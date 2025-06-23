@@ -4,6 +4,7 @@ import { HeroSection } from '@/components/sections/hero-section';
 import { DiscoverSection } from '@/components/sections/discover-section';
 import { ToursSection } from '@/components/sections/tours-section';
 import { ExploreRatnapuraSection } from '@/components/sections/explore-ratnapura-section';
+import { BookingSection } from '@/components/sections/booking-section';
 import { ContactSection } from '@/components/sections/contact-section';
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
         <DiscoverSection />
         <ToursSection />
         <ExploreRatnapuraSection />
+        <BookingSection />
         <ContactSection />
       </main>
       <Footer />
