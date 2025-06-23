@@ -1,56 +1,30 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { natureAndWildlife } from "@/lib/locations-data";
 
-const natureAndWildlife = [
-  {
-    title: "Sinharaja Rainforest",
-    distance: "12 km away",
-    description: "UNESCO World Heritage Site with rich biodiversity, lush trails, and exotic wildlife.",
-    image: "https://placehold.co/600x400.png",
-    hint: "rainforest canopy",
-  },
-  {
-    title: "Bopath Ella Falls",
-    distance: "8 km away",
-    description: "Iconic waterfall famed for its shape, surrounded by lush forest and local eateries.",
-    image: "https://placehold.co/600x400.png",
-    hint: "waterfall jungle",
-  },
-  {
-    title: "Udawalawe National Park",
-    distance: "40 km away",
-    description: "Elephant watching, jeep safaris, and diverse fauna in a vast, scenic landscape.",
-    image: "https://placehold.co/600x400.png",
-    hint: "elephants safari",
-  },
-  {
-    title: "Kalthota Doowili Ella",
-    distance: "27 km away",
-    description: "Secluded waterfall, pristine waters and a tranquil atmosphere for nature lovers.",
-    image: "https://placehold.co/600x400.png",
-    hint: "waterfall rocks",
-  },
-];
 
 const LocationCard = ({ location }: { location: typeof natureAndWildlife[0] }) => (
-  <Card className="bg-transparent border-0 shadow-none flex flex-col">
-    <div className="overflow-hidden rounded-lg">
-      <Image
-        src={location.image}
-        alt={location.title}
-        data-ai-hint={location.hint}
-        width={600}
-        height={400}
-        className="object-cover w-full h-auto transition-transform duration-300 hover:scale-105"
-      />
-    </div>
-    <CardContent className="p-4 flex flex-col flex-grow bg-transparent text-left">
-      <h3 className="text-xl font-headline font-bold text-primary">{location.title}</h3>
-      <p className="text-sm text-muted-foreground mt-1 mb-2">{location.distance}</p>
-      <p className="text-sm text-muted-foreground flex-grow">{location.description}</p>
-    </CardContent>
-  </Card>
+  <Link href={`/explore-ratnapura/${location.slug}`} className="group">
+    <Card className="bg-transparent border-0 shadow-none flex flex-col h-full">
+      <div className="overflow-hidden rounded-lg">
+        <Image
+          src={location.cardImage}
+          alt={location.title}
+          data-ai-hint={location.imageHint}
+          width={600}
+          height={400}
+          className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+      <CardContent className="p-4 flex flex-col flex-grow bg-transparent text-left">
+        <h3 className="text-xl font-headline font-bold text-primary">{location.title}</h3>
+        <p className="text-sm text-muted-foreground mt-1 mb-2">{location.distance}</p>
+        <p className="text-sm text-muted-foreground flex-grow">{location.cardDescription}</p>
+      </CardContent>
+    </Card>
+  </Link>
 );
 
 export function ExploreRatnapuraContent() {

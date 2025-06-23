@@ -1,0 +1,117 @@
+import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves } from 'lucide-react';
+
+export const natureAndWildlife = [
+  {
+    slug: "sinharaja-rainforest",
+    title: "Sinharaja Rainforest",
+    cardDescription: "UNESCO World Heritage Site with rich biodiversity, lush trails, and exotic wildlife.",
+    cardImage: "https://placehold.co/600x400.png",
+    imageHint: "rainforest canopy",
+    distance: "12 km away",
+    subtitle: "Nature's Unspoiled Wonder",
+    heroImage: "https://placehold.co/1920x1080.png",
+    heroImageHint: "rainforest misty mountains",
+    intro: {
+        title: "UNESCO World Heritage Wonder",
+        description: "Sinharaja Rainforest stands as Sri Lanka’s last viable area of primary tropical rainforest, harboring an extraordinary collection of endemic species. This pristine wilderness covers 11,187 hectares of untouched biodiversity, where ancient trees tower over 45 meters high and rare species thrive in their natural habitat. Experience guided eco-treks through dense canopies, witness endemic bird species, and immerse yourself in one of the world's most biodiverse ecosystems. Perfect for nature enthusiasts, researchers, and adventure seekers looking to connect with pristine wilderness.",
+        imageUrl: "https://placehold.co/600x600.png",
+        imageHint: "jungle river rocks"
+    },
+    galleryImages: [
+        { src: 'https://placehold.co/600x800.png', alt: 'Monkey on a branch', hint: 'monkey jungle' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Waterfall view', hint: 'waterfall jungle' },
+        { src: 'https://placehold.co/600x400.png', alt: 'People swimming in a waterfall pool', hint: 'swimming waterfall' },
+        { src: 'https://placehold.co/600x400.png', alt: 'People hiking across a river', hint: 'hiking river' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Lush green forest canopy', hint: 'forest canopy', is360: true },
+    ],
+    highlights: [
+        { icon: 'Leaf', title: 'Biodiversity', description: 'Home to 60% of Sri Lanka’s endemic trees and countless rare species.' },
+        { icon: 'Mountain', title: 'Guided Hikes', description: 'Expert-led trails through pristine wilderness paths.' },
+        { icon: 'Bird', title: 'Bird Watching', description: 'Spot endemic species like the Red-faced Malkoha.' },
+        { icon: 'Home', title: 'Eco-Lodging', description: 'Sustainable accommodations within the forest buffer zone.' },
+    ],
+    visitorInfo: [
+        { icon: 'Clock', title: 'Opening Hours', line1: '6:00 AM - 6:00 PM', line2: 'Daily (Weather permitting)' },
+        { icon: 'CalendarDays', title: 'Best Time', line1: 'Dec - Apr', line2: 'Dry season recommended' },
+        { icon: 'Ticket', title: 'Entry Fees', line1: 'LKR 3,000', line2: 'Foreign visitors' },
+        { icon: 'Users', title: 'Local Guides', line1: 'Available', line2: 'Recommended for safety' },
+    ],
+    map: {
+        image: 'https://placehold.co/1200x800.png',
+        hint: 'sri lanka map',
+        nearbyAttractions: [
+            { icon: 'AlertTriangle', name: "Adam's Peak", distance: '45 km away' },
+            { icon: 'Gem', name: 'Gem Mining Site', distance: '15 km away' },
+            { icon: 'Waves', name: 'Bopath Falls', distance: '25 km away' },
+        ]
+    }
+  },
+  {
+    slug: "bopath-ella-falls",
+    title: "Bopath Ella Falls",
+    cardDescription: "Iconic waterfall famed for its shape, surrounded by lush forest and local eateries.",
+    cardImage: "https://placehold.co/600x400.png",
+    imageHint: "waterfall jungle",
+    distance: "8 km away",
+    subtitle: "The Sacred Bo-Leaf",
+    heroImage: "https://placehold.co/1920x1080.png",
+    heroImageHint: "large jungle waterfall",
+    intro: {
+        title: "A Natural Masterpiece",
+        description: "Bopath Ella, named for its perfect resemblance to a leaf from the sacred Bo tree, is one of Sri Lanka's most iconic waterfalls. Cascading from a height of 30 meters, its beauty is accessible and captivating. The area is well-developed for tourism, offering safe swimming areas and local eateries where you can enjoy a meal with a view. It's a perfect spot for a family outing or a refreshing dip in nature's own infinity pool.",
+        imageUrl: "https://placehold.co/600x600.png",
+        imageHint: "people at waterfall"
+    },
+    galleryImages: [],
+    highlights: [],
+    visitorInfo: [],
+    map: { image: '', hint: '', nearbyAttractions: [] }
+  },
+  {
+    slug: "udawalawe-national-park",
+    title: "Udawalawe National Park",
+    cardDescription: "Elephant watching, jeep safaris, and diverse fauna in a vast, scenic landscape.",
+    cardImage: "https://placehold.co/600x400.png",
+    imageHint: "elephants safari",
+    distance: "40 km away",
+    subtitle: "A Wild Haven",
+    heroImage: "https://placehold.co/1920x1080.png",
+    heroImageHint: "safari jeep elephants",
+    intro: {
+        title: "Home of the Gentle Giants",
+        description: "Udawalawe National Park is an unparalleled destination for wildlife enthusiasts, particularly famous for its large population of Sri Lankan elephants. Spanning 30,821 hectares, the park's open grasslands and reservoir make it easy to spot herds of elephants, water buffalo, deer, and a rich variety of birdlife. Embark on a thrilling jeep safari to get up close with these magnificent creatures in their natural habitat.",
+        imageUrl: "https://placehold.co/600x600.png",
+        imageHint: "elephant family"
+    },
+    galleryImages: [],
+    highlights: [],
+    visitorInfo: [],
+    map: { image: '', hint: '', nearbyAttractions: [] }
+  },
+  {
+    slug: "kalthota-doowili-ella",
+    title: "Kalthota Doowili Ella",
+    cardDescription: "Secluded waterfall, pristine waters and a tranquil atmosphere for nature lovers.",
+    cardImage: "https://placehold.co/600x400.png",
+    imageHint: "waterfall rocks",
+    distance: "27 km away",
+    subtitle: "The Dusty Waterfall",
+    heroImage: "https://placehold.co/1920x1080.png",
+    heroImageHint: "secluded jungle waterfall",
+    intro: {
+        title: "A Hidden Gem",
+        description: "Known as 'Doowili Ella' or 'Dusty Falls' because its spray resembles a cloud of dust, this secluded waterfall is a reward for the adventurous traveler. Tucked away in Kalthota, it offers a more tranquil and untouched experience compared to more popular falls. The journey to the falls is as beautiful as the destination itself, making it a perfect escape for those seeking peace and natural beauty off the beaten path.",
+        imageUrl: "https://placehold.co/600x600.png",
+        imageHint: "misty waterfall"
+    },
+    galleryImages: [],
+    highlights: [],
+    visitorInfo: [],
+    map: { image: '', hint: '', nearbyAttractions: [] }
+  },
+];
+
+export const locationsData = natureAndWildlife.map(location => ({
+    ...location,
+    // Add any additional processing or default values here if needed
+}));
