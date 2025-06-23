@@ -3,6 +3,7 @@ import { Footer } from '@/components/layout/footer';
 import { HeroSection } from '@/components/sections/hero-section';
 import { DiscoverSection } from '@/components/sections/discover-section';
 import { ToursSection } from '@/components/sections/tours-section';
+import { ExploreRatnapuraSection } from '@/components/sections/explore-ratnapura-section';
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
         <HeroSection />
         <DiscoverSection />
         <ToursSection />
+        <ExploreRatnapuraSection />
       </main>
       <Footer />
     </div>
