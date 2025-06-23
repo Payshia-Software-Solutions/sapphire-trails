@@ -1,9 +1,12 @@
 "use client";
 
 import Image from 'next/image';
-import { useState, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
+import useEmblaCarousel from 'embla-carousel-react';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const images = [
     {
@@ -25,31 +28,33 @@ const images = [
 
 export function DiscoverSection() {
   const [activeIndex, setActiveIndex] = useState(1);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, startIndex: 1 });
 
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev()
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext()
+  }, [emblaApi]);
+  
+  // When user swipes the mobile carousel, update the activeIndex
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => {
+      setActiveIndex(emblaApi.selectedScrollSnap());
+    };
+    emblaApi.on('select', onSelect);
+    return () => { emblaApi.off('select', onSelect) };
+  }, [emblaApi]);
+
+  // When a dot is clicked, update embla's position
   const handleDotClick = (index: number) => {
     setActiveIndex(index);
-  };
-  
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.targetTouches[0].clientX;
-    touchEndX.current = e.targetTouches[0].clientX; 
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    const swipeThreshold = 50; 
-    if (touchStartX.current - touchEndX.current > swipeThreshold) {
-      setActiveIndex((prevIndex) => (prevIndex + 1) % images.length);
-    } else if (touchEndX.current - touchStartX.current > swipeThreshold) {
-      setActiveIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    if (emblaApi) {
+        emblaApi.scrollTo(index);
     }
-  };
+  }
 
 
   return (
@@ -66,11 +71,37 @@ export function DiscoverSection() {
 
         <ScrollAnimate 
             className="mt-16 w-full"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
         >
-            <div className="relative h-[400px] w-full max-w-4xl mx-auto">
+            {/* Mobile View: Standard Swiper */}
+            <div className="md:hidden">
+              <div className="relative">
+                <div className="overflow-hidden" ref={emblaRef}>
+                  <div className="flex -ml-4">
+                    {images.map((image, index) => (
+                      <div className="flex-grow-0 flex-shrink-0 basis-full min-w-0 pl-4" key={index}>
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          data-ai-hint={image.hint}
+                          width={600}
+                          height={400}
+                          className="rounded-2xl object-cover w-full h-auto"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <Button onClick={scrollPrev} className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button onClick={scrollNext} className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Desktop View: Cover-flow effect */}
+            <div className="relative h-[400px] w-full max-w-4xl mx-auto hidden md:block">
                 {images.map((image, index) => {
                     const rawOffset = index - activeIndex;
                     const directedOffset = Math.abs(rawOffset) > images.length / 2 
@@ -78,7 +109,7 @@ export function DiscoverSection() {
                         : rawOffset;
 
                     const isCenter = directedOffset === 0;
-                    const translateX = directedOffset * 50; // Closer positioning
+                    const translateX = directedOffset * 50;
                     const scale = isCenter ? 1 : 0.8;
                     const zIndex = images.length - Math.abs(directedOffset);
                     const opacity = Math.abs(directedOffset) > 1 ? 0 : 1;
