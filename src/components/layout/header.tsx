@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 const navLinks = [
   { href: '/about', label: 'About' },
@@ -49,10 +49,6 @@ export function Header() {
                 <Link href="/" onClick={() => setIsMenuOpen(false)}>
                     <span className="font-headline text-xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
-                    <X className="h-6 w-6 text-primary" />
-                    <span className="sr-only">Close menu</span>
-                </Button>
               </div>
 
               <nav className="flex flex-col space-y-6 text-lg font-headline uppercase tracking-widest text-center">
