@@ -31,7 +31,7 @@ export function Header() {
             </Link>
           ))}
           <Button asChild size="sm" className="rounded-md">
-            <Link href="/contact">Book Now</Link>
+            <Link href="/booking">Book Now</Link>
           </Button>
         </nav>
 
@@ -63,7 +63,7 @@ export function Header() {
                   </Link>
                 ))}
                  <Button asChild size="lg" className="w-full mt-6" onClick={() => setIsMenuOpen(false)}>
-                    <Link href="/contact">Book Now</Link>
+                    <Link href="/booking">Book Now</Link>
                  </Button>
               </nav>
             </SheetContent>

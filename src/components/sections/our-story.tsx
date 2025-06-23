@@ -84,7 +84,7 @@ export function OurStory() {
 
           <div className="text-center pt-8">
             <Button asChild size="lg" className="rounded-full px-10">
-                <Link href="/contact">Book Now</Link>
+                <Link href="/booking">Book Now</Link>
             </Button>
           </div>
           

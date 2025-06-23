@@ -96,7 +96,7 @@ export function ExploreRatnapuraSection() {
           </div>
 
           <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Link href="#contact">Book Now</Link>
+            <Link href="/booking">Book Now</Link>
           </Button>
         </ScrollAnimate>
       </div>

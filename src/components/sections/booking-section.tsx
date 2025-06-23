@@ -16,7 +16,7 @@ export function BookingSection() {
             </p>
           </div>
           <Button asChild size="lg" className="rounded-full px-10 bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href="/contact">Contact Us</Link>
+              <Link href="/booking">Book Now</Link>
           </Button>
         </ScrollAnimate>
       </div>

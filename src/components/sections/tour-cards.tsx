@@ -37,7 +37,7 @@ export function TourCards() {
               </div>
               <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
                 <p className="text-3xl font-bold text-primary">$135 <span className="text-sm font-normal text-muted-foreground">per person</span></p>
-                <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href="/contact">Book Now</Link></Button>
+                <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href="/booking">Book Now</Link></Button>
               </div>
             </CardContent>
           </Card>
@@ -50,8 +50,8 @@ export function TourCards() {
                     <path d="M0.5 38H127.5"/>
                     <path d="M32 38L64 71L96 38"/>
                     <path d="M64 105.5V0.5"/>
-                    <path d="M48 38C52.6667 30.1667 71.8 28.6 80 38"/>
-                    <path d="M56 38C59.3333 32.5 68.2 31.4 72 38"/>
+                    <path d="M48 38C52.6667 30.1667 71.8 28.6 80 38" stroke="currentColor"/>
+                    <path d="M56 38C59.3333 32.5 68.2 31.4 72 38" stroke="currentColor"/>
                 </svg>
                 <h3 className="text-4xl tracking-[0.2em] mt-4">SAPPHIRE TRAILS</h3>
                 <div className="flex items-center justify-center gap-4 my-2">
@@ -70,7 +70,7 @@ export function TourCards() {
               </div>
               <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
                 <p className="text-3xl font-bold text-primary">$215 <span className="text-sm font-normal text-muted-foreground">per person</span></p>
-                <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href="/contact">Book Now</Link></Button>
+                <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href="/booking">Book Now</Link></Button>
               </div>
             </CardContent>
           </Card>
