@@ -11,7 +11,6 @@ export function Header() {
           <Link href="#about" className="text-primary hover:text-primary/80 transition-colors">About</Link>
           <Link href="#tours" className="text-primary hover:text-primary/80 transition-colors">Tours</Link>
           <Link href="#ratnapura" className="text-primary hover:text-primary/80 transition-colors">Explore Ratnapura</Link>
-          <Link href="#booking" className="text-primary hover:text-primary/80 transition-colors">Book Now</Link>
           <Link href="#contact" className="text-primary hover:text-primary/80 transition-colors">Contact</Link>
         </nav>
       </div>

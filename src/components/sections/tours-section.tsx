@@ -42,7 +42,7 @@ export function ToursSection() {
                   <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.title}</h3>
                   <p className="text-muted-foreground mb-6 flex-grow">{tour.description}</p>
                   <Button asChild className="w-fit bg-primary text-primary-foreground hover:bg-primary/90 mt-auto rounded-full px-6">
-                    <Link href="#booking">More Info</Link>
+                    <Link href="#contact">More Info</Link>
                   </Button>
                 </CardContent>
               </Card>
