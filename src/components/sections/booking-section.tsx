@@ -6,7 +6,7 @@ export function BookingSection() {
   return (
     <section id="booking" className="w-full py-12 md:py-24 lg:py-32 bg-background">
       <div className="container px-4 md:px-6">
-        <ScrollAnimate className="flex flex-col items-center justify-center gap-6 text-center">
+        <ScrollAnimate className="mx-auto flex flex-col items-center justify-center gap-6 text-center">
           <div className="space-y-4">
             <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
               Reserve Your Adventure
