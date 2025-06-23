@@ -14,7 +14,7 @@ export function LocationCta() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Link href="/#contact">Book a Tour</Link>
+            <Link href="/contact">Book a Tour</Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10 hover:text-primary">
             <Link href="tel:+94771234567">

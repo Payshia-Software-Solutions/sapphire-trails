@@ -46,7 +46,7 @@ export function HeroSection() {
         </div>
 
         <Button asChild size="lg">
-          <Link href="#contact">Book Now</Link>
+          <Link href="/contact">Book Now</Link>
         </Button>
       </div>
     </section>

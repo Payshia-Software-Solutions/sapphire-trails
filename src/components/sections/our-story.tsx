@@ -47,7 +47,7 @@ export function OurStory() {
               </p>
             </div>
             <Button asChild size="lg" className="rounded-full px-10">
-                <Link href="/#contact">Book Now</Link>
+                <Link href="/contact">Book Now</Link>
             </Button>
           </div>
           <div className="hidden md:flex justify-center items-center">
