@@ -27,8 +27,8 @@ const images = [
 ];
 
 export function DiscoverSection() {
-  const [activeIndex, setActiveIndex] = useState(1);
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, startIndex: 1 });
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev()
@@ -78,7 +78,7 @@ export function DiscoverSection() {
                 <div className="overflow-hidden" ref={emblaRef}>
                   <div className="flex -ml-4">
                     {images.map((image, index) => (
-                      <div className="flex-grow-0 flex-shrink-0 basis-full min-w-0 pl-4" key={index}>
+                      <div className="flex-grow-0 flex-shrink-0 basis-4/5 min-w-0 pl-4" key={index}>
                         <Image
                           src={image.src}
                           alt={image.alt}
