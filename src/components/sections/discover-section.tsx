@@ -45,50 +45,35 @@ export function DiscoverSection() {
         <ScrollAnimate className="mt-16 w-full">
             <div className="relative h-[400px] w-full max-w-4xl mx-auto">
                 {images.map((image, index) => {
-                    const isCenter = index === activeIndex;
-                    const isLeft = index === (activeIndex - 1 + images.length) % images.length;
-                    const isRight = index === (activeIndex + 1) % images.length;
+                    const rawOffset = index - activeIndex;
+                    const directedOffset = Math.abs(rawOffset) > images.length / 2 
+                        ? rawOffset - Math.sign(rawOffset) * images.length 
+                        : rawOffset;
 
-                    const getTransform = () => {
-                        if (isCenter) return 'translateX(0%) scale(1)';
-                        if (isLeft) return 'translateX(-60%) scale(0.85)';
-                        if (isRight) return 'translateX(60%) scale(0.85)';
-
-                        const rawOffset = index - activeIndex;
-                        const directedOffset = Math.abs(rawOffset) > images.length / 2 
-                            ? rawOffset - Math.sign(rawOffset) * images.length 
-                            : rawOffset;
-
-                        return `translateX(${directedOffset * 70}%) scale(0.7)`;
-                    };
-
-                    const getZIndex = () => {
-                        if (isCenter) return 20;
-                        if (isLeft || isRight) return 10;
-                        return 0;
-                    }
+                    const isCenter = directedOffset === 0;
+                    const translateX = directedOffset * 50; // Closer positioning
+                    const scale = isCenter ? 1 : 0.8;
+                    const zIndex = images.length - Math.abs(directedOffset);
+                    const opacity = Math.abs(directedOffset) > 1 ? 0 : 1;
+                    const filter = isCenter ? 'none' : 'brightness(0.7)';
                     
-                    const getOpacity = () => {
-                        if (isCenter || isLeft || isRight) return 1;
-                        return 0;
-                    }
-
                     return (
                         <div
                             key={index}
-                            className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center transition-all duration-500 ease-in-out"
+                            className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center transition-all duration-1000 ease-out"
                             style={{
-                                transform: getTransform(),
-                                zIndex: getZIndex(),
-                                opacity: getOpacity(),
+                                transform: `translateX(${translateX}%) scale(${scale})`,
+                                zIndex: zIndex,
+                                opacity: opacity,
+                                filter: filter,
                             }}
                         >
                             <Image
                                 src={image.src}
                                 alt={image.alt}
                                 data-ai-hint={image.hint}
-                                width={isCenter ? 600 : 450}
-                                height={isCenter ? 400 : 300}
+                                width={600}
+                                height={400}
                                 className="rounded-2xl object-cover shadow-2xl"
                             />
                         </div>
