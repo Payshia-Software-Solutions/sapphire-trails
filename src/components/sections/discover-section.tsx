@@ -24,7 +24,18 @@ const images = [
 ];
 
 export function DiscoverSection() {
-  const [activeDot, setActiveDot] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(1);
+
+  const handleDotClick = (index: number) => {
+    setActiveIndex(index);
+  };
+
+  const prevIndex = (activeIndex - 1 + images.length) % images.length;
+  const nextIndex = (activeIndex + 1) % images.length;
+
+  const leftImage = images[prevIndex];
+  const centerImage = images[activeIndex];
+  const rightImage = images[nextIndex];
 
   return (
     <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-background">
@@ -40,31 +51,34 @@ export function DiscoverSection() {
 
         <ScrollAnimate className="mt-16 w-full flex justify-center">
           <div className="flex items-center justify-center">
-            <div className="relative z-10 -mr-20 md:-mr-32 transform transition-transform duration-500 hover:scale-105">
+            <div className="relative z-10 -mr-20 md:-mr-32 transform transition-all duration-500 hover:scale-105">
               <Image
-                src={images[0].src}
-                alt={images[0].alt}
-                data-ai-hint={images[0].hint}
+                key={prevIndex}
+                src={leftImage.src}
+                alt={leftImage.alt}
+                data-ai-hint={leftImage.hint}
                 width={500}
                 height={350}
                 className="rounded-2xl object-cover shadow-2xl"
               />
             </div>
-            <div className="relative z-20 transform transition-transform duration-500 hover:scale-105">
+            <div className="relative z-20 transform transition-all duration-500 hover:scale-105">
               <Image
-                src={images[1].src}
-                alt={images[1].alt}
-                data-ai-hint={images[1].hint}
+                key={activeIndex}
+                src={centerImage.src}
+                alt={centerImage.alt}
+                data-ai-hint={centerImage.hint}
                 width={600}
                 height={400}
                 className="rounded-2xl object-cover shadow-2xl"
               />
             </div>
-            <div className="relative z-10 -ml-20 md:-ml-32 transform transition-transform duration-500 hover:scale-105">
+            <div className="relative z-10 -ml-20 md:-ml-32 transform transition-all duration-500 hover:scale-105">
               <Image
-                src={images[2].src}
-                alt={images[2].alt}
-                data-ai-hint={images[2].hint}
+                key={nextIndex}
+                src={rightImage.src}
+                alt={rightImage.alt}
+                data-ai-hint={rightImage.hint}
                 width={500}
                 height={350}
                 className="rounded-2xl object-cover shadow-2xl"
@@ -74,13 +88,13 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <div className="mt-8 flex justify-center gap-3">
-          {[0, 1, 2, 3].map((index) => (
+          {images.map((_, index) => (
             <button
               key={index}
-              onClick={() => setActiveDot(index)}
+              onClick={() => handleDotClick(index)}
               className={cn(
                 'h-2.5 w-2.5 rounded-full transition-colors',
-                activeDot === index ? 'bg-primary' : 'bg-muted/50'
+                activeIndex === index ? 'bg-primary' : 'bg-muted/50'
               )}
               aria-label={`Go to image ${index + 1}`}
             />
