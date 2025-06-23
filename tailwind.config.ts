@@ -16,6 +16,7 @@ export default {
       },
       colors: {
         background: 'hsl(var(--background))',
+        'background-alt': 'hsl(var(--background-alt))',
         foreground: 'hsl(var(--foreground))',
         card: {
           DEFAULT: 'hsl(var(--card))',
