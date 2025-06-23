@@ -30,9 +30,6 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          <Button asChild size="sm" className="rounded-md">
-            <Link href="/booking">Book Now</Link>
-          </Button>
         </nav>
 
         {/* Mobile Navigation */}
@@ -62,9 +59,6 @@ export function Header() {
                     {link.label}
                   </Link>
                 ))}
-                 <Button asChild size="lg" className="w-full mt-6" onClick={() => setIsMenuOpen(false)}>
-                    <Link href="/booking">Book Now</Link>
-                 </Button>
               </nav>
             </SheetContent>
           </Sheet>
