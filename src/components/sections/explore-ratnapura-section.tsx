@@ -5,17 +5,17 @@ import { ScrollAnimate } from '@/components/shared/scroll-animate';
 
 const gallery = [
   {
-    src: 'https://placehold.co/600x400.png',
+    src: 'https://images.unsplash.com/photo-1511936606692-5e0d73f6b638?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxqdW5nbGUlMjB3YXRlcmZhbGx8ZW58MHx8fHwxNzUwNzA1NTcwfDA&ixlib=rb-4.1.0&q=80&w=1080',
     alt: 'A beautiful cascading waterfall in a lush, green jungle environment.',
     hint: 'jungle waterfall',
   },
   {
-    src: 'https://placehold.co/600x400.png',
+    src: 'https://images.unsplash.com/photo-1634646297235-008cc35cb8d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxlbGVwaGFudHMlMjBzYWZhcml8ZW58MHx8fHwxNzUwNzA1NTcwfDA&ixlib=rb-4.1.0&q=80&w=1080',
     alt: 'A family of elephants walking near a tour jeep in a grassy, wooded area.',
     hint: 'elephants safari',
   },
   {
-    src: 'https://placehold.co/600x400.png',
+    src: 'https://images.unsplash.com/photo-1695469773735-3fd25fdbf3af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxiYW1ib28lMjBmb3Jlc3R8ZW58MHx8fHwxNzUwNzA1NTcwfDA&ixlib=rb-4.1.0&q=80&w=1080',
     alt: 'Sunlight filtering through a dense bamboo forest with thick vines.',
     hint: 'bamboo forest',
   },
