@@ -1,7 +1,7 @@
 "use client";
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 
@@ -29,6 +29,28 @@ export function DiscoverSection() {
   const handleDotClick = (index: number) => {
     setActiveIndex(index);
   };
+  
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = e.targetTouches[0].clientX; 
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const swipeThreshold = 50; 
+    if (touchStartX.current - touchEndX.current > swipeThreshold) {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % images.length);
+    } else if (touchEndX.current - touchStartX.current > swipeThreshold) {
+      setActiveIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    }
+  };
+
 
   return (
     <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
@@ -42,7 +64,12 @@ export function DiscoverSection() {
           </p>
         </ScrollAnimate>
 
-        <ScrollAnimate className="mt-16 w-full">
+        <ScrollAnimate 
+            className="mt-16 w-full"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
             <div className="relative h-[400px] w-full max-w-4xl mx-auto">
                 {images.map((image, index) => {
                     const rawOffset = index - activeIndex;
