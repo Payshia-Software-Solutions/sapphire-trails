@@ -30,13 +30,6 @@ export function DiscoverSection() {
     setActiveIndex(index);
   };
 
-  const prevIndex = (activeIndex - 1 + images.length) % images.length;
-  const nextIndex = (activeIndex + 1) % images.length;
-
-  const leftImage = images[prevIndex];
-  const centerImage = images[activeIndex];
-  const rightImage = images[nextIndex];
-
   return (
     <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-background">
       <div className="container mx-auto px-4 md:px-6 flex flex-col items-center">
@@ -49,45 +42,62 @@ export function DiscoverSection() {
           </p>
         </ScrollAnimate>
 
-        <ScrollAnimate className="mt-16 w-full flex justify-center">
-          <div className="flex items-center justify-center">
-            <div className="relative z-10 -mr-20 md:-mr-32 transform transition-all duration-500 hover:scale-105">
-              <Image
-                key={prevIndex}
-                src={leftImage.src}
-                alt={leftImage.alt}
-                data-ai-hint={leftImage.hint}
-                width={500}
-                height={350}
-                className="rounded-2xl object-cover shadow-2xl"
-              />
+        <ScrollAnimate className="mt-16 w-full">
+            <div className="relative h-[400px] w-full max-w-4xl mx-auto">
+                {images.map((image, index) => {
+                    const isCenter = index === activeIndex;
+                    const isLeft = index === (activeIndex - 1 + images.length) % images.length;
+                    const isRight = index === (activeIndex + 1) % images.length;
+
+                    const getTransform = () => {
+                        if (isCenter) return 'translateX(0%) scale(1)';
+                        if (isLeft) return 'translateX(-60%) scale(0.85)';
+                        if (isRight) return 'translateX(60%) scale(0.85)';
+
+                        const rawOffset = index - activeIndex;
+                        const directedOffset = Math.abs(rawOffset) > images.length / 2 
+                            ? rawOffset - Math.sign(rawOffset) * images.length 
+                            : rawOffset;
+
+                        return `translateX(${directedOffset * 70}%) scale(0.7)`;
+                    };
+
+                    const getZIndex = () => {
+                        if (isCenter) return 20;
+                        if (isLeft || isRight) return 10;
+                        return 0;
+                    }
+                    
+                    const getOpacity = () => {
+                        if (isCenter || isLeft || isRight) return 1;
+                        return 0;
+                    }
+
+                    return (
+                        <div
+                            key={index}
+                            className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center transition-all duration-500 ease-in-out"
+                            style={{
+                                transform: getTransform(),
+                                zIndex: getZIndex(),
+                                opacity: getOpacity(),
+                            }}
+                        >
+                            <Image
+                                src={image.src}
+                                alt={image.alt}
+                                data-ai-hint={image.hint}
+                                width={isCenter ? 600 : 450}
+                                height={isCenter ? 400 : 300}
+                                className="rounded-2xl object-cover shadow-2xl"
+                            />
+                        </div>
+                    );
+                })}
             </div>
-            <div className="relative z-20 transform transition-all duration-500 hover:scale-105">
-              <Image
-                key={activeIndex}
-                src={centerImage.src}
-                alt={centerImage.alt}
-                data-ai-hint={centerImage.hint}
-                width={600}
-                height={400}
-                className="rounded-2xl object-cover shadow-2xl"
-              />
-            </div>
-            <div className="relative z-10 -ml-20 md:-ml-32 transform transition-all duration-500 hover:scale-105">
-              <Image
-                key={nextIndex}
-                src={rightImage.src}
-                alt={rightImage.alt}
-                data-ai-hint={rightImage.hint}
-                width={500}
-                height={350}
-                className="rounded-2xl object-cover shadow-2xl"
-              />
-            </div>
-          </div>
         </ScrollAnimate>
 
-        <div className="mt-8 flex justify-center gap-3">
+        <div className="mt-12 flex justify-center gap-3">
           {images.map((_, index) => (
             <button
               key={index}
