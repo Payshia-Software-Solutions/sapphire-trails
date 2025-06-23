@@ -1,7 +1,6 @@
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { HeroSection } from '@/components/sections/hero-section';
-import { DiscoverSection } from '@/components/sections/discover-section';
 import { ExploreRatnapuraSection } from '@/components/sections/explore-ratnapura-section';
 import { BookingSection } from '@/components/sections/booking-section';
 import { ContactSection } from '@/components/sections/contact-section';
@@ -12,7 +11,6 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <DiscoverSection />
         <ExploreRatnapuraSection />
         <BookingSection />
         <ContactSection />
