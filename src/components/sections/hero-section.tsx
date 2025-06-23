@@ -1,48 +1,53 @@
 "use client";
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { TaglineGenerator } from '@/components/shared/tagline-generator';
 import Image from 'next/image';
 
-export function HeroSection() {
-  const [headline, setHeadline] = useState("Craft Your Perfect Landing Page in Minutes");
-  const sectionDescription = "A hero section for a website builder called 'Landing Spark'. It helps users create beautiful and effective landing pages quickly using AI. The tone should be inspiring and empowering.";
+const LogoIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg {...props} width="128" height="106" viewBox="0 0 128 106" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="1">
+        <path d="M64 105.5L0.5 38L64 0.5L127.5 38L64 105.5Z" stroke="currentColor"/>
+        <path d="M0.5 38H127.5" stroke="currentColor"/>
+        <path d="M32 38L64 71L96 38" stroke="currentColor"/>
+        <path d="M64 105.5V0.5" stroke="currentColor"/>
+        <path d="M48 38C52.6667 30.1667 71.8 28.6 80 38" stroke="currentColor"/>
+        <path d="M56 38C59.3333 32.5 68.2 31.4 72 38" stroke="currentColor"/>
+    </svg>
+);
 
+
+export function HeroSection() {
   return (
-    <section className="w-full py-20 md:py-32 lg:py-40 bg-card">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:gap-24 items-center">
-          <div className="flex flex-col justify-center space-y-4">
-            <div className="space-y-2">
-              <h1 className="text-4xl font-headline font-bold tracking-tighter sm:text-5xl md:text-6xl text-primary-foreground/90">
-                {headline}
-              </h1>
-              <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                Unlock your potential with Landing Spark. Our AI-driven platform helps you build stunning, high-converting landing pages with zero code.
-              </p>
-            </div>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="#contact">Get Started Now</Link>
-              </Button>
-            </div>
-             <TaglineGenerator 
-              sectionDescription={sectionDescription}
-              onTaglineSelect={setHeadline}
-              currentTagline={headline}
-            />
-          </div>
-          <Image
-            src="https://placehold.co/600x400.png"
-            alt="Hero Image"
-            data-ai-hint="website builder interface"
-            width={600}
-            height={400}
-            className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
-          />
+    <section className="relative h-screen w-full flex items-center justify-center">
+      <Image
+        src="https://placehold.co/1920x1080.png"
+        alt="A dark and moody image of the inside of a gem mine, with rock walls and dim lighting."
+        data-ai-hint="gem mine cave"
+        layout="fill"
+        objectFit="cover"
+        className="z-0"
+      />
+      <div className="absolute inset-0 bg-black/70 z-10" />
+      <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4 space-y-8">
+        
+        <div className="flex flex-col items-center space-y-4">
+            <LogoIcon className="w-24 h-24" />
+            <p className="font-headline text-2xl tracking-[0.3em]">SAPPHIRE TRAILS</p>
+            <p className="text-xs tracking-[0.4em] text-muted-foreground">PROFESSIONAL GEM TOURS</p>
         </div>
+
+        <div className="space-y-4 max-w-4xl">
+            <h1 className="text-5xl font-headline font-bold tracking-tight sm:text-6xl md:text-7xl">
+                Sri Lanka's Only Luxury Gem Experience
+            </h1>
+            <p className="text-lg md:text-xl text-foreground/80 font-body">
+                Experience luxury, culture, and adventure
+            </p>
+        </div>
+
+        <Button asChild size="lg">
+          <Link href="#booking">Book Now</Link>
+        </Button>
       </div>
     </section>
   );
