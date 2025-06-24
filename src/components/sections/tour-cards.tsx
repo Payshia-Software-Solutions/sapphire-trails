@@ -45,7 +45,7 @@ export function TourCards() {
           <Card className="bg-card border-stone-800/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
             <div className="relative h-[400px] w-full bg-[#0a2823] flex items-center justify-center p-8" data-ai-hint="luxury gem logo">
               <div className="text-center text-white font-headline">
-                 <Image src="/img/logo.jpg" alt="Sapphire Trails Logo" width={96} height={80} className="mx-auto" />
+                 <Image src="/img/logo.png" alt="Sapphire Trails Logo" width={96} height={80} className="mx-auto" />
                 <h3 className="text-4xl tracking-[0.2em] mt-4">SAPPHIRE TRAILS</h3>
                 <div className="flex items-center justify-center gap-4 my-2">
                   <div className="h-px w-12 bg-primary/50"></div>
