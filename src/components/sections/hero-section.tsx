@@ -4,18 +4,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 
-const LogoIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} width="128" height="106" viewBox="0 0 128 106" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="1">
-        <path d="M64 105.5L0.5 38L64 0.5L127.5 38L64 105.5Z" stroke="currentColor"/>
-        <path d="M0.5 38H127.5" stroke="currentColor"/>
-        <path d="M32 38L64 71L96 38" stroke="currentColor"/>
-        <path d="M64 105.5V0.5" stroke="currentColor"/>
-        <path d="M48 38C52.6667 30.1667 71.8 28.6 80 38" stroke="currentColor"/>
-        <path d="M56 38C59.3333 32.5 68.2 31.4 72 38" stroke="currentColor"/>
-    </svg>
-);
-
-
 export function HeroSection() {
   return (
     <section className="relative h-screen w-full flex items-center justify-center">
@@ -31,7 +19,7 @@ export function HeroSection() {
       <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4 space-y-8">
         
         <div className="flex flex-col items-center space-y-4">
-            <LogoIcon className="w-24 h-24" />
+            <Image src="/img/logo.svg" alt="Sapphire Trails Logo" width={96} height={80} />
             <p className="font-headline text-2xl tracking-[0.3em]">SAPPHIRE TRAILS</p>
             <p className="text-xs tracking-[0.4em] text-muted-foreground">PROFESSIONAL GEM TOURS</p>
         </div>

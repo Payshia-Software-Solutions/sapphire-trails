@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
+import Image from 'next/image';
 
 const navLinks = [
   { href: '/about', label: 'About' },
@@ -21,6 +22,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full bg-background border-t border-white/10">
       <div className="container mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center space-x-2" onClick={() => setIsMenuOpen(false)}>
+          <Image src="/img/logo.svg" alt="Sapphire Trails Logo" width={32} height={32} />
           <span className="font-headline text-2xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
         </Link>
         
@@ -44,7 +46,8 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-full max-w-sm bg-background p-6">
               <div className="flex justify-between items-center mb-8">
-                <Link href="/" onClick={() => setIsMenuOpen(false)}>
+                <Link href="/" className="flex items-center space-x-2" onClick={() => setIsMenuOpen(false)}>
+                    <Image src="/img/logo.svg" alt="Sapphire Trails Logo" width={28} height={28} />
                     <span className="font-headline text-xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
                 </Link>
               </div>
