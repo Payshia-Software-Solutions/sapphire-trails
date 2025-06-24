@@ -14,6 +14,10 @@ interface LocationGalleryProps {
 }
 
 export function LocationGallery({ images }: LocationGalleryProps) {
+  if (!images || images.length === 0) {
+    return null;
+  }
+  
   const mainImage = images[0];
   const sideImagesTop = images.slice(1, 3);
   const sideImagesBottom = images.slice(3, 5);
