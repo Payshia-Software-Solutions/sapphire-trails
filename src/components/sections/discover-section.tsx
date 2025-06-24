@@ -10,17 +10,17 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const images = [
     {
-      src: 'https://placehold.co/500x350.png',
+      src: '/img/1.jpg',
       alt: 'A pair of hands cupping a collection of rough, uncut blue sapphires.',
       hint: 'raw sapphires',
     },
     {
-      src: 'https://placehold.co/600x400.png',
+      src: '/img/2.jpg',
       alt: 'A person sifting through gravel and dirt in a woven basket, searching for gems.',
       hint: 'gem mining',
     },
     {
-      src: 'https://placehold.co/500x350.png',
+      src: '/img/3.jpg',
       alt: 'A close-up of a woven basket filled with pebbles and potential gemstones.',
       hint: 'sifting gems',
     },
