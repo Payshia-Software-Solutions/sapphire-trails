@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { Gem, AlertTriangle, Waves, Landmark } from 'lucide-react';
+import { Gem, AlertTriangle, Waves, Landmark, Home, Thermometer } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface Attraction {
@@ -20,6 +20,8 @@ const iconMap: { [key: string]: LucideIcon } = {
   Gem,
   Waves,
   Landmark,
+  Home,
+  Thermometer,
 };
 
 export function LocationNearby({ mapImage, mapImageHint, nearbyAttractions }: LocationNearbyProps) {

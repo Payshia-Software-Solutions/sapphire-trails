@@ -1,4 +1,4 @@
-import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves } from 'lucide-react';
+import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves, Landmark } from 'lucide-react';
 
 export const natureAndWildlife = [
   {
@@ -106,10 +106,35 @@ export const natureAndWildlife = [
         imageUrl: "https://placehold.co/600x600.png",
         imageHint: "elephant family"
     },
-    galleryImages: [],
-    highlights: [],
-    visitorInfo: [],
-    map: { image: '', hint: '', nearbyAttractions: [] }
+    galleryImages: [
+        { src: 'https://placehold.co/600x800.png', alt: 'Jeep on a safari', hint: 'jeep safari' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Herd of elephants by water', hint: 'elephant herd' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Water buffalo in a field', hint: 'water buffalo' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Peacock with feathers out', hint: 'peacock bird' },
+        { src: 'https://placehold.co/600x400.png', alt: '360 view of the safari park', hint: 'safari panorama', is360: true },
+    ],
+    highlights: [
+        { icon: 'Mountain', title: 'Jeep Safaris', description: 'Observe elephants and other wildlife on a thrilling jeep safari.' },
+        { icon: 'Home', title: 'Elephant Transit Home', description: 'Visit the renowned center for orphaned elephant calves.' },
+        { icon: 'Waves', title: 'Udawalawe Reservoir', description: 'Explore the vast reservoir, a lifeline for the park\'s ecosystem.' },
+        { icon: 'Bird', title: 'Bird Watching', description: 'A paradise for birdwatchers with numerous resident and migratory species.' },
+    ],
+    visitorInfo: [
+        { icon: 'Clock', title: 'Opening Hours', line1: '6:00 AM - 6:00 PM', line2: 'Daily' },
+        { icon: 'CalendarDays', title: 'Best Time', line1: 'May - Sep', line2: 'Dry season' },
+        { icon: 'Ticket', title: 'Entry Fees', line1: 'LKR 1,500 (Locals)', line2: 'LKR 8,700 (Foreign)' },
+        { icon: 'Users', title: 'Local Guides', line1: 'Available', line2: 'Recommended for safaris' },
+    ],
+    map: {
+        image: 'https://placehold.co/1200x800.png',
+        hint: 'udawalawe map',
+        nearbyAttractions: [
+            { icon: 'Home', name: 'Udawalawe Elephant Transit Home', distance: 'Adjacent to park' },
+            { icon: 'Waves', name: 'Udawalawe Reservoir', distance: 'Inside the park' },
+            { icon: 'Landmark', name: 'Sankapala Raja Maha Viharaya', distance: '30 km away' },
+            { icon: 'Thermometer', name: 'Madunagala Hot Springs', distance: '20 km away' },
+        ]
+    }
   },
   {
     slug: "kalthota-doowili-ella",
