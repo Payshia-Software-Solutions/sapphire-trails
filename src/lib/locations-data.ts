@@ -160,7 +160,6 @@ export const natureAndWildlife = [
         { src: 'https://placehold.co/600x400.png', alt: '360 view of Doowili Ella', hint: 'waterfall panorama', is360: true },
     ],
     highlights: [
-        { icon: 'Mountain', title: 'Trekking', description: 'Hike through the lush greenery of the Rajawaka Reserve to reach the falls.' },
         { icon: 'Camera', title: 'Photography', description: 'Capture the beauty of the waterfall and its surroundings.' },
         { icon: 'Waves', title: 'Swimming', description: 'Enjoy a refreshing swim in the shallow pool at the base of the falls, especially during the dry season.' },
         { icon: 'Leaf', title: 'Nature Exploration', description: 'Observe the diverse flora and fauna in the area.' },
