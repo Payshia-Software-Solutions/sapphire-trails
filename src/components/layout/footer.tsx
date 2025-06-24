@@ -5,10 +5,6 @@ import Image from 'next/image';
 const FooterLogo = () => (
     <div className="flex flex-col items-center gap-1.5 text-center">
         <Image src="/img/logo.jpg" alt="Sapphire Trails Logo" width={80} height={67} />
-        <div className="mt-1">
-            <p className="font-headline text-[10px] tracking-widest text-primary">SAPPHIRE TRAILS</p>
-            <p className="text-[7px] tracking-[0.15em] text-muted-foreground/80 font-body uppercase">Professional Gem Tours</p>
-        </div>
     </div>
 );
 
