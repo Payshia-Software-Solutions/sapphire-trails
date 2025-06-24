@@ -23,11 +23,11 @@ export function Header() {
       <div className="container mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center space-x-2" onClick={() => setIsMenuOpen(false)}>
           <Image src="/img/logo.jpg" alt="Sapphire Trails Logo" width={32} height={27} />
-          <span className="font-headline text-2xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
+          <span className="font-serif text-2xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
         </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-headline uppercase tracking-widest">
+        <nav className="hidden md:flex items-center space-x-6 text-sm font-serif uppercase tracking-widest">
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="text-primary hover:text-primary/80 transition-colors">
               {link.label}
@@ -48,11 +48,11 @@ export function Header() {
               <div className="flex justify-between items-center mb-8">
                 <Link href="/" className="flex items-center space-x-2" onClick={() => setIsMenuOpen(false)}>
                     <Image src="/img/logo.jpg" alt="Sapphire Trails Logo" width={28} height={23} />
-                    <span className="font-headline text-xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
+                    <span className="font-serif text-xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
                 </Link>
               </div>
 
-              <nav className="flex flex-col space-y-6 text-lg font-headline uppercase tracking-widest text-center">
+              <nav className="flex flex-col space-y-6 text-lg font-serif uppercase tracking-widest text-center">
                 {navLinks.map((link) => (
                   <Link 
                     key={link.href} 
