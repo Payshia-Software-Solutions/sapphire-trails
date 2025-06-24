@@ -13,14 +13,14 @@ const tours = [
   {
     title: 'Exclusive Sapphire Mine Tour with Hands-On Discovery',
     description: "Dive deep into the world of gem mining with expert guides. Discover the secrets behind Sri Lanka's most precious sapphires and immerse yourself in authentic local traditions.",
-    imageUrl: 'https://placehold.co/600x400.png',
+    imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
     imageHint: 'tourists mining',
     alt: 'A group of smiling tourists wearing hard hats on a sapphire mine tour.'
   },
   {
     title: 'Tea Estate & Luxury Dining',
     description: 'Savor the flavors of Sri Lanka with a private tour of a lush tea estate, followed by a curated gourmet dining experience in an elegant setting surrounded by nature.',
-    imageUrl: 'https://placehold.co/600x400.png',
+    imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img5.webp',
     imageHint: 'luxury gem logo',
     alt: 'The logo for Sapphire Trails Deluxe tours.'
   }
