@@ -1,0 +1,1 @@
+This directory is for your static image assets. Please place your logo.jpg file and other images here. They can be referenced in the code starting with /img/filename.jpg.
