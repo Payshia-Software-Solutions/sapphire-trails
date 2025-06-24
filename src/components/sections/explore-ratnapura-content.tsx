@@ -6,7 +6,7 @@ import { natureAndWildlife } from "@/lib/locations-data";
 
 
 const LocationCard = ({ location }: { location: typeof natureAndWildlife[0] }) => (
-  <Link href={`/explore-ratnapura/${location.slug}`} className="group">
+  <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
     <Card className="bg-transparent border-0 shadow-none flex flex-col h-full">
       <div className="overflow-hidden rounded-lg">
         <Image
@@ -15,13 +15,13 @@ const LocationCard = ({ location }: { location: typeof natureAndWildlife[0] }) =
           data-ai-hint={location.imageHint}
           width={600}
           height={400}
-          className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+          className="object-cover w-full h-auto aspect-[3/2] transition-transform duration-300 group-hover:scale-105"
         />
       </div>
       <CardContent className="p-4 flex flex-col flex-grow bg-transparent text-left">
         <h3 className="text-xl font-headline font-bold text-primary">{location.title}</h3>
         <p className="text-sm text-muted-foreground mt-1 mb-2">{location.distance}</p>
-        <p className="text-sm text-muted-foreground flex-grow">{location.cardDescription}</p>
+        <p className="text-sm text-muted-foreground">{location.cardDescription}</p>
       </CardContent>
     </Card>
   </Link>
