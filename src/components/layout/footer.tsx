@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const FooterLogo = () => (
     <div className="flex flex-col items-center gap-1.5 text-center">
-        <Image src="/img/logo.png" alt="Sapphire Trails Logo" width={80} height={67} />
+        <Image src="/img/logo.png" alt="Sapphire Trails Logo" width={150} height={90} />
     </div>
 );
 
