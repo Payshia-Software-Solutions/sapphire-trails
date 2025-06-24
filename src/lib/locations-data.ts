@@ -1,4 +1,4 @@
-import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves, Landmark } from 'lucide-react';
+import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves, Landmark, Camera, Tent } from 'lucide-react';
 
 export const natureAndWildlife = [
   {
@@ -152,10 +152,35 @@ export const natureAndWildlife = [
         imageUrl: "https://placehold.co/600x600.png",
         imageHint: "misty waterfall"
     },
-    galleryImages: [],
-    highlights: [],
-    visitorInfo: [],
-    map: { image: '', hint: '', nearbyAttractions: [] }
+    galleryImages: [
+        { src: 'https://placehold.co/600x800.png', alt: 'Doowili Ella falls from below', hint: 'waterfall jungle rocks' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Hiker on the trail to the falls', hint: 'hiking jungle' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Pool at the base of the waterfall', hint: 'waterfall pool' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Camping tent near the falls', hint: 'camping tent night' },
+        { src: 'https://placehold.co/600x400.png', alt: '360 view of Doowili Ella', hint: 'waterfall panorama', is360: true },
+    ],
+    highlights: [
+        { icon: 'Mountain', title: 'Trekking', description: 'Hike through the lush greenery of the Rajawaka Reserve to reach the falls.' },
+        { icon: 'Camera', title: 'Photography', description: 'Capture the beauty of the waterfall and its surroundings.' },
+        { icon: 'Waves', title: 'Swimming', description: 'Enjoy a refreshing swim in the shallow pool at the base of the falls, especially during the dry season.' },
+        { icon: 'Leaf', title: 'Nature Exploration', description: 'Observe the diverse flora and fauna in the area.' },
+        { icon: 'Tent', title: 'Camping', description: 'Set up a small camp or tent near the falls and enjoy the peaceful atmosphere, especially during cold nights.' },
+    ],
+    visitorInfo: [
+        { icon: 'Clock', title: 'Opening Hours', line1: 'Open all day', line2: '' },
+        { icon: 'CalendarDays', title: 'Best Time', line1: 'Apr - Dec', line2: 'Rainy season' },
+        { icon: 'Ticket', title: 'Entry Fees', line1: 'No official fee', line2: '' },
+        { icon: 'Users', title: 'Local Guides', line1: 'Not available', line2: 'Explore at your own pace' },
+    ],
+    map: { 
+        image: 'https://placehold.co/1200x800.png',
+        hint: 'kalthota map',
+        nearbyAttractions: [
+            { icon: 'Waves', name: 'Kalthota Kuda Doowili Ella Falls', distance: 'Nearby' },
+            { icon: 'Landmark', name: 'Uggal Kalthota Ancient Amuna', distance: 'Nearby' },
+            { icon: 'Landmark', name: 'Budugala Ruins and Temple', distance: 'Nearby' },
+        ]
+    }
   },
 ];
 

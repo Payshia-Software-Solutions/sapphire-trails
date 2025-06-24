@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Leaf, Mountain, Bird, Home, Waves } from 'lucide-react';
+import { Leaf, Mountain, Bird, Home, Waves, Camera, Tent } from 'lucide-react';
 import { type LucideIcon } from "lucide-react";
 
 interface Highlight {
@@ -18,6 +18,8 @@ const iconMap: { [key: string]: LucideIcon } = {
   Bird,
   Home,
   Waves,
+  Camera,
+  Tent,
 };
 
 
