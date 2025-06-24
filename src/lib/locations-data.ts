@@ -1,11 +1,11 @@
-import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves, Landmark, Camera, Tent } from 'lucide-react';
+import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves, Landmark, Camera, Tent, Thermometer } from 'lucide-react';
 
 export const natureAndWildlife = [
   {
     slug: "sinharaja-rainforest",
     title: "Sinharaja Rainforest",
     cardDescription: "UNESCO World Heritage Site with rich biodiversity, lush trails, and exotic wildlife.",
-    cardImage: "https://placehold.co/600x400.png",
+    cardImage: "https://content-provider.payshia.com/sapphire-trail/images/img7.webp",
     imageHint: "rainforest canopy",
     distance: "12 km away",
     subtitle: "Nature's Unspoiled Wonder",
@@ -50,7 +50,7 @@ export const natureAndWildlife = [
     slug: "bopath-ella-falls",
     title: "Bopath Ella Falls",
     cardDescription: "Iconic waterfall famed for its shape, surrounded by lush forest and local eateries.",
-    cardImage: "https://placehold.co/600x400.png",
+    cardImage: "https://content-provider.payshia.com/sapphire-trail/images/img14.webp",
     imageHint: "waterfall jungle",
     distance: "8 km away",
     subtitle: "The Sacred Bo-Leaf",
@@ -94,7 +94,7 @@ export const natureAndWildlife = [
     slug: "udawalawe-national-park",
     title: "Udawalawe National Park",
     cardDescription: "Elephant watching, jeep safaris, and diverse fauna in a vast, scenic landscape.",
-    cardImage: "https://placehold.co/600x400.png",
+    cardImage: "https://content-provider.payshia.com/sapphire-trail/images/img19.webp",
     imageHint: "elephants safari",
     distance: "40 km away",
     subtitle: "A Wild Haven",
@@ -140,7 +140,7 @@ export const natureAndWildlife = [
     slug: "kalthota-doowili-ella",
     title: "Kalthota Doowili Ella",
     cardDescription: "Secluded waterfall, pristine waters and a tranquil atmosphere for nature lovers.",
-    cardImage: "https://placehold.co/600x400.png",
+    cardImage: "https://content-provider.payshia.com/sapphire-trail/images/img23.webp",
     imageHint: "waterfall rocks",
     distance: "27 km away",
     subtitle: "The Dusty Waterfall",
