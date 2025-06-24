@@ -10,17 +10,17 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const images = [
     {
-      src: '/img/1.jpg',
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/img1.webp',
       alt: 'A pair of hands cupping a collection of rough, uncut blue sapphires.',
       hint: 'raw sapphires',
     },
     {
-      src: '/img/2.jpg',
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp',
       alt: 'A person sifting through gravel and dirt in a woven basket, searching for gems.',
       hint: 'gem mining',
     },
     {
-      src: '/img/3.jpg',
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/img3.webp',
       alt: 'A close-up of a woven basket filled with pebbles and potential gemstones.',
       hint: 'sifting gems',
     },
