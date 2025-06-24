@@ -19,7 +19,7 @@ export function HeroSection() {
       <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4 space-y-8">
         
         <div className="flex flex-col items-center space-y-4">
-            <Image src="/img/logo.svg" alt="Sapphire Trails Logo" width={96} height={80} />
+            <Image src="/img/logo.jpg" alt="Sapphire Trails Logo" width={96} height={80} />
             <p className="font-headline text-2xl tracking-[0.3em]">SAPPHIRE TRAILS</p>
             <p className="text-xs tracking-[0.4em] text-muted-foreground">PROFESSIONAL GEM TOURS</p>
         </div>
