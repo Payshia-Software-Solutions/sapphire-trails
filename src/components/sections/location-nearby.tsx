@@ -22,6 +22,10 @@ const iconMap: { [key: string]: LucideIcon } = {
 };
 
 export function LocationNearby({ mapImage, mapImageHint, nearbyAttractions }: LocationNearbyProps) {
+  if (!mapImage || !nearbyAttractions || nearbyAttractions.length === 0) {
+    return null;
+  }
+  
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
       <div className="container mx-auto px-4 md:px-6">
