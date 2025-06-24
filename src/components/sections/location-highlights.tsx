@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Leaf, Mountain, Bird, Home } from 'lucide-react';
+import { Leaf, Mountain, Bird, Home, Waves } from 'lucide-react';
 import { type LucideIcon } from "lucide-react";
 
 interface Highlight {
@@ -17,10 +17,15 @@ const iconMap: { [key: string]: LucideIcon } = {
   Mountain,
   Bird,
   Home,
+  Waves,
 };
 
 
 export function LocationHighlights({ highlights }: LocationHighlightsProps) {
+  if (!highlights || highlights.length === 0) {
+    return null;
+  }
+  
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
       <div className="container mx-auto px-4 md:px-6">

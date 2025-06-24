@@ -62,10 +62,33 @@ export const natureAndWildlife = [
         imageUrl: "https://placehold.co/600x600.png",
         imageHint: "people at waterfall"
     },
-    galleryImages: [],
-    highlights: [],
-    visitorInfo: [],
-    map: { image: '', hint: '', nearbyAttractions: [] }
+    galleryImages: [
+        { src: 'https://placehold.co/600x800.png', alt: 'Bopath Ella Falls from a distance', hint: 'waterfall distance' },
+        { src: 'https://placehold.co/600x400.png', alt: 'People enjoying the water', hint: 'swimming waterfall' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Lush greenery around the falls', hint: 'jungle greenery' },
+        { src: 'https://placehold.co/600x400.png', alt: 'Close up of the cascading water', hint: 'waterfall close' },
+        { src: 'https://placehold.co/600x400.png', alt: '360 view of Bopath Ella Falls area', hint: 'waterfall panorama', is360: true },
+    ],
+    highlights: [
+        { icon: 'Mountain', title: 'Scenic Beauty', description: 'Enjoy the scenic beauty of the waterfall.' },
+        { icon: 'Waves', title: 'Natural Pools', description: 'Take a refreshing swim in the natural pools.' },
+        { icon: 'Leaf', title: 'Trekking', description: 'Explore the surrounding lush greenery through trekking.' },
+        { icon: 'Home', title: 'Local Culture', description: 'Visit nearby attractions like the Ratnapura Gem Market or the Maha Saman Devale.' },
+    ],
+    visitorInfo: [
+        { icon: 'Clock', title: 'Opening Hours', line1: '6:00 AM - 7:00 PM', line2: 'Daily' },
+        { icon: 'CalendarDays', title: 'Best Time', line1: 'May - Sep', line2: 'Wet season' },
+        { icon: 'Ticket', title: 'Entry Fees', line1: 'LKR 100 (Locals)', line2: 'LKR 3,000 (Foreign)' },
+        { icon: 'Users', title: 'Local Guides', line1: 'Not available', line2: 'Explore at your own pace' },
+    ],
+    map: {
+        image: 'https://placehold.co/1200x800.png',
+        hint: 'ratnapura map',
+        nearbyAttractions: [
+            { icon: 'Gem', name: "Ratnapura Gem Market", distance: '10 km away' },
+            { icon: 'Landmark', name: 'Maha Saman Devale', distance: '12 km away' },
+        ]
+    }
   },
   {
     slug: "udawalawe-national-park",
