@@ -13,7 +13,7 @@ export function TourCards() {
           <Card className="bg-card border-stone-800/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
             <div className="relative h-[400px] w-full">
               <Image
-                src="https://placehold.co/600x400.png"
+                src="https://content-provider.payshia.com/sapphire-trail/images/img4.webp"
                 alt="A group of smiling tourists wearing hard hats on a sapphire mine tour."
                 data-ai-hint="tourists mining gems"
                 layout="fill"
@@ -43,16 +43,14 @@ export function TourCards() {
           </Card>
 
           <Card className="bg-card border-stone-800/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
-            <div className="relative h-[400px] w-full bg-[#0a2823] flex items-center justify-center p-8" data-ai-hint="luxury gem logo">
-              <div className="text-center text-white font-headline">
-                 <Image src="/img/logo.png" alt="Sapphire Trails Logo" width={96} height={80} className="mx-auto" />
-                <h3 className="text-4xl tracking-[0.2em] mt-4">SAPPHIRE TRAILS</h3>
-                <div className="flex items-center justify-center gap-4 my-2">
-                  <div className="h-px w-12 bg-primary/50"></div>
-                  <p className="text-xl tracking-[0.1em] text-primary">DELUXE</p>
-                  <div className="h-px w-12 bg-primary/50"></div>
-                </div>
-              </div>
+            <div className="relative h-[400px] w-full">
+              <Image
+                src="https://content-provider.payshia.com/sapphire-trail/images/img5.webp"
+                alt="Sapphire Trails Deluxe Tour"
+                data-ai-hint="luxury gem logo"
+                layout="fill"
+                objectFit="cover"
+              />
             </div>
             <CardContent className="p-8 flex flex-col flex-grow">
               <div className="space-y-3 flex-grow text-sm text-muted-foreground">
