@@ -26,7 +26,7 @@ export function HeroSection() {
             <h1 className="text-5xl font-headline font-bold tracking-tight sm:text-6xl md:text-7xl">
                 Sri Lanka's Only Luxury Gem Experience
             </h1>
-            <p className="text-lg md:text-xl text-foreground/80 font-body">
+            <p className="font-body text-xl md:text-2xl tracking-widest font-normal text-foreground/90">
                 Experience luxury, culture, and adventure
             </p>
         </div>
