@@ -10,7 +10,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Roboto', 'sans-serif'],
+        body: ['Poppins', 'sans-serif'],
         headline: ['Montserrat', 'sans-serif'],
         serif: ['Cinzel', 'serif'],
         code: ['monospace'],
