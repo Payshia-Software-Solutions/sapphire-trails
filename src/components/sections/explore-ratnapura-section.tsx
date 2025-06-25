@@ -10,19 +10,19 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const gallery = [
   {
-    src: 'https://content-provider.payshia.com/sapphire-trail/images/img32.webp',
-    alt: 'A beautiful cascading waterfall in a lush, green jungle environment.',
-    hint: 'jungle waterfall',
+    src: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp',
+    alt: 'A person sifting for gems in a river using a traditional basket.',
+    hint: 'gem mining',
   },
   {
-    src: 'https://content-provider.payshia.com/sapphire-trail/images/img33.webp',
-    alt: 'A close-up shot of an elephant in the wild.',
-    hint: 'elephants safari',
+    src: 'https://content-provider.payshia.com/sapphire-trail/images/img36.webp',
+    alt: 'People swimming and enjoying the cool water at the base of a waterfall.',
+    hint: 'waterfall swimming',
   },
   {
-    src: 'https://content-provider.payshia.com/sapphire-trail/images/img34.webp',
-    alt: 'Sunlight filtering through a dense bamboo forest.',
-    hint: 'bamboo forest',
+    src: 'https://content-provider.payshia.com/sapphire-trail/images/img37.webp',
+    alt: 'A vibrant collection of polished gemstones displayed in black trays.',
+    hint: 'gemstones collection',
   },
 ];
 
