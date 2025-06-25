@@ -27,9 +27,9 @@ export function OurStory() {
             </div>
             <div className="relative aspect-video rounded-lg overflow-hidden">
                 <Image
-                    src="https://placehold.co/600x400.png"
+                    src="https://content-provider.payshia.com/sapphire-trail/images/img31.webp"
                     alt="Exterior of the Grand Silver Ray resort"
-                    data-ai-hint="luxury hotel exterior"
+                    data-ai-hint="luxury suite"
                     layout="fill"
                     objectFit="cover"
                     className="transition-transform duration-300 hover:scale-105"
@@ -41,9 +41,9 @@ export function OurStory() {
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="relative aspect-video rounded-lg overflow-hidden md:order-last">
                 <Image
-                    src="https://placehold.co/600x400.png"
-                    alt="A collection of polished gemstones"
-                    data-ai-hint="gemstone jewelry"
+                    src="https://content-provider.payshia.com/sapphire-trail/images/img30.webp"
+                    alt="A delicious looking gourmet meal"
+                    data-ai-hint="gourmet food"
                     layout="fill"
                     objectFit="cover"
                     className="transition-transform duration-300 hover:scale-105"
@@ -72,9 +72,9 @@ export function OurStory() {
             </div>
             <div className="relative aspect-video rounded-lg overflow-hidden">
                  <Image
-                    src="https://placehold.co/600x400.png"
-                    alt="A group of happy tourists on a tour"
-                    data-ai-hint="tourist group smiling"
+                    src="https://content-provider.payshia.com/sapphire-trail/images/img5.webp"
+                    alt="Sapphire Trails Deluxe logo"
+                    data-ai-hint="luxury gem logo"
                     layout="fill"
                     objectFit="cover"
                     className="transition-transform duration-300 hover:scale-105"
