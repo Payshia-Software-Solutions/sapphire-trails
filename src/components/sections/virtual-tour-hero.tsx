@@ -14,10 +14,10 @@ export function VirtualTourHero() {
       <div className="absolute inset-0 bg-gradient-to-t from-background-alt via-background-alt/50 to-transparent z-10" />
       <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4">
         <h1 className="text-5xl font-headline font-bold tracking-tight text-primary sm:text-6xl">
-          Virtual Tour
+          Coming Soon
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Explore the Sapphire Trails from anywhere in the world.
+          Our immersive virtual tour experience is under construction.
         </p>
       </div>
     </section>
