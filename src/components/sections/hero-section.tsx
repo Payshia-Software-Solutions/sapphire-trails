@@ -15,7 +15,7 @@ export function HeroSection() {
         objectFit="cover"
         className="z-0"
       />
-      <div className="absolute inset-0 bg-black/70 z-10" />
+      <div className="absolute inset-0 bg-black/60 z-10" />
       <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4 space-y-8">
         
         <div className="flex flex-col items-center space-y-4">
