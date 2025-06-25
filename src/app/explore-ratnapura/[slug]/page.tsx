@@ -38,8 +38,7 @@ export default function LocationPage({ params }: { params: { slug: string } }) {
         <LocationHighlights highlights={location.highlights} />
         <LocationVisitorInfo visitorInfo={location.visitorInfo} />
         <LocationNearby
-          mapImage={location.map.image}
-          mapImageHint={location.map.hint}
+          mapEmbedUrl={location.map.embedUrl}
           nearbyAttractions={location.map.nearbyAttractions}
         />
         <LocationCta />

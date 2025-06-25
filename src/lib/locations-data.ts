@@ -36,8 +36,7 @@ export const natureAndWildlife = [
         { icon: 'Users', title: 'Local Guides', line1: 'Available', line2: 'Recommended for safety' },
     ],
     map: {
-        image: 'https://placehold.co/1200x800.png',
-        hint: 'sri lanka map',
+        embedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.331599863484!2d80.41097967475191!3d6.47915019350791!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae3e733465b8399%3A0x84694905085521e4!2sSinharaja%20Forest%20Reserve!5e0!3m2!1sen!2slk!4v1719565538965!5m2!1sen!2slk',
         nearbyAttractions: [
             { icon: 'AlertTriangle', name: "Adam's Peak", distance: '45 km away' },
             { icon: 'Gem', name: 'Gem Mining Site', distance: '15 km away' },
@@ -80,8 +79,7 @@ export const natureAndWildlife = [
         { icon: 'Users', title: 'Local Guides', line1: 'Not available', line2: 'Explore at your own pace' },
     ],
     map: {
-        image: 'https://placehold.co/1200x800.png',
-        hint: 'ratnapura map',
+        embedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.8361734346296!2d80.3703906747535!3d6.666993193322079!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae3bde3525287f3%3A0x7d6a59b6c4b22c71!2sBopath%20Waterfall!5e0!3m2!1sen!2slk!4v1719565985002!5m2!1sen!2slk',
         nearbyAttractions: [
             { icon: 'Gem', name: "Ratnapura Gem Market", distance: '10 km away' },
             { icon: 'Landmark', name: 'Maha Saman Devale', distance: '12 km away' },
@@ -123,8 +121,7 @@ export const natureAndWildlife = [
         { icon: 'Users', title: 'Local Guides', line1: 'Available', line2: 'Recommended for safaris' },
     ],
     map: {
-        image: 'https://placehold.co/1200x800.png',
-        hint: 'udawalawe map',
+        embedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1014876.1152065842!2d80.20397793139366!3d6.452693899478335!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae408f76901e853%3A0x6d113f954388836!2sUdawalawe%20National%20Park!5e0!3m2!1sen!2slk!4v1719566050519!5m2!1sen!2slk',
         nearbyAttractions: [
             { icon: 'Home', name: 'Udawalawe Elephant Transit Home', distance: 'Adjacent to park' },
             { icon: 'Waves', name: 'Udawalawe Reservoir', distance: 'Inside the park' },
@@ -168,8 +165,7 @@ export const natureAndWildlife = [
         { icon: 'Users', title: 'Local Guides', line1: 'Not available', line2: 'Explore at your own pace' },
     ],
     map: { 
-        image: 'https://placehold.co/1200x800.png',
-        hint: 'kalthota map',
+        embedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.220199723528!2d80.82903747475306!3d6.619098793361836!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae4771746279f53%3A0x44619d675e47856d!2sKaltota%20Duwili%20Ella%20Falls!5e0!3m2!1sen!2slk!4v1719566113116!5m2!1sen!2slk',
         nearbyAttractions: [
             { icon: 'Waves', name: 'Kalthota Kuda Doowili Ella Falls', distance: 'Nearby' },
             { icon: 'Landmark', name: 'Uggal Kalthota Ancient Amuna', distance: 'Nearby' },

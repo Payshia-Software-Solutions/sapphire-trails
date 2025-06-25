@@ -1,4 +1,6 @@
-import Image from 'next/image';
+'use client';
+
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Gem, AlertTriangle, Waves, Landmark, Home, Thermometer } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -10,8 +12,7 @@ interface Attraction {
 }
 
 interface LocationNearbyProps {
-  mapImage: string;
-  mapImageHint: string;
+  mapEmbedUrl: string;
   nearbyAttractions: Attraction[];
 }
 
@@ -24,8 +25,10 @@ const iconMap: { [key: string]: LucideIcon } = {
   Thermometer,
 };
 
-export function LocationNearby({ mapImage, mapImageHint, nearbyAttractions }: LocationNearbyProps) {
-  if (!mapImage || !nearbyAttractions || nearbyAttractions.length === 0) {
+export function LocationNearby({ mapEmbedUrl, nearbyAttractions }: LocationNearbyProps) {
+  const [isMapActive, setIsMapActive] = useState(false);
+
+  if (!mapEmbedUrl || !nearbyAttractions || nearbyAttractions.length === 0) {
     return null;
   }
   
@@ -36,15 +39,23 @@ export function LocationNearby({ mapImage, mapImageHint, nearbyAttractions }: Lo
           Location & Nearby Attractions
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-          <div className="lg:col-span-2 rounded-lg overflow-hidden border border-border shadow-lg">
-            <Image
-              src={mapImage}
-              alt="Map of the area"
-              data-ai-hint={mapImageHint}
-              width={1200}
-              height={800}
-              className="w-full h-auto object-cover"
-            />
+          <div
+            className="relative lg:col-span-2 rounded-lg overflow-hidden border border-border shadow-lg aspect-[3/2]"
+            onClick={() => setIsMapActive(true)}
+          >
+            <iframe
+              src={mapEmbedUrl}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-full"
+            ></iframe>
+            {!isMapActive && (
+              <div className="absolute inset-0 bg-transparent cursor-pointer"></div>
+            )}
           </div>
           <div>
             <h3 className="text-xl font-headline font-bold text-primary mb-4">Nearby Points of Interest</h3>
