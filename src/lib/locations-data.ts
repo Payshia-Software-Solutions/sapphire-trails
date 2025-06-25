@@ -105,11 +105,10 @@ export const natureAndWildlife = [
         imageHint: "elephant family"
     },
     galleryImages: [
-        { src: 'https://placehold.co/600x800.png', alt: 'Jeep on a safari', hint: 'jeep safari' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Herd of elephants by water', hint: 'elephant herd' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Water buffalo in a field', hint: 'water buffalo' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Peacock with feathers out', hint: 'peacock bird' },
-        { src: 'https://placehold.co/600x400.png', alt: '360 view of the safari park', hint: 'safari panorama', is360: true },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img17.webp', alt: 'Jeep on a safari at Udawalawe', hint: 'jeep safari' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img18.webp', alt: 'Herd of elephants at Udawalawe', hint: 'elephant herd' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img20.webp', alt: 'Water buffalo grazing', hint: 'water buffalo' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img21.webp', alt: 'Peacock displaying its feathers', hint: 'peacock bird' },
     ],
     highlights: [
         { icon: 'Mountain', title: 'Jeep Safaris', description: 'Observe elephants and other wildlife on a thrilling jeep safari.' },
