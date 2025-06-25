@@ -54,7 +54,7 @@ export function LocationGallery({ images }: LocationGalleryProps) {
           
           <div className="grid grid-cols-2 grid-rows-2 gap-4 md:gap-6">
             {sideImages.map((image, index) => (
-              <ImageWithOverlay key={index} image={image} className="aspect-video" />
+              <ImageWithOverlay key={index} image={image} />
             ))}
           </div>
         </div>
