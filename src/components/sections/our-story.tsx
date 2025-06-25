@@ -39,7 +39,7 @@ export function OurStory() {
 
           {/* The Experience */}
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
-            <div className="relative aspect-video rounded-lg overflow-hidden md:order-last">
+            <div className="relative aspect-video rounded-lg overflow-hidden">
                 <Image
                     src="https://content-provider.payshia.com/sapphire-trail/images/img30.webp"
                     alt="A delicious looking gourmet meal"
