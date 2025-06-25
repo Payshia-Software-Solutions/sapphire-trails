@@ -105,7 +105,7 @@ export const natureAndWildlife = [
         imageHint: "elephant family"
     },
     galleryImages: [
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img17.webp', alt: 'Jeep on a safari at Udawalawe', hint: 'jeep safari' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img28.webp', alt: 'Safari jeeps by the lake at Udawalawe', hint: 'safari jeeps lake' },
         { src: 'https://content-provider.payshia.com/sapphire-trail/images/img18.webp', alt: 'Herd of elephants at Udawalawe', hint: 'elephant herd' },
         { src: 'https://content-provider.payshia.com/sapphire-trail/images/img20.webp', alt: 'Water buffalo grazing', hint: 'water buffalo' },
         { src: 'https://content-provider.payshia.com/sapphire-trail/images/img21.webp', alt: 'Peacock displaying its feathers', hint: 'peacock bird' },
