@@ -53,13 +53,13 @@ export const natureAndWildlife = [
     imageHint: "waterfall jungle",
     distance: "8 km away",
     subtitle: "The Sacred Bo-Leaf",
-    heroImage: "https://placehold.co/1920x1080.png",
-    heroImageHint: "large jungle waterfall",
+    heroImage: "https://content-provider.payshia.com/sapphire-trail/images/img14.webp",
+    heroImageHint: "jungle waterfall",
     intro: {
         title: "A Natural Masterpiece",
         description: "Bopath Ella, named for its perfect resemblance to a leaf from the sacred Bo tree, is one of Sri Lanka's most iconic waterfalls. Cascading from a height of 30 meters, its beauty is accessible and captivating. The area is well-developed for tourism, offering safe swimming areas and local eateries where you can enjoy a meal with a view. It's a perfect spot for a family outing or a refreshing dip in nature's own infinity pool.",
-        imageUrl: "https://placehold.co/600x600.png",
-        imageHint: "people at waterfall"
+        imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img10.webp",
+        imageHint: "waterfall rocks"
     },
     galleryImages: [
         { src: 'https://placehold.co/600x800.png', alt: 'Bopath Ella Falls from a distance', hint: 'waterfall distance' },
