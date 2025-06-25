@@ -55,7 +55,7 @@ export function ExploreRatnapuraSection() {
                   data-ai-hint={image.hint}
                   width={600}
                   height={750}
-                  className="object-cover w-full h-auto transform transition-transform duration-500 hover:scale-110"
+                  className="object-cover w-full h-[400px] transform transition-transform duration-500 hover:scale-110"
                 />
               </div>
             ))}
