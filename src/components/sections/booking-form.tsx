@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -38,6 +39,8 @@ import type { Booking } from "@/lib/bookings-data"
 
 export function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const searchParams = useSearchParams();
+  const tourTypeParam = searchParams.get('tourType');
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -45,6 +48,7 @@ export function BookingForm() {
       name: "",
       email: "",
       phone: "",
+      tourType: tourTypeParam === 'gem-explorer-day-tour' || tourTypeParam === 'sapphire-trails-deluxe' ? tourTypeParam : undefined,
       guests: 1,
       message: "",
     },

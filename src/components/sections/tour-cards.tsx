@@ -106,7 +106,7 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                   </div>
                   <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
                     <p className="text-3xl font-bold text-primary">{tour.price} <span className="text-sm font-normal text-muted-foreground">{tour.priceSuffix}</span></p>
-                    <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href={tour.bookingLink}>Book Now</Link></Button>
+                    <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href={`${tour.bookingLink}?tourType=${tour.id}`}>Book Now</Link></Button>
                   </div>
                 </CardContent>
               </Card>
