@@ -141,12 +141,12 @@ export const natureAndWildlife = [
     imageHint: "waterfall rocks",
     distance: "27 km away",
     subtitle: "The Dusty Waterfall",
-    heroImage: "https://placehold.co/1920x1080.png",
+    heroImage: "https://content-provider.payshia.com/sapphire-trail/images/img23.webp",
     heroImageHint: "secluded jungle waterfall",
     intro: {
         title: "A Hidden Gem",
         description: "Known as 'Doowili Ella' or 'Dusty Falls' because its spray resembles a cloud of dust, this secluded waterfall is a reward for the adventurous traveler. Tucked away in Kalthota, it offers a more tranquil and untouched experience compared to more popular falls. The journey to the falls is as beautiful as the destination itself, making it a perfect escape for those seeking peace and natural beauty off the beaten path.",
-        imageUrl: "https://placehold.co/600x600.png",
+        imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img26.webp",
         imageHint: "misty waterfall"
     },
     galleryImages: [
