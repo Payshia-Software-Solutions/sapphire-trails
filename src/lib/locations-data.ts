@@ -62,11 +62,10 @@ export const natureAndWildlife = [
         imageHint: "waterfall rocks"
     },
     galleryImages: [
-        { src: 'https://placehold.co/600x800.png', alt: 'Bopath Ella Falls from a distance', hint: 'waterfall distance' },
-        { src: 'https://placehold.co/600x400.png', alt: 'People enjoying the water', hint: 'swimming waterfall' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Lush greenery around the falls', hint: 'jungle greenery' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Close up of the cascading water', hint: 'waterfall close' },
-        { src: 'https://placehold.co/600x400.png', alt: '360 view of Bopath Ella Falls area', hint: 'waterfall panorama', is360: true },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img15.webp', alt: 'Bopath Ella Falls from a distance', hint: 'waterfall distance' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img12.webp', alt: 'People enjoying the water near the falls', hint: 'swimming waterfall' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img13.webp', alt: 'Lush greenery surrounding Bopath Ella Falls', hint: 'jungle greenery' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img11.webp', alt: 'A close-up view of the cascading water at Bopath Ella', hint: 'waterfall close' },
     ],
     highlights: [
         { icon: 'Mountain', title: 'Scenic Beauty', description: 'Enjoy the scenic beauty of the waterfall.' },
