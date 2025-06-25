@@ -150,11 +150,10 @@ export const natureAndWildlife = [
         imageHint: "misty waterfall"
     },
     galleryImages: [
-        { src: 'https://placehold.co/600x800.png', alt: 'Doowili Ella falls from below', hint: 'waterfall jungle rocks' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Hiker on the trail to the falls', hint: 'hiking jungle' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Pool at the base of the waterfall', hint: 'waterfall pool' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Camping tent near the falls', hint: 'camping tent night' },
-        { src: 'https://placehold.co/600x400.png', alt: '360 view of Doowili Ella', hint: 'waterfall panorama', is360: true },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img29.webp', alt: 'A wide view of Kalthota Doowili Ella falls', hint: 'waterfall wide' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img24.webp', alt: 'The powerful spray of Doowili Ella falls', hint: 'waterfall spray' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img25.webp', alt: 'Lush green foliage surrounding the waterfall', hint: 'jungle foliage' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img27.webp', alt: 'A serene view of the pool at the base of the falls', hint: 'waterfall pool' },
     ],
     highlights: [
         { icon: 'Camera', title: 'Photography', description: 'Capture the beauty of the waterfall and its surroundings.' },
