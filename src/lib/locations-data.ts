@@ -9,12 +9,12 @@ export const natureAndWildlife = [
     imageHint: "rainforest canopy",
     distance: "12 km away",
     subtitle: "Nature's Unspoiled Wonder",
-    heroImage: "https://placehold.co/1920x1080.png",
+    heroImage: "https://content-provider.payshia.com/sapphire-trail/images/img7.webp",
     heroImageHint: "rainforest misty mountains",
     intro: {
         title: "UNESCO World Heritage Wonder",
         description: "Sinharaja Rainforest stands as Sri Lanka’s last viable area of primary tropical rainforest, harboring an extraordinary collection of endemic species. This pristine wilderness covers 11,187 hectares of untouched biodiversity, where ancient trees tower over 45 meters high and rare species thrive in their natural habitat. Experience guided eco-treks through dense canopies, witness endemic bird species, and immerse yourself in one of the world's most biodiverse ecosystems. Perfect for nature enthusiasts, researchers, and adventure seekers looking to connect with pristine wilderness.",
-        imageUrl: "https://placehold.co/600x600.png",
+        imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img6.webp",
         imageHint: "jungle river rocks"
     },
     galleryImages: [
