@@ -17,7 +17,7 @@ export default function LoginPage() {
     e.preventDefault();
     if (username === 'admin' && password === 'admin123') {
       sessionStorage.setItem('isAdminAuthenticated', 'true');
-      router.push('/admin/dashboard');
+      router.push('/admin/booking-requests');
     } else {
       setError('Invalid username or password');
     }
