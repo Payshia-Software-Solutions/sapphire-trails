@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 export function BookingRequests() {
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -20,15 +20,23 @@ export function BookingRequests() {
       router.push('/admin/login');
     } else {
       setIsAuthenticated(true);
+      const storedBookingsRaw = localStorage.getItem('bookings');
+      if (storedBookingsRaw) {
+        setBookings(JSON.parse(storedBookingsRaw));
+      } else {
+        // If nothing in localStorage, seed it with mock data
+        localStorage.setItem('bookings', JSON.stringify(mockBookings));
+        setBookings(mockBookings);
+      }
     }
   }, [router]);
 
   const handleStatusChange = (id: string, status: 'accepted' | 'rejected') => {
-    setBookings((prevBookings) =>
-      prevBookings.map((booking) =>
-        booking.id === id ? { ...booking, status } : booking
-      )
+    const updatedBookings = bookings.map((booking) =>
+      booking.id === id ? { ...booking, status } : booking
     );
+    setBookings(updatedBookings);
+    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
   };
   
   const getStatusBadgeVariant = (status: Booking['status']) => {

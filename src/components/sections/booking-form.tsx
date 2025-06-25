@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/popover"
 import { bookingFormSchema } from "@/lib/schemas"
 import { Card, CardContent } from "@/components/ui/card"
+import type { Booking } from "@/lib/bookings-data"
 
 export function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -50,7 +51,24 @@ export function BookingForm() {
   })
 
   function onSubmit(data: z.infer<typeof bookingFormSchema>) {
-    console.log(data);
+    const storedBookingsRaw = localStorage.getItem('bookings');
+    const storedBookings = storedBookingsRaw ? JSON.parse(storedBookingsRaw) : [];
+
+    const newBooking: Booking = {
+        id: new Date().toISOString(),
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        tourType: data.tourType,
+        guests: Number(data.guests),
+        date: format(data.date, 'yyyy-MM-dd'),
+        message: data.message,
+        status: 'pending',
+    };
+
+    const updatedBookings = [...storedBookings, newBooking];
+    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+    
     setIsSubmitted(true);
     form.reset();
   }
