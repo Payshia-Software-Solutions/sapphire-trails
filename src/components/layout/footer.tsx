@@ -9,14 +9,8 @@ const FooterLogo = () => (
 );
 
 const GrandSilverRayLogo = () => (
-    <div className="font-headline text-center text-muted-foreground/80 -space-y-1">
-      <p className="text-[9px] tracking-[0.15em]">GRAND</p>
-      <p className="font-serif text-3xl tracking-tight leading-none scale-y-110">
-        <span className="italic">S</span>R
-      </p>
-      <p className="text-[10px] tracking-[0.2em] !mt-0">Silver Ray</p>
-      <p className="text-[6px] tracking-wider !mt-1.5">GRAND SILVER RAY</p>
-      <p className="text-[5px] tracking-widest">RATHNAPURA</p>
+    <div>
+      <Image src="/img/logo2.png" alt="Grand Silver Ray Logo" width={100} height={100} />
     </div>
 );
 
