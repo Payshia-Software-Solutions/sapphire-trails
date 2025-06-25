@@ -96,12 +96,12 @@ export const natureAndWildlife = [
     imageHint: "elephants safari",
     distance: "40 km away",
     subtitle: "A Wild Haven",
-    heroImage: "https://placehold.co/1920x1080.png",
+    heroImage: "https://content-provider.payshia.com/sapphire-trail/images/img19.webp",
     heroImageHint: "safari jeep elephants",
     intro: {
         title: "Home of the Gentle Giants",
         description: "Udawalawe National Park is an unparalleled destination for wildlife enthusiasts, particularly famous for its large population of Sri Lankan elephants. Spanning 30,821 hectares, the park's open grasslands and reservoir make it easy to spot herds of elephants, water buffalo, deer, and a rich variety of birdlife. Embark on a thrilling jeep safari to get up close with these magnificent creatures in their natural habitat.",
-        imageUrl: "https://placehold.co/600x600.png",
+        imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img16.webp",
         imageHint: "elephant family"
     },
     galleryImages: [
