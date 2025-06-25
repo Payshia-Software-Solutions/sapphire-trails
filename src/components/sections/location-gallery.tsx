@@ -14,6 +14,27 @@ interface LocationGalleryProps {
   images: ImageInfo[];
 }
 
+const ImageWithOverlay = ({ image, className }: { image: ImageInfo; className?: string }) => (
+  <div className={cn("relative overflow-hidden rounded-lg", className)}>
+    <Image
+      src={image.src}
+      alt={image.alt}
+      data-ai-hint={image.hint}
+      layout="fill"
+      objectFit="cover"
+      className="transition-transform duration-300 hover:scale-105"
+    />
+    {image.is360 && (
+      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+        <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/20 hover:text-white">
+          <Play className="h-5 w-5 mr-2 fill-white"/>
+          360° View
+        </Button>
+      </div>
+    )}
+  </div>
+);
+
 export function LocationGallery({ images }: LocationGalleryProps) {
   if (!images || images.length === 0) {
     return null;
@@ -29,44 +50,16 @@ export function LocationGallery({ images }: LocationGalleryProps) {
           Experience the Wonder
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-lg">
-            <Image
-              src={mainImage.src}
-              alt={mainImage.alt}
-              data-ai-hint={mainImage.hint}
-              layout="fill"
-              objectFit="cover"
-              className="transition-transform duration-300 hover:scale-105"
-            />
-          </div>
+          <ImageWithOverlay image={mainImage} className="aspect-[4/5]" />
           
-          <div className="grid grid-cols-2 gap-4 md:gap-6">
-            {sideImages.map((image, index) => (
-              <div 
-                key={index} 
-                className={cn(
-                  "relative aspect-video overflow-hidden rounded-lg",
-                  // If there is 1 or 3 side images, make the last one span both columns
-                  (sideImages.length === 1 || (sideImages.length === 3 && index === 2)) && "col-span-2"
-                )}
-              >
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  data-ai-hint={image.hint}
-                  layout="fill"
-                  objectFit="cover"
-                  className="transition-transform duration-300 hover:scale-105"
-                />
-                 {image.is360 && (
-                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                      <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/20 hover:text-white">
-                          <Play className="h-5 w-5 mr-2 fill-white"/>
-                          360° View
-                      </Button>
-                  </div>
-                 )}
-              </div>
+          <div className="flex flex-col gap-4 md:gap-6">
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+              {sideImages[0] && <ImageWithOverlay image={sideImages[0]} className="aspect-video" />}
+              {sideImages[1] && <ImageWithOverlay image={sideImages[1]} className="aspect-video" />}
+            </div>
+            {sideImages[2] && <ImageWithOverlay image={sideImages[2]} className="aspect-video" />}
+            {sideImages.slice(3).map((image, index) => (
+              <ImageWithOverlay key={index + 3} image={image} className="aspect-video" />
             ))}
           </div>
         </div>
