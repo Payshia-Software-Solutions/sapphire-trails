@@ -1,11 +1,15 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { natureAndWildlife } from "@/lib/locations-data";
+import { natureAndWildlife as staticNatureAndWildlife } from "@/lib/locations-data";
+import type { Location } from '@/lib/locations-data';
 
 
-const LocationCard = ({ location }: { location: typeof natureAndWildlife[0] }) => (
+const LocationCard = ({ location }: { location: typeof staticNatureAndWildlife[0] }) => (
   <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
     <Card className="bg-transparent border-0 shadow-none flex flex-col h-full">
       <div className="overflow-hidden rounded-lg">
@@ -28,6 +32,31 @@ const LocationCard = ({ location }: { location: typeof natureAndWildlife[0] }) =
 );
 
 export function ExploreRatnapuraContent() {
+  const [natureLocations, setNatureLocations] = useState(staticNatureAndWildlife);
+
+  useEffect(() => {
+    const storedLocationsRaw = localStorage.getItem('customLocations');
+    if (storedLocationsRaw) {
+      try {
+        const customLocations = JSON.parse(storedLocationsRaw) as Location[];
+        const newNatureLocations = customLocations.filter(loc => (loc.category === 'nature' || !loc.category));
+        
+        if (newNatureLocations.length > 0) {
+            setNatureLocations(prev => {
+                const combined = [...prev, ...newNatureLocations];
+                const unique: { [key: string]: typeof staticNatureAndWildlife[0] } = {};
+                for (const loc of combined) {
+                  unique[loc.slug] = loc;
+                }
+                return Object.values(unique);
+            });
+        }
+      } catch (e) { 
+        console.error("Failed to load custom locations", e);
+      }
+    }
+  }, []);
+
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
       <div className="container mx-auto px-4 md:px-6">
@@ -48,8 +77,8 @@ export function ExploreRatnapuraContent() {
           </TabsList>
           <TabsContent value="nature" className="mt-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {natureAndWildlife.map((location) => (
-                <LocationCard key={location.title} location={location} />
+              {natureLocations.map((location) => (
+                <LocationCard key={location.slug} location={location} />
               ))}
             </div>
           </TabsContent>

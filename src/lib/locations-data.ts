@@ -1,6 +1,58 @@
 import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves, Landmark, Camera, Tent, Thermometer } from 'lucide-react';
 
-export const natureAndWildlife = [
+export interface GalleryImage {
+  src: string;
+  alt: string;
+  hint: string;
+  is360?: boolean;
+}
+
+export interface Highlight {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface VisitorInfo {
+  icon: string;
+  title: string;
+  line1: string;
+  line2: string;
+}
+
+export interface NearbyAttraction {
+  icon: string;
+  name: string;
+  distance: string;
+}
+
+export interface Location {
+  slug: string;
+  title: string;
+  cardDescription: string;
+  cardImage: string;
+  imageHint: string;
+  distance: string;
+  subtitle: string;
+  heroImage: string;
+  heroImageHint: string;
+  intro: {
+    title: string;
+    description: string;
+    imageUrl: string;
+    imageHint: string;
+  };
+  galleryImages: GalleryImage[];
+  highlights: Highlight[];
+  visitorInfo: VisitorInfo[];
+  map: {
+    embedUrl: string;
+    nearbyAttractions: NearbyAttraction[];
+  };
+  category: 'nature' | 'agriculture' | 'cultural';
+}
+
+export const natureAndWildlife: Omit<Location, 'category'>[] = [
   {
     slug: "sinharaja-rainforest",
     title: "Sinharaja Rainforest",
@@ -175,7 +227,7 @@ export const natureAndWildlife = [
   },
 ];
 
-export const locationsData = natureAndWildlife.map(location => ({
+export const locationsData: Location[] = natureAndWildlife.map(location => ({
     ...location,
-    // Add any additional processing or default values here if needed
+    category: 'nature',
 }));
