@@ -1,10 +1,11 @@
+
 'use client';
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -44,6 +45,9 @@ export default function AdminLayout({
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="flex flex-col">
+                    <SheetHeader>
+                        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                    </SheetHeader>
                     <nav className="grid gap-2 text-lg font-medium">
                         <Link
                             href="/admin/booking-requests"
