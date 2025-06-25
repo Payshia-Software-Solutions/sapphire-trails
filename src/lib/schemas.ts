@@ -54,14 +54,14 @@ export const locationFormSchema = z.object({
     src: z.string().url("Please enter a valid URL."),
     alt: z.string().min(3, "Alt text is required."),
     hint: z.string().min(2, "Hint is required."),
-  })).length(4, "Please provide 4 gallery images."),
+  })).length(4, "Please provide exactly 4 gallery images."),
 
   // Highlights (4 items)
   highlights: z.array(z.object({
     icon: iconEnum,
     title: z.string().min(3, "Highlight title is required."),
     description: z.string().min(10, "Highlight description is required."),
-  })).length(4, "Please provide 4 highlights."),
+  })).length(4, "Please provide exactly 4 highlights."),
 
   // Visitor Info (4 items)
   visitorInfo: z.array(z.object({
@@ -69,7 +69,7 @@ export const locationFormSchema = z.object({
     title: z.string().min(3, "Visitor info title is required."),
     line1: z.string().min(3, "Line 1 is required."),
     line2: z.string().min(3, "Line 2 is required."),
-  })).length(4, "Please provide 4 visitor info items."),
+  })).length(4, "Please provide exactly 4 visitor info items."),
 
   // Map & Nearby
   mapEmbedUrl: z.string().url("Please enter a valid map embed URL."),
@@ -77,5 +77,5 @@ export const locationFormSchema = z.object({
       icon: iconEnum,
       name: z.string().min(3, "Attraction name is required."),
       distance: z.string().min(2, "Distance is required."),
-  })).length(3, "Please provide 3 nearby attractions."),
+  })).length(3, "Please provide exactly 3 nearby attractions."),
 });

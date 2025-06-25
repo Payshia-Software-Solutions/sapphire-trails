@@ -5,11 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { natureAndWildlife as staticNatureAndWildlife } from "@/lib/locations-data";
+import { locationsData as staticLocationsData } from "@/lib/locations-data";
 import type { Location } from '@/lib/locations-data';
 
 
-const LocationCard = ({ location }: { location: typeof staticNatureAndWildlife[0] }) => (
+const LocationCard = ({ location }: { location: Location }) => (
   <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
     <Card className="bg-transparent border-0 shadow-none flex flex-col h-full">
       <div className="overflow-hidden rounded-lg">
@@ -32,30 +32,30 @@ const LocationCard = ({ location }: { location: typeof staticNatureAndWildlife[0
 );
 
 export function ExploreRatnapuraContent() {
-  const [natureLocations, setNatureLocations] = useState(staticNatureAndWildlife);
+  const [allLocations, setAllLocations] = useState<Location[]>(staticLocationsData);
 
   useEffect(() => {
     const storedLocationsRaw = localStorage.getItem('customLocations');
     if (storedLocationsRaw) {
       try {
         const customLocations = JSON.parse(storedLocationsRaw) as Location[];
-        const newNatureLocations = customLocations.filter(loc => (loc.category === 'nature' || !loc.category));
-        
-        if (newNatureLocations.length > 0) {
-            setNatureLocations(prev => {
-                const combined = [...prev, ...newNatureLocations];
-                const unique: { [key: string]: typeof staticNatureAndWildlife[0] } = {};
-                for (const loc of combined) {
-                  unique[loc.slug] = loc;
-                }
-                return Object.values(unique);
-            });
+        if (Array.isArray(customLocations)) {
+            const combined = [...staticLocationsData, ...customLocations];
+            const uniqueLocations: { [key: string]: Location } = {};
+            for (const loc of combined) {
+              uniqueLocations[loc.slug] = loc;
+            }
+            setAllLocations(Object.values(uniqueLocations));
         }
       } catch (e) { 
         console.error("Failed to load custom locations", e);
       }
     }
   }, []);
+
+  const natureLocations = allLocations.filter(loc => loc.category === 'nature');
+  const agricultureLocations = allLocations.filter(loc => loc.category === 'agriculture');
+  const culturalLocations = allLocations.filter(loc => loc.category === 'cultural');
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
@@ -75,19 +75,49 @@ export function ExploreRatnapuraContent() {
               <span className="sm:hidden">Cultural</span>
             </TabsTrigger>
           </TabsList>
+          
           <TabsContent value="nature" className="mt-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {natureLocations.map((location) => (
-                <LocationCard key={location.slug} location={location} />
-              ))}
-            </div>
+            {natureLocations.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {natureLocations.map((location) => (
+                    <LocationCard key={location.slug} location={location} />
+                ))}
+                </div>
+            ) : (
+                <div className="text-center text-muted-foreground py-16">
+                    <p>No locations found for this category.</p>
+                </div>
+            )}
           </TabsContent>
-          <TabsContent value="agriculture" className="mt-12 text-center py-16">
-             <p className="text-muted-foreground">Content for Agricultural & Energy coming soon.</p>
+          
+          <TabsContent value="agriculture" className="mt-12">
+             {agricultureLocations.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {agricultureLocations.map((location) => (
+                    <LocationCard key={location.slug} location={location} />
+                ))}
+                </div>
+            ) : (
+                <div className="text-center text-muted-foreground py-16">
+                    <p>Content for Agricultural & Energy coming soon.</p>
+                </div>
+            )}
           </TabsContent>
-          <TabsContent value="cultural" className="mt-12 text-center py-16">
-            <p className="text-muted-foreground">Content for Cultural & Religious coming soon.</p>
+          
+          <TabsContent value="cultural" className="mt-12">
+            {culturalLocations.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {culturalLocations.map((location) => (
+                    <LocationCard key={location.slug} location={location} />
+                ))}
+                </div>
+            ) : (
+                <div className="text-center text-muted-foreground py-16">
+                    <p>Content for Cultural & Religious coming soon.</p>
+                </div>
+            )}
           </TabsContent>
+
         </Tabs>
       </div>
     </section>
