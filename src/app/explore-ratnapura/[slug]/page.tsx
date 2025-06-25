@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { locationsData as staticLocationsData, type Location } from '@/lib/locations-data';
@@ -56,7 +56,8 @@ function LoadingSkeleton() {
     )
 }
 
-export default function LocationPage({ params }: { params: { slug: string } }) {
+export default function LocationPage() {
+  const params = useParams<{ slug: string }>();
   const [location, setLocation] = useState<Location | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
