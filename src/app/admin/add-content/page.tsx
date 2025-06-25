@@ -35,11 +35,11 @@ export default function AddContentPage() {
       introDescription: '',
       introImageUrl: '',
       introImageHint: '',
-      galleryImages: Array(4).fill({ src: '', alt: '', hint: '' }),
-      highlights: Array(4).fill({ icon: 'Leaf', title: '', description: '' }),
-      visitorInfo: Array(4).fill({ icon: 'Clock', title: '', line1: '', line2: '' }),
+      galleryImages: Array.from({ length: 4 }, () => ({ src: '', alt: '', hint: '' })),
+      highlights: Array.from({ length: 4 }, () => ({ icon: 'Leaf' as const, title: '', description: '' })),
+      visitorInfo: Array.from({ length: 4 }, () => ({ icon: 'Clock' as const, title: '', line1: '', line2: '' })),
       mapEmbedUrl: '',
-      nearbyAttractions: Array(3).fill({ icon: 'Gem', name: '', distance: '' }),
+      nearbyAttractions: Array.from({ length: 3 }, () => ({ icon: 'Gem' as const, name: '', distance: '' })),
     },
   });
 
