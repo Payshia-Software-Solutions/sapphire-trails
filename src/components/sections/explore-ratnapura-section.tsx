@@ -54,8 +54,8 @@ export function ExploreRatnapuraSection() {
                   alt={image.alt}
                   data-ai-hint={image.hint}
                   width={600}
-                  height={300}
-                  className="object-cover w-full transform transition-transform duration-500 hover:scale-110"
+                  height={750}
+                  className="object-cover w-full h-auto transform transition-transform duration-500 hover:scale-110"
                 />
               </div>
             ))}
@@ -73,7 +73,7 @@ export function ExploreRatnapuraSection() {
                         alt={image.alt}
                         data-ai-hint={image.hint}
                         width={600}
-                        height={300}
+                        height={750}
                         className="object-cover w-full h-auto"
                       />
                     </div>
