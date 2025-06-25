@@ -3,15 +3,33 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockBookings, type Booking } from '@/lib/bookings-data';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 
 export default function BookingRequestsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -57,6 +75,11 @@ export default function BookingRequestsPage() {
     );
     setBookings(updatedBookings);
     localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+    
+    // Update the selected booking in the modal to reflect the change instantly
+    if (selectedBooking && selectedBooking.id === id) {
+      setSelectedBooking({ ...selectedBooking, status });
+    }
   };
   
   const getStatusBadgeVariant = (status: Booking['status']) => {
@@ -121,46 +144,110 @@ export default function BookingRequestsPage() {
             </Card>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {bookings.map((booking) => (
-            <Card key={booking.id} className="flex flex-col">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-xl">{booking.name}</CardTitle>
-                  <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">
-                    {booking.status}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">{booking.email}</p>
-                {booking.phone && <p className="text-sm text-muted-foreground">{booking.phone}</p>}
-              </CardHeader>
-              <CardContent className="flex-grow space-y-4">
-                <div>
-                  <h4 className="font-semibold text-sm">Tour Details</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Package: {booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Guests: {booking.guests}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Date: {format(new Date(booking.date), 'PPP')}
-                  </p>
-                </div>
-                {booking.message && (
-                  <div>
-                    <h4 className="font-semibold text-sm">Message</h4>
-                    <p className="text-sm text-muted-foreground italic">"{booking.message}"</p>
-                  </div>
+        <Card>
+            <CardHeader>
+                <CardTitle>All Requests</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead className="hidden md:table-cell">Tour Package</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead className="hidden sm:table-cell">Guests</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {bookings.map((booking) => (
+                        <TableRow key={booking.id}>
+                            <TableCell>
+                                <div className="font-medium">{booking.name}</div>
+                                <div className="text-sm text-muted-foreground hidden md:block">{booking.email}</div>
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell">
+                                {booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}
+                            </TableCell>
+                            <TableCell>{format(new Date(booking.date), 'PPP')}</TableCell>
+                            <TableCell className="hidden sm:table-cell">{booking.guests}</TableCell>
+                            <TableCell>
+                                <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">
+                                {booking.status}
+                                </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                                <Button variant="outline" size="sm" onClick={() => setSelectedBooking(booking)}>View</Button>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+
+        <Dialog open={!!selectedBooking} onOpenChange={(isOpen) => !isOpen && setSelectedBooking(null)}>
+            <DialogContent className="sm:max-w-lg">
+                {selectedBooking && (
+                <>
+                    <DialogHeader>
+                        <DialogTitle>Booking Details</DialogTitle>
+                        <DialogDescription>
+                            Request from {selectedBooking.name} on {format(new Date(selectedBooking.date), 'PPP')}.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right text-muted-foreground">Status</Label>
+                            <div className="col-span-3">
+                                <Badge variant={getStatusBadgeVariant(selectedBooking.status)} className="capitalize">
+                                    {selectedBooking.status}
+                                </Badge>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right text-muted-foreground">Name</Label>
+                            <span className="col-span-3 font-medium">{selectedBooking.name}</span>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right text-muted-foreground">Email</Label>
+                            <span className="col-span-3">{selectedBooking.email}</span>
+                        </div>
+                        {selectedBooking.phone && (
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label className="text-right text-muted-foreground">Phone</Label>
+                                <span className="col-span-3">{selectedBooking.phone}</span>
+                            </div>
+                        )}
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right text-muted-foreground">Tour</Label>
+                            <span className="col-span-3">{selectedBooking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}</span>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right text-muted-foreground">Guests</Label>
+                            <span className="col-span-3">{selectedBooking.guests}</span>
+                        </div>
+                        {selectedBooking.message && (
+                            <div className="grid grid-cols-4 items-start gap-4">
+                                <Label className="text-right text-muted-foreground mt-1">Message</Label>
+                                <p className="col-span-3 text-sm italic">"{selectedBooking.message}"</p>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-between gap-2">
+                        <Button variant="outline" onClick={() => setSelectedBooking(null)}>Close</Button>
+                        {selectedBooking.status === 'pending' && (
+                            <div className="flex gap-2">
+                                <Button onClick={() => handleStatusChange(selectedBooking.id, 'accepted')}>Accept</Button>
+                                <Button onClick={() => handleStatusChange(selectedBooking.id, 'rejected')} variant="destructive">Reject</Button>
+                            </div>
+                        )}
+                    </DialogFooter>
+                </>
                 )}
-              </CardContent>
-              {booking.status === 'pending' && (
-                <CardFooter className="flex gap-4">
-                  <Button onClick={() => handleStatusChange(booking.id, 'accepted')} className="w-full">Accept</Button>
-                  <Button onClick={() => handleStatusChange(booking.id, 'rejected')} variant="destructive" className="w-full">Reject</Button>
-                </CardFooter>
-              )}
-            </Card>
-          ))}
-        </div>
+            </DialogContent>
+        </Dialog>
     </div>
   );
 }
