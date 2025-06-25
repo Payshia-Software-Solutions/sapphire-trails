@@ -41,7 +41,7 @@ export function LocationGallery({ images }: LocationGalleryProps) {
   }
   
   const mainImage = images[0];
-  const sideImages = images.slice(1);
+  const sideImages = images.slice(1, 5);
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
@@ -52,14 +52,9 @@ export function LocationGallery({ images }: LocationGalleryProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <ImageWithOverlay image={mainImage} className="aspect-[4/5]" />
           
-          <div className="flex flex-col gap-4 md:gap-6">
-            <div className="grid grid-cols-2 gap-4 md:gap-6">
-              {sideImages[0] && <ImageWithOverlay image={sideImages[0]} className="aspect-video" />}
-              {sideImages[1] && <ImageWithOverlay image={sideImages[1]} className="aspect-video" />}
-            </div>
-            {sideImages[2] && <ImageWithOverlay image={sideImages[2]} className="aspect-video" />}
-            {sideImages.slice(3).map((image, index) => (
-              <ImageWithOverlay key={index + 3} image={image} className="aspect-video" />
+          <div className="grid grid-cols-2 grid-rows-2 gap-4 md:gap-6">
+            {sideImages.map((image, index) => (
+              <ImageWithOverlay key={index} image={image} className="aspect-video" />
             ))}
           </div>
         </div>
