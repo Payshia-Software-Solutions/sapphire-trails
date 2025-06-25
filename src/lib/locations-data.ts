@@ -18,11 +18,10 @@ export const natureAndWildlife = [
         imageHint: "jungle river rocks"
     },
     galleryImages: [
-        { src: 'https://placehold.co/600x800.png', alt: 'Monkey on a branch', hint: 'monkey jungle' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Waterfall view', hint: 'waterfall jungle' },
-        { src: 'https://placehold.co/600x400.png', alt: 'People swimming in a waterfall pool', hint: 'swimming waterfall' },
-        { src: 'https://placehold.co/600x400.png', alt: 'People hiking across a river', hint: 'hiking river' },
-        { src: 'https://placehold.co/600x400.png', alt: 'Lush green forest canopy', hint: 'forest canopy', is360: true },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img9.webp', alt: 'A trail winding through the Sinharaja rainforest.', hint: 'rainforest path' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img8.webp', alt: 'A beautiful cascading waterfall within the rainforest.', hint: 'jungle waterfall' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img3.webp', alt: 'Sifting for gems in a traditional woven basket.', hint: 'sifting gems' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/img1.webp', alt: 'A collection of rough, uncut blue sapphires held in hands.', hint: 'raw sapphires' },
     ],
     highlights: [
         { icon: 'Leaf', title: 'Biodiversity', description: 'Home to 60% of Sri Lanka’s endemic trees and countless rare species.' },

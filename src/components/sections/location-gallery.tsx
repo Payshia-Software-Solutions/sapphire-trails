@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ImageInfo {
   src: string;
@@ -56,7 +57,7 @@ export function LocationGallery({ images }: LocationGalleryProps) {
             </div>
             <div className="grid grid-cols-2 gap-4 md:gap-6">
               {sideImagesBottom.map((image, index) => (
-                <div key={index} className="relative aspect-video overflow-hidden rounded-lg">
+                <div key={index} className={cn("relative aspect-video overflow-hidden rounded-lg", sideImagesBottom.length === 1 && "col-span-2")}>
                   <Image
                     src={image.src}
                     alt={image.alt}
