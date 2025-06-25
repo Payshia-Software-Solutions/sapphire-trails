@@ -50,9 +50,12 @@ export function Footer() {
 
         </div>
 
-        <div className="mt-16 pt-8 border-t border-white/10 text-center">
-          <p className="text-balance text-sm leading-loose text-muted-foreground">
+        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground gap-2">
+          <p>
             © {new Date().getFullYear()} Sapphire Trails. All rights reserved.
+          </p>
+          <p>
+            Powered by Payshia Software Solutions
           </p>
         </div>
       </div>
