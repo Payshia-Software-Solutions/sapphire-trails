@@ -1,5 +1,4 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import { AdminSidebar } from '@/components/admin/sidebar';
 
 export default function AdminLayout({
   children,
@@ -7,16 +6,13 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-background-alt">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/admin/dashboard" className="flex items-center space-x-2">
-            <Image src="/img/logo.png" alt="Sapphire Trails Logo" width={28} height={23} />
-            <span className="font-serif text-xl tracking-[0.2em] text-primary">ADMIN PANEL</span>
-          </Link>
-        </div>
-      </header>
-      <main className="flex-1">{children}</main>
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <AdminSidebar />
+      <div className="flex flex-col">
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-background-alt">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
