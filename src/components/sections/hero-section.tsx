@@ -8,7 +8,7 @@ export function HeroSection() {
   return (
     <section className="relative h-screen w-full flex items-center justify-center">
       <Image
-        src="https://images.unsplash.com/photo-1550450009-3b80827e8817?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxN3x8Z2VtJTIwdHJhaWwlMjB1bmRlcmdyb3VuZHxlbnwwfHx8fDE3NTA3MDQ5OTJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
+        src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
         alt="A dark and moody image of the inside of a gem mine, with rock walls and dim lighting."
         data-ai-hint="gem mine cave"
         layout="fill"
