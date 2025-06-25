@@ -11,6 +11,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const tours = [
   {
+    id: 'gem-explorer-day-tour',
     title: 'Exclusive Sapphire Mine Tour with Hands-On Discovery',
     description: "Dive deep into the world of gem mining with expert guides. Discover the secrets behind Sri Lanka's most precious sapphires and immerse yourself in authentic local traditions.",
     imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
@@ -18,6 +19,7 @@ const tours = [
     alt: 'A group of smiling tourists wearing hard hats on a sapphire mine tour.'
   },
   {
+    id: 'sapphire-trails-deluxe',
     title: 'Tea Estate & Luxury Dining',
     description: 'Savor the flavors of Sri Lanka with a private tour of a lush tea estate, followed by a curated gourmet dining experience in an elegant setting surrounded by nature.',
     imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img5.webp',
@@ -41,7 +43,7 @@ const TourCard = ({ tour }: { tour: typeof tours[0] }) => (
       <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.title}</h3>
       <p className="text-muted-foreground mb-6 flex-grow">{tour.description}</p>
       <Button asChild className="w-fit bg-primary text-primary-foreground hover:bg-primary/90 mt-auto rounded-full px-6">
-        <Link href="#contact">More Info</Link>
+        <Link href={`/tours?selected=${tour.id}`}>More Info</Link>
       </Button>
     </CardContent>
   </Card>

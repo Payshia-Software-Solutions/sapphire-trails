@@ -4,69 +4,115 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, Gem, Landmark, Award, Utensils, Star, Package, Coffee, BedDouble } from 'lucide-react';
 
-export function TourCards() {
+const tourData = [
+    {
+        id: 'gem-explorer-day-tour',
+        headerType: 'text-overlay',
+        imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
+        imageAlt: 'A group of smiling tourists wearing hard hats on a sapphire mine tour.',
+        imageHint: 'tourists mining gems',
+        title: {
+            line1: 'GEM EXPLORER',
+            line2: 'GEM XPLOR',
+            line3: 'DAY TOUR',
+        },
+        features: [
+            { icon: MapPin, text: 'GUIDED MINE TOUR' },
+            { icon: Gem, text: 'Gem market tour' },
+            { icon: Gem, text: 'Traditional & Modern Gem cutting tour' },
+            { icon: Landmark, text: 'Gem museum visit' },
+            { icon: Award, text: 'Gem Showcase from premium vendors' },
+            { icon: Utensils, text: 'SNACK AT THE MINE LUNCH AT GRAND SILVER RAY' },
+        ],
+        price: '$135',
+        priceSuffix: 'per person',
+        bookingLink: '/booking',
+    },
+    {
+        id: 'sapphire-trails-deluxe',
+        headerType: 'full-image',
+        imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img5.webp',
+        imageAlt: 'Sapphire Trails Deluxe Tour',
+        imageHint: 'luxury gem logo',
+        title: null,
+        features: [
+            { icon: Star, text: 'Includes everything from the Gem Explorer Tour' },
+            { icon: Package, text: 'GEM EXPLORER TOUR' },
+            { icon: Coffee, text: 'TEA FACTORY TOUR & TEA TASTING SESSION' },
+            { icon: BedDouble, text: 'ONE NIGHT FULL BOARD STAY AT GRAND SILVER RAY' },
+        ],
+        price: '$215',
+        priceSuffix: 'per person',
+        bookingLink: '/booking',
+    }
+];
+
+export function TourCards({ selectedTour }: { selectedTour: string | null }) {
+  const toursToShow = selectedTour
+    ? tourData.filter(tour => tour.id === selectedTour)
+    : tourData;
+
+  const gridColsClass = toursToShow.length === 1 ? 'md:grid-cols-1 justify-center' : 'md:grid-cols-2';
+
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
-          
-          <Card className="bg-card border-stone-800/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
-            <div className="relative h-[400px] w-full">
-              <Image
-                src="https://content-provider.payshia.com/sapphire-trail/images/img4.webp"
-                alt="A group of smiling tourists wearing hard hats on a sapphire mine tour."
-                data-ai-hint="tourists mining gems"
-                layout="fill"
-                objectFit="cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-white font-headline w-full px-4">
-                <p className="text-sm tracking-[0.2em]">GEM EXPLORER</p>
-                <h3 className="text-6xl font-bold tracking-tight my-2">GEM XPLOR</h3>
-                <p className="text-2xl tracking-[0.1em]">DAY TOUR</p>
-              </div>
-            </div>
-            <CardContent className="p-8 flex flex-col flex-grow">
-              <div className="space-y-3 flex-grow text-sm text-muted-foreground">
-                <div className="flex items-start gap-3"><MapPin className="h-4 w-4 mt-1 text-primary shrink-0" /><span>GUIDED MINE TOUR</span></div>
-                <div className="flex items-start gap-3"><Gem className="h-4 w-4 mt-1 text-primary shrink-0" /><span>Gem market tour</span></div>
-                <div className="flex items-start gap-3"><Gem className="h-4 w-4 mt-1 text-primary shrink-0" /><span>Traditional & Modern Gem cutting tour</span></div>
-                <div className="flex items-start gap-3"><Landmark className="h-4 w-4 mt-1 text-primary shrink-0" /><span>Gem museum visit</span></div>
-                <div className="flex items-start gap-3"><Award className="h-4 w-4 mt-1 text-primary shrink-0" /><span>Gem Showcase from premium vendors</span></div>
-                <div className="flex items-start gap-3"><Utensils className="h-4 w-4 mt-1 text-primary shrink-0" /><span>SNACK AT THE MINE LUNCH AT GRAND SILVER RAY</span></div>
-              </div>
-              <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
-                <p className="text-3xl font-bold text-primary">$135 <span className="text-sm font-normal text-muted-foreground">per person</span></p>
-                <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href="/booking">Book Now</Link></Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-stone-800/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
-            <div className="relative h-[400px] w-full">
-              <Image
-                src="https://content-provider.payshia.com/sapphire-trail/images/img5.webp"
-                alt="Sapphire Trails Deluxe Tour"
-                data-ai-hint="luxury gem logo"
-                layout="fill"
-                objectFit="cover"
-              />
-            </div>
-            <CardContent className="p-8 flex flex-col flex-grow">
-              <div className="space-y-3 flex-grow text-sm text-muted-foreground">
-                <div className="flex items-start gap-3"><Star className="h-4 w-4 mt-1 text-primary shrink-0" /><span>Includes everything from the Gem Explorer Tour</span></div>
-                <div className="flex items-start gap-3"><Package className="h-4 w-4 mt-1 text-primary shrink-0" /><span>GEM EXPLORER TOUR</span></div>
-                <div className="flex items-start gap-3"><Coffee className="h-4 w-4 mt-1 text-primary shrink-0" /><span>TEA FACTORY TOUR & TEA TASTING SESSION</span></div>
-                <div className="flex items-start gap-3"><BedDouble className="h-4 w-4 mt-1 text-primary shrink-0" /><span>ONE NIGHT FULL BOARD STAY AT GRAND SILVER RAY</span></div>
-              </div>
-              <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
-                <p className="text-3xl font-bold text-primary">$215 <span className="text-sm font-normal text-muted-foreground">per person</span></p>
-                <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href="/booking">Book Now</Link></Button>
-              </div>
-            </CardContent>
-          </Card>
-
-        </div>
+        {toursToShow.length === 0 ? (
+          <div className="text-center text-muted-foreground py-16">
+            <p className="text-lg">The selected tour package was not found.</p>
+            <Button asChild variant="link" className="mt-4 text-lg text-primary">
+              <Link href="/tours">View All Tours</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className={`grid grid-cols-1 ${gridColsClass} gap-8 lg:gap-12 items-stretch max-w-5xl mx-auto`}>
+            {toursToShow.map(tour => (
+              <Card key={tour.id} className="bg-card border-stone-800/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
+                <div className="relative h-[400px] w-full">
+                  {tour.headerType === 'text-overlay' && tour.title ? (
+                    <>
+                      <Image
+                        src={tour.imageUrl}
+                        alt={tour.imageAlt}
+                        data-ai-hint={tour.imageHint}
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                      <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-white font-headline w-full px-4">
+                        <p className="text-sm tracking-[0.2em]">{tour.title.line1}</p>
+                        <h3 className="text-6xl font-bold tracking-tight my-2">{tour.title.line2}</h3>
+                        <p className="text-2xl tracking-[0.1em]">{tour.title.line3}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <Image
+                      src={tour.imageUrl}
+                      alt={tour.imageAlt}
+                      data-ai-hint={tour.imageHint}
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                  )}
+                </div>
+                <CardContent className="p-8 flex flex-col flex-grow">
+                  <div className="space-y-3 flex-grow text-sm text-muted-foreground">
+                    {tour.features.map((feature, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <feature.icon className="h-4 w-4 mt-1 text-primary shrink-0" />
+                        <span>{feature.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
+                    <p className="text-3xl font-bold text-primary">{tour.price} <span className="text-sm font-normal text-muted-foreground">{tour.priceSuffix}</span></p>
+                    <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href={tour.bookingLink}>Book Now</Link></Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
