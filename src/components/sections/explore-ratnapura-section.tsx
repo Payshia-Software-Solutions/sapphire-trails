@@ -10,18 +10,18 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const gallery = [
   {
-    src: 'https://images.unsplash.com/photo-1511936606692-5e0d73f6b638?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxqdW5nbGUlMjB3YXRlcmZhbGx8ZW58MHx8fHwxNzUwNzA1NTcwfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    src: 'https://content-provider.payshia.com/sapphire-trail/images/img32.webp',
     alt: 'A beautiful cascading waterfall in a lush, green jungle environment.',
     hint: 'jungle waterfall',
   },
   {
-    src: 'https://images.unsplash.com/photo-1634646297235-008cc35cb8d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxlbGVwaGFudHMlMjBzYWZhcml8ZW58MHx8fHwxNzUwNzA1NTcwfDA&ixlib=rb-4.1.0&q=80&w=1080',
-    alt: 'A family of elephants walking near a tour jeep in a grassy, wooded area.',
+    src: 'https://content-provider.payshia.com/sapphire-trail/images/img33.webp',
+    alt: 'A close-up shot of an elephant in the wild.',
     hint: 'elephants safari',
   },
   {
-    src: 'https://images.unsplash.com/photo-1695469773735-3fd25fdbf3af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxiYW1ib28lMjBmb3Jlc3R8ZW58MHx8fHwxNzUwNzA1NTcwfDA&ixlib=rb-4.1.0&q=80&w=1080',
-    alt: 'Sunlight filtering through a dense bamboo forest with thick vines.',
+    src: 'https://content-provider.payshia.com/sapphire-trail/images/img34.webp',
+    alt: 'Sunlight filtering through a dense bamboo forest.',
     hint: 'bamboo forest',
   },
 ];
