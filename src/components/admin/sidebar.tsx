@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { CalendarCheck, LogOut, PlusSquare, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 
-const navLinks = [
+export const navLinks = [
   { href: '/admin/booking-requests', label: 'Booking Requests', icon: CalendarCheck },
   { href: '/admin/add-content', label: 'Add Content', icon: PlusSquare },
   { href: '/admin/manage-content', label: 'Manage Content', icon: Trash2 },
