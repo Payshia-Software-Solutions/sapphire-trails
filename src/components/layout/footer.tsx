@@ -18,7 +18,7 @@ export function Footer() {
   return (
     <footer className="w-full bg-background border-t border-white/10">
       <div className="container mx-auto px-4 md:px-6 pt-16 pb-8">
-        <div className="grid md:grid-cols-3 gap-12 items-start text-center md:text-left">
+        <div className="grid md:grid-cols-3 gap-12 items-center text-center md:text-left">
           
           <div className="flex justify-center md:justify-start">
             <FooterLogo />
