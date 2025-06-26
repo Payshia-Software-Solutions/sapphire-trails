@@ -33,7 +33,7 @@ export default function LoginPage() {
             alt="Sapphire Trails Logo"
             width={120}
             height={80}
-            className="mb-4"
+            className="mb-4 [filter:drop-shadow(0_2px_3px_rgba(0,0,0,0.2))]"
           />
           <CardTitle className="text-2xl">Admin Login</CardTitle>
           <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
