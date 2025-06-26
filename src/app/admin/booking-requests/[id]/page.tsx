@@ -33,25 +33,39 @@ export default function EditBookingPage() {
     const form = useForm<z.infer<typeof bookingFormSchema>>({
         resolver: zodResolver(bookingFormSchema),
     });
+    const { reset } = form;
 
     useEffect(() => {
-        if (!id) return;
-
-        const storedBookingsRaw = localStorage.getItem('bookings');
-        if (storedBookingsRaw) {
-            const bookings: Booking[] = JSON.parse(storedBookingsRaw);
-            const foundBooking = bookings.find(b => b.id === id);
-            if (foundBooking) {
-                setBooking(foundBooking);
-                form.reset({
-                    ...foundBooking,
-                    date: new Date(foundBooking.date),
-                    guests: Number(foundBooking.guests),
-                });
-            }
+        if (!id) {
+            setIsLoading(false);
+            return;
         }
-        setIsLoading(false);
-    }, [id, form]);
+
+        try {
+            const storedBookingsRaw = localStorage.getItem('bookings');
+            if (storedBookingsRaw) {
+                const bookings: Booking[] = JSON.parse(storedBookingsRaw);
+                const foundBooking = bookings.find(b => b.id === id);
+                
+                if (foundBooking) {
+                    setBooking(foundBooking);
+                    reset({
+                        ...foundBooking,
+                        date: new Date(foundBooking.date),
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("Failed to load or parse booking data:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not load booking data.',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [id, reset, toast]);
 
     const handleStatusChange = (status: 'accepted' | 'rejected') => {
         if (!booking) return;
@@ -190,4 +204,3 @@ export default function EditBookingPage() {
         </div>
     );
 }
-
