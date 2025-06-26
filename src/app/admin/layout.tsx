@@ -69,7 +69,7 @@ export default function AdminLayout({
                             ))}
                         </nav>
                         <div className="mt-auto flex items-center justify-between">
-                            <Button variant="ghost" className="justify-start" onClick={handleLogout}>
+                            <Button variant="ghost" className="justify-start text-muted-foreground hover:text-primary" onClick={handleLogout}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Logout
                             </Button>
@@ -93,7 +93,7 @@ export default function AdminLayout({
   return (
      <ThemeProvider
       attribute="class"
-      defaultTheme="light"
+      defaultTheme="dark"
       enableSystem={false}
     >
         {layout}
