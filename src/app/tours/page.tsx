@@ -17,7 +17,7 @@ function PageContent() {
     <>
       <ToursHero />
       <TourCards selectedTour={selectedTour} />
-      <ComparisonTable />
+      <ComparisonTable selectedTour={selectedTour} />
       <Faq />
     </>
   );
