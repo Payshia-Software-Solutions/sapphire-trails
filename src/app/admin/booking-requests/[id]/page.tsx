@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,45 +33,42 @@ export default function EditBookingPage() {
     const form = useForm<z.infer<typeof bookingFormSchema>>({
         resolver: zodResolver(bookingFormSchema),
     });
+
     const { reset } = form;
 
-    useEffect(() => {
+    const loadBooking = useCallback(() => {
         if (!id) {
             setIsLoading(false);
             return;
         }
-
-        let foundBooking: Booking | undefined;
         try {
             const storedBookingsRaw = localStorage.getItem('bookings');
             if (storedBookingsRaw) {
                 const bookings: Booking[] = JSON.parse(storedBookingsRaw);
-                foundBooking = bookings.find(b => b.id === id);
+                const foundBooking = bookings.find(b => b.id === id);
+                if (foundBooking) {
+                    setBooking(foundBooking);
+                    reset({
+                        ...foundBooking,
+                        date: new Date(foundBooking.date),
+                    });
+                }
             }
         } catch (error) {
-            console.error("Failed to load or parse booking data:", error);
+            console.error("Failed to load booking data:", error);
             toast({
                 variant: 'destructive',
                 title: 'Error',
                 description: 'Could not load booking data from storage.',
             });
+        } finally {
+            setIsLoading(false);
         }
-        
-        if (foundBooking) {
-            setBooking(foundBooking);
-        }
-
-        setIsLoading(false);
-    }, [id, toast]);
+    }, [id, reset, toast]);
 
     useEffect(() => {
-        if (booking) {
-            reset({
-                ...booking,
-                date: new Date(booking.date),
-            });
-        }
-    }, [booking, reset]);
+        loadBooking();
+    }, [loadBooking]);
 
 
     const handleStatusChange = (status: 'accepted' | 'rejected') => {
