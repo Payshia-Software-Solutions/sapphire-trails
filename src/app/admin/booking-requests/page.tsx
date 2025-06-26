@@ -1,7 +1,9 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { mockBookings, type Booking } from '@/lib/bookings-data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -68,19 +70,6 @@ export default function BookingRequestsPage() {
     const total = bookings.length;
     return { pending, accepted, rejected, total };
   }, [bookings]);
-
-  const handleStatusChange = (id: string, status: 'accepted' | 'rejected') => {
-    const updatedBookings = bookings.map((booking) =>
-      booking.id === id ? { ...booking, status } : booking
-    );
-    setBookings(updatedBookings);
-    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
-    
-    // Update the selected booking in the modal to reflect the change instantly
-    if (selectedBooking && selectedBooking.id === id) {
-      setSelectedBooking({ ...selectedBooking, status });
-    }
-  };
   
   const getStatusBadgeVariant = (status: Booking['status']) => {
     switch (status) {
@@ -235,14 +224,11 @@ export default function BookingRequestsPage() {
                             </div>
                         )}
                     </div>
-                    <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-between gap-2">
+                    <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-2">
                         <Button variant="outline" onClick={() => setSelectedBooking(null)}>Close</Button>
-                        {selectedBooking.status === 'pending' && (
-                            <div className="flex gap-2">
-                                <Button onClick={() => handleStatusChange(selectedBooking.id, 'accepted')}>Accept</Button>
-                                <Button onClick={() => handleStatusChange(selectedBooking.id, 'rejected')} variant="destructive">Reject</Button>
-                            </div>
-                        )}
+                        <Button asChild>
+                            <Link href={`/admin/booking-requests/${selectedBooking.id}`}>Edit Booking</Link>
+                        </Button>
                     </DialogFooter>
                 </>
                 )}
