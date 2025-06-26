@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -36,6 +36,11 @@ export default function AddContentPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const form = useForm<z.infer<typeof locationFormSchema>>({
     resolver: zodResolver(locationFormSchema),
@@ -134,6 +139,10 @@ export default function AddContentPage() {
   }
 
   const progressValue = (currentStep / steps.length) * 100;
+  
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-6 h-full">
