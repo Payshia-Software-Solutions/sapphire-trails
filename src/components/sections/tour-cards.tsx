@@ -91,7 +91,7 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                       alt={tour.imageAlt}
                       data-ai-hint={tour.imageHint}
                       fill
-                      className="object-cover"
+                      className="object-contain p-12"
                     />
                   )}
                 </div>
