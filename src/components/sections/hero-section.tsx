@@ -21,8 +21,8 @@ export function HeroSection() {
           <Image
             src="/img/logo.png"
             alt="Sapphire Trails Logo"
-            width={150}
-            height={150}
+            width={350}
+            height={500}
             className="h-auto"
           />
           <h1 className="text-5xl font-headline font-bold tracking-tight text-white sm:text-6xl max-w-3xl">
