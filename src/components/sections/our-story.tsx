@@ -30,9 +30,8 @@ export function OurStory() {
                     src="https://content-provider.payshia.com/sapphire-trail/images/img31.webp"
                     alt="Exterior of the Grand Silver Ray resort"
                     data-ai-hint="luxury suite"
-                    layout="fill"
-                    objectFit="cover"
-                    className="transition-transform duration-300 hover:scale-105"
+                    fill
+                    className="object-cover transition-transform duration-300 hover:scale-105"
                 />
             </div>
           </div>
@@ -44,9 +43,8 @@ export function OurStory() {
                     src="https://content-provider.payshia.com/sapphire-trail/images/img30.webp"
                     alt="A delicious looking gourmet meal"
                     data-ai-hint="gourmet food"
-                    layout="fill"
-                    objectFit="cover"
-                    className="transition-transform duration-300 hover:scale-105"
+                    fill
+                    className="object-cover transition-transform duration-300 hover:scale-105"
                 />
             </div>
             <div className="space-y-4">
@@ -75,9 +73,8 @@ export function OurStory() {
                     src="https://content-provider.payshia.com/sapphire-trail/images/img5.webp"
                     alt="Sapphire Trails Deluxe logo"
                     data-ai-hint="luxury gem logo"
-                    layout="fill"
-                    objectFit="cover"
-                    className="transition-transform duration-300 hover:scale-105"
+                    fill
+                    className="object-cover transition-transform duration-300 hover:scale-105"
                 />
             </div>
           </div>

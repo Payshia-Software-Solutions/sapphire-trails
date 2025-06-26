@@ -52,8 +52,8 @@ export function TeamSection() {
                                     src={member.image}
                                     alt={`Portrait of ${member.name}`}
                                     data-ai-hint={member.imageHint}
-                                    layout="fill"
-                                    objectFit="cover"
+                                    fill
+                                    className="object-cover"
                                 />
                             </div>
                             <CardContent className="p-6 flex flex-col flex-grow">

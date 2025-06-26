@@ -31,9 +31,8 @@ export function LocationIntro({ distance, title, description, imageUrl, imageHin
               src={imageUrl}
               alt={title}
               data-ai-hint={imageHint}
-              layout="fill"
-              objectFit="cover"
-              className="transition-transform duration-300 hover:scale-105"
+              fill
+              className="object-cover transition-transform duration-300 hover:scale-105"
             />
           </div>
         </div>

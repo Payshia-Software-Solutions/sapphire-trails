@@ -20,9 +20,8 @@ const ImageWithOverlay = ({ image, className }: { image: ImageInfo; className?: 
       src={image.src}
       alt={image.alt}
       data-ai-hint={image.hint}
-      layout="fill"
-      objectFit="cover"
-      className="transition-transform duration-300 hover:scale-105"
+      fill
+      className="object-cover transition-transform duration-300 hover:scale-105"
     />
     {image.is360 && (
       <div className="absolute inset-0 bg-black/30 flex items-center justify-center">

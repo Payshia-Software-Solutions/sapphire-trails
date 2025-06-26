@@ -35,8 +35,8 @@ const TourCard = ({ tour }: { tour: typeof tours[0] }) => (
         src={tour.imageUrl}
         alt={tour.alt}
         data-ai-hint={tour.imageHint}
-        layout="fill"
-        objectFit="cover"
+        fill
+        className="object-cover"
       />
     </div>
     <CardContent className="p-8 flex flex-col flex-grow">

@@ -11,9 +11,8 @@ export function HeroSection() {
         src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
         alt="A dark and moody image of the inside of a gem mine, with rock walls and dim lighting."
         data-ai-hint="gem mine cave"
-        layout="fill"
-        objectFit="cover"
-        className="z-0"
+        fill
+        className="z-0 object-cover"
       />
       <div className="absolute inset-0 bg-black/30 z-10" />
       <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4 space-y-8">

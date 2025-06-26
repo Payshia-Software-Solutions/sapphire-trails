@@ -14,9 +14,8 @@ export function LocationHero({ title, subtitle, imageUrl, imageHint }: LocationH
         src={imageUrl}
         alt={`A scenic view of ${title}`}
         data-ai-hint={imageHint}
-        layout="fill"
-        objectFit="cover"
-        className="z-0 opacity-50"
+        fill
+        className="z-0 opacity-50 object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent z-10" />
       <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4">

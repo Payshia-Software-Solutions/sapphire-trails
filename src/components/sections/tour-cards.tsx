@@ -75,8 +75,8 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                         src={tour.imageUrl}
                         alt={tour.imageAlt}
                         data-ai-hint={tour.imageHint}
-                        layout="fill"
-                        objectFit="cover"
+                        fill
+                        className="object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                       <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-white font-headline w-full px-4">
@@ -90,8 +90,8 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                       src={tour.imageUrl}
                       alt={tour.imageAlt}
                       data-ai-hint={tour.imageHint}
-                      layout="fill"
-                      objectFit="cover"
+                      fill
+                      className="object-cover"
                     />
                   )}
                 </div>
