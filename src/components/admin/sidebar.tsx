@@ -23,7 +23,7 @@ export function AdminSidebar() {
   return (
     <aside className="hidden border-r bg-background md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+        <div className="flex h-[60px] items-center border-b px-4 lg:px-6">
           <Link href="/admin/booking-requests" className="flex items-center gap-2 font-semibold">
             <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
           </Link>
@@ -46,7 +46,7 @@ export function AdminSidebar() {
           </nav>
         </div>
         <div className="mt-auto p-4">
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-primary" onClick={handleLogout}>
+            <Button variant="ghost" className="w-full justify-start text-muted-foreground" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
