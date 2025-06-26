@@ -34,11 +34,6 @@ const tourData = [
         imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img5.webp',
         imageAlt: 'The logo for Sapphire Trails Deluxe tours.',
         imageHint: 'luxury gem logo',
-        title: {
-            line1: 'SAPPHIRE TRAILS',
-            line2: 'DELUXE',
-            line3: 'PACKAGE',
-        },
         features: [
             { icon: Star, text: 'Includes everything from the Gem Explorer Tour' },
             { icon: Package, text: 'GEM EXPLORER TOUR' },
