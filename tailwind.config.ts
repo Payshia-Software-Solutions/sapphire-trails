@@ -80,10 +80,21 @@ export default {
             height: '0',
           },
         },
+        'gem-pulse': {
+          '0%, 100%': {
+            transform: 'scale(1)',
+            filter: 'brightness(1) drop-shadow(0 0 5px hsl(var(--primary) / 0.5))',
+          },
+          '50%': {
+            transform: 'scale(1.05)',
+            filter: 'brightness(1.3) drop-shadow(0 0 15px hsl(var(--primary) / 0.7))',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'gem-pulse': 'gem-pulse 2s infinite ease-in-out',
       },
     },
   },
