@@ -35,43 +35,44 @@ export default function EditBookingPage() {
     resolver: zodResolver(bookingFormSchema),
   });
 
+  // Effect to fetch data from localStorage
   useEffect(() => {
     if (!id) {
-        setIsLoading(false);
-        return;
-    };
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const storedBookingsRaw = localStorage.getItem('bookings');
       if (storedBookingsRaw) {
         const allBookings = JSON.parse(storedBookingsRaw) as Booking[];
         const foundBooking = allBookings.find(b => b.id === id);
-        if (foundBooking) {
-          setBooking(foundBooking);
-          form.reset({
-            ...foundBooking,
-            date: parseISO(foundBooking.date),
-            guests: Number(foundBooking.guests),
-          });
-        }
+        setBooking(foundBooking || null);
       }
     } catch (error) {
       console.error("Failed to load booking data:", error);
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to load booking data.' });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
-  }, [id, form, toast]);
-  
-  const updateBookingInStorage = (updatedBooking: Booking | Booking[]) => {
+  }, [id, toast]);
+
+  // Effect to populate the form once booking data is available
+  useEffect(() => {
+    if (booking) {
+      form.reset({
+        ...booking,
+        date: parseISO(booking.date),
+        guests: Number(booking.guests),
+      });
+    }
+  }, [booking, form]);
+
+  const updateBookingInStorage = (updatedBooking: Booking) => {
     try {
-      let bookingsToStore;
-      if (Array.isArray(updatedBooking)) {
-        bookingsToStore = updatedBooking;
-      } else {
-        const storedBookingsRaw = localStorage.getItem('bookings');
-        const allBookings = storedBookingsRaw ? JSON.parse(storedBookingsRaw) as Booking[] : [];
-        bookingsToStore = allBookings.map(b => b.id === updatedBooking.id ? updatedBooking : b);
-      }
+      const storedBookingsRaw = localStorage.getItem('bookings');
+      const allBookings = storedBookingsRaw ? JSON.parse(storedBookingsRaw) as Booking[] : [];
+      const bookingsToStore = allBookings.map(b => b.id === updatedBooking.id ? updatedBooking : b);
       localStorage.setItem('bookings', JSON.stringify(bookingsToStore));
       return true;
     } catch (error) {
