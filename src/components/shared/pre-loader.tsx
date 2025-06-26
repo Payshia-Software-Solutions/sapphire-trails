@@ -1,21 +1,38 @@
 'use client';
 
 const GemIcon = () => (
-    <svg
-      width="80"
-      height="80"
-      viewBox="-100 -100 200 200"
-      xmlns="http://www.w3.org/2000/svg"
-      className="animate-gem-pulse"
+    <svg 
+        width="80" 
+        height="80" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+        className="animate-gem-pulse"
     >
-        <g>
-            <path d="M 0 -80 L 80 0 L 0 80 L -80 0 Z" fill="#4dd0e1"/>
-            <path d="M 0 -80 L -80 0 L -60 -10 L 0 -60 Z" fill="#26c6da"/>
-            <path d="M 0 -80 L 80 0 L 60 -10 L 0 -60 Z" fill="#00bcd4"/>
-            <path d="M 0 80 L -80 0 L -60 10 L 0 60 Z" fill="#00acc1"/>
-            <path d="M 0 80 L 80 0 L 60 10 L 0 60 Z" fill="#0097a7"/>
-            <path d="M 0 -60 L 60 -10 L 0 60 L -60 10 Z" fill="#80deea"/>
-        </g>
+        <path 
+            d="M6 4H18L22 10L12 21L2 10L6 4Z" 
+            stroke="hsl(var(--primary))" 
+            strokeWidth="1.5" 
+            strokeLinejoin="round"
+        />
+        <path 
+            d="M2 10L12 21L22 10" 
+            stroke="hsl(var(--primary))" 
+            strokeWidth="1.5" 
+            strokeLinejoin="round"
+        />
+        <path 
+            d="M12 21L8 10H16L12 21Z" 
+            stroke="hsl(var(--primary))" 
+            strokeWidth="1.5" 
+            strokeLinejoin="round"
+        />
+        <path 
+            d="M6 4L12 10L18 4" 
+            stroke="hsl(var(--primary))" 
+            strokeWidth="1.5" 
+            strokeLinejoin="round"
+        />
     </svg>
 );
 
