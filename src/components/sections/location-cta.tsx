@@ -10,7 +10,7 @@ export function LocationCta() {
           Ready to Explore?
         </h2>
         <p className="mx-auto max-w-3xl text-muted-foreground md:text-xl/relaxed mb-8">
-          Book your guided tour to Sinharaja Rainforest and experience Sri Lanka's natural treasure.
+          Book your guided tour to Sinharaja Rainforest and experience Sri Lanka&apos;s natural treasure.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">

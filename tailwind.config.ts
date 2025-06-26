@@ -10,9 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Poppins', 'sans-serif'],
-        headline: ['Montserrat', 'sans-serif'],
-        serif: ['Cinzel', 'serif'],
+        body: ['var(--font-poppins)', 'sans-serif'],
+        headline: ['var(--font-montserrat)', 'sans-serif'],
+        serif: ['var(--font-cinzel)', 'serif'],
         code: ['monospace'],
       },
       colors: {
@@ -90,11 +90,17 @@ export default {
             filter: 'brightness(1.3) drop-shadow(0 0 15px hsl(var(--primary) / 0.7))',
           },
         },
+        'top-loading-bar': {
+          '0%': { transform: 'translateX(-100%)' },
+          '75%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(0%)', opacity: '0' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'gem-pulse': 'gem-pulse 2s infinite ease-in-out',
+        'top-loading': 'top-loading-bar 1.5s ease-out forwards',
       },
     },
   },

@@ -83,7 +83,7 @@ export function BookingForm() {
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-headline font-bold tracking-tighter sm:text-5xl">Confirm Your Details</h2>
           <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
-            Fill out the form below to book your tour. We'll get back to you shortly to confirm your reservation.
+            Fill out the form below to book your tour. We&apos;ll get back to you shortly to confirm your reservation.
           </p>
         </div>
         <div className="mx-auto mt-12 max-w-xl">

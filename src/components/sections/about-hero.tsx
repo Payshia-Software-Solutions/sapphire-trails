@@ -16,7 +16,7 @@ export function AboutHero() {
           About Sapphire Trails
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Sri Lanka's First Gem Mining Experience
+          Sri Lanka&apos;s First Gem Mining Experience
         </p>
       </div>
     </section>

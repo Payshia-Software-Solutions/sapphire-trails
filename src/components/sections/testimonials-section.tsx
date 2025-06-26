@@ -57,7 +57,7 @@ export function TestimonialsSection() {
                 <Quote className="h-8 w-8 text-primary" />
               </CardHeader>
               <CardContent className="p-6 pt-0">
-                <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
+                <p className="text-muted-foreground italic">&quot;{testimonial.quote}&quot;</p>
                 <div className="mt-4 flex items-center gap-4">
                   <Avatar>
                     <AvatarImage src={testimonial.image} alt={testimonial.name} data-ai-hint={testimonial.imageHint} />

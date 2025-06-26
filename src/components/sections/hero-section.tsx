@@ -25,11 +25,8 @@ export function HeroSection() {
             height={400}
             className="h-auto"
           />
-          <p className="font-serif text-4xl tracking-[0.2em] text-primary">
-            SAPPHIRE TRAILS
-          </p>
           <h1 className="text-5xl font-headline font-bold tracking-tight text-white max-w-3xl">
-            Sri Lanka's Only Luxury Gem Experience
+            Sri Lanka&apos;s Only Luxury Gem Experience
           </h1>
           <p className="text-lg text-white/90">
             Experience luxury, culture, and adventure

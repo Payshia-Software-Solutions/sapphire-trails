@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
 import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -18,6 +19,19 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const isLoginPage = pathname === '/admin/login';
+  const [isLoading, setIsLoading] = useState(false);
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    if (isMounted.current) {
+      setIsLoading(true);
+      const timer = setTimeout(() => setIsLoading(false), 1500); // Duration matches animation
+      return () => clearTimeout(timer);
+    } else {
+      isMounted.current = true;
+    }
+  }, [pathname]);
+
 
   const handleLogout = () => {
     sessionStorage.removeItem('isAdminAuthenticated');
@@ -93,9 +107,10 @@ export default function AdminLayout({
   return (
      <ThemeProvider
       attribute="class"
-      defaultTheme="dark"
+      defaultTheme="light"
       enableSystem={false}
     >
+        {isLoading && <div className="fixed top-0 left-0 right-0 h-1 bg-primary z-[200] animate-top-loading" />}
         {layout}
     </ThemeProvider>
   );

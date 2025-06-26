@@ -65,7 +65,7 @@ export function OurStory() {
             <div className="space-y-4">
               <h2 className="text-3xl font-headline font-bold text-primary">Who We Are</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Sapphire Trail welcomes discerning travelers, luxury connoisseurs, and influencers seeking extraordinary stories. We are a sanctuary for those who appreciate rarity, authenticity, and the transformative power of nature's finest treasures.
+                Sapphire Trail welcomes discerning travelers, luxury connoisseurs, and influencers seeking extraordinary stories. We are a sanctuary for those who appreciate rarity, authenticity, and the transformative power of nature&apos;s finest treasures.
               </p>
             </div>
             <div className="relative aspect-video rounded-lg overflow-hidden">

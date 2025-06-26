@@ -83,7 +83,7 @@ export function BookingRequests() {
             {booking.message && (
               <div>
                 <h4 className="font-semibold text-sm">Message</h4>
-                <p className="text-sm text-muted-foreground italic">"{booking.message}"</p>
+                <p className="text-sm text-muted-foreground italic">&quot;{booking.message}&quot;</p>
               </div>
             )}
           </CardContent>

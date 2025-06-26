@@ -68,7 +68,7 @@ export default function ManageContentPage() {
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Content</h1>
-            <p className="text-muted-foreground">Add or delete custom locations for the "Explore Ratnapura" page.</p>
+            <p className="text-muted-foreground">Add or delete custom locations for the &quot;Explore Ratnapura&quot; page.</p>
         </div>
         <Button asChild>
           <Link href="/admin/add-content">
@@ -82,7 +82,7 @@ export default function ManageContentPage() {
         <CardHeader>
           <CardTitle>Custom Added Locations</CardTitle>
           <CardDescription>
-            Only locations added via the 'Add Content' form are listed here. Deleting an item is permanent.
+            Only locations added via the &apos;Add Content&apos; form are listed here. Deleting an item is permanent.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -113,7 +113,7 @@ export default function ManageContentPage() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the content for <span className="font-semibold text-foreground">"{location.title}"</span>.
+                          This action cannot be undone. This will permanently delete the content for <span className="font-semibold text-foreground">&quot;{location.title}&quot;</span>.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>

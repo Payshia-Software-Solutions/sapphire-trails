@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: '/about', label: 'About' },
@@ -43,18 +44,21 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-full max-w-sm bg-background p-6">
-              <div className="flex justify-between items-center mb-8">
-                <Link href="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
+              <div className="text-center mb-8">
+                <Link href="/" className="inline-block" onClick={() => setIsMenuOpen(false)}>
                     <span className="font-serif text-xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
                 </Link>
               </div>
 
-              <nav className="flex flex-col space-y-6 text-lg font-serif uppercase tracking-widest text-center">
-                {navLinks.map((link) => (
+              <nav className="grid grid-cols-2 gap-x-4 gap-y-8 text-lg font-serif uppercase tracking-widest text-center">
+                {navLinks.map((link, index) => (
                   <Link 
                     key={link.href} 
                     href={link.href} 
-                    className="text-primary hover:text-primary/80 transition-colors"
+                    className={cn(
+                      "text-primary hover:text-primary/80 transition-colors",
+                      navLinks.length % 2 !== 0 && index === navLinks.length - 1 && "col-span-2"
+                    )}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.label}

@@ -220,7 +220,7 @@ export default function BookingRequestsPage() {
                         {selectedBooking.message && (
                             <div className="grid grid-cols-4 items-start gap-4">
                                 <Label className="text-right text-muted-foreground mt-1">Message</Label>
-                                <p className="col-span-3 text-sm italic">"{selectedBooking.message}"</p>
+                                <p className="col-span-3 text-sm italic">&quot;{selectedBooking.message}&quot;</p>
                             </div>
                         )}
                     </div>
