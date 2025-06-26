@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, Gem, Landmark, Award, Utensils, Star, Package, Coffee, BedDouble } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const tourData = [
     {
@@ -80,7 +81,7 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                         alt={tour.imageAlt}
                         data-ai-hint={tour.imageHint}
                         fill
-                        className="object-cover"
+                        className={cn("object-cover", tour.id === 'sapphire-trails-deluxe' && 'scale-150')}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                       <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-white font-headline w-full px-4">
