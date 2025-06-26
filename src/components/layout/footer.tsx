@@ -2,10 +2,19 @@ import Link from 'next/link';
 import { Facebook, Instagram, Youtube } from 'lucide-react';
 import Image from 'next/image';
 
+const navLinks = [
+  { href: '/about', label: 'About' },
+  { href: '/tours', label: 'Tours' },
+  { href: '/explore-ratnapura', label: 'Explore Ratnapura' },
+  { href: '/virtual-tour', label: 'Virtual Tour' },
+  { href: '/contact', label: 'Contact' },
+];
+
 const FooterLogo = () => (
-    <div className="flex flex-col items-center gap-1.5 text-center">
+    <>
         <Image src="/img/logo.png" alt="Sapphire Trails Logo" width={150} height={90} />
-    </div>
+        <p className="text-sm text-muted-foreground max-w-xs mt-2">Sri Lanka's only luxury gem experience, offering immersive tours into the heart of Ratnapura's rich heritage.</p>
+    </>
 );
 
 const GrandSilverRayLogo = () => (
@@ -18,14 +27,25 @@ export function Footer() {
   return (
     <footer className="w-full bg-background border-t border-white/10">
       <div className="container mx-auto px-4 md:px-6 pt-16 pb-8">
-        <div className="grid md:grid-cols-3 gap-12 items-center text-center md:text-left">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-center md:text-left">
           
-          <div className="flex justify-center md:justify-start">
+          <div className="flex flex-col items-center md:items-start">
             <FooterLogo />
+          </div>
+
+          <div className="flex flex-col items-center md:items-start">
+             <h3 className="font-headline text-lg tracking-widest text-primary mb-4">QUICK LINKS</h3>
+             <div className="flex flex-col space-y-2">
+                {navLinks.map((link) => (
+                    <Link key={link.href} href={link.href} className="text-muted-foreground hover:text-primary transition-colors">
+                        {link.label}
+                    </Link>
+                ))}
+             </div>
           </div>
           
           <div className="flex flex-col items-center md:items-start">
-            <h3 className="font-headline text-lg tracking-widest text-primary mb-4">SAPPHIRE TRAILS</h3>
+            <h3 className="font-headline text-lg tracking-widest text-primary mb-4">CONTACT US</h3>
             <div className="space-y-1 text-sm text-muted-foreground font-body">
                 <p>Email: info@sapphiretrails.com</p>
                 <p>Phone: +94 77 123 4567</p>
