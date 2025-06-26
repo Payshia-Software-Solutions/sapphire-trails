@@ -12,7 +12,7 @@ const navLinks = [
 
 const FooterLogo = () => (
     <>
-        <Image src="/img/logo3.png" alt="Sapphire Trails Logo" width={150} height={90} />
+        <Image src="/img/logo3.png" alt="Sapphire Trails Logo" width={100} height={60} />
         <p className="text-sm text-muted-foreground max-w-xs mt-2">Sri Lanka's only luxury gem experience, offering immersive tours into the heart of Ratnapura's rich heritage.</p>
     </>
 );
