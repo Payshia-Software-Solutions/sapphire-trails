@@ -31,15 +31,9 @@ const tourData = [
     },
     {
         id: 'sapphire-trails-deluxe',
-        headerType: 'text-overlay',
         imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img5.webp',
         imageAlt: 'The logo for Sapphire Trails Deluxe tours.',
         imageHint: 'luxury gem logo',
-        title: {
-            line1: 'SAPPHIRE TRAILS',
-            line2: 'DELUXE',
-            line3: 'EXPERIENCE',
-        },
         features: [
             { icon: Star, text: 'Includes everything from the Gem Explorer Tour' },
             { icon: Package, text: 'GEM EXPLORER TOUR' },
@@ -74,20 +68,20 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
             {toursToShow.map(tour => (
               <Card key={tour.id} className="bg-card border-stone-800/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
                 <div className="relative h-[400px] w-full">
-                  {tour.headerType === 'text-overlay' && tour.title ? (
+                  {(tour as any).title ? (
                     <>
                       <Image
                         src={tour.imageUrl}
                         alt={tour.imageAlt}
                         data-ai-hint={tour.imageHint}
                         fill
-                        className={cn("object-cover", tour.id === 'sapphire-trails-deluxe' && 'scale-150')}
+                        className="object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                       <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-white font-headline w-full px-4">
-                        <p className="text-sm tracking-[0.2em]">{tour.title.line1}</p>
-                        <h3 className="text-6xl font-bold tracking-tight my-2">{tour.title.line2}</h3>
-                        <p className="text-2xl tracking-[0.1em]">{tour.title.line3}</p>
+                        <p className="text-sm tracking-[0.2em]">{(tour as any).title.line1}</p>
+                        <h3 className="text-6xl font-bold tracking-tight my-2">{(tour as any).title.line2}</h3>
+                        <p className="text-2xl tracking-[0.1em]">{(tour as any).title.line3}</p>
                       </div>
                     </>
                   ) : (
@@ -96,7 +90,7 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                       alt={tour.imageAlt}
                       data-ai-hint={tour.imageHint}
                       fill
-                      className="object-contain p-12"
+                      className="object-cover"
                     />
                   )}
                 </div>
