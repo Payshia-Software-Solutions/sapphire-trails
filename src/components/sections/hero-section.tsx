@@ -18,16 +18,7 @@ export function HeroSection() {
       <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4 space-y-8">
         
         <div className="flex flex-col items-center space-y-4">
-            <Image src="/img/logo.png" alt="Sapphire Trails Logo" width={300} height={150} />
-        </div>
-
-        <div className="space-y-4 max-w-4xl">
-            <h1 className="text-5xl font-headline font-bold tracking-tight sm:text-6xl md:text-7xl">
-                Sri Lanka's Only Luxury Gem Experience
-            </h1>
-            <p className="font-body text-xl md:text-2xl tracking-widest font-normal text-foreground/90">
-                Experience luxury, culture, and adventure
-            </p>
+          <Image src="/img/logo3.png" alt="Sapphire Trails - Professional Gem Tours Logo" width={450} height={225} />
         </div>
 
         <Button asChild size="lg">
