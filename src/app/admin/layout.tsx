@@ -9,6 +9,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Menu, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { ThemeProvider } from '@/components/shared/theme-provider';
+import { ThemeToggle } from '@/components/shared/theme-toggle';
 
 export default function AdminLayout({
   children,
@@ -25,7 +27,12 @@ export default function AdminLayout({
   };
 
   const layout = (
-    <>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem
+      disableTransitionOnChange
+    >
       {isLoginPage ? (
         <>{children}</>
       ) : (
@@ -75,20 +82,22 @@ export default function AdminLayout({
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Logout
                             </Button>
+                            <ThemeToggle />
                         </div>
                     </SheetContent>
                 </Sheet>
                 <div className="w-full flex-1">
                     {/* Can add search or breadcrumbs here */}
                 </div>
+                <ThemeToggle />
             </header>
-            <main className="flex-1 overflow-y-auto bg-background-alt p-4 lg:p-6">
+            <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-y-auto">
               {children}
             </main>
           </div>
         </div>
       )}
-    </>
+    </ThemeProvider>
   );
 
   return layout;
