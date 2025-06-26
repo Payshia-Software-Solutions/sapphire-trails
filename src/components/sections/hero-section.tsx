@@ -14,18 +14,22 @@ export function HeroSection() {
         fill
         className="z-0 object-cover"
       />
-      <div className="absolute inset-0 bg-black/30 z-10" />
-      <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4 space-y-8">
+      <div className="absolute inset-0 bg-black/50 z-10" />
+      <div className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
         
         <div className="flex flex-col items-center space-y-4">
-          <h1 className="text-6xl font-serif font-bold tracking-[0.2em] text-primary sm:text-8xl">
-            SAPPHIRE
-          </h1>
-          <h2 className="text-3xl font-serif font-bold tracking-[0.4em] text-primary sm:text-5xl">
-            TRAILS
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <Image
+            src="/img/logo3.png"
+            alt="Sapphire Trails Logo"
+            width={200}
+            height={120}
+            className="h-auto"
+          />
+          <h1 className="text-5xl font-headline font-bold tracking-tight text-white sm:text-6xl max-w-3xl">
             Sri Lanka's Only Luxury Gem Experience
+          </h1>
+          <p className="text-lg text-white/90">
+            Experience luxury, culture, and adventure
           </p>
         </div>
 
