@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import type { z } from 'zod';
 import { bookingFormSchema } from '@/lib/schemas';
 import type { Booking } from '@/lib/bookings-data';
 import { Button } from '@/components/ui/button';
@@ -32,43 +32,68 @@ export default function EditBookingPage() {
 
     const form = useForm<z.infer<typeof bookingFormSchema>>({
         resolver: zodResolver(bookingFormSchema),
+        defaultValues: {
+            name: "",
+            email: "",
+            phone: "",
+            tourType: undefined,
+            guests: 1,
+            message: "",
+        },
     });
 
-    const { reset } = form;
-
+    // Effect 1: Fetch data from localStorage and set the main booking state.
     useEffect(() => {
         if (!id || typeof window === 'undefined') {
-          setIsLoading(false);
-          return;
-        }
-
-        let foundBooking: Booking | undefined;
-        try {
-            const storedBookingsRaw = localStorage.getItem('bookings');
-            if (storedBookingsRaw) {
-                const bookings: Booking[] = JSON.parse(storedBookingsRaw);
-                foundBooking = bookings.find(b => b.id === id);
-            }
-        } catch (error) {
-            console.error("Failed to load or parse booking data:", error);
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not load booking data from storage.',
-            });
-        } finally {
-            if (foundBooking) {
-                setBooking(foundBooking);
-                const formValues = {
-                    ...foundBooking,
-                    date: new Date(foundBooking.date),
-                };
-                reset(formValues);
-            }
             setIsLoading(false);
+            return;
         }
-    }, [id, reset, toast]);
 
+        let isMounted = true;
+
+        const loadBooking = () => {
+            try {
+                const storedBookingsRaw = localStorage.getItem('bookings');
+                if (storedBookingsRaw) {
+                    const bookings: Booking[] = JSON.parse(storedBookingsRaw);
+                    const foundBooking = bookings.find(b => b.id === id);
+                    if (isMounted) {
+                        setBooking(foundBooking || null);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to load or parse booking data:", error);
+                if (isMounted) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: 'Could not load booking data from storage.',
+                    });
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        loadBooking();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [id, toast]);
+
+    // Effect 2: Populate the form only when the booking data has been successfully loaded.
+    useEffect(() => {
+        if (booking) {
+            form.reset({
+                ...booking,
+                date: new Date(booking.date),
+                guests: Number(booking.guests),
+            });
+        }
+    }, [booking, form]);
 
     const handleStatusChange = (status: 'accepted' | 'rejected') => {
         if (!booking) return;
@@ -122,11 +147,11 @@ export default function EditBookingPage() {
     }
 
     if (isLoading) {
-        return <div className="text-center p-12">Loading booking details...</div>;
+        return <div className="flex items-center justify-center h-full"><p>Loading booking details...</p></div>;
     }
 
     if (!booking) {
-        return <div className="text-center p-12">Booking not found.</div>;
+        return <div className="flex items-center justify-center h-full"><p>Booking not found.</p></div>;
     }
 
     return (
@@ -160,7 +185,7 @@ export default function EditBookingPage() {
                                 <FormField control={form.control} name="tourType" render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Tour Package</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl><SelectTrigger><SelectValue placeholder="Select a tour" /></SelectTrigger></FormControl>
                                             <SelectContent>
                                                 <SelectItem value="gem-explorer-day-tour">Gem Explorer Day Tour</SelectItem>
@@ -170,7 +195,7 @@ export default function EditBookingPage() {
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                                <FormField control={form.control} name="guests" render={({ field }) => (<FormItem><FormLabel>Number of Guests</FormLabel><FormControl><Input type="number" min="1" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="guests" render={({ field }) => (<FormItem><FormLabel>Number of Guests</FormLabel><FormControl><Input type="number" min="1" {...field} onChange={e => field.onChange(Number(e.target.value))} /></FormControl><FormMessage /></FormItem>)} />
                              </div>
                              
                              <FormField control={form.control} name="date" render={({ field }) => (
