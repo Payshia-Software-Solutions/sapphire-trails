@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Menu, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/shared/theme-toggle';
 
 export default function AdminLayout({
   children,
@@ -70,11 +71,14 @@ export default function AdminLayout({
                         </Link>
                         ))}
                     </nav>
-                    <div className="mt-auto">
-                        <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+                    <div className="mt-auto flex items-center justify-between">
+                        <Button variant="ghost" className="justify-start" onClick={handleLogout}>
                             <LogOut className="mr-2 h-4 w-4" />
                             Logout
                         </Button>
+                        <div className="md:hidden">
+                          <ThemeToggle />
+                        </div>
                     </div>
                 </SheetContent>
             </Sheet>
