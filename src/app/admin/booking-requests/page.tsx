@@ -28,12 +28,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 export default function BookingRequestsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const authStatus = sessionStorage.getItem('isAdminAuthenticated');
@@ -80,6 +82,26 @@ export default function BookingRequestsPage() {
       case 'pending':
       default:
         return 'secondary';
+    }
+  };
+
+  const handleStatusChange = (bookingId: string, status: 'accepted' | 'rejected') => {
+    if (!selectedBooking) return;
+    
+    const updatedBookings = bookings.map(b => 
+        b.id === bookingId ? { ...b, status } : b
+    );
+
+    try {
+        localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+        setBookings(updatedBookings);
+        setSelectedBooking(null);
+        toast({
+            title: `Booking ${status}!`,
+            description: `The booking for ${selectedBooking.name} has been ${status}.`,
+        });
+    } catch(e) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to update booking status.' });
     }
   };
 
@@ -226,9 +248,12 @@ export default function BookingRequestsPage() {
                     </div>
                     <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-2">
                         <Button variant="outline" onClick={() => setSelectedBooking(null)}>Close</Button>
-                        <Button asChild>
-                            <Link href={`/admin/booking-requests/${selectedBooking.id}`}>Edit Booking</Link>
-                        </Button>
+                        {selectedBooking.status === 'pending' && (
+                            <>
+                                <Button variant="destructive" onClick={() => handleStatusChange(selectedBooking.id, 'rejected')}>Reject</Button>
+                                <Button onClick={() => handleStatusChange(selectedBooking.id, 'accepted')}>Accept</Button>
+                            </>
+                        )}
                     </DialogFooter>
                 </>
                 )}
