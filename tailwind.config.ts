@@ -10,9 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Poppins', 'sans-serif'],
-        headline: ['Montserrat', 'sans-serif'],
-        serif: ['Cinzel', 'serif'],
+        body: ['var(--font-poppins)', 'sans-serif'],
+        headline: ['var(--font-montserrat)', 'sans-serif'],
+        serif: ['var(--font-cinzel)', 'serif'],
         code: ['monospace'],
       },
       colors: {
