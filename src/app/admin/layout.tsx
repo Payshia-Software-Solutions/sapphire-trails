@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -7,7 +6,6 @@ import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut } from 'lucide-react';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/shared/theme-provider';
 import { ThemeToggle } from '@/components/shared/theme-toggle';
@@ -54,7 +52,6 @@ export default function AdminLayout({
                                 href="/admin/booking-requests"
                                 className="flex items-center gap-2 text-lg font-semibold mb-4"
                             >
-                                <Image src="/img/logo.png" alt="Sapphire Trails Logo" width={28} height={23} />
                                 <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
                             </Link>
                             {navLinks.map((link) => (
@@ -96,7 +93,7 @@ export default function AdminLayout({
   return (
      <ThemeProvider
       attribute="class"
-      defaultTheme="dark"
+      defaultTheme="light"
       enableSystem={false}
     >
         {layout}

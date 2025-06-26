@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -6,7 +5,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { CalendarCheck, LogOut, Settings } from 'lucide-react';
-import Image from 'next/image';
 
 export const navLinks = [
   { href: '/admin/booking-requests', label: 'Booking Requests', icon: CalendarCheck },
@@ -27,7 +25,6 @@ export function AdminSidebar() {
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-16 items-center border-b px-4 lg:px-6">
           <Link href="/admin/booking-requests" className="flex items-center gap-2 font-semibold">
-            <Image src="/img/logo.png" alt="Sapphire Trails Logo" width={28} height={23} />
             <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
           </Link>
         </div>
