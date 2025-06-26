@@ -41,58 +41,71 @@ export default function EditBookingPage() {
             return;
         }
 
+        let foundBooking: Booking | undefined;
         try {
             const storedBookingsRaw = localStorage.getItem('bookings');
             if (storedBookingsRaw) {
                 const bookings: Booking[] = JSON.parse(storedBookingsRaw);
-                const foundBooking = bookings.find(b => b.id === id);
-                
-                if (foundBooking) {
-                    setBooking(foundBooking);
-                    reset({
-                        ...foundBooking,
-                        date: new Date(foundBooking.date),
-                    });
-                }
+                foundBooking = bookings.find(b => b.id === id);
             }
         } catch (error) {
             console.error("Failed to load or parse booking data:", error);
             toast({
                 variant: 'destructive',
                 title: 'Error',
-                description: 'Could not load booking data.',
+                description: 'Could not load booking data from storage.',
             });
-        } finally {
-            setIsLoading(false);
         }
-    }, [id, reset, toast]);
+        
+        if (foundBooking) {
+            setBooking(foundBooking);
+        }
+
+        setIsLoading(false);
+    }, [id, toast]);
+
+    useEffect(() => {
+        if (booking) {
+            reset({
+                ...booking,
+                date: new Date(booking.date),
+            });
+        }
+    }, [booking, reset]);
+
 
     const handleStatusChange = (status: 'accepted' | 'rejected') => {
         if (!booking) return;
 
         const updatedBooking = { ...booking, status };
         
-        const storedBookingsRaw = localStorage.getItem('bookings');
-        const bookings: Booking[] = storedBookingsRaw ? JSON.parse(storedBookingsRaw) : [];
-        const updatedBookings = bookings.map(b => (b.id === id ? updatedBooking : b));
+        try {
+            const storedBookingsRaw = localStorage.getItem('bookings');
+            const bookings: Booking[] = storedBookingsRaw ? JSON.parse(storedBookingsRaw) : [];
+            const updatedBookings = bookings.map(b => (b.id === id ? updatedBooking : b));
 
-        localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+            localStorage.setItem('bookings', JSON.stringify(updatedBookings));
 
-        toast({
-            title: `Booking ${status}!`,
-            description: `The booking for ${booking.name} has been ${status}.`,
-        });
+            toast({
+                title: `Booking ${status}!`,
+                description: `The booking for ${booking.name} has been ${status}.`,
+            });
 
-        router.push('/admin/booking-requests');
+            router.push('/admin/booking-requests');
+        } catch(e) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to update booking status.' });
+        }
     };
 
     function onSubmit(data: z.infer<typeof bookingFormSchema>) {
+        if (!booking) return;
+        
         const storedBookingsRaw = localStorage.getItem('bookings');
         const bookings: Booking[] = storedBookingsRaw ? JSON.parse(storedBookingsRaw) : [];
 
         const updatedBookingData: Booking = {
             id: id,
-            status: booking?.status || 'pending',
+            status: booking.status,
             name: data.name,
             email: data.email,
             phone: data.phone,
