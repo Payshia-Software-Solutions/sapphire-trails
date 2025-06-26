@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -14,11 +15,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
 
 export default function AddContentPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<z.infer<typeof locationFormSchema>>({
     resolver: zodResolver(locationFormSchema),
     defaultValues: {
@@ -79,7 +83,7 @@ export default function AddContentPage() {
         title: 'Content Added!',
         description: `Location "${data.title}" has been saved successfully.`,
       });
-      form.reset();
+      router.push('/admin/manage-content');
     } catch (error) {
       console.error('Failed to save to localStorage', error);
       toast({
@@ -92,9 +96,14 @@ export default function AddContentPage() {
 
   return (
     <div className="flex flex-col gap-6 h-full">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-primary">Add New Location</h1>
-        <p className="text-muted-foreground">Fill out this form to add a new location to the "Explore Ratnapura" page.</p>
+       <div className="flex items-center gap-4">
+        <Button variant="outline" size="icon" onClick={() => router.push('/admin/manage-content')}>
+            <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold tracking-tight text-primary">Add New Location</h1>
+            <p className="text-muted-foreground">Fill out this form to add a new location to the "Explore Ratnapura" page.</p>
+        </div>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

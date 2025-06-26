@@ -5,13 +5,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { CalendarCheck, LogOut, PlusSquare, Trash2 } from 'lucide-react';
+import { CalendarCheck, LogOut, Settings } from 'lucide-react';
 import Image from 'next/image';
 
 export const navLinks = [
   { href: '/admin/booking-requests', label: 'Booking Requests', icon: CalendarCheck },
-  { href: '/admin/add-content', label: 'Add Content', icon: PlusSquare },
-  { href: '/admin/manage-content', label: 'Manage Content', icon: Trash2 },
+  { href: '/admin/manage-content', label: 'Manage Content', icon: Settings },
 ];
 
 export function AdminSidebar() {
@@ -40,7 +39,7 @@ export function AdminSidebar() {
                 href={link.href}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-                  (pathname === link.href) && 'bg-muted text-primary'
+                  (pathname.startsWith(link.href)) && 'bg-muted text-primary'
                 )}
               >
                 <link.icon className="h-4 w-4" />

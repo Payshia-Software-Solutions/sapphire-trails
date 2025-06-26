@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { Location } from '@/lib/locations-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, AlertTriangle } from 'lucide-react';
+import { Trash2, AlertTriangle, Plus } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +19,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function ManageContentPage() {
   const { toast } = useToast();
@@ -64,9 +65,17 @@ export default function ManageContentPage() {
 
   return (
     <div className="flex flex-col gap-6 h-full">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Content</h1>
-        <p className="text-muted-foreground">Delete custom locations you have added to the "Explore Ratnapura" page.</p>
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Content</h1>
+            <p className="text-muted-foreground">Add or delete custom locations for the "Explore Ratnapura" page.</p>
+        </div>
+        <Button asChild>
+          <Link href="/admin/add-content">
+            <Plus className="mr-2 h-4 w-4" />
+            Add New Location
+          </Link>
+        </Button>
       </div>
 
       <Card>
@@ -123,7 +132,9 @@ export default function ManageContentPage() {
             <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
               <AlertTriangle className="h-12 w-12 text-muted-foreground/50" />
               <p>No custom locations have been added yet.</p>
-              <p className="text-sm">Use the "Add Content" page to add new locations.</p>
+              <Button asChild variant="link" className="text-primary">
+                <Link href="/admin/add-content">Add your first location</Link>
+              </Button>
             </div>
           )}
         </CardContent>

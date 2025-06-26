@@ -63,7 +63,7 @@ export default function AdminLayout({
                             href={link.href}
                             className={cn(
                             'mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground',
-                            (pathname === link.href) && 'bg-muted text-foreground'
+                            (pathname.startsWith(link.href)) && 'bg-muted text-foreground'
                             )}
                         >
                             <link.icon className="h-5 w-5" />
