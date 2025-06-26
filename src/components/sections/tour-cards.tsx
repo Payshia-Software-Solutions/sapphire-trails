@@ -68,15 +68,15 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
             {toursToShow.map(tour => (
               <Card key={tour.id} className="bg-card border-stone-800/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
                 <div className="relative h-[400px] w-full">
-                  {(tour as any).title ? (
+                  <Image
+                    src={tour.imageUrl}
+                    alt={tour.imageAlt}
+                    data-ai-hint={tour.imageHint}
+                    fill
+                    className="object-cover"
+                  />
+                  {(tour as any).title && (
                     <>
-                      <Image
-                        src={tour.imageUrl}
-                        alt={tour.imageAlt}
-                        data-ai-hint={tour.imageHint}
-                        fill
-                        className="object-cover"
-                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                       <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-white font-headline w-full px-4">
                         <p className="text-sm tracking-[0.2em]">{(tour as any).title.line1}</p>
@@ -84,14 +84,6 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                         <p className="text-2xl tracking-[0.1em]">{(tour as any).title.line3}</p>
                       </div>
                     </>
-                  ) : (
-                    <Image
-                      src={tour.imageUrl}
-                      alt={tour.imageAlt}
-                      data-ai-hint={tour.imageHint}
-                      fill
-                      className="object-cover"
-                    />
                   )}
                 </div>
                 <CardContent className="p-8 flex flex-col flex-grow">
