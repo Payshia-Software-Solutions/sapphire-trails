@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   title: 'Sapphire Trails',
   description: "Sri Lanka's Only Luxury Gem Experience",
   icons: {
-    icon: '/favicon-logo5.ico',
-    apple: '/apple-touch-icon-logo5.png',
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
 };
 
