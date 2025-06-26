@@ -1,8 +1,4 @@
-
 'use client';
-
-import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
 
 const GemIcon = () => (
     <svg
@@ -25,44 +21,10 @@ const GemIcon = () => (
 
 
 export function PreLoader() {
-  const [loading, setLoading] = useState(true);
-  const [fadeout, setFadeout] = useState(false);
-
-  useEffect(() => {
-    const handleLoad = () => {
-      setTimeout(() => {
-        setFadeout(true);
-        setTimeout(() => setLoading(false), 500); 
-      }, 1000);
-    };
-    
-    if (document.readyState === 'complete') {
-        handleLoad();
-    } else {
-        window.addEventListener('load', handleLoad);
-        const fallback = setTimeout(handleLoad, 3000);
-        return () => {
-            window.removeEventListener('load', handleLoad);
-            clearTimeout(fallback);
-        };
-    }
-  }, []);
-
-  if (!loading) {
-    return null;
-  }
-
   return (
-    <div
-      className={cn(
-        'fixed inset-0 z-[100] flex items-center justify-center bg-background transition-opacity duration-500',
-        fadeout ? 'opacity-0' : 'opacity-100'
-      )}
-    >
-        <div className="relative flex items-center justify-center">
-            <GemIcon />
-            <div className="absolute h-32 w-32 rounded-full border-2 border-primary/30 animate-ping" />
-        </div>
+    <div className="relative flex items-center justify-center">
+        <GemIcon />
+        <div className="absolute h-32 w-32 rounded-full border-2 border-primary/30 animate-ping" />
     </div>
   );
 }
