@@ -16,7 +16,7 @@ export function ContactHero() {
           Contact Us
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          We'd love to hear from you
+          We&apos;d love to hear from you
         </p>
       </div>
     </section>

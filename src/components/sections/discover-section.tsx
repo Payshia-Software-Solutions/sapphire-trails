@@ -65,7 +65,7 @@ export function DiscoverSection() {
             Discover the Sapphire Trails
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Embark on an exclusive journey through the heart of Sri Lanka's gem country. The Sapphire Trails offers an immersive experience into Ratnapura's rich heritage, from dazzling gem mines and lush tea estates to exquisite dining and vibrant local culture. Let us guide you on a luxurious adventure that unveils the true treasures of the island.
+            Embark on an exclusive journey through the heart of Sri Lanka&apos;s gem country. The Sapphire Trails offers an immersive experience into Ratnapura&apos;s rich heritage, from dazzling gem mines and lush tea estates to exquisite dining and vibrant local culture. Let us guide you on a luxurious adventure that unveils the true treasures of the island.
           </p>
         </ScrollAnimate>
 
