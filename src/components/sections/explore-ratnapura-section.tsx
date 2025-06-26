@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -30,6 +31,13 @@ const gallery = [
     title: 'Kalthota Doowili ella',
     description: "Known as 'Doowili Ella' or 'Dusty Falls' because its spray resembles a cloud of dust, this secluded waterfall is a reward for the adventurous traveler."
   },
+  {
+    src: 'https://content-provider.payshia.com/sapphire-trail/images/img39.webp',
+    alt: 'Elephants at Udawalawe National Park',
+    hint: 'elephants safari',
+    title: 'Udawalawa National Park',
+    description: "Udawalawe National Park is an unparalleled destination for wildlife enthusiasts, particularly famous for its large population of Sri Lankan elephants."
+  },
 ];
 
 export function ExploreRatnapuraSection() {
@@ -52,7 +60,7 @@ export function ExploreRatnapuraSection() {
           </h2>
 
           {/* Desktop view */}
-          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {gallery.map((image, index) => (
               <div key={index} className="group relative overflow-hidden rounded-xl">
                 <Image
