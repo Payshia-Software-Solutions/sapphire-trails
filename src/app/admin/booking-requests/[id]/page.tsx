@@ -43,10 +43,11 @@ export default function EditBookingPage() {
     }
 
     try {
+      const decodedId = decodeURIComponent(id);
       const storedBookingsRaw = localStorage.getItem('bookings');
       if (storedBookingsRaw) {
         const allBookings = JSON.parse(storedBookingsRaw) as Booking[];
-        const foundBooking = allBookings.find(b => b.id === id);
+        const foundBooking = allBookings.find(b => b.id === decodedId);
         setBooking(foundBooking || null);
       }
     } catch (error) {
