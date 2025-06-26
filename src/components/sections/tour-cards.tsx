@@ -31,9 +31,9 @@ const tourData = [
     {
         id: 'sapphire-trails-deluxe',
         headerType: 'text-overlay',
-        imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img31.webp',
-        imageAlt: 'Luxury suite at Grand Silver Ray',
-        imageHint: 'luxury hotel suite',
+        imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img5.webp',
+        imageAlt: 'The logo for Sapphire Trails Deluxe tours.',
+        imageHint: 'luxury gem logo',
         title: {
             line1: 'SAPPHIRE TRAILS',
             line2: 'DELUXE',
