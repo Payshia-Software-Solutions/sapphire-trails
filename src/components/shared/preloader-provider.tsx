@@ -2,39 +2,39 @@
 
 import { usePathname } from 'next/navigation';
 import { PreLoader } from './pre-loader';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 export function PreloaderProvider({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const [isLoading, setIsLoading] = useState(true);
     const [isFadingOut, setIsFadingOut] = useState(false);
+    const isInitialLoad = useRef(true);
 
-    const hideLoader = useCallback(() => {
-        if (isFadingOut) return;
+    // This effect is responsible for HIDING the preloader.
+    // It is triggered whenever the page's path changes.
+    useEffect(() => {
+        // For the very first page load, we want a minimum display time for a good first impression.
+        // For subsequent page loads, we hide it much faster.
+        const delay = isInitialLoad.current ? 1000 : 200;
         
-        setIsFadingOut(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            setIsFadingOut(false);
-        }, 500); // CSS transition duration
-    }, [isFadingOut]);
-
-    // Initial load effect
-    useEffect(() => {
         const timer = setTimeout(() => {
-            hideLoader();
-        }, 1000);
+            setIsFadingOut(true); // Start the fade-out animation
+            setTimeout(() => {
+                setIsLoading(false); // Remove the preloader from the DOM
+                setIsFadingOut(false);
+                if (isInitialLoad.current) {
+                    isInitialLoad.current = false; // After the first load, subsequent loads are faster.
+                }
+            }, 500); // This duration must match the CSS transition time
+        }, delay);
+        
         return () => clearTimeout(timer);
-    }, [hideLoader]);
+    }, [pathname]);
 
-    // Route change effect
+    // This effect is responsible for SHOWING the preloader.
+    // It adds a click listener to the whole document.
     useEffect(() => {
-        // When path changes, hide the loader if it's currently showing
-        if (isLoading && !isFadingOut) {
-            hideLoader();
-        }
-
         const handleAnchorClick = (event: MouseEvent) => {
             const target = event.target as HTMLElement;
             const anchor = target.closest('a');
@@ -45,16 +45,16 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
                 const isSamePageNav = targetUrl.pathname === pathname && targetUrl.search === window.location.search;
                 const opensInNewTab = anchor.target === '_blank';
 
+                // If it's an internal link for navigation, show the preloader.
                 if (!isExternal && !isSamePageNav && !opensInNewTab) {
                     setIsLoading(true);
-                    setIsFadingOut(false);
                 }
             }
         };
 
         document.addEventListener('click', handleAnchorClick);
         return () => document.removeEventListener('click', handleAnchorClick);
-    }, [pathname, isLoading, isFadingOut, hideLoader]);
+    }, [pathname]); // Re-add the listener if the path changes to get the correct current 'pathname'.
 
     const isAdminPage = pathname.startsWith('/admin');
 
