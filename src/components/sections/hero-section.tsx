@@ -19,10 +19,10 @@ export function HeroSection() {
         
         <div className="flex flex-col items-center space-y-4">
           <Image
-            src="/img/logo3.png"
+            src="/img/logo.png"
             alt="Sapphire Trails Logo"
-            width={200}
-            height={120}
+            width={150}
+            height={150}
             className="h-auto"
           />
           <h1 className="text-5xl font-headline font-bold tracking-tight text-white sm:text-6xl max-w-3xl">
