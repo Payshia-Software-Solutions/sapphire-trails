@@ -67,7 +67,7 @@ export default function ManageContentPage() {
 
   return (
     <div className="flex flex-col gap-6 h-full">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Content</h1>
             <p className="text-muted-foreground">Add or delete custom locations for the &quot;Explore Ratnapura&quot; page.</p>
@@ -101,7 +101,7 @@ export default function ManageContentPage() {
                   />
                   <div className="grid gap-1 text-sm flex-1">
                     <div className="font-medium text-lg">{location.title}</div>
-                    <div className="text-muted-foreground">Slug: {location.slug}</div>
+                    <div className="text-muted-foreground break-all">Slug: {location.slug}</div>
                   </div>
                   
                   <AlertDialog>

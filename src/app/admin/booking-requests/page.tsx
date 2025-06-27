@@ -156,7 +156,7 @@ export default function BookingRequestsPage() {
                         <TableRow key={booking.id}>
                             <TableCell>
                                 <div className="font-medium">{booking.name}</div>
-                                <div className="text-sm text-muted-foreground hidden md:block">{booking.email}</div>
+                                <div className="text-sm text-muted-foreground hidden md:block break-all">{booking.email}</div>
                             </TableCell>
                             <TableCell className="hidden md:table-cell">
                                 {booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}
@@ -188,41 +188,41 @@ export default function BookingRequestsPage() {
                             Request from {selectedBooking.name} on {format(new Date(selectedBooking.date), 'PPP')}.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Status</Label>
-                            <div className="col-span-3">
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-1">
+                            <Label className="text-muted-foreground">Status</Label>
+                            <div>
                                 <Badge variant={getStatusBadgeVariant(selectedBooking.status)} className="capitalize">
                                     {selectedBooking.status}
                                 </Badge>
                             </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Name</Label>
-                            <span className="col-span-3 font-medium">{selectedBooking.name}</span>
+                        <div className="space-y-1">
+                            <Label className="text-muted-foreground">Name</Label>
+                            <p className="font-medium">{selectedBooking.name}</p>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Email</Label>
-                            <span className="col-span-3">{selectedBooking.email}</span>
+                        <div className="space-y-1">
+                            <Label className="text-muted-foreground">Email</Label>
+                            <p className="break-all">{selectedBooking.email}</p>
                         </div>
                         {selectedBooking.phone && (
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label className="text-right text-muted-foreground">Phone</Label>
-                                <span className="col-span-3">{selectedBooking.phone}</span>
+                            <div className="space-y-1">
+                                <Label className="text-muted-foreground">Phone</Label>
+                                <p>{selectedBooking.phone}</p>
                             </div>
                         )}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Tour</Label>
-                            <span className="col-span-3">{selectedBooking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}</span>
+                        <div className="space-y-1">
+                            <Label className="text-muted-foreground">Tour</Label>
+                            <p>{selectedBooking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}</p>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Guests</Label>
-                            <span className="col-span-3">{selectedBooking.guests}</span>
+                         <div className="space-y-1">
+                            <Label className="text-muted-foreground">Guests</Label>
+                            <p>{selectedBooking.guests}</p>
                         </div>
                         {selectedBooking.message && (
-                            <div className="grid grid-cols-4 items-start gap-4">
-                                <Label className="text-right text-muted-foreground mt-1">Message</Label>
-                                <p className="col-span-3 text-sm italic">&quot;{selectedBooking.message}&quot;</p>
+                            <div className="space-y-1">
+                                <Label className="text-muted-foreground">Message</Label>
+                                <p className="text-sm italic">&quot;{selectedBooking.message}&quot;</p>
                             </div>
                         )}
                     </div>
