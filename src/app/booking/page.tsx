@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Header } from '@/components/layout/header';
@@ -49,7 +50,13 @@ export default function BookingPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1 flex flex-col">
-        <BookingContent />
+        <Suspense fallback={
+          <div className="flex-1 flex items-center justify-center">
+            <p>Loading...</p>
+          </div>
+        }>
+          <BookingContent />
+        </Suspense>
       </main>
       <Footer />
     </div>
