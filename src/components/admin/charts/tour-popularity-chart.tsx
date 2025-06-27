@@ -22,8 +22,8 @@ interface TourPopularityChartProps {
 
 export function TourPopularityChart({ data }: TourPopularityChartProps) {
   return (
-    <ChartContainer config={chartConfig} className="min-h-[150px] w-full">
-        <BarChart accessibilityLayer data={data} layout="vertical" margin={{ left: 10 }}>
+    <ChartContainer config={chartConfig} className="w-full h-full">
+        <BarChart accessibilityLayer data={data} layout="vertical" margin={{ left: 10, right: 30 }}>
             <CartesianGrid horizontal={false} />
             <YAxis
                 dataKey="name"
@@ -31,6 +31,7 @@ export function TourPopularityChart({ data }: TourPopularityChartProps) {
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
+                width={80}
             />
             <XAxis type="number" dataKey="bookings" hide />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />

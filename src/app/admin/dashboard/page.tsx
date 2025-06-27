@@ -7,6 +7,7 @@ import { mockBookings, type Booking } from '@/lib/bookings-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { subDays, format, parseISO } from 'date-fns';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import { BookingVolumeChart } from '@/components/admin/charts/booking-volume-chart';
 import { BookingStatusChart } from '@/components/admin/charts/booking-status-chart';
@@ -46,9 +47,9 @@ export default function DashboardPage() {
     }
   }, [router]);
   
-  const { bookingStats, volumeData, statusData, tourData } = useMemo(() => {
+  const { bookingStats, volumeData, statusData, tourData, recentBookings } = useMemo(() => {
     if (!bookings || bookings.length === 0) {
-        return { bookingStats: { pending: 0, accepted: 0, rejected: 0, total: 0 }, volumeData: [], statusData: [], tourData: [] };
+        return { bookingStats: { pending: 0, accepted: 0, rejected: 0, total: 0 }, volumeData: [], statusData: [], tourData: [], recentBookings: [] };
     }
 
     // 1. Booking Stats
@@ -88,7 +89,13 @@ export default function DashboardPage() {
       bookings: count,
     }));
 
-    return { bookingStats, volumeData, statusData, tourData };
+    // 5. Recent Bookings
+    const recentBookings = bookings
+      .sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime())
+      .slice(0, 5);
+
+
+    return { bookingStats, volumeData, statusData, tourData, recentBookings };
   }, [bookings]);
 
 
@@ -160,14 +167,34 @@ export default function DashboardPage() {
             </Card>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-1">
+        <div className="grid gap-6 md:grid-cols-2">
              <Card>
                 <CardHeader>
                     <CardTitle>Tour Popularity</CardTitle>
                     <CardDescription>All-time booking counts per tour package.</CardDescription>
                 </CardHeader>
-                <CardContent className="pl-2">
+                <CardContent className="pl-2 h-[250px]">
                     <TourPopularityChart data={tourData} />
+                </CardContent>
+            </Card>
+            <Card>
+                 <CardHeader>
+                    <CardTitle>Recent Bookings</CardTitle>
+                    <CardDescription>The five most recent booking requests.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     {recentBookings.map((booking) => (
+                        <div key={booking.id} className="flex items-center gap-4">
+                            <Avatar className="h-9 w-9">
+                                <AvatarImage src={`https://placehold.co/100x100.png`} alt="Avatar" data-ai-hint="person portrait" />
+                                <AvatarFallback>{booking.name.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="grid gap-1">
+                                <p className="text-sm font-medium leading-none break-all">{booking.name}</p>
+                                <p className="text-sm text-muted-foreground break-all">{booking.email}</p>
+                            </div>
+                        </div>
+                    ))}
                 </CardContent>
             </Card>
         </div>
