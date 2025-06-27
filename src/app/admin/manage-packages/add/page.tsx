@@ -39,6 +39,9 @@ export default function AddPackagePage() {
       price: '',
       priceSuffix: 'per person',
       bookingLink: '/booking',
+      titleLine1: '',
+      titleLine2: '',
+      titleLine3: '',
     },
   });
 
