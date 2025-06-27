@@ -1,9 +1,11 @@
+
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { cmsFormSchema } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
@@ -43,7 +45,9 @@ type CmsFormValues = z.infer<typeof cmsFormSchema>;
 
 export default function CmsPage() {
   const { toast } = useToast();
-  
+  const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
+  const [discoverImagePreviews, setDiscoverImagePreviews] = useState<(string | null)[]>([null, null, null]);
+
   const form = useForm<CmsFormValues>({
     resolver: zodResolver(cmsFormSchema),
     defaultValues: defaultValues,
@@ -55,11 +59,38 @@ export default function CmsPage() {
       if (storedDataRaw) {
         const storedData = JSON.parse(storedDataRaw);
         form.reset(storedData);
+        if (storedData.hero?.imageUrl) {
+          setHeroImagePreview(storedData.hero.imageUrl);
+        }
+        if (storedData.discover?.images) {
+          setDiscoverImagePreviews(storedData.discover.images.map((img: { src: string }) => img.src || null));
+        }
+      } else {
+        // Set initial previews from defaults if no stored data
+        setHeroImagePreview(defaultValues.hero.imageUrl);
+        setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
       }
     } catch (error) {
       console.error("Failed to load CMS data from localStorage", error);
     }
   }, [form]);
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    onChange: (value: string) => void,
+    setPreview: (value: string | null) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        onChange(dataUrl);
+        setPreview(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   function onSubmit(data: CmsFormValues) {
     try {
@@ -96,7 +127,32 @@ export default function CmsPage() {
             <CardContent className="space-y-4">
               <FormField control={form.control} name="hero.headline" render={({ field }) => (<FormItem><FormLabel>Headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name="hero.subheadline" render={({ field }) => (<FormItem><FormLabel>Sub-headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="hero.imageUrl" render={({ field }) => (<FormItem><FormLabel>Background Image URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              
+              <FormField
+                control={form.control}
+                name="hero.imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Background Image</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, field.onChange, setHeroImagePreview)}
+                        className="text-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {heroImagePreview && (
+                <div className="mt-2">
+                  <FormLabel>Preview</FormLabel>
+                  <Image src={heroImagePreview} alt="Hero image preview" width={200} height={100} className="rounded-md object-cover mt-2 border" />
+                </div>
+              )}
+
               <div className="grid md:grid-cols-2 gap-4">
                 <FormField control={form.control} name="hero.imageAlt" render={({ field }) => (<FormItem><FormLabel>Image Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="hero.imageHint" render={({ field }) => (<FormItem><FormLabel>Image AI Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -116,7 +172,34 @@ export default function CmsPage() {
               {defaultValues.discover.images.map((_, index) => (
                 <div key={index} className="space-y-4 p-4 border rounded-md">
                   <p className="font-medium text-sm text-muted-foreground">Image {index + 1}</p>
-                  <FormField control={form.control} name={`discover.images.${index}.src`} render={({ field }) => (<FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                   <FormField
+                    control={form.control}
+                    name={`discover.images.${index}.src`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Upload Image</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e, field.onChange, (preview) => {
+                              const newPreviews = [...discoverImagePreviews];
+                              newPreviews[index] = preview;
+                              setDiscoverImagePreviews(newPreviews);
+                            })}
+                            className="text-sm"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {discoverImagePreviews[index] && (
+                    <div className="mt-2">
+                        <FormLabel>Preview</FormLabel>
+                        <Image src={discoverImagePreviews[index]!} alt={`Discover image ${index + 1} preview`} width={200} height={100} className="rounded-md object-cover mt-2 border" />
+                    </div>
+                  )}
                   <div className="grid md:grid-cols-2 gap-4">
                     <FormField control={form.control} name={`discover.images.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name={`discover.images.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />

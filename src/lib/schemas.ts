@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const contactFormSchema = z.object({
@@ -34,24 +35,24 @@ export const locationFormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters."),
   slug: z.string().min(3, "Slug is required and must be unique (e.g., location-name).").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens."),
   cardDescription: z.string().min(10, "Card description must be at least 10 characters."),
-  cardImage: z.string().url("Please enter a valid URL."),
+  cardImage: z.string().min(1, "An image is required."),
   imageHint: z.string().min(2, "Image hint is required."),
   distance: z.string().min(2, "Distance is required."),
 
   // Hero
   subtitle: z.string().min(3, "Subtitle is required."),
-  heroImage: z.string().url("Please enter a valid URL for the hero image."),
+  heroImage: z.string().min(1, "An image is required."),
   heroImageHint: z.string().min(2, "Hero image hint is required."),
 
   // Intro
   introTitle: z.string().min(3, "Intro title is required."),
   introDescription: z.string().min(10, "Intro description is required."),
-  introImageUrl: z.string().url("Please enter a valid URL for the intro image."),
+  introImageUrl: z.string().min(1, "An image is required."),
   introImageHint: z.string().min(2, "Intro image hint is required."),
   
   // Gallery (4 images)
   galleryImages: z.array(z.object({
-    src: z.string().url("Please enter a valid URL."),
+    src: z.string().min(1, "An image is required."),
     alt: z.string().min(3, "Alt text is required."),
     hint: z.string().min(2, "Hint is required."),
   })).length(4, "Please provide exactly 4 gallery images."),
@@ -80,6 +81,7 @@ export const locationFormSchema = z.object({
   })).length(3, "Please provide exactly 3 nearby attractions."),
 });
 
+
 // Admin Schemas
 export const adminCreationSchema = z.object({
   username: z.string().min(3, { message: 'Username must be at least 3 characters.' }),
@@ -107,18 +109,18 @@ export const packageFeatureSchema = z.object({
 
 export const packageFormSchema = z.object({
   id: z.string().min(3, "ID is required and must be unique.").regex(/^[a-z0-9-]+$/, "ID can only contain lowercase letters, numbers, and hyphens."),
-  imageUrl: z.string().min(1, "An image is required.").optional().or(z.literal('')),
-  imageAlt: z.string().min(3, "Image alt text is required.").optional().or(z.literal('')),
-  imageHint: z.string().min(2, "Image hint is required.").optional().or(z.literal('')),
-  titleLine1: z.string().optional(),
-  titleLine2: z.string().optional(),
-  titleLine3: z.string().optional(),
-  title: z.string().min(3, "Title is required for homepage card.").optional().or(z.literal('')),
-  description: z.string().min(10, "Description is required for homepage card.").optional().or(z.literal('')),
+  imageUrl: z.string().min(1, "An image is required."),
+  imageAlt: z.string().min(3, "Image alt text is required."),
+  imageHint: z.string().min(2, "Image hint is required."),
+  titleLine1: z.string().optional().or(z.literal('')),
+  titleLine2: z.string().optional().or(z.literal('')),
+  titleLine3: z.string().optional().or(z.literal('')),
+  title: z.string().min(3, "Title is required for homepage card."),
+  description: z.string().min(10, "Description is required for homepage card."),
   features: z.array(packageFeatureSchema).min(1, "At least one feature is required."),
-  price: z.string().min(1, "Price is required.").optional().or(z.literal('')),
-  priceSuffix: z.string().min(3, "Price suffix is required (e.g., per person).").optional().or(z.literal('')),
-  bookingLink: z.string().min(1, "Booking link is required.").startsWith("/", { message: "Booking link must be a relative path starting with '/'." }).optional().or(z.literal('')),
+  price: z.string().min(1, "Price is required."),
+  priceSuffix: z.string().min(3, "Price suffix is required (e.g., per person)."),
+  bookingLink: z.string().min(1, "Booking link is required.").startsWith("/", { message: "Booking link must be a relative path starting with '/'." }),
 });
 
 // CMS Schema
@@ -126,14 +128,14 @@ export const cmsFormSchema = z.object({
   hero: z.object({
     headline: z.string().min(1, "Headline is required."),
     subheadline: z.string().min(1, "Sub-headline is required."),
-    imageUrl: z.string().url("Please enter a valid URL."),
+    imageUrl: z.string().min(1, "An image is required."),
     imageAlt: z.string().min(1, "Image alt text is required."),
     imageHint: z.string().min(1, "Image hint is required."),
   }),
   discover: z.object({
     description: z.string().min(1, "Description is required."),
     images: z.array(z.object({
-      src: z.string().url("Image URL is required."),
+      src: z.string().min(1, "An image is required."),
       alt: z.string().min(1, "Alt text is required."),
       hint: z.string().min(1, "Image hint is required."),
     })).length(3, "You must provide exactly 3 images."),
