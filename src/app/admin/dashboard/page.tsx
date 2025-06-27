@@ -11,14 +11,17 @@ import { Users, Clock, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
+const ADMIN_SESSION_KEY = 'adminUser';
+
+
 export default function DashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const authStatus = sessionStorage.getItem('isAdminAuthenticated');
-    if (authStatus !== 'true') {
+    const adminUser = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    if (!adminUser) {
       router.push('/admin/login');
     } else {
       setIsAuthenticated(true);

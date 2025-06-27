@@ -3,22 +3,54 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { CalendarCheck, LogOut, Settings, Users } from 'lucide-react';
+import { CalendarCheck, LogOut, Settings, Users, type LucideIcon } from 'lucide-react';
+import type { AdminUser } from '@/lib/schemas';
 
-export const navLinks = [
+export interface NavLink {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+export const navLinks: NavLink[] = [
+  { href: '/admin/dashboard', label: 'Dashboard', icon: Users },
   { href: '/admin/booking-requests', label: 'Booking Requests', icon: CalendarCheck },
   { href: '/admin/manage-content', label: 'Manage Content', icon: Settings },
   { href: '/admin/user-management', label: 'User Management', icon: Users },
 ];
 
+const ADMIN_SESSION_KEY = 'adminUser';
+
 export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [visibleNavLinks, setVisibleNavLinks] = useState<NavLink[]>([]);
+
+  useEffect(() => {
+    const adminUserRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    if (adminUserRaw) {
+      const adminUser: AdminUser = JSON.parse(adminUserRaw);
+      // 'superadmin' sees all links
+      if (adminUser.role === 'superadmin') {
+        setVisibleNavLinks(navLinks);
+      } 
+      // 'admin' sees only booking requests and dashboard
+      else if (adminUser.role === 'admin') {
+        const adminLinks = navLinks.filter(
+          link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard'
+        );
+        setVisibleNavLinks(adminLinks);
+      }
+    } else {
+        router.push('/admin/login');
+    }
+  }, [pathname, router]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem('isAdminAuthenticated');
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
     router.push('/admin/login');
   };
 
@@ -26,13 +58,13 @@ export function AdminSidebar() {
     <aside className="hidden border-r bg-background md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-[60px] items-center border-b px-4 lg:px-6">
-          <Link href="/admin/booking-requests" className="flex items-center gap-2 font-semibold">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 font-semibold">
             <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
           </Link>
         </div>
         <div className="flex-1">
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-            {navLinks.map((link) => (
+            {visibleNavLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

@@ -21,6 +21,8 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
+const ADMIN_SESSION_KEY = 'adminUser';
+
 export default function ManageContentPage() {
   const { toast } = useToast();
   const [customLocations, setCustomLocations] = useState<Location[]>([]);

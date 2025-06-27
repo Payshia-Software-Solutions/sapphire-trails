@@ -79,3 +79,13 @@ export const locationFormSchema = z.object({
       distance: z.string().min(2, "Distance is required."),
   })).length(3, "Please provide exactly 3 nearby attractions."),
 });
+
+
+// Admin Schemas
+export const adminCreationSchema = z.object({
+  username: z.string().min(3, { message: 'Username must be at least 3 characters.' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  role: z.enum(['admin', 'superadmin'], { required_error: 'A role must be selected.' }),
+});
+
+export type AdminUser = z.infer<typeof adminCreationSchema>;

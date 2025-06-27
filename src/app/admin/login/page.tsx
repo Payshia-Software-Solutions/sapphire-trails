@@ -1,26 +1,64 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
+import type { AdminUser } from '@/lib/schemas';
+import { useToast } from '@/hooks/use-toast';
+
+const ADMIN_USERS_KEY = 'sapphire-admins';
+const ADMIN_SESSION_KEY = 'adminUser';
+
+const defaultSuperAdmin: AdminUser = {
+  username: 'admin',
+  password: 'admin123',
+  role: 'superadmin'
+};
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Seed the first super admin if no admins exist
+    try {
+      const storedAdmins = localStorage.getItem(ADMIN_USERS_KEY);
+      if (!storedAdmins) {
+        localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify([defaultSuperAdmin]));
+      }
+    } catch (error) {
+        console.error("Failed to seed admin user", error);
+    }
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'admin' && password === 'admin123') {
-      sessionStorage.setItem('isAdminAuthenticated', 'true');
-      router.push('/admin/booking-requests');
-    } else {
-      setError('Invalid username or password');
+    try {
+        const storedAdminsRaw = localStorage.getItem(ADMIN_USERS_KEY);
+        const storedAdmins: AdminUser[] = storedAdminsRaw ? JSON.parse(storedAdminsRaw) : [];
+        
+        const foundAdmin = storedAdmins.find(admin => admin.username === username && admin.password === password);
+
+        if (foundAdmin) {
+            sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(foundAdmin));
+            toast({
+                title: "Login Successful",
+                description: `Welcome back, ${foundAdmin.username}!`,
+            });
+            router.push('/admin/dashboard');
+        } else {
+            setError('Invalid username or password');
+        }
+    } catch (error) {
+        console.error("Login failed", error);
+        setError('An unexpected error occurred. Please try again.');
     }
   };
 

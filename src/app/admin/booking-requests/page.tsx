@@ -29,6 +29,8 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 
+const ADMIN_SESSION_KEY = 'adminUser';
+
 export default function BookingRequestsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -36,8 +38,8 @@ export default function BookingRequestsPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const authStatus = sessionStorage.getItem('isAdminAuthenticated');
-    if (authStatus !== 'true') {
+    const adminUser = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    if (!adminUser) {
       router.push('/admin/login');
     } else {
       setIsAuthenticated(true);
@@ -227,7 +229,7 @@ export default function BookingRequestsPage() {
                     <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-2">
                         <Button variant="outline" onClick={() => setSelectedBooking(null)}>Close</Button>
                         <Button asChild>
-                            <Link href={`/admin/booking-requests/${selectedBooking.id}`}>Edit Booking</Link>
+                            <Link href={`/admin/booking-requests/${encodeURIComponent(selectedBooking.id)}`}>Edit Booking</Link>
                         </Button>
                     </DialogFooter>
                 </>

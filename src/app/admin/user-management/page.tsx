@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -11,7 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Plus, ShieldCheck, UserCog } from 'lucide-react';
+import type { AdminUser } from '@/lib/schemas';
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 interface User {
   id: string;
@@ -20,40 +24,109 @@ interface User {
 }
 
 const ALL_USERS_KEY = 'sapphire-all-users';
+const ADMIN_USERS_KEY = 'sapphire-admins';
 
 export default function UserManagementPage() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [clientUsers, setClientUsers] = useState<User[]>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
 
   useEffect(() => {
+    // Load client users
     try {
       const storedUsersRaw = localStorage.getItem(ALL_USERS_KEY);
       if (storedUsersRaw) {
         const storedUsers = JSON.parse(storedUsersRaw);
         if (Array.isArray(storedUsers)) {
-          setUsers(storedUsers);
+          setClientUsers(storedUsers);
         }
       }
     } catch (error) {
-      console.error('Failed to load users from localStorage', error);
+      console.error('Failed to load client users from localStorage', error);
+    }
+    
+    // Load admin users
+    try {
+        const storedAdminsRaw = localStorage.getItem(ADMIN_USERS_KEY);
+        if (storedAdminsRaw) {
+            const storedAdmins = JSON.parse(storedAdminsRaw);
+            if (Array.isArray(storedAdmins)) {
+                setAdminUsers(storedAdmins);
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load admin users from localStorage', error);
     }
   }, []);
 
   return (
-    <div className="flex flex-col gap-6 h-full">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-primary">User Management</h1>
-        <p className="text-muted-foreground">View and manage all registered client accounts.</p>
+    <div className="flex flex-col gap-8 h-full">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold tracking-tight text-primary">User Management</h1>
+            <p className="text-muted-foreground">View client accounts and manage administrator roles.</p>
+        </div>
       </div>
+      
+      {/* Admin Users Card */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Admin Accounts</CardTitle>
+            <CardDescription>
+              Manage users with access to this admin dashboard.
+            </CardDescription>
+          </div>
+          <Button asChild>
+            <Link href="/admin/user-management/create-admin">
+              <Plus className="mr-2 h-4 w-4" />
+              Create Admin
+            </Link>
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {adminUsers.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Username</TableHead>
+                  <TableHead>Role</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {adminUsers.map((user) => (
+                  <TableRow key={user.username}>
+                    <TableCell className="font-medium">{user.username}</TableCell>
+                    <TableCell>
+                      <Badge variant={user.role === 'superadmin' ? 'default' : 'secondary'} className="capitalize">
+                         {user.role === 'superadmin' && <ShieldCheck className="mr-1 h-3.5 w-3.5" />}
+                         {user.role === 'admin' && <UserCog className="mr-1 h-3.5 w-3.5" />}
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+             <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+              <AlertTriangle className="h-12 w-12 text-muted-foreground/50" />
+              <p>No admin users found. A default superadmin is created on first login.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
+
+      {/* Client Users Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Registered Users</CardTitle>
+          <CardTitle>Registered Client Users</CardTitle>
           <CardDescription>
             This is a list of all users who have signed up through the client-facing website.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {users.length > 0 ? (
+          {clientUsers.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -63,7 +136,7 @@ export default function UserManagementPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => (
+                {clientUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="hidden sm:table-cell font-mono text-xs">{user.id}</TableCell>
                     <TableCell className="font-medium">{user.name}</TableCell>
@@ -75,7 +148,7 @@ export default function UserManagementPage() {
           ) : (
             <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
               <AlertTriangle className="h-12 w-12 text-muted-foreground/50" />
-              <p>No users have signed up yet.</p>
+              <p>No client users have signed up yet.</p>
             </div>
           )}
         </CardContent>

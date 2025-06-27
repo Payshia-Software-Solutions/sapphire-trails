@@ -4,12 +4,16 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
+import type { NavLink } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/shared/theme-provider';
 import { ThemeToggle } from '@/components/shared/theme-toggle';
+import type { AdminUser } from '@/lib/schemas';
+
+const ADMIN_SESSION_KEY = 'adminUser';
 
 export default function AdminLayout({
   children,
@@ -20,6 +24,7 @@ export default function AdminLayout({
   const router = useRouter();
   const isLoginPage = pathname === '/admin/login';
   const [isLoading, setIsLoading] = useState(false);
+  const [mobileNavLinks, setMobileNavLinks] = useState<NavLink[]>([]);
   const isMounted = useRef(false);
 
   useEffect(() => {
@@ -32,9 +37,21 @@ export default function AdminLayout({
     }
   }, [pathname]);
 
+   useEffect(() => {
+    const adminUserRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    if (adminUserRaw) {
+      const adminUser: AdminUser = JSON.parse(adminUserRaw);
+      if (adminUser.role === 'admin') {
+        setMobileNavLinks(navLinks.filter(link => link.href === '/admin/booking-requests'));
+      } else {
+        setMobileNavLinks(navLinks);
+      }
+    }
+  }, [pathname]);
+
 
   const handleLogout = () => {
-    sessionStorage.removeItem('isAdminAuthenticated');
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
     router.push('/admin/login');
   };
 
@@ -68,7 +85,7 @@ export default function AdminLayout({
                             >
                                 <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
                             </Link>
-                            {navLinks.map((link) => (
+                            {mobileNavLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
