@@ -1,12 +1,12 @@
-
 'use client';
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Home, CalendarCheck, Settings, Users, type LucideIcon, LayoutGrid } from 'lucide-react';
+import { Home, CalendarCheck, Settings, Users, type LucideIcon, LayoutGrid, LogOut } from 'lucide-react';
 import type { AdminUser } from '@/lib/schemas';
+import { Button } from '@/components/ui/button';
 
 export interface NavLink {
   href: string;
@@ -47,6 +47,11 @@ export function AdminSidebar() {
         router.push('/admin/login');
     }
   }, [pathname, router]);
+  
+  const handleLogout = () => {
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    router.push('/admin/login');
+  };
 
   return (
     <aside className="hidden border-r bg-background md:block">
@@ -74,7 +79,10 @@ export function AdminSidebar() {
           </nav>
         </div>
         <div className="mt-auto p-4">
-            {/* Logout button removed and moved to header dropdown */}
+            <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+            </Button>
         </div>
       </div>
     </aside>
