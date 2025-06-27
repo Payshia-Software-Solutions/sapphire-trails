@@ -85,7 +85,7 @@ export function DiscoverSection() {
                           data-ai-hint={image.hint}
                           width={600}
                           height={400}
-                          className="rounded-2xl object-cover w-full h-auto"
+                          className="rounded-2xl object-cover w-full h-60"
                         />
                       </div>
                     ))}
