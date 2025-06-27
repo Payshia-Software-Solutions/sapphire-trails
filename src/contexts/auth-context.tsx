@@ -10,11 +10,12 @@ interface User {
   id: string;
   name: string;
   email: string;
+  phone?: string;
 }
 
 // A mock user database
 const initialMockUsers: User[] = [
-  { id: '1', name: 'Test User', email: 'user@test.com' },
+  { id: '1', name: 'Test User', email: 'user@test.com', phone: '123-456-7890' },
 ];
 const MOCK_PASSWORD = 'password123';
 const USER_SESSION_KEY = 'sapphire-user';
@@ -25,7 +26,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, pass: string) => Promise<boolean>;
-  signup: (name: string, email: string, pass: string) => Promise<boolean>;
+  signup: (name: string, email: string, phone: string | undefined, pass: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -79,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const signup = async (name: string, email: string, pass: string): Promise<boolean> => {
+  const signup = async (name: string, email: string, phone: string | undefined, pass: string): Promise<boolean> => {
      setIsLoading(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -93,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return false;
     }
 
-    const newUser: User = { id: String(allUsers.length + 1), name, email };
+    const newUser: User = { id: String(allUsers.length + 1), name, email, phone };
     const updatedUsers = [...allUsers, newUser];
     localStorage.setItem(ALL_USERS_KEY, JSON.stringify(updatedUsers));
     

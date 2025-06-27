@@ -31,7 +31,7 @@ export function AuthForm() {
 
   const signupForm = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { name: '', email: '', password: '' },
+    defaultValues: { name: '', email: '', phone: '', password: '' },
   });
 
   const onLoginSubmit = async (data: z.infer<typeof loginSchema>) => {
@@ -45,7 +45,7 @@ export function AuthForm() {
 
   const onSignupSubmit = async (data: z.infer<typeof signupSchema>) => {
     setIsLoading(true);
-    const success = await signup(data.name, data.email, data.password);
+    const success = await signup(data.name, data.email, data.phone, data.password);
     setIsLoading(false);
     if (success) {
       router.push(redirectUrl);
@@ -93,6 +93,7 @@ export function AuthForm() {
                   <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-4">
                     <FormField control={signupForm.control} name="name" render={({ field }) => ( <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Your Name" {...field} /></FormControl><FormMessage /></FormItem> )} />
                     <FormField control={signupForm.control} name="email" render={({ field }) => ( <FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem> )} />
+                    <FormField control={signupForm.control} name="phone" render={({ field }) => ( <FormItem><FormLabel>Phone Number (Optional)</FormLabel><FormControl><Input type="tel" placeholder="Your Phone Number" {...field} /></FormControl><FormMessage /></FormItem> )} />
                     <FormField control={signupForm.control} name="password" render={({ field }) => ( <FormItem><FormLabel>Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem> )} />
                      <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
