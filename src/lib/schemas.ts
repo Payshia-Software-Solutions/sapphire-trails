@@ -18,7 +18,7 @@ export const bookingFormSchema = z.object({
   phone: z.string().optional(),
   tourType: z.enum(['gem-explorer-day-tour', 'sapphire-trails-deluxe'], {
     required_error: "You need to select a tour type.",
-  }),
+  }).or(z.string()),
   guests: z.coerce.number().int().min(1, { message: "Please enter at least 1 guest." }),
   date: z.date({
     required_error: "A date for your tour is required.",
@@ -27,7 +27,7 @@ export const bookingFormSchema = z.object({
 });
 
 
-const iconEnum = z.enum(['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer']);
+const iconEnum = z.enum(['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer', 'MapPin', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble']);
 
 export const locationFormSchema = z.object({
   // Basic info
@@ -80,7 +80,6 @@ export const locationFormSchema = z.object({
   })).length(3, "Please provide exactly 3 nearby attractions."),
 });
 
-
 // Admin Schemas
 export const adminCreationSchema = z.object({
   username: z.string().min(3, { message: 'Username must be at least 3 characters.' }),
@@ -97,4 +96,27 @@ export const adminProfilePasswordSchema = z.object({
 }).refine(data => data.newPassword === data.confirmPassword, {
   message: "New passwords don't match",
   path: ["confirmPassword"],
+});
+
+
+// Tour Package Schema
+export const packageFeatureSchema = z.object({
+  icon: iconEnum,
+  text: z.string().min(3, "Feature text is required."),
+});
+
+export const packageFormSchema = z.object({
+  id: z.string().min(3, "ID is required and must be unique.").regex(/^[a-z0-9-]+$/, "ID can only contain lowercase letters, numbers, and hyphens."),
+  imageUrl: z.string().min(1, "An image is required."),
+  imageAlt: z.string().min(3, "Image alt text is required."),
+  imageHint: z.string().min(2, "Image hint is required."),
+  titleLine1: z.string().optional(),
+  titleLine2: z.string().optional(),
+  titleLine3: z.string().optional(),
+  title: z.string().min(3, "Title is required for homepage card."),
+  description: z.string().min(10, "Description is required for homepage card."),
+  features: z.array(packageFeatureSchema).min(1, "At least one feature is required."),
+  price: z.string().min(1, "Price is required."),
+  priceSuffix: z.string().min(3, "Price suffix is required (e.g., per person)."),
+  bookingLink: z.string().url("A valid booking link URL is required."),
 });

@@ -93,7 +93,7 @@ export function AuthForm() {
                   <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-4">
                     <FormField control={signupForm.control} name="name" render={({ field }) => ( <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Your Name" {...field} /></FormControl><FormMessage /></FormItem> )} />
                     <FormField control={signupForm.control} name="email" render={({ field }) => ( <FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                    <FormField control={signupForm.control} name="phone" render={({ field }) => ( <FormItem><FormLabel>Phone Number (Optional)</FormLabel><FormControl><Input type="tel" placeholder="Your Phone Number" {...field} /></FormControl><FormMessage /></FormItem> )} />
+                    <FormField control={signupForm.control} name="phone" render={({ field }) => ( <FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input type="tel" placeholder="Your Phone Number" {...field} /></FormControl><FormMessage /></FormItem> )} />
                     <FormField control={signupForm.control} name="password" render={({ field }) => ( <FormItem><FormLabel>Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem> )} />
                      <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}

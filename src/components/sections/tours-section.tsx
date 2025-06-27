@@ -6,42 +6,24 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import useEmblaCarousel from 'embla-carousel-react';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { initialTourPackages, type TourPackage } from '@/lib/packages-data';
 
-const tours = [
-  {
-    id: 'gem-explorer-day-tour',
-    title: 'Exclusive Sapphire Mine Tour with Hands-On Discovery',
-    description: "Dive deep into the world of gem mining with expert guides. Discover the secrets behind Sri Lanka's most precious sapphires and immerse yourself in authentic local traditions.",
-    imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
-    imageHint: 'tourists mining',
-    alt: 'A group of smiling tourists wearing hard hats on a sapphire mine tour.'
-  },
-  {
-    id: 'sapphire-trails-deluxe',
-    title: 'Tea Estate & Luxury Dining',
-    description: 'Savor the flavors of Sri Lanka with a private tour of a lush tea estate, followed by a curated gourmet dining experience in an elegant setting surrounded by nature.',
-    imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img5.webp',
-    imageHint: 'luxury gem logo',
-    alt: 'The logo for Sapphire Trails Deluxe tours.'
-  }
-];
-
-const TourCard = ({ tour }: { tour: typeof tours[0] }) => (
+const TourCard = ({ tour }: { tour: TourPackage }) => (
   <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
     <div className="relative h-64 w-full">
       <Image
         src={tour.imageUrl}
-        alt={tour.alt}
+        alt={tour.imageAlt}
         data-ai-hint={tour.imageHint}
         fill
         className="object-cover"
       />
     </div>
     <CardContent className="p-8 flex flex-col flex-grow">
-      <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.title}</h3>
-      <p className="text-muted-foreground mb-6 flex-grow">{tour.description}</p>
+      <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
+      <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
       <Button asChild className="w-fit bg-primary text-primary-foreground hover:bg-primary/90 mt-auto rounded-full px-6">
         <Link href={`/tours?selected=${tour.id}`}>More Info</Link>
       </Button>
@@ -52,6 +34,27 @@ const TourCard = ({ tour }: { tour: typeof tours[0] }) => (
 
 export function ToursSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [tours, setTours] = useState<TourPackage[]>(initialTourPackages);
+
+  useEffect(() => {
+    const storedPackagesRaw = localStorage.getItem('customPackages');
+    if (storedPackagesRaw) {
+        try {
+            const customPackages = JSON.parse(storedPackagesRaw) as TourPackage[];
+            if (Array.isArray(customPackages)) {
+                const combined = [...initialTourPackages, ...customPackages];
+                const unique: { [key: string]: TourPackage } = {};
+                for (const pkg of combined) {
+                    unique[pkg.id] = pkg;
+                }
+                setTours(Object.values(unique));
+            }
+        } catch (e) {
+            console.error("Failed to parse custom packages", e);
+            setTours(initialTourPackages);
+        }
+    }
+  }, []);
   
   const scrollPrev = React.useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev()
