@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ArrowLeft, ShieldCheck, UserCog } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -101,11 +103,11 @@ export default function AdminProfilePage() {
           </CardHeader>
           <CardContent className="space-y-4">
               <div className="space-y-1">
-                  <FormLabel>Username</FormLabel>
+                  <Label>Username</Label>
                   <p className="text-sm font-medium">{adminUser.username}</p>
               </div>
               <div className="space-y-1">
-                  <FormLabel>Role</FormLabel>
+                  <Label>Role</Label>
                   <div>
                     <Badge variant={adminUser.role === 'superadmin' ? 'default' : 'secondary'} className="capitalize">
                          {adminUser.role === 'superadmin' && <ShieldCheck className="mr-1 h-3.5 w-3.5" />}
