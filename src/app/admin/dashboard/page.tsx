@@ -152,7 +152,7 @@ export default function DashboardPage() {
                     <CardTitle>Booking Volume</CardTitle>
                     <CardDescription>Last 7 days</CardDescription>
                 </CardHeader>
-                <CardContent className="pl-2">
+                <CardContent>
                     <BookingVolumeChart data={volumeData} />
                 </CardContent>
             </Card>
@@ -173,7 +173,7 @@ export default function DashboardPage() {
                     <CardTitle>Tour Popularity</CardTitle>
                     <CardDescription>All-time booking counts per tour package.</CardDescription>
                 </CardHeader>
-                <CardContent className="pl-2 h-[250px]">
+                <CardContent className="h-[250px]">
                     <TourPopularityChart data={tourData} />
                 </CardContent>
             </Card>
