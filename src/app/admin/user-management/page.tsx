@@ -139,8 +139,8 @@ export default function UserManagementPage() {
                 {clientUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="hidden sm:table-cell font-mono text-xs">{user.id}</TableCell>
-                    <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
+                    <TableCell className="font-medium break-words">{user.name}</TableCell>
+                    <TableCell className="break-all">{user.email}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

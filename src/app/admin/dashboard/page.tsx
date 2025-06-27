@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -140,17 +141,19 @@ export default function DashboardPage() {
             {recentBookings.length > 0 ? (
                  <div className="grid gap-6">
                    {recentBookings.map((booking) => (
-                     <div key={booking.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                     <div key={booking.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 border rounded-lg">
                         <div className="grid gap-1 text-sm">
                           <div className="font-medium">{booking.name}</div>
-                          <div className="text-muted-foreground">{booking.email}</div>
+                          <div className="text-muted-foreground break-all">{booking.email}</div>
                         </div>
-                        <div className="ml-auto text-sm text-muted-foreground">
-                          {format(new Date(booking.date), 'PPP')}
+                        <div className="flex items-center gap-4 self-end sm:self-center">
+                            <div className="text-sm text-muted-foreground whitespace-nowrap">
+                              {format(new Date(booking.date), 'PPP')}
+                            </div>
+                            <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize shrink-0">
+                                {booking.status}
+                            </Badge>
                         </div>
-                        <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">
-                            {booking.status}
-                        </Badge>
                      </div>
                    ))}
                 </div>
