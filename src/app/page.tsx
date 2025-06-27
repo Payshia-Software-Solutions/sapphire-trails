@@ -13,8 +13,8 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <SubscriptionSection />
         <DiscoverSection />
+        <SubscriptionSection />
         <ToursSection />
         <ExploreRatnapuraSection />
         <BookingSection />
