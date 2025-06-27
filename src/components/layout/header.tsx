@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 const navLinks = [
   { href: '/about', label: 'About' },
@@ -46,19 +47,21 @@ export function Header() {
             <SheetContent side="right" className="w-full max-w-sm bg-background p-6">
               <div className="text-center mb-8">
                 <Link href="/" className="inline-block" onClick={() => setIsMenuOpen(false)}>
-                    <span className="font-serif text-xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
+                   <Image 
+                    src="/img/logo4.png"
+                    alt="Sapphire Trails Logo"
+                    width={100}
+                    height={60}
+                  />
                 </Link>
               </div>
 
-              <nav className="grid grid-cols-2 gap-x-4 gap-y-8 text-lg font-serif uppercase tracking-widest text-center">
-                {navLinks.map((link, index) => (
+              <nav className="flex flex-col items-center gap-y-6 text-lg font-serif uppercase tracking-widest">
+                {navLinks.map((link) => (
                   <Link 
                     key={link.href} 
                     href={link.href} 
-                    className={cn(
-                      "text-primary hover:text-primary/80 transition-colors",
-                      navLinks.length % 2 !== 0 && index === navLinks.length - 1 && "col-span-2"
-                    )}
+                    className="text-primary hover:text-primary/80 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.label}
