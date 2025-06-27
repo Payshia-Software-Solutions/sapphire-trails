@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -42,7 +43,10 @@ export default function AdminLayout({
     if (adminUserRaw) {
       const adminUser: AdminUser = JSON.parse(adminUserRaw);
       if (adminUser.role === 'admin') {
-        setMobileNavLinks(navLinks.filter(link => link.href === '/admin/booking-requests'));
+        const adminLinks = navLinks.filter(
+          link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard'
+        );
+        setMobileNavLinks(adminLinks);
       } else {
         setMobileNavLinks(navLinks);
       }
@@ -80,7 +84,7 @@ export default function AdminLayout({
                         </SheetHeader>
                         <nav className="grid gap-2 text-lg font-medium">
                             <Link
-                                href="/admin/booking-requests"
+                                href="/admin/dashboard"
                                 className="flex items-center gap-2 text-lg font-semibold mb-4"
                             >
                                 <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>

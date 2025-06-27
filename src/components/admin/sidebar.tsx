@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { CalendarCheck, LogOut, Settings, Users, type LucideIcon } from 'lucide-react';
+import { Home, CalendarCheck, Settings, Users, type LucideIcon, LayoutGrid } from 'lucide-react';
 import type { AdminUser } from '@/lib/schemas';
 
 export interface NavLink {
@@ -16,7 +16,7 @@ export interface NavLink {
 }
 
 export const navLinks: NavLink[] = [
-  { href: '/admin/dashboard', label: 'Dashboard', icon: Users },
+  { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutGrid },
   { href: '/admin/booking-requests', label: 'Booking Requests', icon: CalendarCheck },
   { href: '/admin/manage-content', label: 'Manage Content', icon: Settings },
   { href: '/admin/user-management', label: 'User Management', icon: Users },
