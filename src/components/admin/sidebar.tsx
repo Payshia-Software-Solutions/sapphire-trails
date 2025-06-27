@@ -56,7 +56,7 @@ export function AdminSidebar() {
 
   return (
     <aside className="hidden border-r bg-background md:block">
-      <div className="flex h-full max-h-screen flex-col gap-2">
+      <div className="flex h-full flex-col gap-2">
         <div className="flex h-[60px] items-center border-b px-4 lg:px-6">
           <Link href="/admin/dashboard" className="flex items-center gap-2 font-semibold">
             <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
