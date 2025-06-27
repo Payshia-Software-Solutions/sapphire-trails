@@ -8,7 +8,11 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-const images = [
+const CMS_DATA_KEY = 'sapphire-cms-data';
+
+const defaultContent = {
+  description: "Embark on an exclusive journey through the heart of Sri Lanka's gem country. The Sapphire Trails offers an immersive experience into Ratnapura's rich heritage, from dazzling gem mines and lush tea estates to exquisite dining and vibrant local culture. Let us guide you on a luxurious adventure that unveils the true treasures of the island.",
+  images: [
     {
       src: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp',
       alt: 'A person sifting through gravel and dirt in a woven basket, searching for gems.',
@@ -24,11 +28,29 @@ const images = [
       alt: 'A vibrant collection of polished gemstones displayed in black trays.',
       hint: 'gemstones collection',
     },
-];
+  ]
+};
+
 
 export function DiscoverSection() {
+  const [content, setContent] = useState(defaultContent);
   const [activeIndex, setActiveIndex] = useState(0);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
+
+  useEffect(() => {
+    try {
+      const storedDataRaw = localStorage.getItem(CMS_DATA_KEY);
+      if (storedDataRaw) {
+        const storedData = JSON.parse(storedDataRaw);
+        if (storedData.discover) {
+          const images = storedData.discover.images?.length === 3 ? storedData.discover.images : defaultContent.images;
+          setContent({ ...defaultContent, ...storedData.discover, images });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load discover section CMS data", error);
+    }
+  }, []);
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev()
@@ -65,7 +87,7 @@ export function DiscoverSection() {
             Discover the Sapphire Trails
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Embark on an exclusive journey through the heart of Sri Lanka&apos;s gem country. The Sapphire Trails offers an immersive experience into Ratnapura&apos;s rich heritage, from dazzling gem mines and lush tea estates to exquisite dining and vibrant local culture. Let us guide you on a luxurious adventure that unveils the true treasures of the island.
+            {content.description}
           </p>
         </ScrollAnimate>
 
@@ -77,7 +99,7 @@ export function DiscoverSection() {
               <div className="relative">
                 <div className="overflow-hidden" ref={emblaRef}>
                   <div className="flex -ml-4">
-                    {images.map((image, index) => (
+                    {content.images.map((image, index) => (
                       <div className="flex-grow-0 flex-shrink-0 basis-4/5 min-w-0 pl-4" key={index}>
                         <Image
                           src={image.src}
@@ -102,16 +124,16 @@ export function DiscoverSection() {
 
             {/* Desktop View: Cover-flow effect */}
             <div className="relative h-[400px] w-full max-w-4xl mx-auto hidden md:block">
-                {images.map((image, index) => {
+                {content.images.map((image, index) => {
                     const rawOffset = index - activeIndex;
-                    const directedOffset = Math.abs(rawOffset) > images.length / 2 
-                        ? rawOffset - Math.sign(rawOffset) * images.length 
+                    const directedOffset = Math.abs(rawOffset) > content.images.length / 2 
+                        ? rawOffset - Math.sign(rawOffset) * content.images.length 
                         : rawOffset;
 
                     const isCenter = directedOffset === 0;
                     const translateX = directedOffset * 50;
                     const scale = isCenter ? 1 : 0.8;
-                    const zIndex = images.length - Math.abs(directedOffset);
+                    const zIndex = content.images.length - Math.abs(directedOffset);
                     const opacity = Math.abs(directedOffset) > 1 ? 0 : 1;
                     const filter = isCenter ? 'none' : 'brightness(0.7)';
                     
@@ -141,7 +163,7 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <div className="mt-12 flex justify-center gap-3">
-          {images.map((_, index) => (
+          {content.images.map((_, index) => (
             <button
               key={index}
               onClick={() => handleDotClick(index)}

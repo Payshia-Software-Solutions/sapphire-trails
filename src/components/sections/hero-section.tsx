@@ -3,14 +3,42 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+
+const CMS_DATA_KEY = 'sapphire-cms-data';
+
+const defaultContent = {
+  headline: "Sri Lanka's Only Luxury Gem Experience",
+  subheadline: "Experience luxury, culture, and adventure",
+  imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img35.webp",
+  imageAlt: "A dark and moody image of the inside of a gem mine, with rock walls and dim lighting.",
+  imageHint: "gem mine cave",
+};
+
 
 export function HeroSection() {
+  const [content, setContent] = useState(defaultContent);
+
+  useEffect(() => {
+    try {
+      const storedDataRaw = localStorage.getItem(CMS_DATA_KEY);
+      if (storedDataRaw) {
+        const storedData = JSON.parse(storedDataRaw);
+        if (storedData.hero) {
+          setContent({ ...defaultContent, ...storedData.hero });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load hero section CMS data", error);
+    }
+  }, []);
+
   return (
     <section className="relative h-screen w-full flex items-center justify-center">
       <Image
-        src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
-        alt="A dark and moody image of the inside of a gem mine, with rock walls and dim lighting."
-        data-ai-hint="gem mine cave"
+        src={content.imageUrl}
+        alt={content.imageAlt}
+        data-ai-hint={content.imageHint}
         fill
         className="z-0 object-cover"
       />
@@ -26,10 +54,10 @@ export function HeroSection() {
             className="h-auto"
           />
           <h1 className="text-5xl font-headline font-bold tracking-tight text-white max-w-3xl">
-            Sri Lanka&apos;s Only Luxury Gem Experience
+            {content.headline}
           </h1>
           <p className="text-lg text-white/90">
-            Experience luxury, culture, and adventure
+            {content.subheadline}
           </p>
         </div>
 
