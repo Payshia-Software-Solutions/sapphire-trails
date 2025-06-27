@@ -118,5 +118,5 @@ export const packageFormSchema = z.object({
   features: z.array(packageFeatureSchema).min(1, "At least one feature is required."),
   price: z.string().min(1, "Price is required."),
   priceSuffix: z.string().min(3, "Price suffix is required (e.g., per person)."),
-  bookingLink: z.string().url("A valid booking link URL is required."),
+  bookingLink: z.string().min(1, "Booking link is required.").startsWith("/", { message: "Booking link must be a relative path starting with '/'." }),
 });
