@@ -4,9 +4,8 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Home, CalendarCheck, Settings, Users, type LucideIcon, LayoutGrid, LogOut } from 'lucide-react';
+import { Home, CalendarCheck, Settings, Users, type LucideIcon, LayoutGrid } from 'lucide-react';
 import type { AdminUser } from '@/lib/schemas';
 
 export interface NavLink {
@@ -49,11 +48,6 @@ export function AdminSidebar() {
     }
   }, [pathname, router]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    router.push('/admin/login');
-  };
-
   return (
     <aside className="hidden border-r bg-background md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
@@ -80,10 +74,7 @@ export function AdminSidebar() {
           </nav>
         </div>
         <div className="mt-auto p-4">
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
+            {/* Logout button removed and moved to header dropdown */}
         </div>
       </div>
     </aside>

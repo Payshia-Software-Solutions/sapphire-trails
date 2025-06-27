@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -8,11 +7,21 @@ import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
 import type { NavLink } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LogOut } from 'lucide-react';
+import { Menu, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/shared/theme-provider';
 import { ThemeToggle } from '@/components/shared/theme-toggle';
 import type { AdminUser } from '@/lib/schemas';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 const ADMIN_SESSION_KEY = 'adminUser';
 
@@ -25,7 +34,7 @@ export default function AdminLayout({
   const router = useRouter();
   const isLoginPage = pathname === '/admin/login';
   const [isLoading, setIsLoading] = useState(false);
-  const [mobileNavLinks, setMobileNavLinks] = useState<NavLink[]>([]);
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const isMounted = useRef(false);
 
   useEffect(() => {
@@ -41,15 +50,7 @@ export default function AdminLayout({
    useEffect(() => {
     const adminUserRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
     if (adminUserRaw) {
-      const adminUser: AdminUser = JSON.parse(adminUserRaw);
-      if (adminUser.role === 'admin') {
-        const adminLinks = navLinks.filter(
-          link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard'
-        );
-        setMobileNavLinks(adminLinks);
-      } else {
-        setMobileNavLinks(navLinks);
-      }
+      setAdminUser(JSON.parse(adminUserRaw));
     }
   }, [pathname]);
 
@@ -58,6 +59,14 @@ export default function AdminLayout({
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
     router.push('/admin/login');
   };
+  
+  const getVisibleNavLinks = (role: 'admin' | 'superadmin' | undefined): NavLink[] => {
+    if (!role) return [];
+    if (role === 'superadmin') {
+      return navLinks;
+    }
+    return navLinks.filter(link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard');
+  }
 
   const layout = (
       isLoginPage ? (
@@ -89,7 +98,7 @@ export default function AdminLayout({
                             >
                                 <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
                             </Link>
-                            {mobileNavLinks.map((link) => (
+                            {getVisibleNavLinks(adminUser?.role).map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
@@ -103,19 +112,55 @@ export default function AdminLayout({
                             </Link>
                             ))}
                         </nav>
-                        <div className="mt-auto flex items-center justify-between">
-                            <Button variant="ghost" className="justify-start text-muted-foreground" onClick={handleLogout}>
+                        <div className="mt-auto flex flex-col gap-2">
+                            <div className="flex items-center justify-between">
+                                <ThemeToggle />
+                                {adminUser && (
+                                    <span className='text-sm text-muted-foreground'>Hi, {adminUser.username}</span>
+                                )}
+                            </div>
+                            <Button asChild variant="outline">
+                                <Link href="/admin/profile">
+                                    <User className="mr-2 h-4 w-4" /> Profile
+                                </Link>
+                            </Button>
+                            <Button variant="ghost" className="justify-center" onClick={handleLogout}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Logout
                             </Button>
-                            <ThemeToggle />
                         </div>
                     </SheetContent>
                 </Sheet>
                 <div className="w-full flex-1">
                     {/* Can add search or breadcrumbs here */}
                 </div>
-                <ThemeToggle />
+                 <div className="flex items-center gap-4">
+                  <ThemeToggle />
+                   {adminUser && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="secondary" size="icon" className="rounded-full">
+                          <Avatar>
+                            <AvatarImage src={`https://placehold.co/100x100.png?text=${adminUser.username.charAt(0).toUpperCase()}`} />
+                            <AvatarFallback>{adminUser.username.charAt(0).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <span className="sr-only">Toggle user menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Hi, {adminUser.username}!</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                           <Link href="/admin/profile">Profile</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                          Logout
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                 </div>
             </header>
             <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-y-auto">
               {children}
