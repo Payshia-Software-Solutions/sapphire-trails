@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { mockBookings, type Booking } from '@/lib/bookings-data';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
@@ -30,10 +30,12 @@ import {
 import { Label } from '@/components/ui/label';
 
 const ADMIN_SESSION_KEY = 'adminUser';
+const ITEMS_PER_PAGE = 4;
 
 export default function BookingRequestsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -63,7 +65,7 @@ export default function BookingRequestsPage() {
       }
     }
   }, [router]);
-
+  
   const bookingStats = useMemo(() => {
     if (!bookings) return { pending: 0, accepted: 0, rejected: 0, total: 0 };
     const pending = bookings.filter((b) => b.status === 'pending').length;
@@ -72,6 +74,13 @@ export default function BookingRequestsPage() {
     const total = bookings.length;
     return { pending, accepted, rejected, total };
   }, [bookings]);
+
+  const { paginatedBookings, totalPages } = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginated = bookings.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const total = Math.ceil(bookings.length / ITEMS_PER_PAGE);
+    return { paginatedBookings: paginated, totalPages: total };
+  }, [bookings, currentPage]);
   
   const getStatusBadgeVariant = (status: Booking['status']) => {
     switch (status) {
@@ -152,13 +161,13 @@ export default function BookingRequestsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                    {bookings.map((booking) => (
+                    {paginatedBookings.map((booking) => (
                         <TableRow key={booking.id}>
                             <TableCell>
                                 <div className="font-medium break-words">{booking.name}</div>
                                 <div className="text-sm text-muted-foreground hidden md:block break-all">{booking.email}</div>
                             </TableCell>
-                            <TableCell className="hidden md:table-cell">
+                            <TableCell className="hidden md:table-cell break-all">
                                 {booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}
                             </TableCell>
                             <TableCell>{format(new Date(booking.date), 'PPP')}</TableCell>
@@ -176,6 +185,29 @@ export default function BookingRequestsPage() {
                     </TableBody>
                 </Table>
             </CardContent>
+             <CardFooter className="flex items-center justify-between border-t pt-6">
+                <div className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages || 1}
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    >
+                    Previous
+                    </Button>
+                    <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage >= totalPages}
+                    >
+                    Next
+                    </Button>
+                </div>
+            </CardFooter>
         </Card>
 
         <Dialog open={!!selectedBooking} onOpenChange={(isOpen) => !isOpen && setSelectedBooking(null)}>
