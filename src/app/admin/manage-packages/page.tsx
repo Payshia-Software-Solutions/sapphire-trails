@@ -63,7 +63,7 @@ export default function ManagePackagesPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Tour Packages</h1>

@@ -99,7 +99,7 @@ export default function BookingRequestsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6">
         <div className='flex flex-col gap-2'>
             <h1 className="text-3xl font-bold tracking-tight text-primary">Booking Requests</h1>
             <p className="text-muted-foreground">Manage all incoming tour booking requests from this panel.</p>
