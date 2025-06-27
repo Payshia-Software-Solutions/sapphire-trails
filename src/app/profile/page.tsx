@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { Header } from '@/components/layout/header';
@@ -10,19 +10,46 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { mockBookings } from '@/lib/bookings-data';
+import { mockBookings, type Booking } from '@/lib/bookings-data';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 
 export default function ProfilePage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
+  const [userBookings, setUserBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.push('/auth');
     }
   }, [user, isLoading, router]);
+  
+  useEffect(() => {
+    if (user) {
+      const storedBookingsRaw = localStorage.getItem('bookings');
+      let allBookings: Booking[] = [];
+
+      if (storedBookingsRaw) {
+        try {
+          const parsed = JSON.parse(storedBookingsRaw);
+           if (Array.isArray(parsed)) {
+            allBookings = parsed;
+          } else {
+            allBookings = mockBookings;
+          }
+        } catch (e) {
+            allBookings = mockBookings;
+        }
+      } else {
+        allBookings = mockBookings;
+      }
+      
+      const currentUserBookings = allBookings.filter(b => b.email === user.email);
+      setUserBookings(currentUserBookings);
+    }
+  }, [user]);
+
 
   if (isLoading || !user) {
     return (
@@ -31,8 +58,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  const userBookings = mockBookings.filter(b => b.email === user.email);
   
   const getStatusBadgeVariant = (status: 'pending' | 'accepted' | 'rejected') => {
     switch (status) {

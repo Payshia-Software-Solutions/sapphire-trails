@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -36,11 +36,13 @@ import {
 import { bookingFormSchema } from "@/lib/schemas"
 import { Card, CardContent } from "@/components/ui/card"
 import type { Booking } from "@/lib/bookings-data"
+import { useAuth } from "@/contexts/auth-context"
 
 export function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const searchParams = useSearchParams();
   const tourTypeParam = searchParams.get('tourType');
+  const { user } = useAuth();
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -52,14 +54,28 @@ export function BookingForm() {
       guests: 1,
       message: "",
     },
-  })
+  });
+
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        name: user.name,
+        email: user.email,
+        phone: "",
+        tourType: tourTypeParam === 'gem-explorer-day-tour' || tourTypeParam === 'sapphire-trails-deluxe' ? tourTypeParam : form.getValues('tourType'),
+        guests: form.getValues('guests') || 1,
+        date: form.getValues('date'),
+        message: form.getValues('message') || "",
+      });
+    }
+  }, [user, form, tourTypeParam]);
 
   function onSubmit(data: z.infer<typeof bookingFormSchema>) {
     const storedBookingsRaw = localStorage.getItem('bookings');
     const storedBookings = storedBookingsRaw ? JSON.parse(storedBookingsRaw) : [];
 
     const newBooking: Booking = {
-        id: new Date().toISOString(),
+        id: new Date().toISOString() + Math.random(),
         name: data.name,
         email: data.email,
         phone: data.phone,
@@ -74,7 +90,6 @@ export function BookingForm() {
     localStorage.setItem('bookings', JSON.stringify(updatedBookings));
     
     setIsSubmitted(true);
-    form.reset();
   }
 
   return (
@@ -83,7 +98,7 @@ export function BookingForm() {
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-headline font-bold tracking-tighter sm:text-5xl">Confirm Your Details</h2>
           <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
-            Fill out the form below to book your tour. We&apos;ll get back to you shortly to confirm your reservation.
+            Fill out the form below to book your tour. We will get back to you shortly to confirm your reservation.
           </p>
         </div>
         <div className="mx-auto mt-12 max-w-xl">
@@ -104,7 +119,7 @@ export function BookingForm() {
                         <FormItem>
                           <FormLabel>Full Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your Name" {...field} />
+                            <Input placeholder="Your Name" {...field} disabled={!!user} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -117,7 +132,7 @@ export function BookingForm() {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="your.email@example.com" {...field} />
+                            <Input placeholder="your.email@example.com" {...field} disabled={!!user} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -143,7 +158,7 @@ export function BookingForm() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Tour Package</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select a tour" />
@@ -165,7 +180,7 @@ export function BookingForm() {
                           <FormItem>
                             <FormLabel>Number of Guests</FormLabel>
                             <FormControl>
-                              <Input type="number" min="1" placeholder="1" {...field} />
+                              <Input type="number" min="1" placeholder="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))}/>
                             </FormControl>
                             <FormMessage />
                           </FormItem>

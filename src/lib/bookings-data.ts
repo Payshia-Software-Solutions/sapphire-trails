@@ -13,8 +13,8 @@ export interface Booking {
 export const mockBookings: Booking[] = [
   {
     id: '1',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
+    name: 'Test User',
+    email: 'user@test.com',
     phone: '123-456-7890',
     tourType: 'sapphire-trails-deluxe',
     guests: 2,
