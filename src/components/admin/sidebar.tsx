@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Home, CalendarCheck, Settings, Users, type LucideIcon, LayoutGrid } from 'lucide-react';
+import { Home, CalendarCheck, Settings, Users, type LucideIcon, LayoutGrid, LogOut } from 'lucide-react';
 import type { AdminUser } from '@/lib/schemas';
 
 export interface NavLink {
