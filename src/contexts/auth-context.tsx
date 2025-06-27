@@ -13,11 +13,12 @@ interface User {
 }
 
 // A mock user database
-const mockUsers: User[] = [
+const initialMockUsers: User[] = [
   { id: '1', name: 'Test User', email: 'user@test.com' },
 ];
 const MOCK_PASSWORD = 'password123';
 const USER_SESSION_KEY = 'sapphire-user';
+const ALL_USERS_KEY = 'sapphire-all-users';
 
 
 interface AuthContextType {
@@ -43,8 +44,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
+      
+      const allUsers = localStorage.getItem(ALL_USERS_KEY);
+      if (!allUsers) {
+        localStorage.setItem(ALL_USERS_KEY, JSON.stringify(initialMockUsers));
+      }
     } catch (error) {
-      console.error('Failed to parse user from sessionStorage', error);
+      console.error('Failed to initialize user data', error);
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -55,8 +61,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
-
-    const foundUser = mockUsers.find(u => u.email === email);
+    
+    const allUsersRaw = localStorage.getItem(ALL_USERS_KEY);
+    const allUsers: User[] = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+    const foundUser = allUsers.find(u => u.email === email);
 
     if (foundUser && pass === MOCK_PASSWORD) {
       setUser(foundUser);
@@ -76,14 +84,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    if (mockUsers.find(u => u.email === email)) {
+    const allUsersRaw = localStorage.getItem(ALL_USERS_KEY);
+    const allUsers: User[] = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+
+    if (allUsers.find(u => u.email === email)) {
       setIsLoading(false);
       toast({ variant: 'destructive', title: 'Error', description: 'An account with this email already exists.' });
       return false;
     }
 
-    const newUser: User = { id: String(mockUsers.length + 1), name, email };
-    mockUsers.push(newUser);
+    const newUser: User = { id: String(allUsers.length + 1), name, email };
+    const updatedUsers = [...allUsers, newUser];
+    localStorage.setItem(ALL_USERS_KEY, JSON.stringify(updatedUsers));
     
     setUser(newUser);
     sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(newUser));

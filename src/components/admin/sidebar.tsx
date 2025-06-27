@@ -1,14 +1,16 @@
+
 'use client';
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { CalendarCheck, LogOut, Settings } from 'lucide-react';
+import { CalendarCheck, LogOut, Settings, Users } from 'lucide-react';
 
 export const navLinks = [
   { href: '/admin/booking-requests', label: 'Booking Requests', icon: CalendarCheck },
   { href: '/admin/manage-content', label: 'Manage Content', icon: Settings },
+  { href: '/admin/user-management', label: 'User Management', icon: Users },
 ];
 
 export function AdminSidebar() {
