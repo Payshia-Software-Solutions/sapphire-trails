@@ -21,6 +21,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  phone?: string;
 }
 
 const ALL_USERS_KEY = 'sapphire-all-users';
@@ -59,7 +60,7 @@ export default function UserManagementPage() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-8 h-full">
+    <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">User Management</h1>
@@ -133,6 +134,7 @@ export default function UserManagementPage() {
                   <TableHead className="hidden sm:table-cell">User ID</TableHead>
                   <TableHead>Full Name</TableHead>
                   <TableHead>Email Address</TableHead>
+                  <TableHead>Phone Number</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -141,6 +143,7 @@ export default function UserManagementPage() {
                     <TableCell className="hidden sm:table-cell font-mono text-xs">{user.id}</TableCell>
                     <TableCell className="font-medium break-words">{user.name}</TableCell>
                     <TableCell className="break-all">{user.email}</TableCell>
+                    <TableCell className="break-all">{user.phone || 'N/A'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -3,10 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import type { Location } from '@/lib/locations-data';
+import type { TourPackage } from '@/lib/packages-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, AlertTriangle, Plus } from 'lucide-react';
+import { Trash2, AlertTriangle, Plus, Package as PackageIcon } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,46 +21,44 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
-const ADMIN_SESSION_KEY = 'adminUser';
-
-export default function ManageContentPage() {
+export default function ManagePackagesPage() {
   const { toast } = useToast();
-  const [customLocations, setCustomLocations] = useState<Location[]>([]);
+  const [customPackages, setCustomPackages] = useState<TourPackage[]>([]);
 
   useEffect(() => {
     try {
-      const storedLocationsRaw = localStorage.getItem('customLocations');
-      if (storedLocationsRaw) {
-        const storedLocations = JSON.parse(storedLocationsRaw) as Location[];
-        if (Array.isArray(storedLocations)) {
-          setCustomLocations(storedLocations);
+      const storedPackagesRaw = localStorage.getItem('customPackages');
+      if (storedPackagesRaw) {
+        const storedPackages = JSON.parse(storedPackagesRaw) as TourPackage[];
+        if (Array.isArray(storedPackages)) {
+          setCustomPackages(storedPackages);
         }
       }
     } catch (error) {
-      console.error('Failed to load custom locations from localStorage', error);
+      console.error('Failed to load custom packages from localStorage', error);
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not load custom locations.',
+        description: 'Could not load custom packages.',
       });
     }
   }, [toast]);
 
-  const handleDelete = (slug: string) => {
-    const updatedLocations = customLocations.filter(loc => loc.slug !== slug);
+  const handleDelete = (id: string) => {
+    const updatedPackages = customPackages.filter(pkg => pkg.id !== id);
     try {
-      localStorage.setItem('customLocations', JSON.stringify(updatedLocations));
-      setCustomLocations(updatedLocations);
+      localStorage.setItem('customPackages', JSON.stringify(updatedPackages));
+      setCustomPackages(updatedPackages);
       toast({
-        title: 'Content Deleted!',
-        description: `The location has been successfully removed.`,
+        title: 'Package Deleted!',
+        description: `The tour package has been successfully removed.`,
       });
     } catch (error) {
       console.error('Failed to save to localStorage', error);
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'There was a problem deleting the content.',
+        description: 'There was a problem deleting the package.',
       });
     }
   };
@@ -69,58 +67,58 @@ export default function ManageContentPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Content</h1>
-            <p className="text-muted-foreground">Add or delete custom locations for the &quot;Explore Ratnapura&quot; page.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Tour Packages</h1>
+            <p className="text-muted-foreground">Add or delete custom tour packages for your website.</p>
         </div>
         <Button asChild>
-          <Link href="/admin/add-content">
+          <Link href="/admin/manage-packages/add">
             <Plus className="mr-2 h-4 w-4" />
-            Add New Location
+            Add New Package
           </Link>
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Custom Added Locations</CardTitle>
+          <CardTitle>Custom Added Packages</CardTitle>
           <CardDescription>
-            Only locations added via the &apos;Add Content&apos; form are listed here. Deleting an item is permanent.
+            Only packages added via the form are listed here. Deleting an item is permanent.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {customLocations.length > 0 ? (
+          {customPackages.length > 0 ? (
             <div className="grid gap-6">
-              {customLocations.map((location) => (
-                <div key={location.slug} className="flex items-center gap-4 p-4 border rounded-lg">
+              {customPackages.map((pkg) => (
+                <div key={pkg.id} className="flex items-center gap-4 p-4 border rounded-lg">
                   <Image
-                    src={location.cardImage}
-                    alt={location.title}
+                    src={pkg.imageUrl}
+                    alt={pkg.homepageTitle}
                     width={80}
                     height={80}
                     className="rounded-md object-cover aspect-square"
                   />
                   <div className="grid gap-1 text-sm flex-1">
-                    <div className="font-medium text-lg break-words">{location.title}</div>
-                    <div className="text-muted-foreground break-all">Slug: {location.slug}</div>
+                    <div className="font-medium text-lg break-words">{pkg.title?.line2 || pkg.homepageTitle}</div>
+                    <div className="text-muted-foreground break-all">ID: {pkg.id}</div>
                   </div>
                   
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                        <Button variant="destructive" size="icon">
                         <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete {location.title}</span>
+                        <span className="sr-only">Delete {pkg.homepageTitle}</span>
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription className="break-words">
-                          This action cannot be undone. This will permanently delete the content for <span className="font-semibold text-foreground">&quot;{location.title}&quot;</span>.
+                          This action cannot be undone. This will permanently delete the package for <span className="font-semibold text-foreground">&quot;{pkg.homepageTitle}&quot;</span>.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(location.slug)}>
+                        <AlertDialogAction onClick={() => handleDelete(pkg.id)}>
                           Yes, delete
                         </AlertDialogAction>
                       </AlertDialogFooter>
@@ -132,10 +130,10 @@ export default function ManageContentPage() {
             </div>
           ) : (
             <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
-              <AlertTriangle className="h-12 w-12 text-muted-foreground/50" />
-              <p>No custom locations have been added yet.</p>
+              <PackageIcon className="h-12 w-12 text-muted-foreground/50" />
+              <p>No custom packages have been added yet.</p>
               <Button asChild variant="link" className="text-primary">
-                <Link href="/admin/add-content">Add your first location</Link>
+                <Link href="/admin/manage-packages/add">Add your first package</Link>
               </Button>
             </div>
           )}

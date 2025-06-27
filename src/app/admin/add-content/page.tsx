@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import Image from 'next/image';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
 
@@ -37,6 +38,12 @@ export default function AddContentPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isClient, setIsClient] = useState(false);
+
+  // States for image previews
+  const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
+  const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
+  const [introImagePreview, setIntroImagePreview] = useState<string | null>(null);
+  const [galleryImagePreviews, setGalleryImagePreviews] = useState<(string | null)[]>(Array(4).fill(null));
 
   useEffect(() => {
     setIsClient(true);
@@ -66,6 +73,38 @@ export default function AddContentPage() {
       nearbyAttractions: Array.from({ length: 3 }, () => ({ icon: 'Gem' as const, name: '', distance: '' })),
     },
   });
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    onChange: (value: string) => void,
+    setPreview: (value: string | null) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        onChange(dataUrl);
+        setPreview(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGalleryFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+     const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        form.setValue(`galleryImages.${index}.src`, dataUrl, { shouldValidate: true });
+        const newPreviews = [...galleryImagePreviews];
+        newPreviews[index] = dataUrl;
+        setGalleryImagePreviews(newPreviews);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
@@ -145,7 +184,7 @@ export default function AddContentPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6">
        <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" onClick={() => router.push('/admin/manage-content')}>
             <ArrowLeft className="h-4 w-4" />
@@ -175,8 +214,27 @@ export default function AddContentPage() {
                     <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug</FormLabel><FormControl><Input placeholder="e.g., sinharaja-rainforest" {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                   <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea placeholder="A short description for the card..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control} name="cardImage"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Card Image</FormLabel>
+                          <FormControl>
+                            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setCardImagePreview)} className="text-sm" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {cardImagePreview && (
+                      <div>
+                        <FormLabel>Preview</FormLabel>
+                        <Image src={cardImagePreview} alt="Card image preview" width={200} height={100} className="rounded-md object-cover mt-2 border" />
+                      </div>
+                    )}
+                  </div>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="cardImage" render={({ field }) => (<FormItem><FormLabel>Card Image URL</FormLabel><FormControl><Input placeholder="https://example.com/image.jpg" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="imageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input placeholder="e.g., rainforest canopy" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input placeholder="e.g., 12 km away" {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
@@ -192,17 +250,19 @@ export default function AddContentPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <FormField control={form.control} name="subtitle" render={({ field }) => (<FormItem><FormLabel>Hero Subtitle</FormLabel><FormControl><Input placeholder="e.g., Nature's Unspoiled Wonder" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="heroImage" render={({ field }) => (<FormItem><FormLabel>Hero Image URL</FormLabel><FormControl><Input placeholder="https://example.com/hero-image.jpg" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image Hint</FormLabel><FormControl><Input placeholder="e.g., rainforest misty mountains" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                     <div className="space-y-4">
+                        <FormField control={form.control} name="heroImage" render={({ field }) => (<FormItem><FormLabel>Hero Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setHeroImagePreview)} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
+                        {heroImagePreview && (<div><FormLabel>Preview</FormLabel><Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover mt-2 border" /></div>)}
                     </div>
+                    <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image Hint</FormLabel><FormControl><Input placeholder="e.g., rainforest misty mountains" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator/>
                     <FormField control={form.control} name="introTitle" render={({ field }) => (<FormItem><FormLabel>Intro Title</FormLabel><FormControl><Input placeholder="e.g., UNESCO World Heritage Wonder" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="introDescription" render={({ field }) => (<FormItem><FormLabel>Intro Description</FormLabel><FormControl><Textarea placeholder="Full description for the intro section..." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                     <div className="grid md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="introImageUrl" render={({ field }) => (<FormItem><FormLabel>Intro Image URL</FormLabel><FormControl><Input placeholder="https://example.com/intro-image.jpg" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input placeholder="e.g., jungle river rocks" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                     <div className="space-y-4">
+                        <FormField control={form.control} name="introImageUrl" render={({ field }) => (<FormItem><FormLabel>Intro Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setIntroImagePreview)} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
+                        {introImagePreview && (<div><FormLabel>Preview</FormLabel><Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover mt-2 border" /></div>)}
                     </div>
+                    <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input placeholder="e.g., jungle river rocks" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </CardContent>
               </Card>
             </div>
@@ -214,7 +274,25 @@ export default function AddContentPage() {
                     {[...Array(4)].map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md">
                              <p className="font-medium">Image {index + 1}</p>
-                             <FormField control={form.control} name={`galleryImages.${index}.src`} render={({ field }) => (<FormItem><FormLabel>URL</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField
+                                control={form.control}
+                                name={`galleryImages.${index}.src`}
+                                render={() => (
+                                <FormItem>
+                                    <FormLabel>Upload Image</FormLabel>
+                                    <FormControl>
+                                    <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            {galleryImagePreviews[index] && (
+                                <div>
+                                <FormLabel>Preview</FormLabel>
+                                <Image src={galleryImagePreviews[index]!} alt={`Gallery ${index+1} preview`} width={200} height={100} className="rounded-md object-cover mt-2 border" />
+                                </div>
+                            )}
                              <div className="grid md:grid-cols-2 gap-4">
                                 <FormField control={form.control} name={`galleryImages.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={form.control} name={`galleryImages.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />

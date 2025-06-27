@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -127,7 +128,7 @@ export default function EditBookingPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
@@ -181,10 +182,16 @@ export default function EditBookingPage() {
                     )} />
                     <FormField control={form.control} name="message" render={({ field }) => ( <FormItem><FormLabel>Additional Message (Optional)</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     
-                    <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 pt-4 border-t border-border mt-4">
-                        <Button type="submit">Save Changes</Button>
-                        <Button type="button" variant="destructive" onClick={() => handleStatusChange('rejected')}>Reject Booking</Button>
-                        <Button type="button" onClick={() => handleStatusChange('accepted')}>Accept Booking</Button>
+                    <div className="grid grid-cols-2 gap-2 pt-4 mt-4 border-t border-border sm:flex sm:justify-end">
+                        <Button type="button" onClick={() => handleStatusChange('accepted')}>
+                            Accept Booking
+                        </Button>
+                        <Button type="button" variant="destructive" onClick={() => handleStatusChange('rejected')}>
+                            Reject Booking
+                        </Button>
+                        <Button type="submit" className="col-span-2">
+                            Save Changes
+                        </Button>
                     </div>
                 </form>
             </Form>

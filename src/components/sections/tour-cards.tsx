@@ -1,55 +1,59 @@
 
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MapPin, Gem, Landmark, Award, Utensils, Star, Package, Coffee, BedDouble } from 'lucide-react';
+import { MapPin, Gem, Landmark, Award, Utensils, Star, Package, Coffee, BedDouble, Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Waves, Camera, Tent, Thermometer } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { initialTourPackages, type TourPackage } from '@/lib/packages-data';
+import { useState, useEffect } from 'react';
+import type { LucideIcon } from 'lucide-react';
 
-const tourData = [
-    {
-        id: 'gem-explorer-day-tour',
-        imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
-        imageAlt: 'A group of smiling tourists wearing hard hats on a sapphire mine tour.',
-        imageHint: 'tourists mining gems',
-        title: {
-            line1: 'GEM EXPLORER',
-            line2: 'GEM XPLOR',
-            line3: 'DAY TOUR',
-        },
-        features: [
-            { icon: MapPin, text: 'GUIDED MINE TOUR' },
-            { icon: Gem, text: 'Gem market tour' },
-            { icon: Gem, text: 'Traditional & Modern Gem cutting tour' },
-            { icon: Landmark, text: 'Gem museum visit' },
-            { icon: Award, text: 'Gem Showcase from premium vendors' },
-            { icon: Utensils, text: 'SNACK AT THE MINE LUNCH AT GRAND SILVER RAY' },
-        ],
-        price: '$135',
-        priceSuffix: 'per person',
-        bookingLink: '/booking',
-    },
-    {
-        id: 'sapphire-trails-deluxe',
-        imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img5.webp',
-        imageAlt: 'The logo for Sapphire Trails Deluxe tours.',
-        imageHint: 'luxury gem logo',
-        features: [
-            { icon: Star, text: 'Includes everything from the Gem Explorer Tour' },
-            { icon: Package, text: 'GEM EXPLORER TOUR' },
-            { icon: Coffee, text: 'TEA FACTORY TOUR & TEA TASTING SESSION' },
-            { icon: BedDouble, text: 'ONE NIGHT FULL BOARD STAY AT GRAND SILVER RAY' },
-        ],
-        price: '$215',
-        priceSuffix: 'per person',
-        bookingLink: '/booking',
-    }
-];
+const iconMap: { [key: string]: LucideIcon } = {
+  MapPin, Gem, Landmark, Award, Utensils, Star, Package, Coffee, BedDouble, Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Waves, Camera, Tent, Thermometer
+};
+
+
+const mapFeatures = (features: any[]) => {
+  return features.map(feature => {
+    const IconComponent = iconMap[feature.icon as string] || Star;
+    return { ...feature, icon: IconComponent };
+  });
+};
 
 export function TourCards({ selectedTour }: { selectedTour: string | null }) {
+  const [allTours, setAllTours] = useState<TourPackage[]>(initialTourPackages);
+
+   useEffect(() => {
+    const storedPackagesRaw = localStorage.getItem('customPackages');
+    if (storedPackagesRaw) {
+        try {
+            const customPackages = JSON.parse(storedPackagesRaw) as any[];
+            if (Array.isArray(customPackages)) {
+                const mappedCustom = customPackages.map(pkg => ({
+                  ...pkg,
+                  features: mapFeatures(pkg.features)
+                }));
+                const combined = [...initialTourPackages, ...mappedCustom];
+
+                const unique: { [key: string]: TourPackage } = {};
+                for (const pkg of combined) {
+                    unique[pkg.id] = pkg;
+                }
+                setAllTours(Object.values(unique));
+            }
+        } catch (e) {
+            console.error("Failed to parse custom packages", e);
+            setAllTours(initialTourPackages);
+        }
+    }
+  }, []);
+
   const toursToShow = selectedTour
-    ? tourData.filter(tour => tour.id === selectedTour)
-    : tourData;
+    ? allTours.filter(tour => tour.id === selectedTour)
+    : allTours;
 
   const gridColsClass = toursToShow.length === 1 ? 'md:grid-cols-1 justify-center' : 'md:grid-cols-2';
 
@@ -97,7 +101,7 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                   </div>
                   <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
                     <p className="text-3xl font-bold text-primary">{tour.price} <span className="text-sm font-normal text-muted-foreground">{tour.priceSuffix}</span></p>
-                    <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href={`${tour.bookingLink}?tourType=${tour.id}`}>Book Now</Link></Button>
+                    <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href={`${tour.bookingLink}?tourType=${tour.id}`}>{tour.id === 'sapphire-trails-deluxe' ? 'Contact Us' : 'Book Now'}</Link></Button>
                   </div>
                 </CardContent>
               </Card>

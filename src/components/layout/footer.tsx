@@ -1,6 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 import { Facebook, Instagram, Youtube } from 'lucide-react';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+
+const CMS_DATA_KEY = 'sapphire-cms-data';
+
+const defaultSocials = {
+    facebookUrl: 'https://facebook.com',
+    instagramUrl: 'https://instagram.com',
+    youtubeUrl: 'https://youtube.com',
+};
+
 
 const navLinks = [
   { href: '/about', label: 'About' },
@@ -25,6 +37,22 @@ const GrandSilverRayLogo = () => (
 );
 
 export function Footer() {
+  const [socials, setSocials] = useState(defaultSocials);
+
+    useEffect(() => {
+        try {
+            const storedDataRaw = localStorage.getItem(CMS_DATA_KEY);
+            if (storedDataRaw) {
+                const storedData = JSON.parse(storedDataRaw);
+                if (storedData.footer) {
+                    setSocials({ ...defaultSocials, ...storedData.footer });
+                }
+            }
+        } catch (error) {
+            console.error("Failed to load footer CMS data", error);
+        }
+    }, []);
+
   return (
     <footer className="w-full bg-background border-t border-white/10">
       <div className="container mx-auto px-4 md:px-6 pt-16 pb-8">
@@ -57,13 +85,13 @@ export function Footer() {
           <div className="flex flex-col items-center md:items-end gap-4">
              <GrandSilverRayLogo />
              <div className="flex items-center gap-4 mt-2">
-               <Link href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Facebook">
+               <Link href={socials.facebookUrl} className="text-muted-foreground hover:text-primary transition-colors" aria-label="Facebook">
                  <Facebook className="h-5 w-5" />
                </Link>
-               <Link href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
+               <Link href={socials.instagramUrl} className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
                  <Instagram className="h-5 w-5" />
                </Link>
-               <Link href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="YouTube">
+               <Link href={socials.youtubeUrl} className="text-muted-foreground hover:text-primary transition-colors" aria-label="YouTube">
                  <Youtube className="h-5 w-5" />
                </Link>
              </div>
