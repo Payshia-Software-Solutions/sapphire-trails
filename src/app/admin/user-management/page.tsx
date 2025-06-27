@@ -95,7 +95,7 @@ export default function UserManagementPage() {
               <TableBody>
                 {adminUsers.map((user) => (
                   <TableRow key={user.username}>
-                    <TableCell className="font-medium">{user.username}</TableCell>
+                    <TableCell className="font-medium break-words">{user.username}</TableCell>
                     <TableCell>
                       <Badge variant={user.role === 'superadmin' ? 'default' : 'secondary'} className="capitalize">
                          {user.role === 'superadmin' && <ShieldCheck className="mr-1 h-3.5 w-3.5" />}

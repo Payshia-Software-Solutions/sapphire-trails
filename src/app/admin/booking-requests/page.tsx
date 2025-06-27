@@ -155,7 +155,7 @@ export default function BookingRequestsPage() {
                     {bookings.map((booking) => (
                         <TableRow key={booking.id}>
                             <TableCell>
-                                <div className="font-medium">{booking.name}</div>
+                                <div className="font-medium break-words">{booking.name}</div>
                                 <div className="text-sm text-muted-foreground hidden md:block break-all">{booking.email}</div>
                             </TableCell>
                             <TableCell className="hidden md:table-cell">
@@ -184,7 +184,7 @@ export default function BookingRequestsPage() {
                 <>
                     <DialogHeader>
                         <DialogTitle>Booking Details</DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="break-words">
                             Request from {selectedBooking.name} on {format(new Date(selectedBooking.date), 'PPP')}.
                         </DialogDescription>
                     </DialogHeader>
@@ -199,7 +199,7 @@ export default function BookingRequestsPage() {
                         </div>
                         <div className="space-y-1">
                             <Label className="text-muted-foreground">Name</Label>
-                            <p className="font-medium">{selectedBooking.name}</p>
+                            <p className="font-medium break-words">{selectedBooking.name}</p>
                         </div>
                         <div className="space-y-1">
                             <Label className="text-muted-foreground">Email</Label>
@@ -222,7 +222,7 @@ export default function BookingRequestsPage() {
                         {selectedBooking.message && (
                             <div className="space-y-1">
                                 <Label className="text-muted-foreground">Message</Label>
-                                <p className="text-sm italic">&quot;{selectedBooking.message}&quot;</p>
+                                <p className="text-sm italic break-words">&quot;{selectedBooking.message}&quot;</p>
                             </div>
                         )}
                     </div>

@@ -100,7 +100,7 @@ export default function ManageContentPage() {
                     className="rounded-md object-cover aspect-square"
                   />
                   <div className="grid gap-1 text-sm flex-1">
-                    <div className="font-medium text-lg">{location.title}</div>
+                    <div className="font-medium text-lg break-words">{location.title}</div>
                     <div className="text-muted-foreground break-all">Slug: {location.slug}</div>
                   </div>
                   
@@ -114,7 +114,7 @@ export default function ManageContentPage() {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
+                        <AlertDialogDescription className="break-words">
                           This action cannot be undone. This will permanently delete the content for <span className="font-semibold text-foreground">&quot;{location.title}&quot;</span>.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
