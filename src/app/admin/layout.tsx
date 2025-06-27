@@ -65,7 +65,7 @@ export default function AdminLayout({
       ) : (
         <div className="grid h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
           <AdminSidebar />
-          <div className="flex flex-col">
+          <div className="flex flex-col overflow-hidden">
             <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
                 <Sheet>
                     <SheetTrigger asChild>
