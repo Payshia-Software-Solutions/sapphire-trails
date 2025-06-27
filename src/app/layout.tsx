@@ -4,6 +4,7 @@ import './globals.css';
 import { PreloaderProvider } from '@/components/shared/preloader-provider';
 import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import { AuthProvider } from '@/contexts/auth-context';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -48,9 +49,11 @@ export default function RootLayout({
         montserrat.variable,
         cinzel.variable
         )}>
-          <PreloaderProvider>
-            {children}
-          </PreloaderProvider>
+          <AuthProvider>
+            <PreloaderProvider>
+              {children}
+            </PreloaderProvider>
+          </AuthProvider>
           <Toaster />
       </body>
     </html>

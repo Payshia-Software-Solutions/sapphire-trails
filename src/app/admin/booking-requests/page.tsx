@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { mockBookings, type Booking } from '@/lib/bookings-data';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
@@ -29,15 +29,19 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 
+const ADMIN_SESSION_KEY = 'adminUser';
+const ITEMS_PER_PAGE = 4;
+
 export default function BookingRequestsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const authStatus = sessionStorage.getItem('isAdminAuthenticated');
-    if (authStatus !== 'true') {
+    const adminUser = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    if (!adminUser) {
       router.push('/admin/login');
     } else {
       setIsAuthenticated(true);
@@ -61,7 +65,7 @@ export default function BookingRequestsPage() {
       }
     }
   }, [router]);
-
+  
   const bookingStats = useMemo(() => {
     if (!bookings) return { pending: 0, accepted: 0, rejected: 0, total: 0 };
     const pending = bookings.filter((b) => b.status === 'pending').length;
@@ -70,6 +74,13 @@ export default function BookingRequestsPage() {
     const total = bookings.length;
     return { pending, accepted, rejected, total };
   }, [bookings]);
+
+  const { paginatedBookings, totalPages } = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginated = bookings.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const total = Math.ceil(bookings.length / ITEMS_PER_PAGE);
+    return { paginatedBookings: paginated, totalPages: total };
+  }, [bookings, currentPage]);
   
   const getStatusBadgeVariant = (status: Booking['status']) => {
     switch (status) {
@@ -150,13 +161,13 @@ export default function BookingRequestsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                    {bookings.map((booking) => (
+                    {paginatedBookings.map((booking) => (
                         <TableRow key={booking.id}>
                             <TableCell>
-                                <div className="font-medium">{booking.name}</div>
-                                <div className="text-sm text-muted-foreground hidden md:block">{booking.email}</div>
+                                <div className="font-medium break-words">{booking.name}</div>
+                                <div className="text-sm text-muted-foreground hidden md:block break-all">{booking.email}</div>
                             </TableCell>
-                            <TableCell className="hidden md:table-cell">
+                            <TableCell className="hidden md:table-cell break-all">
                                 {booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}
                             </TableCell>
                             <TableCell>{format(new Date(booking.date), 'PPP')}</TableCell>
@@ -174,6 +185,29 @@ export default function BookingRequestsPage() {
                     </TableBody>
                 </Table>
             </CardContent>
+             <CardFooter className="flex items-center justify-between border-t pt-6">
+                <div className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages || 1}
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    >
+                    Previous
+                    </Button>
+                    <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage >= totalPages}
+                    >
+                    Next
+                    </Button>
+                </div>
+            </CardFooter>
         </Card>
 
         <Dialog open={!!selectedBooking} onOpenChange={(isOpen) => !isOpen && setSelectedBooking(null)}>
@@ -182,52 +216,52 @@ export default function BookingRequestsPage() {
                 <>
                     <DialogHeader>
                         <DialogTitle>Booking Details</DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="break-words">
                             Request from {selectedBooking.name} on {format(new Date(selectedBooking.date), 'PPP')}.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Status</Label>
-                            <div className="col-span-3">
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-1">
+                            <Label className="text-muted-foreground">Status</Label>
+                            <div>
                                 <Badge variant={getStatusBadgeVariant(selectedBooking.status)} className="capitalize">
                                     {selectedBooking.status}
                                 </Badge>
                             </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Name</Label>
-                            <span className="col-span-3 font-medium">{selectedBooking.name}</span>
+                        <div className="space-y-1">
+                            <Label className="text-muted-foreground">Name</Label>
+                            <p className="font-medium break-words">{selectedBooking.name}</p>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Email</Label>
-                            <span className="col-span-3">{selectedBooking.email}</span>
+                        <div className="space-y-1">
+                            <Label className="text-muted-foreground">Email</Label>
+                            <p className="break-all">{selectedBooking.email}</p>
                         </div>
                         {selectedBooking.phone && (
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label className="text-right text-muted-foreground">Phone</Label>
-                                <span className="col-span-3">{selectedBooking.phone}</span>
+                            <div className="space-y-1">
+                                <Label className="text-muted-foreground">Phone</Label>
+                                <p>{selectedBooking.phone}</p>
                             </div>
                         )}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Tour</Label>
-                            <span className="col-span-3">{selectedBooking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}</span>
+                        <div className="space-y-1">
+                            <Label className="text-muted-foreground">Tour</Label>
+                            <p>{selectedBooking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}</p>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right text-muted-foreground">Guests</Label>
-                            <span className="col-span-3">{selectedBooking.guests}</span>
+                         <div className="space-y-1">
+                            <Label className="text-muted-foreground">Guests</Label>
+                            <p>{selectedBooking.guests}</p>
                         </div>
                         {selectedBooking.message && (
-                            <div className="grid grid-cols-4 items-start gap-4">
-                                <Label className="text-right text-muted-foreground mt-1">Message</Label>
-                                <p className="col-span-3 text-sm italic">&quot;{selectedBooking.message}&quot;</p>
+                            <div className="space-y-1">
+                                <Label className="text-muted-foreground">Message</Label>
+                                <p className="text-sm italic break-words">&quot;{selectedBooking.message}&quot;</p>
                             </div>
                         )}
                     </div>
                     <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-2">
                         <Button variant="outline" onClick={() => setSelectedBooking(null)}>Close</Button>
                         <Button asChild>
-                            <Link href={`/admin/booking-requests/${selectedBooking.id}`}>Edit Booking</Link>
+                            <Link href={`/admin/booking-requests/${encodeURIComponent(selectedBooking.id)}`}>Edit Booking</Link>
                         </Button>
                     </DialogFooter>
                 </>

@@ -4,8 +4,20 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Menu, User, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import { useAuth } from '@/contexts/auth-context';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useRouter } from 'next/navigation';
+
 
 const navLinks = [
   { href: '/about', label: 'About' },
@@ -17,6 +29,18 @@ const navLinks = [
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+  }
+
+  const handleProfileClick = () => {
+    router.push('/profile');
+    setIsMenuOpen(false);
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background border-t border-white/10">
@@ -32,6 +56,29 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+            {user ? (
+               <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <User className="h-5 w-5 text-primary" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push('/profile')}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => logout()}>
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+                <Button asChild variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/10 hover:text-primary">
+                    <Link href="/auth">Login</Link>
+                </Button>
+            )}
         </nav>
 
         {/* Mobile Navigation */}
@@ -43,28 +90,49 @@ export function Header() {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-full max-w-sm bg-background p-6">
+            <SheetContent side="right" className="w-full max-w-sm bg-background p-6 flex flex-col">
               <div className="text-center mb-8">
                 <Link href="/" className="inline-block" onClick={() => setIsMenuOpen(false)}>
-                    <span className="font-serif text-xl tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
+                   <Image 
+                    src="/img/logo4.png"
+                    alt="Sapphire Trails Logo"
+                    width={100}
+                    height={60}
+                  />
                 </Link>
               </div>
 
-              <nav className="grid grid-cols-2 gap-x-4 gap-y-8 text-lg font-serif uppercase tracking-widest text-center">
-                {navLinks.map((link, index) => (
+              <nav className="flex flex-col items-center gap-y-6 text-lg font-serif uppercase tracking-widest">
+                {navLinks.map((link) => (
                   <Link 
                     key={link.href} 
                     href={link.href} 
-                    className={cn(
-                      "text-primary hover:text-primary/80 transition-colors",
-                      navLinks.length % 2 !== 0 && index === navLinks.length - 1 && "col-span-2"
-                    )}
+                    className="text-primary hover:text-primary/80 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.label}
                   </Link>
                 ))}
               </nav>
+
+              <div className="mt-auto pt-6 border-t border-border">
+                {user ? (
+                  <div className="flex flex-col items-center gap-4">
+                     <Button variant="ghost" className="w-full" onClick={handleProfileClick}>
+                        <User className="mr-2 h-5 w-5" />
+                        Profile
+                      </Button>
+                      <Button variant="ghost" className="w-full" onClick={handleLogout}>
+                        <LogOut className="mr-2 h-5 w-5" />
+                        Log Out
+                      </Button>
+                  </div>
+                ) : (
+                  <Button asChild className="w-full" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/auth">Login / Sign Up</Link>
+                  </Button>
+                )}
+              </div>
             </SheetContent>
           </Sheet>
         </div>

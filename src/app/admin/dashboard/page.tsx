@@ -1,15 +1,19 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { mockBookings, type Booking } from '@/lib/bookings-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Users, Clock, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { subDays, format, parseISO } from 'date-fns';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+import { BookingVolumeChart } from '@/components/admin/charts/booking-volume-chart';
+import { BookingStatusChart } from '@/components/admin/charts/booking-status-chart';
+import { TourPopularityChart } from '@/components/admin/charts/tour-popularity-chart';
+
+const ADMIN_SESSION_KEY = 'adminUser';
 
 export default function DashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -17,8 +21,8 @@ export default function DashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const authStatus = sessionStorage.getItem('isAdminAuthenticated');
-    if (authStatus !== 'true') {
+    const adminUser = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    if (!adminUser) {
       router.push('/admin/login');
     } else {
       setIsAuthenticated(true);
@@ -43,31 +47,55 @@ export default function DashboardPage() {
     }
   }, [router]);
   
-  const getStatusBadgeVariant = (status: Booking['status']) => {
-    switch (status) {
-      case 'accepted':
-        return 'default';
-      case 'rejected':
-        return 'destructive';
-      case 'pending':
-      default:
-        return 'secondary';
+  const { bookingStats, volumeData, statusData, tourData, recentBookings } = useMemo(() => {
+    if (!bookings || bookings.length === 0) {
+        return { bookingStats: { pending: 0, accepted: 0, rejected: 0, total: 0 }, volumeData: [], statusData: [], tourData: [], recentBookings: [] };
     }
-  };
 
-
-  const bookingStats = useMemo(() => {
-    if (!bookings) return { pending: 0, accepted: 0, rejected: 0, total: 0 };
+    // 1. Booking Stats
     const pending = bookings.filter((b) => b.status === 'pending').length;
     const accepted = bookings.filter((b) => b.status === 'accepted').length;
     const rejected = bookings.filter((b) => b.status === 'rejected').length;
     const total = bookings.length;
-    return { pending, accepted, rejected, total };
-  }, [bookings]);
+    const bookingStats = { pending, accepted, rejected, total };
 
-  const recentBookings = useMemo(() => {
-    if (!bookings) return [];
-    return [...bookings].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
+    // 2. Booking Volume (Last 7 Days)
+    const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
+    const volumeData = last7Days.map(day => {
+        const dayString = format(day, 'yyyy-MM-dd');
+        const count = bookings.filter(b => format(parseISO(b.date), 'yyyy-MM-dd') === dayString).length;
+        return {
+            date: format(day, 'EEE'),
+            bookings: count
+        };
+    });
+
+    // 3. Booking Status Distribution
+    const statusData = [
+        { status: 'pending', value: pending, fill: 'var(--color-pending)' },
+        { status: 'accepted', value: accepted, fill: 'var(--color-accepted)' },
+        { status: 'rejected', value: rejected, fill: 'var(--color-rejected)' },
+    ].filter(d => d.value > 0);
+
+    // 4. Tour Popularity
+    const tourCounts = bookings.reduce((acc, booking) => {
+      const tourName = booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer' : 'Sapphire Deluxe';
+      acc[tourName] = (acc[tourName] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const tourData = Object.entries(tourCounts).map(([name, count]) => ({
+      name,
+      bookings: count,
+    }));
+
+    // 5. Recent Bookings
+    const recentBookings = bookings
+      .sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime())
+      .slice(0, 5);
+
+
+    return { bookingStats, volumeData, statusData, tourData, recentBookings };
   }, [bookings]);
 
 
@@ -76,7 +104,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight text-primary">Dashboard</h1>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -118,44 +146,58 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center">
-            <div className="grid gap-2">
-                <CardTitle>Recent Bookings</CardTitle>
-                <CardDescription>
-                    The latest booking requests received.
-                </CardDescription>
-            </div>
-            <Button asChild size="sm" className="ml-auto gap-1">
-                <Link href="/admin/booking-requests">
-                    View All
-                    <ArrowRight className="h-4 w-4" />
-                </Link>
-            </Button>
-        </CardHeader>
-        <CardContent>
-            {recentBookings.length > 0 ? (
-                 <div className="grid gap-6">
-                   {recentBookings.map((booking) => (
-                     <div key={booking.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                        <div className="grid gap-1 text-sm">
-                          <div className="font-medium">{booking.name}</div>
-                          <div className="text-muted-foreground">{booking.email}</div>
+       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="lg:col-span-2">
+                <CardHeader>
+                    <CardTitle>Booking Volume</CardTitle>
+                    <CardDescription>Last 7 days</CardDescription>
+                </CardHeader>
+                <CardContent className="pl-2">
+                    <BookingVolumeChart data={volumeData} />
+                </CardContent>
+            </Card>
+            <Card>
+                 <CardHeader>
+                    <CardTitle>Booking Status Distribution</CardTitle>
+                    <CardDescription>Current snapshot</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <BookingStatusChart data={statusData} />
+                </CardContent>
+            </Card>
+        </div>
+        
+        <div className="grid gap-6 md:grid-cols-2">
+             <Card>
+                <CardHeader>
+                    <CardTitle>Tour Popularity</CardTitle>
+                    <CardDescription>All-time booking counts per tour package.</CardDescription>
+                </CardHeader>
+                <CardContent className="pl-2 h-[250px]">
+                    <TourPopularityChart data={tourData} />
+                </CardContent>
+            </Card>
+            <Card>
+                 <CardHeader>
+                    <CardTitle>Recent Bookings</CardTitle>
+                    <CardDescription>The five most recent booking requests.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     {recentBookings.map((booking) => (
+                        <div key={booking.id} className="flex items-center gap-4">
+                            <Avatar className="h-9 w-9">
+                                <AvatarImage src={`https://placehold.co/100x100.png`} alt="Avatar" data-ai-hint="person portrait" />
+                                <AvatarFallback>{booking.name.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="grid gap-1">
+                                <p className="text-sm font-medium leading-none break-all">{booking.name}</p>
+                                <p className="text-sm text-muted-foreground break-all">{booking.email}</p>
+                            </div>
                         </div>
-                        <div className="ml-auto text-sm text-muted-foreground">
-                          {format(new Date(booking.date), 'PPP')}
-                        </div>
-                        <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">
-                            {booking.status}
-                        </Badge>
-                     </div>
-                   ))}
-                </div>
-            ) : (
-                <div className="text-center text-muted-foreground py-8">No recent bookings.</div>
-            )}
-        </CardContent>
-      </Card>
+                    ))}
+                </CardContent>
+            </Card>
+        </div>
     </div>
   );
 }
