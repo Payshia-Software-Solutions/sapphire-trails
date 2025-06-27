@@ -163,7 +163,7 @@ export default function CmsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Discover Section</CardTitle>
-              <CardDescription>Content for the "Discover the Sapphire Trails" section.</CardDescription>
+              <CardDescription>Content for the &quot;Discover the Sapphire Trails&quot; section.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <FormField control={form.control} name="discover.description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>)} />
