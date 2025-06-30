@@ -78,9 +78,9 @@ export function ToursSection() {
           {/* Mobile view swiper */}
           <div className="md:hidden relative">
              <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex -ml-4">
+              <div className="flex">
                 {tours.map((tour, index) => (
-                  <div className="flex-grow-0 flex-shrink-0 basis-full min-w-0 pl-4" key={index}>
+                  <div className="relative flex-[0_0_100%] min-w-0 p-2" key={index}>
                     <TourCard tour={tour} />
                   </div>
                 ))}
