@@ -101,8 +101,8 @@ export const initialTourPackages: TourPackage[] = [
         duration: '1 Night Stay',
         price: '$215',
         priceSuffix: 'per person',
-        heroImage: 'https://content-provider.payshia.com/sapphire-trail/images/img31.webp',
-        heroImageHint: 'luxury resort architecture',
+        heroImage: 'https://content-provider.payshia.com/sapphire-trail/images/img5.webp',
+        heroImageHint: 'luxury gem logo',
         tourPageDescription: 'Experience the ultimate luxury journey, combining the thrill of gem exploration with the tranquility of a tea estate and a gourmet dining experience, complete with an overnight stay.',
         tourHighlights: [
             { icon: 'Star', title: 'All-Inclusive', description: 'Includes all Gem Explorer perks' },
