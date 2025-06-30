@@ -51,9 +51,9 @@ export function HeroSection() {
             alt="Sapphire Trails Logo"
             width={250}
             height={400}
-            className="h-auto"
+            className="h-auto w-[200px] sm:w-[250px]"
           />
-          <h1 className="text-5xl font-headline font-bold tracking-tight text-white max-w-3xl">
+          <h1 className="text-4xl md:text-5xl font-headline font-bold tracking-tight text-white max-w-3xl">
             {content.headline}
           </h1>
           <p className="text-lg text-white/90">

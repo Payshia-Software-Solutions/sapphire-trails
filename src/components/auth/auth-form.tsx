@@ -86,7 +86,7 @@ export function AuthForm() {
             <Card>
               <CardHeader>
                 <CardTitle>Create an Account</CardTitle>
-                <CardDescription>It's quick and easy to get started.</CardDescription>
+                <CardDescription>It&apos;s quick and easy to get started.</CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...signupForm}>
