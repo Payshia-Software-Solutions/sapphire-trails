@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -25,7 +26,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
       <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
       <Button asChild className="w-fit bg-primary text-primary-foreground hover:bg-primary/90 mt-auto rounded-full px-6">
-        <Link href={`/tours?selected=${tour.id}`}>More Info</Link>
+        <Link href={`/tours/${tour.id}`}>More Info</Link>
       </Button>
     </CardContent>
   </Card>
@@ -78,7 +79,7 @@ export function ToursSection() {
           {/* Mobile view swiper */}
           <div className="md:hidden relative">
              <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex">
+              <div className="flex -ml-2">
                 {tours.map((tour, index) => (
                   <div className="relative flex-[0_0_100%] min-w-0 p-2" key={index}>
                     <TourCard tour={tour} />

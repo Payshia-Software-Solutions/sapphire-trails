@@ -102,26 +102,46 @@ export const adminProfilePasswordSchema = z.object({
 
 
 // Tour Package Schema
-export const packageFeatureSchema = z.object({
+export const tourHighlightSchema = z.object({
   icon: iconEnum,
-  text: z.string().min(3, "Feature text is required."),
+  title: z.string().min(3, "Highlight title is required."),
+  description: z.string().min(10, "Highlight description is required."),
+});
+
+export const itineraryItemSchema = z.object({
+  time: z.string().min(1, "Time is required."),
+  title: z.string().min(3, "Title is required."),
+  description: z.string().min(10, "Description is required."),
 });
 
 export const packageFormSchema = z.object({
   id: z.string().min(3, "ID is required and must be unique.").regex(/^[a-z0-9-]+$/, "ID can only contain lowercase letters, numbers, and hyphens."),
-  imageUrl: z.string().min(1, "An image is required."),
+  
+  // Homepage Card
+  imageUrl: z.string().min(1, "An image is required for the homepage card."),
   imageAlt: z.string().min(3, "Image alt text is required."),
   imageHint: z.string().min(2, "Image hint is required."),
-  titleLine1: z.string().optional().or(z.literal('')),
-  titleLine2: z.string().optional().or(z.literal('')),
-  titleLine3: z.string().optional().or(z.literal('')),
-  title: z.string().min(3, "Title is required for homepage card."),
-  description: z.string().min(10, "Description is required for homepage card."),
-  features: z.array(packageFeatureSchema).min(1, "At least one feature is required."),
+  homepageTitle: z.string().min(3, "Title is required for homepage card."),
+  homepageDescription: z.string().min(10, "Description is required for homepage card."),
+  
+  // Tour Detail Page
+  tourPageTitle: z.string().min(3, "A title for the tour page is required."),
+  duration: z.string().min(3, "Duration is required."),
   price: z.string().min(1, "Price is required."),
   priceSuffix: z.string().min(3, "Price suffix is required (e.g., per person)."),
+  heroImage: z.string().min(1, "A hero image for the tour page is required."),
+  heroImageHint: z.string().min(2, "Hero image hint is required."),
+  tourPageDescription: z.string().min(10, "A description for the tour page is required."),
+  
+  tourHighlights: z.array(tourHighlightSchema).length(3, "You must provide exactly 3 tour highlights."),
+  
+  inclusions: z.array(z.object({ text: z.string().min(3, 'Inclusion text is required.') })).min(1, "At least one inclusion is required."),
+
+  itinerary: z.array(itineraryItemSchema).min(1, "At least one itinerary item is required."),
+  
   bookingLink: z.string().min(1, "Booking link is required.").startsWith("/", { message: "Booking link must be a relative path starting with '/'." }),
 });
+
 
 // CMS Schema
 export const cmsFormSchema = z.object({

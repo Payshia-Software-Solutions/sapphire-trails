@@ -12,8 +12,13 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -119,107 +124,112 @@ export default function CmsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Hero Section</CardTitle>
-              <CardDescription>Content for the main hero banner on the homepage.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField control={form.control} name="hero.headline" render={({ field }) => (<FormItem><FormLabel>Headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="hero.subheadline" render={({ field }) => (<FormItem><FormLabel>Sub-headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-              
-              <FormField
-                control={form.control}
-                name="hero.imageUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Background Image</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileChange(e, field.onChange, setHeroImagePreview)}
-                        className="text-sm"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {heroImagePreview && (
-                <div className="mt-2">
-                  <FormLabel>Preview</FormLabel>
-                  <Image src={heroImagePreview} alt="Hero image preview" width={200} height={100} className="rounded-md object-cover mt-2 border" />
-                </div>
-              )}
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <FormField control={form.control} name="hero.imageAlt" render={({ field }) => (<FormItem><FormLabel>Image Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                <FormField control={form.control} name="hero.imageHint" render={({ field }) => (<FormItem><FormLabel>Image AI Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Discover Section</CardTitle>
-              <CardDescription>Content for the &quot;Discover the Sapphire Trails&quot; section.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <FormField control={form.control} name="discover.description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>)} />
-              <Separator />
-              <p className="font-medium">Section Images (3)</p>
-              {defaultValues.discover.images.map((_, index) => (
-                <div key={index} className="space-y-4 p-4 border rounded-md">
-                  <p className="font-medium text-sm text-muted-foreground">Image {index + 1}</p>
-                   <FormField
-                    control={form.control}
-                    name={`discover.images.${index}.src`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Upload Image</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleFileChange(e, field.onChange, (preview) => {
-                              const newPreviews = [...discoverImagePreviews];
-                              newPreviews[index] = preview;
-                              setDiscoverImagePreviews(newPreviews);
-                            })}
-                            className="text-sm"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {discoverImagePreviews[index] && (
-                    <div className="mt-2">
-                        <FormLabel>Preview</FormLabel>
-                        <Image src={discoverImagePreviews[index]!} alt={`Discover image ${index + 1} preview`} width={200} height={100} className="rounded-md object-cover mt-2 border" />
-                    </div>
-                  )}
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name={`discover.images.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name={`discover.images.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+          <Accordion type="single" collapsible className="w-full space-y-6" defaultValue="hero">
+            
+            {/* Hero Section Accordion */}
+            <AccordionItem value="hero" className="border-none">
+              <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+                <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">
+                  <div className="flex-1 text-left">
+                    <h3 className="text-xl font-semibold leading-none tracking-tight">Hero Section</h3>
+                    <p className="text-sm text-muted-foreground mt-1.5">Content for the main hero banner on the homepage.</p>
                   </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                </AccordionTrigger>
+                <AccordionContent className="p-6 pt-0">
+                   <div className="space-y-4 border-t pt-6">
+                      <FormField control={form.control} name="hero.headline" render={({ field }) => (<FormItem><FormLabel>Headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <FormField control={form.control} name="hero.subheadline" render={({ field }) => (<FormItem><FormLabel>Sub-headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <FormField control={form.control} name="hero.imageUrl" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Background Image</FormLabel>
+                            <FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setHeroImagePreview)} className="text-sm" /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {heroImagePreview && (
+                        <div className="mt-2">
+                          <FormLabel>Preview</FormLabel>
+                          <Image src={heroImagePreview} alt="Hero image preview" width={200} height={100} className="rounded-md object-cover mt-2 border" />
+                        </div>
+                      )}
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <FormField control={form.control} name="hero.imageAlt" render={({ field }) => (<FormItem><FormLabel>Image Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="hero.imageHint" render={({ field }) => (<FormItem><FormLabel>Image AI Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      </div>
+                   </div>
+                </AccordionContent>
+              </div>
+            </AccordionItem>
+            
+            {/* Discover Section Accordion */}
+            <AccordionItem value="discover" className="border-none">
+              <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+                <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">
+                  <div className="flex-1 text-left">
+                    <h3 className="text-xl font-semibold leading-none tracking-tight">Discover Section</h3>
+                    <p className="text-sm text-muted-foreground mt-1.5">Content for the &quot;Discover the Sapphire Trails&quot; section.</p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="p-6 pt-0">
+                  <div className="space-y-6 border-t pt-6">
+                    <FormField control={form.control} name="discover.description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>)} />
+                    <Separator />
+                    <p className="font-medium">Section Images (3)</p>
+                    {defaultValues.discover.images.map((_, index) => (
+                      <div key={index} className="space-y-4 p-4 border rounded-md">
+                        <p className="font-medium text-sm text-muted-foreground">Image {index + 1}</p>
+                        <FormField control={form.control} name={`discover.images.${index}.src`} render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Upload Image</FormLabel>
+                              <FormControl>
+                                <Input type="file" accept="image/*"
+                                  onChange={(e) => handleFileChange(e, field.onChange, (preview) => {
+                                    const newPreviews = [...discoverImagePreviews];
+                                    newPreviews[index] = preview;
+                                    setDiscoverImagePreviews(newPreviews);
+                                  })} className="text-sm" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        {discoverImagePreviews[index] && (
+                          <div className="mt-2">
+                              <FormLabel>Preview</FormLabel>
+                              <Image src={discoverImagePreviews[index]!} alt={`Discover image ${index + 1} preview`} width={200} height={100} className="rounded-md object-cover mt-2 border" />
+                          </div>
+                        )}
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <FormField control={form.control} name={`discover.images.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          <FormField control={form.control} name={`discover.images.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </div>
+            </AccordionItem>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Footer Social Links</CardTitle>
-              <CardDescription>Update the social media links in the website footer.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField control={form.control} name="footer.facebookUrl" render={({ field }) => (<FormItem><FormLabel>Facebook URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="footer.instagramUrl" render={({ field }) => (<FormItem><FormLabel>Instagram URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="footer.youtubeUrl" render={({ field }) => (<FormItem><FormLabel>YouTube URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-            </CardContent>
-          </Card>
+            {/* Footer Section Accordion */}
+            <AccordionItem value="footer" className="border-none">
+              <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+                <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">
+                  <div className="flex-1 text-left">
+                    <h3 className="text-xl font-semibold leading-none tracking-tight">Footer Social Links</h3>
+                    <p className="text-sm text-muted-foreground mt-1.5">Update the social media links in the website footer.</p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="p-6 pt-0">
+                  <div className="space-y-4 border-t pt-6">
+                    <FormField control={form.control} name="footer.facebookUrl" render={({ field }) => (<FormItem><FormLabel>Facebook URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="footer.instagramUrl" render={({ field }) => (<FormItem><FormLabel>Instagram URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="footer.youtubeUrl" render={({ field }) => (<FormItem><FormLabel>YouTube URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  </div>
+                </AccordionContent>
+              </div>
+            </AccordionItem>
+          </Accordion>
 
           <div className="mt-8 pt-5 flex justify-end">
             <Button type="submit" size="lg">Save All Changes</Button>
