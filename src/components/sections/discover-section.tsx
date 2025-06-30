@@ -101,7 +101,7 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-16 w-full"
+            className="mt-16 w-full overflow-hidden"
         >
             {/* Mobile View: A standard swipeable carousel using the Embla library. */}
             <div className="md:hidden">
