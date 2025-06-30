@@ -49,6 +49,7 @@ export default function AddPackagePage() {
       tourPageDescription: '',
       tourHighlights: Array(3).fill({ icon: 'Star', title: '', description: '' }),
       inclusions: [{ text: '' }],
+      itinerary: Array(5).fill({ time: '', title: '', description: '' }),
       bookingLink: '/booking',
     },
   });
@@ -61,6 +62,11 @@ export default function AddPackagePage() {
   const { fields: inclusionFields, append: appendInclusion, remove: removeInclusion } = useFieldArray({
     control: form.control,
     name: "inclusions",
+  });
+
+  const { fields: itineraryFields, append: appendItinerary, remove: removeItinerary } = useFieldArray({
+    control: form.control,
+    name: "itinerary",
   });
 
   const handleFileChange = (
@@ -97,6 +103,7 @@ export default function AddPackagePage() {
       tourPageDescription: data.tourPageDescription,
       tourHighlights: data.tourHighlights,
       inclusions: data.inclusions.map(inc => inc.text),
+      itinerary: data.itinerary,
       bookingLink: data.bookingLink,
     };
 
@@ -224,6 +231,30 @@ export default function AddPackagePage() {
                   <Button type="button" variant="outline" size="sm" onClick={() => appendInclusion({ text: '' })}>
                     <Plus className="mr-2 h-4 w-4" /> Add Inclusion
                   </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                    <CardTitle>Daily Itinerary</CardTitle>
+                    <CardDescription>Add the schedule of activities for the tour.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {itineraryFields.map((item, index) => (
+                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeItinerary(index)} disabled={itineraryFields.length <= 1}>
+                                <Trash2 className="h-3 w-3" />
+                             </Button>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <FormField control={form.control} name={`itinerary.${index}.time`} render={({ field }) => (<FormItem><FormLabel>Time</FormLabel><FormControl><Input placeholder="e.g., 9:00 a.m" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name={`itinerary.${index}.title`} render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="e.g., Meet & Greet" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            </div>
+                            <FormField control={form.control} name={`itinerary.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the activity" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        </div>
+                    ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendItinerary({ time: '', title: '', description: '' })}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Itinerary Item
+                    </Button>
                 </CardContent>
               </Card>
           

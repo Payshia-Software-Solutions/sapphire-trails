@@ -11,6 +11,7 @@ import { TourDetailHero } from '@/components/sections/tour-detail-hero';
 import { TourDetailHighlights } from '@/components/sections/tour-detail-highlights';
 import { TourDetailInclusions } from '@/components/sections/tour-detail-inclusions';
 import { BookingSection } from '@/components/sections/booking-section';
+import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary';
 
 
 const getAllTourPackages = (): TourPackage[] => {
@@ -90,6 +91,7 @@ export default function TourDetailPage() {
             description={tourPackage.tourPageDescription}
             highlights={tourPackage.tourHighlights}
         />
+        <TourDetailItinerary itinerary={tourPackage.itinerary} />
         <TourDetailInclusions
             inclusions={tourPackage.inclusions}
         />

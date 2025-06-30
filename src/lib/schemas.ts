@@ -108,6 +108,12 @@ export const tourHighlightSchema = z.object({
   description: z.string().min(10, "Highlight description is required."),
 });
 
+export const itineraryItemSchema = z.object({
+  time: z.string().min(1, "Time is required."),
+  title: z.string().min(3, "Title is required."),
+  description: z.string().min(10, "Description is required."),
+});
+
 export const packageFormSchema = z.object({
   id: z.string().min(3, "ID is required and must be unique.").regex(/^[a-z0-9-]+$/, "ID can only contain lowercase letters, numbers, and hyphens."),
   
@@ -130,6 +136,8 @@ export const packageFormSchema = z.object({
   tourHighlights: z.array(tourHighlightSchema).length(3, "You must provide exactly 3 tour highlights."),
   
   inclusions: z.array(z.object({ text: z.string().min(3, 'Inclusion text is required.') })).min(1, "At least one inclusion is required."),
+
+  itinerary: z.array(itineraryItemSchema).min(1, "At least one itinerary item is required."),
   
   bookingLink: z.string().min(1, "Booking link is required.").startsWith("/", { message: "Booking link must be a relative path starting with '/'." }),
 });

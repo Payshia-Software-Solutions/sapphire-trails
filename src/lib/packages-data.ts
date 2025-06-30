@@ -11,6 +11,12 @@ export interface TourHighlight {
   description: string;
 }
 
+export interface ItineraryItem {
+  time: string;
+  title: string;
+  description: string;
+}
+
 export interface TourPackage {
     id: string; // slug
     
@@ -31,9 +37,25 @@ export interface TourPackage {
     tourPageDescription: string;
     tourHighlights: TourHighlight[];
     inclusions: string[];
+    itinerary: ItineraryItem[];
     
     bookingLink: string;
 }
+
+const gemExplorerItinerary: ItineraryItem[] = [
+    { time: '9:00 a.m', title: 'Meet & Greet', description: 'Gather at the visitor center for safety briefing and equipment fitting.' },
+    { time: '10:00 a.m', title: 'Mine Entry', description: 'Descend into the mine and explore the underground chambers.' },
+    { time: '12:00 p.m', title: 'Gem Hunting', description: 'Begin your search for precious gems with expert guidance.' },
+    { time: '1:00 p.m', title: 'Lunch Break', description: 'Enjoy a hearty meal at the surface with scenic mountain views.' },
+    { time: '5:00 p.m', title: 'Return Journey', description: 'Head back to the starting point with your precious discoveries.' },
+];
+
+const deluxeItinerary: ItineraryItem[] = [
+    ...gemExplorerItinerary.slice(0, 4),
+    { time: '5:00 p.m', title: 'Luxury Transfer', description: 'Transfer to the Grand Silver Ray resort for check-in.' },
+    { time: '7:30 p.m', title: 'Gourmet Dinner', description: 'Experience a curated dining menu with local and international flavors.' },
+    { time: 'Day 2', title: 'Leisure & Departure', description: 'Enjoy breakfast and resort amenities before departure.' },
+];
 
 export const initialTourPackages: TourPackage[] = [
     {
@@ -64,6 +86,7 @@ export const initialTourPackages: TourPackage[] = [
             'Gem Showcase from premium vendors',
             'SNACK AT THE MINE LUNCH AT GRAND SILVER RAY'
         ],
+        itinerary: gemExplorerItinerary,
         bookingLink: '/booking',
     },
     {
@@ -92,6 +115,7 @@ export const initialTourPackages: TourPackage[] = [
             'TEA FACTORY TOUR & TEA TASTING SESSION',
             'ONE NIGHT FULL BOARD STAY AT GRAND SILVER RAY'
         ],
+        itinerary: deluxeItinerary,
         bookingLink: '/booking',
     }
 ];
