@@ -6,7 +6,6 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { packageFormSchema } from '@/lib/schemas';
-import type { TourPackage } from '@/lib/packages-data';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -126,43 +125,65 @@ export default function AddPackagePage() {
   };
 
 
-  function onSubmit(data: z.infer<typeof packageFormSchema>) {
-    const newPackage: TourPackage = {
-      id: data.id,
-      imageUrl: data.imageUrl,
-      imageAlt: data.imageAlt,
-      imageHint: data.imageHint,
-      homepageTitle: data.homepageTitle,
-      homepageDescription: data.homepageDescription,
-      tourPageTitle: data.tourPageTitle,
-      duration: data.duration,
-      price: data.price,
-      priceSuffix: data.priceSuffix,
-      heroImage: data.heroImage,
-      heroImageHint: data.heroImageHint,
-      tourPageDescription: data.tourPageDescription,
-      tourHighlights: data.tourHighlights,
-      inclusions: data.inclusions.map(inc => inc.text),
-      itinerary: data.itinerary,
-      bookingLink: data.bookingLink,
-    };
-
+  async function onSubmit(data: z.infer<typeof packageFormSchema>) {
     try {
-      const storedPackagesRaw = localStorage.getItem('customPackages');
-      const storedPackages = storedPackagesRaw ? JSON.parse(storedPackagesRaw) : [];
-      const updatedPackages = [...storedPackages, newPackage];
-      localStorage.setItem('customPackages', JSON.stringify(updatedPackages));
+      const payload = {
+        id: data.id,
+        homepage_title: data.homepageTitle,
+        homepage_description: data.homepageDescription,
+        homepage_image_url: data.imageUrl,
+        homepage_image_alt: data.imageAlt,
+        homepage_image_hint: data.imageHint,
+        tour_page_title: data.tourPageTitle,
+        duration: data.duration,
+        price: data.price,
+        price_suffix: data.priceSuffix,
+        hero_image_url: data.heroImage,
+        hero_image_hint: data.heroImageHint,
+        tour_page_description: data.tourPageDescription,
+        booking_link: data.bookingLink,
+      };
+
+      const response = await fetch('http://localhost/sapphire_trails_server/tours', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.message || 'An unexpected error occurred.';
+        
+        if (response.status === 422 && errorMessage.toLowerCase().includes('id')) {
+            form.setError('id', { type: 'manual', message: 'This ID already exists. Please use a unique one.' });
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Creation Failed',
+                description: errorMessage,
+            });
+        }
+        return;
+      }
+      
+      // Note: After creating the main package, separate API calls would be needed
+      // to post highlights, inclusions, and itinerary items, associating them with the new package ID.
+
       toast({
         title: 'Package Added!',
         description: `Package "${data.homepageTitle}" has been saved successfully.`,
       });
       router.push('/admin/manage-packages');
+
     } catch (error) {
-      console.error('Failed to save to localStorage', error);
+      console.error('Failed to save package:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'There was a problem saving the new package.',
+        description: 'Could not connect to the server. Please try again later.',
       });
     }
   }
@@ -344,5 +365,3 @@ export default function AddPackagePage() {
     </div>
   );
 }
-
-    
