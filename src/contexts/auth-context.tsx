@@ -81,28 +81,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signup = async (name: string, email: string, phone: string | undefined, pass: string): Promise<boolean> => {
-     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    const allUsersRaw = localStorage.getItem(ALL_USERS_KEY);
-    const allUsers: User[] = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+    setIsLoading(true);
+    try {
+      const userId = crypto.randomUUID();
+      const response = await fetch('http://localhost/sapphire_trails_server/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          id: userId,
+          name: name,
+          email: email,
+          password: pass,
+          phone: phone || '',
+        }),
+      });
 
-    if (allUsers.find(u => u.email === email)) {
-      setIsLoading(false);
-      toast({ variant: 'destructive', title: 'Error', description: 'An account with this email already exists.' });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.message || `Sign-up failed. Please try again.`;
+        throw new Error(errorMessage);
+      }
+
+      // On successful creation, create a session for the new user with the data we sent.
+      const newUser: User = { id: userId, name, email, phone };
+      
+      setUser(newUser);
+      sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(newUser));
+      toast({ title: 'Welcome!', description: 'Your account has been created successfully.' });
+      return true;
+
+    } catch (error) {
+      console.error('Signup failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during sign-up.';
+      toast({ variant: 'destructive', title: 'Error', description: errorMessage });
       return false;
+    } finally {
+      setIsLoading(false);
     }
-
-    const newUser: User = { id: String(allUsers.length + 1), name, email, phone };
-    const updatedUsers = [...allUsers, newUser];
-    localStorage.setItem(ALL_USERS_KEY, JSON.stringify(updatedUsers));
-    
-    setUser(newUser);
-    sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(newUser));
-    setIsLoading(false);
-    toast({ title: 'Welcome!', description: 'Your account has been created successfully.' });
-    return true;
   };
 
   const logout = () => {
