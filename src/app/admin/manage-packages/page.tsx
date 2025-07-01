@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { TourPackage } from '@/lib/packages-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, AlertTriangle, Plus, Package as PackageIcon } from 'lucide-react';
+import { Trash2, AlertTriangle, Plus, Package as PackageIcon, LoaderCircle } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,46 +21,56 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
+// A leaner type for what this page needs to display
+interface ManagedPackage {
+    id: string;
+    homepageTitle: string;
+    imageUrl: string;
+}
+
 export default function ManagePackagesPage() {
   const { toast } = useToast();
-  const [customPackages, setCustomPackages] = useState<TourPackage[]>([]);
+  const [packages, setPackages] = useState<ManagedPackage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const storedPackagesRaw = localStorage.getItem('customPackages');
-      if (storedPackagesRaw) {
-        const storedPackages = JSON.parse(storedPackagesRaw) as TourPackage[];
-        if (Array.isArray(storedPackages)) {
-          setCustomPackages(storedPackages);
+    async function fetchPackages() {
+        setIsLoading(true);
+        try {
+            const response = await fetch('http://localhost/sapphire_trails_server/tours');
+            if (!response.ok) {
+                throw new Error('Failed to fetch packages from the server.');
+            }
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                const mappedPackages = data.map((pkg: any) => ({
+                    id: pkg.id,
+                    homepageTitle: pkg.homepage_title,
+                    imageUrl: pkg.homepage_image_url,
+                }));
+                setPackages(mappedPackages);
+            }
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not load tour packages. Please ensure the server is running.',
+            });
+        } finally {
+            setIsLoading(false);
         }
-      }
-    } catch (error) {
-      console.error('Failed to load custom packages from localStorage', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Could not load custom packages.',
-      });
     }
+    fetchPackages();
   }, [toast]);
 
+  // Note: Delete functionality would require a DELETE endpoint on the server.
   const handleDelete = (id: string) => {
-    const updatedPackages = customPackages.filter(pkg => pkg.id !== id);
-    try {
-      localStorage.setItem('customPackages', JSON.stringify(updatedPackages));
-      setCustomPackages(updatedPackages);
-      toast({
-        title: 'Package Deleted!',
-        description: `The tour package has been successfully removed.`,
-      });
-    } catch (error) {
-      console.error('Failed to save to localStorage', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'There was a problem deleting the package.',
-      });
-    }
+    // This would be a fetch('.../tours/{id}', { method: 'DELETE' }) call
+    toast({
+        title: 'Delete Not Implemented',
+        description: 'Please implement a DELETE endpoint on the server.',
+    });
   };
 
   return (
@@ -80,25 +90,30 @@ export default function ManagePackagesPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Custom Added Packages</CardTitle>
+          <CardTitle>Tour Packages</CardTitle>
           <CardDescription>
-            Only packages added via the form are listed here. Deleting an item is permanent.
+            This list is fetched from your server. Deleting an item is permanent.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {customPackages.length > 0 ? (
+          {isLoading ? (
+             <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+              <LoaderCircle className="h-12 w-12 text-muted-foreground/50 animate-spin" />
+              <p>Loading packages from server...</p>
+            </div>
+          ) : packages.length > 0 ? (
             <div className="grid gap-6">
-              {customPackages.map((pkg) => (
+              {packages.map((pkg) => (
                 <div key={pkg.id} className="flex items-center gap-4 p-4 border rounded-lg">
                   <Image
                     src={pkg.imageUrl}
                     alt={pkg.homepageTitle}
                     width={80}
                     height={80}
-                    className="rounded-md object-cover aspect-square"
+                    className="rounded-md object-cover aspect-square bg-muted"
                   />
                   <div className="grid gap-1 text-sm flex-1">
-                    <div className="font-medium text-lg break-words">{pkg.title?.line2 || pkg.homepageTitle}</div>
+                    <div className="font-medium text-lg break-words">{pkg.homepageTitle}</div>
                     <div className="text-muted-foreground break-all">ID: {pkg.id}</div>
                   </div>
                   
@@ -131,7 +146,7 @@ export default function ManagePackagesPage() {
           ) : (
             <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
               <PackageIcon className="h-12 w-12 text-muted-foreground/50" />
-              <p>No custom packages have been added yet.</p>
+              <p>No custom packages found on the server.</p>
               <Button asChild variant="link" className="text-primary">
                 <Link href="/admin/manage-packages/add">Add your first package</Link>
               </Button>
