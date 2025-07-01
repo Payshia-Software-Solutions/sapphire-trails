@@ -54,13 +54,16 @@ const mapServerPackageToClient = (pkg: any): TourPackage => ({
 });
 
 function AllToursGrid() {
-    const [allTours, setAllTours] = useState<TourPackage[]>([]);
+    const [allTours, setAllTours] = useState<TourPackage[]>(initialTourPackages);
 
     useEffect(() => {
         async function fetchTours() {
             try {
                 const response = await fetch('http://localhost/sapphire_trails_server/tours');
-                 if (!response.ok) throw new Error('Failed to fetch');
+                 if (!response.ok) {
+                    console.error('Failed to fetch from server, using static data.');
+                    return;
+                }
 
                 const data = await response.json();
                 if (Array.isArray(data)) {
@@ -77,11 +80,10 @@ function AllToursGrid() {
 
                     setAllTours(Object.values(uniqueTours));
                 } else {
-                    setAllTours(initialTourPackages);
+                    console.error('Server response was not an array, using static data.');
                 }
             } catch (e) {
-                console.error("Failed to parse custom packages", e);
-                setAllTours(initialTourPackages);
+                console.error("Failed to fetch or parse packages, using static data as fallback.", e);
             }
         }
         fetchTours();

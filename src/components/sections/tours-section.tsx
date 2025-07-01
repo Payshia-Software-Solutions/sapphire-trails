@@ -60,19 +60,29 @@ export function ToursSection() {
     async function fetchTours() {
       try {
         const response = await fetch('http://localhost/sapphire_trails_server/tours');
-        if (!response.ok) throw new Error('Failed to fetch');
+        if (!response.ok) {
+            console.error("Failed to fetch tour packages, using static data as fallback.");
+            return;
+        }
         
         const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-            const mappedTours = data.map(mapServerPackageToClient);
-            setTours(mappedTours);
+        if (Array.isArray(data)) {
+            const combinedTours = [...initialTourPackages];
+            const serverTours = data.map(mapServerPackageToClient);
+            
+            const uniqueTours: { [key: string]: TourPackage } = {};
+            for (const pkg of combinedTours) {
+                uniqueTours[pkg.id] = pkg;
+            }
+            for (const pkg of serverTours) {
+                uniqueTours[pkg.id] = pkg;
+            }
+            setTours(Object.values(uniqueTours));
         } else {
-            // Fallback to initial static data if server returns empty or invalid data
-            setTours(initialTourPackages);
+            console.error("Server response was not an array, using static data.");
         }
       } catch (e) {
-        console.error("Failed to fetch tour packages, using static data as fallback.", e);
-        setTours(initialTourPackages);
+        console.error("Failed to fetch or parse packages, using static data as fallback.", e);
       }
     }
     fetchTours();
