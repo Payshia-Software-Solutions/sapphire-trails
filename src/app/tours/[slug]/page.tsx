@@ -13,29 +13,26 @@ import { TourDetailInclusions } from '@/components/sections/tour-detail-inclusio
 import { BookingSection } from '@/components/sections/booking-section';
 import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary';
 
+const mapServerPackageToClient = (pkg: any): TourPackage => ({
+  id: pkg.id,
+  imageUrl: pkg.homepage_image_url,
+  imageAlt: pkg.homepage_image_alt || '',
+  imageHint: pkg.homepage_image_hint || '',
+  homepageTitle: pkg.homepage_title,
+  homepageDescription: pkg.homepage_description,
+  tourPageTitle: pkg.tour_page_title,
+  duration: pkg.duration,
+  price: pkg.price,
+  priceSuffix: pkg.price_suffix,
+  heroImage: pkg.hero_image_url,
+  heroImageHint: pkg.hero_image_hint,
+  tourPageDescription: pkg.tour_page_description,
+  tourHighlights: pkg.highlights || [],
+  inclusions: pkg.inclusions ? pkg.inclusions.map((i: { text: string }) => i.text) : [],
+  itinerary: pkg.itinerary || [],
+  bookingLink: pkg.booking_link,
+});
 
-const getAllTourPackages = (): TourPackage[] => {
-  let allPackages: TourPackage[] = [...initialTourPackages];
-  if (typeof window !== 'undefined') {
-    const customPackagesRaw = localStorage.getItem('customPackages');
-    if (customPackagesRaw) {
-      try {
-        const customPackages = JSON.parse(customPackagesRaw) as TourPackage[];
-        if (Array.isArray(customPackages)) {
-          const combined = [...allPackages, ...customPackages];
-          const unique: { [key: string]: TourPackage } = {};
-          for (const pkg of combined) {
-            unique[pkg.id] = pkg;
-          }
-          allPackages = Object.values(unique);
-        }
-      } catch (e) {
-        console.error("Failed to parse custom packages", e);
-      }
-    }
-  }
-  return allPackages;
-};
 
 function LoadingSkeleton() {
     return (
@@ -61,10 +58,38 @@ export default function TourDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const allPackages = getAllTourPackages();
-    const foundPackage = allPackages.find((pkg) => pkg.id === params.slug);
-    setTourPackage(foundPackage);
-    setIsLoading(false);
+    if (!params.slug) return;
+
+    async function fetchTourPackage() {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`http://localhost/sapphire_trails_server/tours/${params.slug}`);
+            if (!response.ok) {
+                if (response.status === 404) {
+                     // Try finding in initial static packages as a fallback
+                    const staticPackage = initialTourPackages.find(p => p.id === params.slug);
+                    if (staticPackage) {
+                        setTourPackage(staticPackage);
+                    } else {
+                        setTourPackage(undefined);
+                    }
+                }
+                return;
+            }
+            const data = await response.json();
+            const mappedPackage = mapServerPackageToClient(data);
+            setTourPackage(mappedPackage);
+        } catch (error) {
+            console.error("Failed to fetch tour package", error);
+             // Try finding in initial static packages as a fallback
+            const staticPackage = initialTourPackages.find(p => p.id === params.slug);
+            setTourPackage(staticPackage);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    fetchTourPackage();
   }, [params.slug]);
 
   if (isLoading) {

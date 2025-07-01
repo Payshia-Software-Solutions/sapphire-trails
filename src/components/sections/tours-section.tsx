@@ -32,29 +32,50 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
   </Card>
 );
 
+const mapServerPackageToClient = (pkg: any): TourPackage => ({
+  id: pkg.id,
+  imageUrl: pkg.homepage_image_url,
+  imageAlt: pkg.homepage_image_alt || '',
+  imageHint: pkg.homepage_image_hint || '',
+  homepageTitle: pkg.homepage_title,
+  homepageDescription: pkg.homepage_description,
+  tourPageTitle: pkg.tour_page_title,
+  duration: pkg.duration,
+  price: pkg.price,
+  priceSuffix: pkg.price_suffix,
+  heroImage: pkg.hero_image_url,
+  heroImageHint: pkg.hero_image_hint,
+  tourPageDescription: pkg.tour_page_description,
+  tourHighlights: pkg.highlights || [],
+  inclusions: pkg.inclusions ? pkg.inclusions.map((i: { text: string }) => i.text) : [],
+  itinerary: pkg.itinerary || [],
+  bookingLink: pkg.booking_link,
+});
 
 export function ToursSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [tours, setTours] = useState<TourPackage[]>(initialTourPackages);
 
   useEffect(() => {
-    const storedPackagesRaw = localStorage.getItem('customPackages');
-    if (storedPackagesRaw) {
-        try {
-            const customPackages = JSON.parse(storedPackagesRaw) as TourPackage[];
-            if (Array.isArray(customPackages)) {
-                const combined = [...initialTourPackages, ...customPackages];
-                const unique: { [key: string]: TourPackage } = {};
-                for (const pkg of combined) {
-                    unique[pkg.id] = pkg;
-                }
-                setTours(Object.values(unique));
-            }
-        } catch (e) {
-            console.error("Failed to parse custom packages", e);
+    async function fetchTours() {
+      try {
+        const response = await fetch('http://localhost/sapphire_trails_server/tours');
+        if (!response.ok) throw new Error('Failed to fetch');
+        
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+            const mappedTours = data.map(mapServerPackageToClient);
+            setTours(mappedTours);
+        } else {
+            // Fallback to initial static data if server returns empty or invalid data
             setTours(initialTourPackages);
         }
+      } catch (e) {
+        console.error("Failed to fetch tour packages, using static data as fallback.", e);
+        setTours(initialTourPackages);
+      }
     }
+    fetchTours();
   }, []);
   
   const scrollPrev = React.useCallback(() => {
@@ -79,7 +100,7 @@ export function ToursSection() {
           {/* Mobile view swiper */}
           <div className="md:hidden relative">
              <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex -ml-2">
+              <div className="flex">
                 {tours.map((tour, index) => (
                   <div className="relative flex-[0_0_100%] min-w-0 p-2" key={index}>
                     <TourCard tour={tour} />

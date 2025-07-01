@@ -33,27 +33,58 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
   </Card>
 );
 
+const mapServerPackageToClient = (pkg: any): TourPackage => ({
+  id: pkg.id,
+  imageUrl: pkg.homepage_image_url,
+  imageAlt: pkg.homepage_image_alt || '',
+  imageHint: pkg.homepage_image_hint || '',
+  homepageTitle: pkg.homepage_title,
+  homepageDescription: pkg.homepage_description,
+  tourPageTitle: pkg.tour_page_title,
+  duration: pkg.duration,
+  price: pkg.price,
+  priceSuffix: pkg.price_suffix,
+  heroImage: pkg.hero_image_url,
+  heroImageHint: pkg.hero_image_hint,
+  tourPageDescription: pkg.tour_page_description,
+  tourHighlights: pkg.highlights || [],
+  inclusions: pkg.inclusions ? pkg.inclusions.map((i: { text: string }) => i.text) : [],
+  itinerary: pkg.itinerary || [],
+  bookingLink: pkg.booking_link,
+});
+
 function AllToursGrid() {
-    const [allTours, setAllTours] = useState<TourPackage[]>(initialTourPackages);
+    const [allTours, setAllTours] = useState<TourPackage[]>([]);
 
     useEffect(() => {
-        const storedPackagesRaw = localStorage.getItem('customPackages');
-        if (storedPackagesRaw) {
+        async function fetchTours() {
             try {
-                const customPackages = JSON.parse(storedPackagesRaw) as TourPackage[];
-                if (Array.isArray(customPackages)) {
-                    const combined = [...initialTourPackages, ...customPackages];
-                    const unique: { [key: string]: TourPackage } = {};
-                    for (const pkg of combined) {
-                        unique[pkg.id] = pkg;
+                const response = await fetch('http://localhost/sapphire_trails_server/tours');
+                 if (!response.ok) throw new Error('Failed to fetch');
+
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    const combinedTours = [...initialTourPackages];
+                    const serverTours = data.map(mapServerPackageToClient);
+                    
+                    const uniqueTours: { [key: string]: TourPackage } = {};
+                    for (const pkg of combinedTours) {
+                        uniqueTours[pkg.id] = pkg;
                     }
-                    setAllTours(Object.values(unique));
+                     for (const pkg of serverTours) {
+                        uniqueTours[pkg.id] = pkg;
+                    }
+
+                    setAllTours(Object.values(uniqueTours));
+                } else {
+                    setAllTours(initialTourPackages);
                 }
             } catch (e) {
                 console.error("Failed to parse custom packages", e);
                 setAllTours(initialTourPackages);
             }
         }
+        fetchTours();
     }, []);
 
     return (
