@@ -1,23 +1,16 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
-import type { AdminUser } from '@/lib/schemas';
 import { useToast } from '@/hooks/use-toast';
 
-const ADMIN_USERS_KEY = 'sapphire-admins';
 const ADMIN_SESSION_KEY = 'adminUser';
-
-const defaultSuperAdmin: AdminUser = {
-  username: 'admin',
-  password: 'admin123',
-  role: 'superadmin'
-};
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -26,39 +19,41 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Seed the first super admin if no admins exist
-    try {
-      const storedAdmins = localStorage.getItem(ADMIN_USERS_KEY);
-      if (!storedAdmins) {
-        localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify([defaultSuperAdmin]));
-      }
-    } catch (error) {
-        console.error("Failed to seed admin user", error);
-    }
-  }, []);
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-        const storedAdminsRaw = localStorage.getItem(ADMIN_USERS_KEY);
-        const storedAdmins: AdminUser[] = storedAdminsRaw ? JSON.parse(storedAdminsRaw) : [];
-        
-        const foundAdmin = storedAdmins.find(admin => admin.username === username && admin.password === password);
+    setError('');
 
-        if (foundAdmin) {
-            sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(foundAdmin));
-            toast({
-                title: "Login Successful",
-                description: `Welcome back, ${foundAdmin.username}!`,
-            });
-            router.push('/admin/dashboard');
-        } else {
-            setError('Invalid username or password');
-        }
+    try {
+      const response = await fetch('http://localhost/sapphire_trails_server/admin/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed. Please check your credentials.');
+      }
+
+      if (data.admin) {
+        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(data.admin));
+        toast({
+          title: 'Login Successful',
+          description: `Welcome back, ${data.admin.username}!`,
+        });
+        router.push('/admin/dashboard');
+      } else {
+         throw new Error('Login successful, but no admin data was returned.');
+      }
+
     } catch (error) {
-        console.error("Login failed", error);
-        setError('An unexpected error occurred. Please try again.');
+      console.error('Login failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.';
+      setError(errorMessage);
     }
   };
 
@@ -66,7 +61,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center p-4 bg-background-alt">
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
-          <Image 
+          <Image
             src="/img/logo4.png"
             alt="Sapphire Trails Logo"
             width={120}

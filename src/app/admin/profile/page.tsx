@@ -17,7 +17,6 @@ import { ArrowLeft, ShieldCheck, UserCog } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const ADMIN_SESSION_KEY = 'adminUser';
-const ADMIN_USERS_KEY = 'sapphire-admins';
 
 export default function AdminProfilePage() {
   const router = useRouter();
@@ -44,37 +43,13 @@ export default function AdminProfilePage() {
 
   const onSubmitPassword = (data: z.infer<typeof adminProfilePasswordSchema>) => {
     if (!adminUser) return;
-    try {
-      const storedAdminsRaw = localStorage.getItem(ADMIN_USERS_KEY);
-      const storedAdmins: AdminUser[] = storedAdminsRaw ? JSON.parse(storedAdminsRaw) : [];
-      
-      const currentUserIndex = storedAdmins.findIndex(u => u.username === adminUser.username);
-      if (currentUserIndex === -1) {
-          toast({ variant: 'destructive', title: 'Error', description: 'User not found.' });
-          return;
-      }
-      
-      if(storedAdmins[currentUserIndex].password !== data.currentPassword) {
-          form.setError('currentPassword', { type: 'manual', message: 'Incorrect current password.' });
-          return;
-      }
-
-      storedAdmins[currentUserIndex].password = data.newPassword;
-      localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify(storedAdmins));
-      
-      toast({
-        title: 'Success!',
-        description: 'Your password has been updated.',
-      });
-      form.reset();
-    } catch (error) {
-      console.error('Failed to update password:', error);
-      toast({
+    toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'An unexpected error occurred.',
-      });
-    }
+        title: 'Not Implemented',
+        description: 'Password change functionality needs to be connected to the server.',
+    });
+    // This would be a server call, e.g.
+    // fetch(`/api/admins/${adminUser.id}/change-password`, { ... })
   };
 
   if (!adminUser) {

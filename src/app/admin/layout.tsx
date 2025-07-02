@@ -4,8 +4,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
-import type { NavLink } from '@/components/admin/sidebar';
+import { AdminSidebar, navLinks, type NavLink } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut, User } from 'lucide-react';
@@ -37,6 +36,7 @@ export default function AdminLayout({
   const [isLoading, setIsLoading] = useState(false);
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const isMounted = useRef(false);
+  const [visibleNavLinks, setVisibleNavLinks] = useState<NavLink[]>([]);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -51,30 +51,33 @@ export default function AdminLayout({
    useEffect(() => {
     const adminUserRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
     if (adminUserRaw) {
-      setAdminUser(JSON.parse(adminUserRaw));
+      const user = JSON.parse(adminUserRaw);
+      setAdminUser(user);
+      
+      // Determine visible links based on role
+      if (user.role === 'superadmin') {
+        setVisibleNavLinks(navLinks);
+      } else {
+        setVisibleNavLinks(navLinks.filter(link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard'));
+      }
+    } else if (!isLoginPage) {
+        router.push('/admin/login');
     }
-  }, [pathname]);
+  }, [pathname, isLoginPage, router]);
 
 
   const handleLogout = () => {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    setAdminUser(null);
     router.push('/admin/login');
   };
   
-  const getVisibleNavLinks = (role: 'admin' | 'superadmin' | undefined): NavLink[] => {
-    if (!role) return [];
-    if (role === 'superadmin') {
-      return navLinks;
-    }
-    return navLinks.filter(link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard');
-  }
-
   const layout = (
       isLoginPage ? (
         <>{children}</>
       ) : (
         <div className="grid h-screen w-full overflow-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-          <AdminSidebar />
+          <AdminSidebar visibleNavLinks={visibleNavLinks} />
           <div className="grid grid-rows-[auto_1fr] overflow-hidden">
             <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
                 <Sheet>
@@ -99,7 +102,7 @@ export default function AdminLayout({
                             >
                                 <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
                             </Link>
-                            {getVisibleNavLinks(adminUser?.role).map((link) => (
+                            {visibleNavLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}

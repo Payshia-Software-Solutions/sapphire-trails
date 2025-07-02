@@ -89,7 +89,13 @@ export const adminCreationSchema = z.object({
   role: z.enum(['admin', 'superadmin'], { required_error: 'A role must be selected.' }),
 });
 
-export type AdminUser = z.infer<typeof adminCreationSchema>;
+// This represents the admin user object stored in session/state
+export interface AdminUser {
+  id: number;
+  username: string;
+  role: 'admin' | 'superadmin';
+  created_at: string;
+}
 
 export const adminProfilePasswordSchema = z.object({
   currentPassword: z.string().min(1, { message: 'Current password is required.' }),
