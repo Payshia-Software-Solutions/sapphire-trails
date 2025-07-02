@@ -15,7 +15,7 @@ interface User {
 
 // A mock user database
 const initialMockUsers: User[] = [
-  { id: '1', name: 'Test User', email: 'user@test.com', phone: '123-456-7890' },
+  { id: 'ecb0641c-9b8b-49e8-81b7-d264fac96cf3', name: 'Test User', email: 'user@test.com', phone: '123-456-7890' },
 ];
 const MOCK_PASSWORD = 'password123';
 const USER_SESSION_KEY = 'sapphire-user';
@@ -105,9 +105,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(errorMessage);
       }
 
-      // On successful creation, create a session for the new user with the data we sent.
       const newUser: User = { id: userId, name, email, phone };
       
+      const allUsersRaw = localStorage.getItem(ALL_USERS_KEY);
+      const allUsers: User[] = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+      allUsers.push(newUser);
+      localStorage.setItem(ALL_USERS_KEY, JSON.stringify(allUsers));
+
       setUser(newUser);
       sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(newUser));
       toast({ title: 'Welcome!', description: 'Your account has been created successfully.' });
