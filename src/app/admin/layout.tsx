@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { AdminSidebar, navLinks, type NavLink } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -36,7 +36,6 @@ export default function AdminLayout({
   const [isLoading, setIsLoading] = useState(false);
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const isMounted = useRef(false);
-  const [visibleNavLinks, setVisibleNavLinks] = useState<NavLink[]>([]);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -51,19 +50,28 @@ export default function AdminLayout({
    useEffect(() => {
     const adminUserRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
     if (adminUserRaw) {
-      const user = JSON.parse(adminUserRaw);
-      setAdminUser(user);
-      
-      // Determine visible links based on role
-      if (user.role === 'superadmin') {
-        setVisibleNavLinks(navLinks);
-      } else {
-        setVisibleNavLinks(navLinks.filter(link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard'));
+      try {
+        const user = JSON.parse(adminUserRaw);
+        setAdminUser(user);
+      } catch (e) {
+        console.error("Failed to parse admin user from session storage", e);
+        sessionStorage.removeItem(ADMIN_SESSION_KEY);
+        if (!isLoginPage) router.push('/admin/login');
       }
     } else if (!isLoginPage) {
         router.push('/admin/login');
     }
   }, [pathname, isLoginPage, router]);
+  
+  const visibleNavLinks = useMemo(() => {
+    if (!adminUser) {
+      return [];
+    }
+    if (adminUser.role === 'superadmin') {
+      return navLinks;
+    }
+    return navLinks.filter(link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard');
+  }, [adminUser]);
 
 
   const handleLogout = () => {
