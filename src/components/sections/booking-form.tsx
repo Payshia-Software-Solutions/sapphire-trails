@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -37,7 +38,7 @@ import { bookingFormSchema } from "@/lib/schemas"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
-import { initialTourPackages, mapServerPackageToClient, type TourPackage } from "@/lib/packages-data"
+import { mapServerPackageToClient, type TourPackage } from "@/lib/packages-data"
 
 export function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -45,7 +46,7 @@ export function BookingForm() {
   const tourTypeParam = searchParams.get('tourType');
   const { user } = useAuth();
   const { toast } = useToast();
-  const [tourPackages, setTourPackages] = useState<TourPackage[]>(initialTourPackages);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
 
   useEffect(() => {
     async function fetchTourPackages() {
@@ -54,10 +55,7 @@ export function BookingForm() {
             if (response.ok) {
                 const serverData = await response.json();
                 if(Array.isArray(serverData)) {
-                    const serverPackages = serverData.map(mapServerPackageToClient);
-                    const combined = [...initialTourPackages, ...serverPackages];
-                    const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
-                    setTourPackages(unique);
+                    setTourPackages(serverData.map(mapServerPackageToClient));
                 }
             }
         } catch(e) { console.error("Could not fetch tour packages", e); }

@@ -10,7 +10,7 @@ import { ToursHero } from '@/components/sections/tours-hero';
 import { Faq } from '@/components/sections/faq';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { initialTourPackages, mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
   <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
@@ -34,30 +34,25 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
 );
 
 function AllToursGrid() {
-    const [allTours, setAllTours] = useState<TourPackage[]>(initialTourPackages);
+    const [allTours, setAllTours] = useState<TourPackage[]>([]);
 
     useEffect(() => {
         async function fetchTours() {
             try {
                 const response = await fetch('http://localhost/sapphire_trails_server/tours');
                  if (!response.ok) {
-                    console.error('Failed to fetch from server, using static data.');
+                    console.error('Failed to fetch from server.');
                     return;
                 }
 
                 const data = await response.json();
                 if (Array.isArray(data)) {
-                    const serverPackages = data.map(mapServerPackageToClient);
-                    const combinedTours = [...initialTourPackages, ...serverPackages];
-                    
-                    const uniqueTours = Array.from(new Map(combinedTours.map(p => [p.id, p])).values());
-
-                    setAllTours(uniqueTours);
+                    setAllTours(data.map(mapServerPackageToClient));
                 } else {
-                    console.error('Server response was not an array, using static data.');
+                    console.error('Server response was not an array.');
                 }
             } catch (e) {
-                console.error("Failed to fetch or parse packages, using static data as fallback.", e);
+                console.error("Failed to fetch or parse packages.", e);
             }
         }
         fetchTours();

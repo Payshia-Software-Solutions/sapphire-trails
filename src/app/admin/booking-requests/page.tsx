@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { initialTourPackages, mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
+import { mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
 
 const ADMIN_SESSION_KEY = 'adminUser';
 const ITEMS_PER_PAGE = 4;
@@ -55,7 +55,7 @@ export default function BookingRequestsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [tourPackages, setTourPackages] = useState<TourPackage[]>(initialTourPackages);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
 
   useEffect(() => {
     async function fetchTourPackages() {
@@ -64,10 +64,7 @@ export default function BookingRequestsPage() {
         if (response.ok) {
             const serverData = await response.json();
             if(Array.isArray(serverData)) {
-                const serverPackages = serverData.map(mapServerPackage);
-                const combined = [...initialTourPackages, ...serverPackages];
-                const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
-                setTourPackages(unique);
+                setTourPackages(serverData.map(mapServerPackage));
             }
         }
       } catch (e) { console.error("Could not fetch tour packages", e); }

@@ -22,7 +22,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { initialTourPackages, mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
 export default function EditBookingPage() {
   const router = useRouter();
@@ -32,7 +32,7 @@ export default function EditBookingPage() {
 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [tourPackages, setTourPackages] = useState<TourPackage[]>(initialTourPackages);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
 
   useEffect(() => {
     async function fetchTourPackages() {
@@ -41,10 +41,7 @@ export default function EditBookingPage() {
             if (response.ok) {
                 const serverData = await response.json();
                 if(Array.isArray(serverData)) {
-                    const serverPackages = serverData.map(mapServerPackageToClient);
-                    const combined = [...initialTourPackages, ...serverPackages];
-                    const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
-                    setTourPackages(unique);
+                    setTourPackages(serverData.map(mapServerPackageToClient));
                 }
             }
         } catch(e) { console.error("Could not fetch tour packages", e); }
