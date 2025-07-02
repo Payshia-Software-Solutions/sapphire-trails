@@ -37,6 +37,7 @@ import { bookingFormSchema } from "@/lib/schemas"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
+import { initialTourPackages } from "@/lib/packages-data"
 
 export function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -44,6 +45,22 @@ export function BookingForm() {
   const tourTypeParam = searchParams.get('tourType');
   const { user } = useAuth();
   const { toast } = useToast();
+  const [tourPackages, setTourPackages] = useState(initialTourPackages);
+
+  useEffect(() => {
+    async function fetchTourPackages() {
+        try {
+            const response = await fetch('http://localhost/sapphire_trails_server/tours');
+            if (response.ok) {
+                const serverPackages = await response.json();
+                const combined = [...initialTourPackages, ...serverPackages.map((p: any) => ({id: p.id, homepageTitle: p.homepage_title}))];
+                const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
+                setTourPackages(unique);
+            }
+        } catch(e) { console.error("Could not fetch tour packages"); }
+    }
+    fetchTourPackages();
+  }, []);
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -51,7 +68,7 @@ export function BookingForm() {
       name: "",
       email: "",
       phone: "",
-      tourType: tourTypeParam === 'gem-explorer-day-tour' || tourTypeParam === 'sapphire-trails-deluxe' ? tourTypeParam : undefined,
+      tourType: tourTypeParam || undefined,
       guests: 1,
       message: "",
     },
@@ -63,7 +80,7 @@ export function BookingForm() {
         name: user.name,
         email: user.email,
         phone: user.phone || "",
-        tourType: tourTypeParam === 'gem-explorer-day-tour' || tourTypeParam === 'sapphire-trails-deluxe' ? tourTypeParam : form.getValues('tourType'),
+        tourType: tourTypeParam || form.getValues('tourType'),
         guests: form.getValues('guests') || 1,
         date: form.getValues('date'),
         message: form.getValues('message') || "",
@@ -137,7 +154,7 @@ export function BookingForm() {
           {isSubmitted ? (
              <div className="text-center rounded-lg border bg-card text-card-foreground shadow-sm p-12">
                 <h3 className="text-2xl font-bold text-primary">Thank You!</h3>
-                <p className="text-muted-foreground mt-4">Your booking request has been sent successfully. We will contact you shortly to confirm.</p>
+                <p className="text-muted-foreground mt-4">Your booking request has been sent successfully. We will contact you shortly.</p>
              </div>
           ) : (
             <Card>
@@ -197,8 +214,9 @@ export function BookingForm() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="gem-explorer-day-tour">Gem Explorer Day Tour</SelectItem>
-                                <SelectItem value="sapphire-trails-deluxe">Sapphire Trails Deluxe</SelectItem>
+                                {tourPackages.map(pkg => (
+                                    <SelectItem key={pkg.id} value={pkg.id}>{pkg.homepageTitle}</SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                             <FormMessage />

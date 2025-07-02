@@ -22,6 +22,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { initialTourPackages } from '@/lib/packages-data';
 
 export default function EditBookingPage() {
   const router = useRouter();
@@ -31,6 +32,22 @@ export default function EditBookingPage() {
 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [tourPackages, setTourPackages] = useState(initialTourPackages);
+
+  useEffect(() => {
+    async function fetchTourPackages() {
+        try {
+            const response = await fetch('http://localhost/sapphire_trails_server/tours');
+            if (response.ok) {
+                const serverPackages = await response.json();
+                const combined = [...initialTourPackages, ...serverPackages.map((p: any) => ({id: p.id, homepageTitle: p.homepage_title}))];
+                const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
+                setTourPackages(unique);
+            }
+        } catch(e) { console.error("Could not fetch tour packages"); }
+    }
+    fetchTourPackages();
+  }, []);
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -127,7 +144,7 @@ export default function EditBookingPage() {
   const updateStatusOnServer = async (bookingId: string, status: 'accepted' | 'rejected') => {
     try {
       const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingId}/status/`, {
-        method: 'PATCH',
+        method: 'PUT', // Changed from PATCH to PUT
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -216,8 +233,9 @@ export default function EditBookingPage() {
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                             <SelectContent>
-                                <SelectItem value="gem-explorer-day-tour">Gem Explorer Day Tour</SelectItem>
-                                <SelectItem value="sapphire-trails-deluxe">Sapphire Trails Deluxe</SelectItem>
+                                {tourPackages.map(pkg => (
+                                    <SelectItem key={pkg.id} value={pkg.id}>{pkg.homepageTitle}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         <FormMessage />

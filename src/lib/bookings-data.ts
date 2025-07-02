@@ -4,7 +4,8 @@ export interface Booking {
   name: string;
   email: string;
   phone?: string;
-  tourType: 'gem-explorer-day-tour' | 'sapphire-trails-deluxe' | string;
+  tourType: string;
+  tourTitle?: string;
   guests: number;
   date: string; // YYYY-MM-DD
   message?: string;

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Header } from '@/components/layout/header';
@@ -17,7 +18,7 @@ function BookingContent() {
   useEffect(() => {
     if (!isLoading && !user) {
       const tourType = searchParams.get('tourType');
-      const destination = tourType ? `/auth?redirect=/booking?tourType=${tourType}` : '/auth?redirect=/booking';
+      const destination = tourType ? `/auth?redirect=/booking?tourType=${encodeURIComponent(tourType)}` : '/auth?redirect=/booking';
       router.push(destination);
     }
   }, [user, isLoading, router, searchParams]);

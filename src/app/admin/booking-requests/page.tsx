@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { initialTourPackages } from '@/lib/packages-data';
 
 const ADMIN_SESSION_KEY = 'adminUser';
 const ITEMS_PER_PAGE = 4;
@@ -40,6 +41,7 @@ const mapServerBookingToClient = (serverBooking: any): Booking => ({
   email: serverBooking.email,
   phone: serverBooking.phone,
   tourType: serverBooking.tour_package_id,
+  tourTitle: serverBooking.tour_title,
   guests: Number(serverBooking.guests),
   date: serverBooking.tour_date,
   message: serverBooking.message,
@@ -53,6 +55,22 @@ export default function BookingRequestsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [tourPackages, setTourPackages] = useState(initialTourPackages);
+
+  useEffect(() => {
+    async function fetchTourPackages() {
+      try {
+        const response = await fetch('http://localhost/sapphire_trails_server/tours');
+        if (response.ok) {
+          const serverPackages = await response.json();
+          const combined = [...initialTourPackages, ...serverPackages.map((p: any) => ({id: p.id, homepageTitle: p.homepage_title}))];
+          const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
+          setTourPackages(unique);
+        }
+      } catch (e) { console.error("Could not fetch tour packages"); }
+    }
+    fetchTourPackages();
+  }, []);
 
   useEffect(() => {
     const adminUser = sessionStorage.getItem(ADMIN_SESSION_KEY);
@@ -115,6 +133,12 @@ export default function BookingRequestsPage() {
         return 'secondary';
     }
   };
+  
+  const getTourTitle = (tourId: string) => {
+    const tour = tourPackages.find(p => p.id === tourId);
+    return tour ? tour.homepageTitle : tourId;
+  };
+
 
   if (!isAuthenticated) {
     return null;
@@ -190,7 +214,7 @@ export default function BookingRequestsPage() {
                                 <div className="text-sm text-muted-foreground hidden md:block break-all">{booking.email}</div>
                             </TableCell>
                             <TableCell className="hidden md:table-cell break-all">
-                                {booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}
+                                {getTourTitle(booking.tourType)}
                             </TableCell>
                             <TableCell>{format(parseISO(booking.date), 'PPP')}</TableCell>
                             <TableCell className="hidden sm:table-cell">{booking.guests}</TableCell>
@@ -267,7 +291,7 @@ export default function BookingRequestsPage() {
                         )}
                         <div className="space-y-1">
                             <Label className="text-muted-foreground">Tour</Label>
-                            <p>{selectedBooking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}</p>
+                            <p>{getTourTitle(selectedBooking.tourType)}</p>
                         </div>
                          <div className="space-y-1">
                             <Label className="text-muted-foreground">Guests</Label>
