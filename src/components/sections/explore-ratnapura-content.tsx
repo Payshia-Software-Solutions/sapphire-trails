@@ -8,6 +8,32 @@ import { Card, CardContent } from "@/components/ui/card";
 import { locationsData as staticLocationsData } from "@/lib/locations-data";
 import type { Location } from '@/lib/locations-data';
 
+const mapServerLocationToClient = (loc: any): Location => ({
+  slug: loc.slug,
+  title: loc.title,
+  cardDescription: loc.card_description,
+  cardImage: loc.card_image_url,
+  imageHint: loc.card_image_hint,
+  distance: loc.distance,
+  subtitle: loc.subtitle,
+  heroImage: loc.hero_image_url,
+  heroImageHint: loc.hero_image_hint,
+  intro: {
+    title: loc.intro_title,
+    description: loc.intro_description,
+    imageUrl: loc.intro_image_url,
+    imageHint: loc.intro_image_hint,
+  },
+  galleryImages: loc.gallery_images || [],
+  highlights: loc.highlights || [],
+  visitorInfo: loc.visitor_info || [],
+  map: {
+    embedUrl: loc.map_embed_url,
+    nearbyAttractions: loc.nearby_attractions || [],
+  },
+  category: loc.category,
+});
+
 
 const LocationCard = ({ location }: { location: Location }) => (
   <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
@@ -35,22 +61,32 @@ export function ExploreRatnapuraContent() {
   const [allLocations, setAllLocations] = useState<Location[]>(staticLocationsData);
 
   useEffect(() => {
-    const storedLocationsRaw = localStorage.getItem('customLocations');
-    if (storedLocationsRaw) {
+    async function fetchLocations() {
       try {
-        const customLocations = JSON.parse(storedLocationsRaw) as Location[];
-        if (Array.isArray(customLocations)) {
-            const combined = [...staticLocationsData, ...customLocations];
-            const uniqueLocations: { [key: string]: Location } = {};
-            for (const loc of combined) {
-              uniqueLocations[loc.slug] = loc;
-            }
-            setAllLocations(Object.values(uniqueLocations));
+        const response = await fetch('http://localhost/sapphire_trails_server/locations');
+        if (!response.ok) {
+          console.error('Failed to fetch from server, using static data.');
+          return;
         }
-      } catch (e) { 
-        console.error("Failed to load custom locations", e);
+
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          const serverLocations = data.map(mapServerLocationToClient);
+          const combined = [...staticLocationsData, ...serverLocations];
+          
+          const uniqueLocations: { [key: string]: Location } = {};
+          for (const loc of combined) {
+            uniqueLocations[loc.slug] = loc;
+          }
+          setAllLocations(Object.values(uniqueLocations));
+        } else {
+          console.error('Server response was not an array, using static data.');
+        }
+      } catch (e) {
+        console.error("Failed to fetch or parse locations, using static data as fallback.", e);
       }
     }
+    fetchLocations();
   }, []);
 
   const natureLocations = allLocations.filter(loc => loc.category === 'nature');

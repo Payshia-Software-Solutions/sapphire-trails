@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { locationFormSchema } from '@/lib/schemas';
-import type { Location } from '@/lib/locations-data';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -130,49 +129,67 @@ export default function AddContentPage() {
     }
   };
 
-  function onSubmit(data: z.infer<typeof locationFormSchema>) {
-    const newLocation: Location = {
-      title: data.title,
+  async function onSubmit(data: z.infer<typeof locationFormSchema>) {
+    const payload = {
       slug: data.slug,
-      cardDescription: data.cardDescription,
-      cardImage: data.cardImage,
-      imageHint: data.imageHint,
-      distance: data.distance,
+      title: data.title,
       subtitle: data.subtitle,
-      heroImage: data.heroImage,
-      heroImageHint: data.heroImageHint,
-      intro: {
-        title: data.introTitle,
-        description: data.introDescription,
-        imageUrl: data.introImageUrl,
-        imageHint: data.introImageHint,
-      },
-      galleryImages: data.galleryImages,
-      highlights: data.highlights,
-      visitorInfo: data.visitorInfo,
-      map: {
-        embedUrl: data.mapEmbedUrl,
-        nearbyAttractions: data.nearbyAttractions,
-      },
-      category: 'nature',
+      card_description: data.cardDescription,
+      card_image_url: data.cardImage,
+      card_image_hint: data.imageHint,
+      distance: data.distance,
+      hero_image_url: data.heroImage,
+      hero_image_hint: data.heroImageHint,
+      intro_title: data.introTitle,
+      intro_description: data.introDescription,
+      intro_image_url: data.introImageUrl,
+      intro_image_hint: data.introImageHint,
+      map_embed_url: data.mapEmbedUrl,
+      category: 'nature', // Hardcoding category as form doesn't have it
     };
 
+    // NOTE: This assumes the server can handle data URIs for image URLs.
+    // In a real application, these would be uploaded to a storage service first.
+    // Also, gallery, highlights, etc. would need separate API calls after location creation.
+
     try {
-      const storedLocationsRaw = localStorage.getItem('customLocations');
-      const storedLocations = storedLocationsRaw ? JSON.parse(storedLocationsRaw) : [];
-      const updatedLocations = [...storedLocations, newLocation];
-      localStorage.setItem('customLocations', JSON.stringify(updatedLocations));
+      const response = await fetch('http://localhost/sapphire_trails_server/locations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.message || 'An unexpected error occurred.';
+        
+        if (response.status === 422 && errorMessage.toLowerCase().includes('slug')) {
+          form.setError('slug', { type: 'manual', message: 'This slug already exists. Please use a unique one.' });
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Creation Failed',
+            description: errorMessage,
+          });
+        }
+        return;
+      }
+
       toast({
-        title: 'Content Added!',
-        description: `Location "${data.title}" has been saved successfully.`,
+        title: 'Location Added!',
+        description: `Location "${data.title}" has been created successfully.`,
       });
       router.push('/admin/manage-content');
+
     } catch (error) {
-      console.error('Failed to save to localStorage', error);
+      console.error('Failed to create location:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'There was a problem saving the new content.',
+        description: 'Could not connect to the server. Please try again later.',
       });
     }
   }

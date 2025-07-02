@@ -14,28 +14,32 @@ import { LocationNearby } from '@/components/sections/location-nearby';
 import { LocationCta } from '@/components/sections/location-cta';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const getAllLocations = (): Location[] => {
-  let allLocations: Location[] = [...staticLocationsData];
-  if (typeof window !== 'undefined') {
-    const customLocationsRaw = localStorage.getItem('customLocations');
-    if (customLocationsRaw) {
-      try {
-        const customLocations = JSON.parse(customLocationsRaw) as Location[];
-        if (Array.isArray(customLocations)) {
-          const combined = [...allLocations, ...customLocations];
-          const unique: { [key: string]: Location } = {};
-          for (const loc of combined) {
-            unique[loc.slug] = loc;
-          }
-          allLocations = Object.values(unique);
-        }
-      } catch (e) {
-        console.error("Failed to parse custom locations", e);
-      }
-    }
-  }
-  return allLocations;
-};
+const mapServerLocationToClient = (loc: any): Location => ({
+  slug: loc.slug,
+  title: loc.title,
+  cardDescription: loc.card_description,
+  cardImage: loc.card_image_url,
+  imageHint: loc.card_image_hint,
+  distance: loc.distance,
+  subtitle: loc.subtitle,
+  heroImage: loc.hero_image_url,
+  heroImageHint: loc.hero_image_hint,
+  intro: {
+    title: loc.intro_title,
+    description: loc.intro_description,
+    imageUrl: loc.intro_image_url,
+    imageHint: loc.intro_image_hint,
+  },
+  galleryImages: loc.gallery_images || [],
+  highlights: loc.highlights || [],
+  visitorInfo: loc.visitor_info || [],
+  map: {
+    embedUrl: loc.map_embed_url,
+    nearbyAttractions: loc.nearby_attractions || [],
+  },
+  category: loc.category,
+});
+
 
 function LoadingSkeleton() {
     return (
@@ -62,11 +66,37 @@ export default function LocationPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const allLocations = getAllLocations();
-    const foundLocation = allLocations.find((loc) => loc.slug === params.slug);
-    setLocation(foundLocation);
-    setIsLoading(false);
-  }, [params.slug]);
+    if (!params.slug) {
+        setIsLoading(false);
+        return;
+    }
+
+    async function fetchLocation() {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`http://localhost/sapphire_trails_server/locations/${params.slug}`);
+            if (response.ok) {
+                const data = await response.json();
+                const mappedLocation = mapServerLocationToClient(data);
+                setLocation(mappedLocation);
+            } else {
+                // If not found on server, try finding in static data as a fallback
+                const staticLocation = staticLocationsData.find(p => p.slug === params.slug);
+                setLocation(staticLocation);
+            }
+        } catch (error) {
+            console.error("Failed to fetch location", error);
+            // On fetch error, also fallback to static data
+            const staticLocation = staticLocationsData.find(p => p.slug === params.slug);
+            setLocation(staticLocation);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    fetchLocation();
+}, [params.slug]);
+
 
   if (isLoading) {
     return <LoadingSkeleton />;
