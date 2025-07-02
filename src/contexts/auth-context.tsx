@@ -58,13 +58,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email: email, password: pass }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed. Please check your credentials.');
+        throw new Error(data?.message || 'Login failed. Please check your credentials.');
       }
       
       const loggedInUser: User = data.user;
+      if (!loggedInUser) {
+        throw new Error('Login successful, but no user data was returned from the server.');
+      }
+
       setUser(loggedInUser);
       sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(loggedInUser));
       toast({ title: 'Success!', description: 'You have logged in successfully.' });
@@ -83,7 +87,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = async (name: string, email: string, phone: string | undefined, pass: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const userId = crypto.randomUUID();
       const response = await fetch('http://localhost/sapphire_trails_server/users', {
         method: 'POST',
         headers: {
@@ -91,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          id: userId,
+          id: crypto.randomUUID(), // The server should ideally generate its own ID and return it
           name: name,
           email: email,
           password: pass,
@@ -99,13 +102,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }),
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || `Sign-up failed. Please try again.`;
+        const errorMessage = data?.message || `Sign-up failed. Please try again.`;
         throw new Error(errorMessage);
       }
 
-      const newUser: User = { id: userId, name, email, phone };
+      // Use the user data returned from the server as the source of truth
+      const newUser: User = data.user;
+      if (!newUser) {
+          throw new Error('Sign-up successful, but no user data was returned from the server.');
+      }
       
       setUser(newUser);
       sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(newUser));
