@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AdminSidebar, navLinks, type NavLink } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -63,15 +63,16 @@ export default function AdminLayout({
     }
   }, [pathname, isLoginPage, router]);
   
-  const visibleNavLinks = useMemo(() => {
-    if (!adminUser) {
-      return [];
-    }
+  let visibleNavLinks: NavLink[] = [];
+  if (adminUser) {
     if (adminUser.role === 'superadmin') {
-      return navLinks;
+      visibleNavLinks = navLinks;
+    } else {
+      visibleNavLinks = navLinks.filter(link => 
+        link.href === '/admin/dashboard' || link.href === '/admin/booking-requests'
+      );
     }
-    return navLinks.filter(link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard');
-  }, [adminUser]);
+  }
 
 
   const handleLogout = () => {
