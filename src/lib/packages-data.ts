@@ -42,6 +42,27 @@ export interface TourPackage {
     bookingLink: string;
 }
 
+export const mapServerPackageToClient = (pkg: any): TourPackage => ({
+  id: pkg.id,
+  imageUrl: pkg.homepage_image_url || '',
+  imageAlt: pkg.homepage_image_alt || '',
+  imageHint: pkg.homepage_image_hint || '',
+  homepageTitle: pkg.homepage_title || '',
+  homepageDescription: pkg.homepage_description || '',
+  tourPageTitle: pkg.tour_page_title || '',
+  duration: pkg.duration || '',
+  price: pkg.price || '',
+  priceSuffix: pkg.price_suffix || '',
+  heroImage: pkg.hero_image_url || '',
+  heroImageHint: pkg.hero_image_hint || '',
+  tourPageDescription: pkg.tour_page_description || '',
+  tourHighlights: pkg.highlights || [],
+  inclusions: pkg.inclusions ? pkg.inclusions.map((i: { text: string }) => i.text) : [],
+  itinerary: pkg.itinerary || [],
+  bookingLink: pkg.booking_link || '/booking',
+});
+
+
 const gemExplorerItinerary: ItineraryItem[] = [
     { time: '9:00 a.m', title: 'Meet & Greet', description: 'Gather at the visitor center for safety briefing and equipment fitting.' },
     { time: '10:00 a.m', title: 'Mine Entry', description: 'Descend into the mine and explore the underground chambers.' },

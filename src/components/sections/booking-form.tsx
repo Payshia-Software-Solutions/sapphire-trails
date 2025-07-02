@@ -37,7 +37,7 @@ import { bookingFormSchema } from "@/lib/schemas"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
-import { initialTourPackages } from "@/lib/packages-data"
+import { initialTourPackages, mapServerPackageToClient, type TourPackage } from "@/lib/packages-data"
 
 export function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -45,19 +45,22 @@ export function BookingForm() {
   const tourTypeParam = searchParams.get('tourType');
   const { user } = useAuth();
   const { toast } = useToast();
-  const [tourPackages, setTourPackages] = useState(initialTourPackages);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>(initialTourPackages);
 
   useEffect(() => {
     async function fetchTourPackages() {
         try {
             const response = await fetch('http://localhost/sapphire_trails_server/tours');
             if (response.ok) {
-                const serverPackages = await response.json();
-                const combined = [...initialTourPackages, ...serverPackages.map((p: any) => ({id: p.id, homepageTitle: p.homepage_title}))];
-                const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
-                setTourPackages(unique);
+                const serverData = await response.json();
+                if(Array.isArray(serverData)) {
+                    const serverPackages = serverData.map(mapServerPackageToClient);
+                    const combined = [...initialTourPackages, ...serverPackages];
+                    const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
+                    setTourPackages(unique);
+                }
             }
-        } catch(e) { console.error("Could not fetch tour packages"); }
+        } catch(e) { console.error("Could not fetch tour packages", e); }
     }
     fetchTourPackages();
   }, []);
@@ -207,7 +210,7 @@ export function BookingForm() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Tour Package</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select a tour" />

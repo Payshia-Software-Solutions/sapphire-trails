@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { initialTourPackages } from '@/lib/packages-data';
+import { initialTourPackages, mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
 
 const ADMIN_SESSION_KEY = 'adminUser';
 const ITEMS_PER_PAGE = 4;
@@ -55,19 +55,22 @@ export default function BookingRequestsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [tourPackages, setTourPackages] = useState(initialTourPackages);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>(initialTourPackages);
 
   useEffect(() => {
     async function fetchTourPackages() {
       try {
         const response = await fetch('http://localhost/sapphire_trails_server/tours');
         if (response.ok) {
-          const serverPackages = await response.json();
-          const combined = [...initialTourPackages, ...serverPackages.map((p: any) => ({id: p.id, homepageTitle: p.homepage_title}))];
-          const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
-          setTourPackages(unique);
+            const serverData = await response.json();
+            if(Array.isArray(serverData)) {
+                const serverPackages = serverData.map(mapServerPackage);
+                const combined = [...initialTourPackages, ...serverPackages];
+                const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
+                setTourPackages(unique);
+            }
         }
-      } catch (e) { console.error("Could not fetch tour packages"); }
+      } catch (e) { console.error("Could not fetch tour packages", e); }
     }
     fetchTourPackages();
   }, []);

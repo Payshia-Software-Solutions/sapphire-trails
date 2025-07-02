@@ -22,7 +22,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { initialTourPackages } from '@/lib/packages-data';
+import { initialTourPackages, mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
 export default function EditBookingPage() {
   const router = useRouter();
@@ -32,19 +32,22 @@ export default function EditBookingPage() {
 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [tourPackages, setTourPackages] = useState(initialTourPackages);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>(initialTourPackages);
 
   useEffect(() => {
     async function fetchTourPackages() {
         try {
             const response = await fetch('http://localhost/sapphire_trails_server/tours');
             if (response.ok) {
-                const serverPackages = await response.json();
-                const combined = [...initialTourPackages, ...serverPackages.map((p: any) => ({id: p.id, homepageTitle: p.homepage_title}))];
-                const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
-                setTourPackages(unique);
+                const serverData = await response.json();
+                if(Array.isArray(serverData)) {
+                    const serverPackages = serverData.map(mapServerPackageToClient);
+                    const combined = [...initialTourPackages, ...serverPackages];
+                    const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
+                    setTourPackages(unique);
+                }
             }
-        } catch(e) { console.error("Could not fetch tour packages"); }
+        } catch(e) { console.error("Could not fetch tour packages", e); }
     }
     fetchTourPackages();
   }, []);
@@ -230,7 +233,7 @@ export default function EditBookingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="tourType" render={({ field }) => (
                         <FormItem><FormLabel>Tour Package</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                             <SelectContent>
                                 {tourPackages.map(pkg => (
