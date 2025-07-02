@@ -102,7 +102,7 @@ export default function EditBookingPage() {
             user_id: bookingToUpdate.user_id,
         };
         
-        const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingToUpdate.id}`, {
+        const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingToUpdate.id}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export default function EditBookingPage() {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => null);
-            throw new Error(errorData?.message || 'Failed to update booking.');
+            throw new Error(errorData?.message || 'Failed to update booking. Ensure the backend update method is implemented.');
         }
         return true;
     } catch (error) {
@@ -124,6 +124,29 @@ export default function EditBookingPage() {
     }
   };
 
+  const updateStatusOnServer = async (bookingId: string, status: 'accepted' | 'rejected') => {
+    try {
+      const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingId}/status/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to update booking status.');
+      }
+      return true;
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not update booking status.";
+      toast({ variant: 'destructive', title: 'Error', description: errorMessage });
+      return false;
+    }
+  };
 
   const handleUpdate = async (data: z.infer<typeof bookingFormSchema>) => {
     if (!booking) return;
@@ -145,9 +168,7 @@ export default function EditBookingPage() {
   const handleStatusChange = async (status: 'accepted' | 'rejected') => {
     if (!booking) return;
     
-    const updatedBooking = { ...booking, status };
-
-    const success = await updateBookingOnServer(updatedBooking);
+    const success = await updateStatusOnServer(booking.id, status);
     if (success) {
       toast({ title: `Booking ${status}`, description: `The booking has been marked as ${status}.` });
       router.push('/admin/booking-requests');
