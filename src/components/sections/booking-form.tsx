@@ -35,14 +35,15 @@ import {
 } from "@/components/ui/popover"
 import { bookingFormSchema } from "@/lib/schemas"
 import { Card, CardContent } from "@/components/ui/card"
-import type { Booking } from "@/lib/bookings-data"
 import { useAuth } from "@/contexts/auth-context"
+import { useToast } from "@/hooks/use-toast"
 
 export function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const searchParams = useSearchParams();
   const tourTypeParam = searchParams.get('tourType');
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -61,7 +62,7 @@ export function BookingForm() {
       form.reset({
         name: user.name,
         email: user.email,
-        phone: "",
+        phone: user.phone || "",
         tourType: tourTypeParam === 'gem-explorer-day-tour' || tourTypeParam === 'sapphire-trails-deluxe' ? tourTypeParam : form.getValues('tourType'),
         guests: form.getValues('guests') || 1,
         date: form.getValues('date'),
@@ -70,26 +71,57 @@ export function BookingForm() {
     }
   }, [user, form, tourTypeParam]);
 
-  function onSubmit(data: z.infer<typeof bookingFormSchema>) {
-    const storedBookingsRaw = localStorage.getItem('bookings');
-    const storedBookings = storedBookingsRaw ? JSON.parse(storedBookingsRaw) : [];
+  async function onSubmit(data: z.infer<typeof bookingFormSchema>) {
+     if (!user) {
+        toast({
+            variant: "destructive",
+            title: "Authentication Error",
+            description: "You must be logged in to make a booking.",
+        });
+        return;
+    }
 
-    const newBooking: Booking = {
-        id: new Date().toISOString() + Math.random(),
+    const payload = {
+        user_id: user.id,
+        tour_package_id: data.tourType,
         name: data.name,
         email: data.email,
         phone: data.phone,
-        tourType: data.tourType,
         guests: Number(data.guests),
-        date: format(data.date, 'yyyy-MM-dd'),
+        tour_date: format(data.date, 'yyyy-MM-dd'),
         message: data.message,
-        status: 'pending',
     };
-
-    const updatedBookings = [...storedBookings, newBooking];
-    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
     
-    setIsSubmitted(true);
+    try {
+        const response = await fetch('http://localhost/sapphire_trails_server/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: "An unknown error occurred."}));
+            throw new Error(errorData.message || 'Failed to submit booking request.');
+        }
+
+        setIsSubmitted(true);
+        form.reset();
+        toast({
+          title: "Request Sent!",
+          description: "Your booking request has been submitted successfully.",
+        });
+
+    } catch (error) {
+        console.error("Booking submission failed:", error);
+        toast({
+            variant: "destructive",
+            title: "Submission Failed",
+            description: error instanceof Error ? error.message : "Could not connect to the server.",
+        });
+    }
   }
 
   return (

@@ -36,27 +36,45 @@ export default function EditBookingPage() {
     resolver: zodResolver(bookingFormSchema),
   });
 
-  // Effect to fetch data from localStorage
+  // Effect to fetch data from the server
   useEffect(() => {
     if (!id) {
       setIsLoading(false);
       return;
     }
+    
+    async function fetchBooking() {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${id}`);
+        if (!response.ok) {
+          throw new Error('Booking not found');
+        }
+        const serverBooking = await response.json();
+        const bookingData = serverBooking.booking || serverBooking;
 
-    try {
-      const decodedId = decodeURIComponent(id);
-      const storedBookingsRaw = localStorage.getItem('bookings');
-      if (storedBookingsRaw) {
-        const allBookings = JSON.parse(storedBookingsRaw) as Booking[];
-        const foundBooking = allBookings.find(b => b.id === decodedId);
-        setBooking(foundBooking || null);
+        const clientBooking: Booking = {
+          id: String(bookingData.id),
+          user_id: bookingData.user_id,
+          name: bookingData.name,
+          email: bookingData.email,
+          phone: bookingData.phone,
+          tourType: bookingData.tour_package_id,
+          guests: Number(bookingData.guests),
+          date: bookingData.tour_date,
+          message: bookingData.message,
+          status: bookingData.status,
+        };
+        setBooking(clientBooking);
+      } catch (error) {
+        console.error("Failed to load booking data:", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to load booking data.' });
+        setBooking(null);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to load booking data:", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to load booking data.' });
-    } finally {
-      setIsLoading(false);
     }
+    fetchBooking();
   }, [id, toast]);
 
   // Effect to populate the form once booking data is available
@@ -70,21 +88,44 @@ export default function EditBookingPage() {
     }
   }, [booking, form]);
 
-  const updateBookingInStorage = (updatedBooking: Booking) => {
+  const updateBookingOnServer = async (bookingToUpdate: Booking) => {
     try {
-      const storedBookingsRaw = localStorage.getItem('bookings');
-      const allBookings = storedBookingsRaw ? JSON.parse(storedBookingsRaw) as Booking[] : [];
-      const bookingsToStore = allBookings.map(b => b.id === updatedBooking.id ? updatedBooking : b);
-      localStorage.setItem('bookings', JSON.stringify(bookingsToStore));
-      return true;
-    } catch (error) {
-      console.error("Failed to save booking:", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save booking changes.' });
-      return false;
-    }
-  }
+        const payload = {
+            name: bookingToUpdate.name,
+            email: bookingToUpdate.email,
+            phone: bookingToUpdate.phone,
+            tour_package_id: bookingToUpdate.tourType,
+            guests: Number(bookingToUpdate.guests),
+            tour_date: bookingToUpdate.date, // Already in 'yyyy-MM-dd' format
+            status: bookingToUpdate.status,
+            message: bookingToUpdate.message,
+            user_id: bookingToUpdate.user_id,
+        };
+        
+        const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingToUpdate.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
 
-  const handleUpdate = (data: z.infer<typeof bookingFormSchema>) => {
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || 'Failed to update booking.');
+        }
+        return true;
+    } catch (error) {
+        console.error("Failed to save booking:", error);
+        const errorMessage = error instanceof Error ? error.message : "Could not save booking changes.";
+        toast({ variant: 'destructive', title: 'Error', description: errorMessage });
+        return false;
+    }
+  };
+
+
+  const handleUpdate = async (data: z.infer<typeof bookingFormSchema>) => {
     if (!booking) return;
 
     const updatedBooking: Booking = {
@@ -94,18 +135,20 @@ export default function EditBookingPage() {
       guests: Number(data.guests),
     };
     
-    if (updateBookingInStorage(updatedBooking)) {
+    const success = await updateBookingOnServer(updatedBooking);
+    if (success) {
       toast({ title: 'Success!', description: 'Booking details have been updated.' });
       router.push('/admin/booking-requests');
     }
   };
 
-  const handleStatusChange = (status: 'accepted' | 'rejected') => {
+  const handleStatusChange = async (status: 'accepted' | 'rejected') => {
     if (!booking) return;
     
     const updatedBooking = { ...booking, status };
 
-    if (updateBookingInStorage(updatedBooking)) {
+    const success = await updateBookingOnServer(updatedBooking);
+    if (success) {
       toast({ title: `Booking ${status}`, description: `The booking has been marked as ${status}.` });
       router.push('/admin/booking-requests');
     }

@@ -11,13 +11,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { mockBookings, type Booking } from '@/lib/bookings-data';
+import { type Booking } from '@/lib/bookings-data';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ProfilePage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
   const [userBookings, setUserBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
@@ -27,29 +29,47 @@ export default function ProfilePage() {
   }, [user, isLoading, router]);
   
   useEffect(() => {
-    if (user) {
-      const storedBookingsRaw = localStorage.getItem('bookings');
-      let allBookings: Booking[] = [];
-
-      if (storedBookingsRaw) {
+    async function fetchUserBookings() {
+        if (!user) return;
         try {
-          const parsed = JSON.parse(storedBookingsRaw);
-           if (Array.isArray(parsed)) {
-            allBookings = parsed;
-          } else {
-            allBookings = mockBookings;
-          }
-        } catch (e) {
-            allBookings = mockBookings;
+            // In a real-world scenario, you'd have an endpoint like /api/bookings?userId=...
+            // For now, we fetch all and filter on the client.
+            const response = await fetch('http://localhost/sapphire_trails_server/bookings');
+            if (!response.ok) {
+                throw new Error("Could not fetch bookings.");
+            }
+            const allBookings = await response.json();
+            if(Array.isArray(allBookings)) {
+                const currentUserBookings = allBookings
+                    .map((serverBooking: any): Booking => ({
+                      id: String(serverBooking.id),
+                      name: serverBooking.name,
+                      email: serverBooking.email,
+                      phone: serverBooking.phone,
+                      tourType: serverBooking.tour_package_id,
+                      guests: serverBooking.guests,
+                      date: serverBooking.tour_date,
+                      message: serverBooking.message,
+                      status: serverBooking.status,
+                    }))
+                    .filter(b => b.email === user.email);
+                
+                setUserBookings(currentUserBookings.sort((a,b) => parseISO(b.date).getTime() - parseISO(a.date).getTime()));
+            }
+        } catch(error) {
+            console.error("Failed to fetch user bookings", error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Could not load your booking history."
+            })
         }
-      } else {
-        allBookings = mockBookings;
-      }
-      
-      const currentUserBookings = allBookings.filter(b => b.email === user.email);
-      setUserBookings(currentUserBookings);
     }
-  }, [user]);
+    
+    if (user) {
+        fetchUserBookings();
+    }
+  }, [user, toast]);
 
 
   if (isLoading || !user) {
@@ -109,7 +129,7 @@ export default function ProfilePage() {
                     <div key={booking.id} className="p-4 border rounded-lg flex justify-between items-center">
                       <div>
                         <p className="font-semibold">{booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}</p>
-                        <p className="text-sm text-muted-foreground">Date: {format(new Date(booking.date), 'PPP')} | Guests: {booking.guests}</p>
+                        <p className="text-sm text-muted-foreground">Date: {format(parseISO(booking.date), 'PPP')} | Guests: {booking.guests}</p>
                       </div>
                       <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">{booking.status}</Badge>
                     </div>

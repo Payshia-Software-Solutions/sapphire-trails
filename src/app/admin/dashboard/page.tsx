@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { mockBookings, type Booking } from '@/lib/bookings-data';
+import { type Booking } from '@/lib/bookings-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { subDays, format, parseISO } from 'date-fns';
@@ -12,12 +12,26 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BookingVolumeChart } from '@/components/admin/charts/booking-volume-chart';
 import { BookingStatusChart } from '@/components/admin/charts/booking-status-chart';
 import { TourPopularityChart } from '@/components/admin/charts/tour-popularity-chart';
+import { useToast } from '@/hooks/use-toast';
 
 const ADMIN_SESSION_KEY = 'adminUser';
+
+const mapServerBookingToClient = (serverBooking: any): Booking => ({
+  id: String(serverBooking.id),
+  name: serverBooking.name,
+  email: serverBooking.email,
+  phone: serverBooking.phone,
+  tourType: serverBooking.tour_package_id,
+  guests: serverBooking.guests,
+  date: serverBooking.tour_date,
+  message: serverBooking.message,
+  status: serverBooking.status,
+});
 
 export default function DashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const router = useRouter();
+  const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -26,27 +40,34 @@ export default function DashboardPage() {
       router.push('/admin/login');
     } else {
       setIsAuthenticated(true);
-      const storedBookingsRaw = localStorage.getItem('bookings');
-      if (storedBookingsRaw) {
-        try {
-            const parsed = JSON.parse(storedBookingsRaw);
-            if(Array.isArray(parsed)) {
-                setBookings(parsed);
-            } else {
-                setBookings(mockBookings);
-                localStorage.setItem('bookings', JSON.stringify(mockBookings));
-            }
-        } catch {
-            setBookings(mockBookings);
-            localStorage.setItem('bookings', JSON.stringify(mockBookings));
-        }
-      } else {
-        localStorage.setItem('bookings', JSON.stringify(mockBookings));
-        setBookings(mockBookings);
-      }
     }
   }, [router]);
   
+  useEffect(() => {
+    async function fetchBookings() {
+      try {
+        const response = await fetch('http://localhost/sapphire_trails_server/bookings');
+        if (!response.ok) {
+          throw new Error('Failed to fetch bookings.');
+        }
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setBookings(data.map(mapServerBookingToClient));
+        }
+      } catch (error) {
+        console.error("Failed to fetch bookings:", error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not load dashboard data from the server.'
+        });
+      }
+    }
+    if (isAuthenticated) {
+      fetchBookings();
+    }
+  }, [isAuthenticated, toast]);
+
   const { bookingStats, volumeData, statusData, tourData, recentBookings } = useMemo(() => {
     if (!bookings || bookings.length === 0) {
         return { bookingStats: { pending: 0, accepted: 0, rejected: 0, total: 0 }, volumeData: [], statusData: [], tourData: [], recentBookings: [] };
@@ -63,7 +84,7 @@ export default function DashboardPage() {
     const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
     const volumeData = last7Days.map(day => {
         const dayString = format(day, 'yyyy-MM-dd');
-        const count = bookings.filter(b => format(parseISO(b.date), 'yyyy-MM-dd') === dayString).length;
+        const count = bookings.filter(b => b.date === dayString).length;
         return {
             date: format(day, 'EEE'),
             bookings: count
