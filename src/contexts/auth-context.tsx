@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, pass: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/login', {
+      const response = await fetch('http://localhost/sapphire_trails_server/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,7 +94,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          id: crypto.randomUUID(), // The server should ideally generate its own ID and return it
           name: name,
           email: email,
           password: pass,
