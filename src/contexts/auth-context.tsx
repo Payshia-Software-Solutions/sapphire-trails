@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 
 // User data type
 interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phone?: string;
