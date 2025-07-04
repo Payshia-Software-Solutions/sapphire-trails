@@ -157,7 +157,7 @@ export default function AddPackagePage() {
         })),
       };
 
-      const response = await fetch('http://localhost/sapphire_trails_server/tour-packages', {
+      const response = await fetch('http://localhost/sapphire_trails_server/tours', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
