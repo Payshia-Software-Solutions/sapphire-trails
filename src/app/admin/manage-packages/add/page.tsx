@@ -60,9 +60,9 @@ export default function AddPackagePage() {
       heroImage: '',
       heroImageHint: '',
       tourPageDescription: '',
-      tourHighlights: Array(3).fill({ icon: 'Star', title: '', description: '' }),
+      tourHighlights: Array.from({ length: 3 }, () => ({ icon: 'Star' as const, title: '', description: '' })),
       inclusions: [{ text: '' }],
-      itinerary: Array(5).fill({ time: '', title: '', description: '' }),
+      itinerary: Array.from({ length: 5 }, () => ({ time: '', title: '', description: '' })),
       bookingLink: '/booking',
     },
   });
@@ -141,19 +141,16 @@ export default function AddPackagePage() {
         hero_image_hint: data.heroImageHint,
         tour_page_description: data.tourPageDescription,
         booking_link: data.bookingLink,
-        // Add sort_order to highlights
         highlights: data.tourHighlights.map((highlight, index) => ({
           ...highlight,
           sort_order: index,
         })),
-        // Transform inclusions to match backend (icon, title, description, sort_order)
         inclusions: data.inclusions.map((inclusion, index) => ({
-          icon: 'Star', // Providing a default icon
+          icon: 'Star',
           title: inclusion.text,
-          description: '', // Providing a default empty description
+          description: '',
           sort_order: index,
         })),
-        // Add sort_order to itinerary
         itinerary: data.itinerary.map((item, index) => ({
           ...item,
           sort_order: index,
@@ -171,7 +168,7 @@ export default function AddPackagePage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || 'An unexpected error occurred.';
+        const errorMessage = errorData?.error || 'An unexpected error occurred.';
         toast({
             variant: 'destructive',
             title: 'Creation Failed',
@@ -372,3 +369,5 @@ export default function AddPackagePage() {
     </div>
   );
 }
+
+    
