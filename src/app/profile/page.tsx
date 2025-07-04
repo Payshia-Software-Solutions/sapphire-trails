@@ -46,7 +46,7 @@ export default function ProfilePage() {
                       name: serverBooking.name,
                       email: serverBooking.email,
                       phone: serverBooking.phone,
-                      tourType: serverBooking.tour_package_id,
+                      tourType: Number(serverBooking.tour_package_id),
                       guests: serverBooking.guests,
                       date: serverBooking.tour_date,
                       message: serverBooking.message,
@@ -128,7 +128,7 @@ export default function ProfilePage() {
                   userBookings.map(booking => (
                     <div key={booking.id} className="p-4 border rounded-lg flex justify-between items-center">
                       <div>
-                        <p className="font-semibold">{booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}</p>
+                        <p className="font-semibold">{booking.tourTitle || `Tour ID: ${booking.tourType}`}</p>
                         <p className="text-sm text-muted-foreground">Date: {format(parseISO(booking.date), 'PPP')} | Guests: {booking.guests}</p>
                       </div>
                       <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">{booking.status}</Badge>

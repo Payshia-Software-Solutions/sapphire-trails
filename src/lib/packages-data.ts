@@ -19,7 +19,7 @@ export interface ItineraryItem {
 }
 
 export interface TourPackage {
-    id: string; // slug
+    id: number; // slug
     
     // Homepage & Tour Grid
     imageUrl: string;
@@ -44,7 +44,7 @@ export interface TourPackage {
 }
 
 export const mapServerPackageToClient = (pkg: any): TourPackage => ({
-  id: pkg.id,
+  id: Number(pkg.id),
   imageUrl: pkg.homepage_image_url || '',
   imageAlt: pkg.homepage_image_alt || '',
   imageHint: pkg.homepage_image_hint || '',

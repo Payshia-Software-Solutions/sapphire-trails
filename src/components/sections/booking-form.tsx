@@ -69,7 +69,7 @@ export function BookingForm() {
       name: "",
       email: "",
       phone: "",
-      tourType: tourTypeParam || undefined,
+      tourType: tourTypeParam ? Number(tourTypeParam) : undefined,
       guests: 1,
       message: "",
     },
@@ -81,7 +81,7 @@ export function BookingForm() {
         name: user.name,
         email: user.email,
         phone: user.phone || "",
-        tourType: tourTypeParam || form.getValues('tourType'),
+        tourType: tourTypeParam ? Number(tourTypeParam) : form.getValues('tourType'),
         guests: form.getValues('guests') || 1,
         date: form.getValues('date'),
         message: form.getValues('message') || "",
@@ -208,7 +208,7 @@ export function BookingForm() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Tour Package</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={String(field.value)}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select a tour" />
@@ -216,7 +216,7 @@ export function BookingForm() {
                               </FormControl>
                               <SelectContent>
                                 {tourPackages.map(pkg => (
-                                    <SelectItem key={pkg.id} value={pkg.id}>{pkg.homepageTitle}</SelectItem>
+                                    <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>

@@ -40,7 +40,7 @@ const mapServerBookingToClient = (serverBooking: any): Booking => ({
   name: serverBooking.name,
   email: serverBooking.email,
   phone: serverBooking.phone,
-  tourType: serverBooking.tour_package_id,
+  tourType: Number(serverBooking.tour_package_id),
   tourTitle: serverBooking.tour_title,
   guests: Number(serverBooking.guests),
   date: serverBooking.tour_date,
@@ -134,9 +134,9 @@ export default function BookingRequestsPage() {
     }
   };
   
-  const getTourTitle = (tourId: string) => {
+  const getTourTitle = (tourId: number) => {
     const tour = tourPackages.find(p => p.id === tourId);
-    return tour ? tour.homepageTitle : tourId;
+    return tour ? tour.homepageTitle : `Tour ID: ${tourId}`;
   };
 
 

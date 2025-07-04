@@ -17,7 +17,7 @@ export const bookingFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   phone: z.string().optional(),
-  tourType: z.string({
+  tourType: z.coerce.number({
     required_error: "You need to select a tour type.",
   }),
   guests: z.coerce.number().int().min(1, { message: "Please enter at least 1 guest." }),
@@ -121,8 +121,6 @@ export const itineraryItemSchema = z.object({
 });
 
 export const packageFormSchema = z.object({
-  id: z.string().min(3, "ID is required and must be unique.").regex(/^[a-z0-9-]+$/, "ID can only contain lowercase letters, numbers, and hyphens."),
-  
   // Homepage Card
   imageUrl: z.string().min(1, "An image is required for the homepage card."),
   imageAlt: z.string().min(3, "Image alt text is required."),

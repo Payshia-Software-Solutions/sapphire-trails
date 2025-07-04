@@ -76,7 +76,7 @@ export default function EditBookingPage() {
           name: bookingData.name,
           email: bookingData.email,
           phone: bookingData.phone,
-          tourType: bookingData.tour_package_id,
+          tourType: Number(bookingData.tour_package_id),
           guests: Number(bookingData.guests),
           date: bookingData.tour_date,
           message: bookingData.message,
@@ -101,6 +101,7 @@ export default function EditBookingPage() {
         ...booking,
         date: parseISO(booking.date),
         guests: Number(booking.guests),
+        tourType: Number(booking.tourType),
       });
     }
   }, [booking, form]);
@@ -230,11 +231,11 @@ export default function EditBookingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="tourType" render={({ field }) => (
                         <FormItem><FormLabel>Tour Package</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange} value={String(field.value)}>
                             <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                             <SelectContent>
                                 {tourPackages.map(pkg => (
-                                    <SelectItem key={pkg.id} value={pkg.id}>{pkg.homepageTitle}</SelectItem>
+                                    <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>

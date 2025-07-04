@@ -23,7 +23,7 @@ import { Progress } from '@/components/ui/progress';
 const iconOptions = ['MapPin', 'Gem', 'Landmark', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble', 'Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Waves', 'Camera', 'Tent', 'Thermometer'];
 
 const steps = [
-  { id: 1, name: 'Homepage Card', fields: ['id', 'homepageTitle', 'homepageDescription', 'imageUrl', 'imageAlt', 'imageHint'] as const },
+  { id: 1, name: 'Homepage Card', fields: ['homepageTitle', 'homepageDescription', 'imageUrl', 'imageAlt', 'imageHint'] as const },
   { id: 2, name: 'Tour Page Details', fields: ['tourPageTitle', 'duration', 'price', 'priceSuffix', 'tourPageDescription', 'heroImage', 'heroImageHint'] as const },
   { id: 3, name: 'Highlights & Inclusions', fields: ['tourHighlights', 'inclusions'] as const },
   { id: 4, name: 'Itinerary & Booking Link', fields: ['itinerary', 'bookingLink'] as const },
@@ -46,7 +46,6 @@ export default function AddPackagePage() {
     resolver: zodResolver(packageFormSchema),
     mode: 'onBlur',
     defaultValues: {
-      id: '',
       // Homepage
       imageUrl: '',
       imageAlt: '',
@@ -128,7 +127,6 @@ export default function AddPackagePage() {
   async function onSubmit(data: z.infer<typeof packageFormSchema>) {
     try {
       const payload = {
-        id: data.id,
         homepage_title: data.homepageTitle,
         homepage_description: data.homepageDescription,
         homepage_image_url: data.imageUrl,
@@ -156,16 +154,11 @@ export default function AddPackagePage() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         const errorMessage = errorData?.message || 'An unexpected error occurred.';
-        
-        if (response.status === 422 && errorMessage.toLowerCase().includes('id')) {
-            form.setError('id', { type: 'manual', message: 'This ID already exists. Please use a unique one.' });
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Creation Failed',
-                description: errorMessage,
-            });
-        }
+        toast({
+            variant: 'destructive',
+            title: 'Creation Failed',
+            description: errorMessage,
+        });
         return;
       }
       
@@ -221,7 +214,6 @@ export default function AddPackagePage() {
                         <CardDescription>Content that appears on the homepage and tour listing cards.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <FormField control={form.control} name="id" render={({ field }) => (<FormItem><FormLabel>Unique ID (Slug)</FormLabel><FormControl><Input placeholder="e.g., new-deluxe-tour" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         <FormField control={form.control} name="homepageTitle" render={({ field }) => (<FormItem><FormLabel>Card Title</FormLabel><FormControl><Input placeholder="e.g., Exclusive Sapphire Mine Tour" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         <FormField control={form.control} name="homepageDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea placeholder="A short description for the homepage card..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                         <FormField control={form.control} name="imageUrl" render={({ field }) => ( <FormItem><FormLabel>Card Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setCardImagePreview)} /></FormControl><FormMessage /></FormItem>)} />

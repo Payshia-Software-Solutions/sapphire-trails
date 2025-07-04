@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { subDays, format, parseISO } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
 
 import { BookingVolumeChart } from '@/components/admin/charts/booking-volume-chart';
 import { BookingStatusChart } from '@/components/admin/charts/booking-status-chart';
@@ -21,7 +22,7 @@ const mapServerBookingToClient = (serverBooking: any): Booking => ({
   name: serverBooking.name,
   email: serverBooking.email,
   phone: serverBooking.phone,
-  tourType: serverBooking.tour_package_id,
+  tourType: Number(serverBooking.tour_package_id),
   guests: serverBooking.guests,
   date: serverBooking.tour_date,
   message: serverBooking.message,
@@ -30,6 +31,7 @@ const mapServerBookingToClient = (serverBooking: any): Booking => ({
 
 export default function DashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
   const router = useRouter();
   const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -63,8 +65,22 @@ export default function DashboardPage() {
         });
       }
     }
+    
+    async function fetchTourPackages() {
+        try {
+            const response = await fetch('http://localhost/sapphire_trails_server/tours');
+            if (response.ok) {
+                const serverData = await response.json();
+                if(Array.isArray(serverData)) {
+                    setTourPackages(serverData.map(mapServerPackage));
+                }
+            }
+        } catch(e) { console.error("Could not fetch tour packages", e); }
+    }
+
     if (isAuthenticated) {
       fetchBookings();
+      fetchTourPackages();
     }
   }, [isAuthenticated, toast]);
 
@@ -100,7 +116,8 @@ export default function DashboardPage() {
 
     // 4. Tour Popularity
     const tourCounts = bookings.reduce((acc, booking) => {
-      const tourName = booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer' : 'Sapphire Deluxe';
+      const tour = tourPackages.find(p => p.id === booking.tourType);
+      const tourName = tour ? tour.homepageTitle : `Unknown Tour (ID: ${booking.tourType})`;
       acc[tourName] = (acc[tourName] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
@@ -117,7 +134,7 @@ export default function DashboardPage() {
 
 
     return { bookingStats, volumeData, statusData, tourData, recentBookings };
-  }, [bookings]);
+  }, [bookings, tourPackages]);
 
 
   if (!isAuthenticated) {

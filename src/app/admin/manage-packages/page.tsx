@@ -23,7 +23,7 @@ import Link from 'next/link';
 
 // A leaner type for what this page needs to display
 interface ManagedPackage {
-    id: string;
+    id: number;
     homepageTitle: string;
     imageUrl: string;
 }
@@ -44,7 +44,7 @@ export default function ManagePackagesPage() {
             const data = await response.json();
             if (Array.isArray(data)) {
                 const mappedPackages = data.map((pkg: any) => ({
-                    id: pkg.id,
+                    id: Number(pkg.id),
                     homepageTitle: pkg.homepage_title,
                     imageUrl: pkg.homepage_image_url,
                 }));
@@ -65,7 +65,7 @@ export default function ManagePackagesPage() {
   }, [toast]);
 
   // Note: Delete functionality would require a DELETE endpoint on the server.
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     // This would be a fetch('.../tours/{id}', { method: 'DELETE' }) call
     toast({
         title: 'Delete Not Implemented',
