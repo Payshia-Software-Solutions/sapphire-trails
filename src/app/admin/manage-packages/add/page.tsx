@@ -126,6 +126,7 @@ export default function AddPackagePage() {
 
   async function onSubmit(data: z.infer<typeof packageFormSchema>) {
     try {
+      // This payload is structured to match your PHP backend exactly.
       const payload = {
         homepage_title: data.homepageTitle,
         homepage_description: data.homepageDescription,
@@ -140,9 +141,26 @@ export default function AddPackagePage() {
         hero_image_hint: data.heroImageHint,
         tour_page_description: data.tourPageDescription,
         booking_link: data.bookingLink,
+        // Add sort_order to highlights
+        highlights: data.tourHighlights.map((highlight, index) => ({
+          ...highlight,
+          sort_order: index,
+        })),
+        // Transform inclusions to match backend (icon, title, description, sort_order)
+        inclusions: data.inclusions.map((inclusion, index) => ({
+          icon: 'Star', // Providing a default icon
+          title: inclusion.text,
+          description: '', // Providing a default empty description
+          sort_order: index,
+        })),
+        // Add sort_order to itinerary
+        itinerary: data.itinerary.map((item, index) => ({
+          ...item,
+          sort_order: index,
+        })),
       };
 
-      const response = await fetch('http://localhost/sapphire_trails_server/tours', {
+      const response = await fetch('http://localhost/sapphire_trails_server/tour-packages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,9 +180,6 @@ export default function AddPackagePage() {
         return;
       }
       
-      // Note: After creating the main package, separate API calls would be needed
-      // to post highlights, inclusions, and itinerary items, associating them with the new package ID.
-
       toast({
         title: 'Package Added!',
         description: `Package "${data.homepageTitle}" has been saved successfully.`,
