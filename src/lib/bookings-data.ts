@@ -1,6 +1,6 @@
 
 export interface Booking {
-  id: string;
+  id: number;
   user_id?: number;
   name: string;
   email: string;

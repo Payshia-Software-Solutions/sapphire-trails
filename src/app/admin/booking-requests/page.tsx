@@ -35,7 +35,7 @@ const ADMIN_SESSION_KEY = 'adminUser';
 const ITEMS_PER_PAGE = 4;
 
 const mapServerBookingToClient = (serverBooking: any): Booking => ({
-  id: String(serverBooking.id),
+  id: Number(serverBooking.id),
   user_id: serverBooking.user_id,
   name: serverBooking.name,
   email: serverBooking.email,

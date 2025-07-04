@@ -18,7 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 const ADMIN_SESSION_KEY = 'adminUser';
 
 const mapServerBookingToClient = (serverBooking: any): Booking => ({
-  id: String(serverBooking.id),
+  id: Number(serverBooking.id),
   name: serverBooking.name,
   email: serverBooking.email,
   phone: serverBooking.phone,

@@ -42,7 +42,7 @@ export default function ProfilePage() {
             if(Array.isArray(allBookings)) {
                 const currentUserBookings = allBookings
                     .map((serverBooking: any): Booking => ({
-                      id: String(serverBooking.id),
+                      id: Number(serverBooking.id),
                       name: serverBooking.name,
                       email: serverBooking.email,
                       phone: serverBooking.phone,

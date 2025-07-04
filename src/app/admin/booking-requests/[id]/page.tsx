@@ -71,7 +71,7 @@ export default function EditBookingPage() {
         const bookingData = serverBooking.booking || serverBooking;
 
         const clientBooking: Booking = {
-          id: String(bookingData.id),
+          id: Number(bookingData.id),
           user_id: bookingData.user_id,
           name: bookingData.name,
           email: bookingData.email,
@@ -142,7 +142,7 @@ export default function EditBookingPage() {
     }
   };
 
-  const updateStatusOnServer = async (bookingId: string, status: 'accepted' | 'rejected') => {
+  const updateStatusOnServer = async (bookingId: number, status: 'accepted' | 'rejected') => {
     try {
       const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingId}/status/`, {
         method: 'PUT', // Changed from PATCH to PUT
