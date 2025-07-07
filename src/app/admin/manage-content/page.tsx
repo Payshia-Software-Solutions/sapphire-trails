@@ -58,12 +58,36 @@ export default function ManageContentPage() {
     fetchLocations();
   }, [toast]);
 
-  const handleDelete = (slug: string) => {
-    // This would be a fetch('.../locations/{slug}', { method: 'DELETE' }) call
-    toast({
-        title: 'Delete Not Implemented',
-        description: 'Please implement a DELETE endpoint on the server.',
-    });
+  const handleDelete = async (slug: string) => {
+    try {
+        const response = await fetch(`http://localhost/sapphire_trails_server/locations/${slug}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || 'Failed to delete the location.');
+        }
+
+        // Remove the location from the local state to update the UI instantly
+        setLocations(prevLocations => prevLocations.filter(location => location.slug !== slug));
+
+        toast({
+            title: 'Location Deleted',
+            description: `The location "${slug}" has been successfully deleted.`,
+        });
+
+    } catch (error) {
+        console.error('Failed to delete location:', error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: error instanceof Error ? error.message : 'Could not connect to the server.',
+        });
+    }
   };
 
   return (

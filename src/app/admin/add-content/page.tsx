@@ -130,7 +130,10 @@ export default function AddContentPage() {
   };
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
+    // NOTE: This assumes the server can handle data URIs for image URLs.
+    // In a real application, these would be uploaded to a storage service first.
     const payload = {
+      // Main location fields
       slug: data.slug,
       title: data.title,
       subtitle: data.subtitle,
@@ -146,11 +149,30 @@ export default function AddContentPage() {
       intro_image_hint: data.introImageHint,
       map_embed_url: data.mapEmbedUrl,
       category: 'nature', // Hardcoding category as form doesn't have it
-    };
 
-    // NOTE: This assumes the server can handle data URIs for image URLs.
-    // In a real application, these would be uploaded to a storage service first.
-    // Also, gallery, highlights, etc. would need separate API calls after location creation.
+      // Nested arrays for related tables
+      gallery_images: data.galleryImages.map(img => ({
+        src: img.src,
+        alt: img.alt,
+        hint: img.hint
+      })),
+      highlights: data.highlights.map(h => ({
+        icon: h.icon,
+        title: h.title,
+        description: h.description
+      })),
+      visitor_info: data.visitorInfo.map(vi => ({
+        icon: vi.icon,
+        title: vi.title,
+        line1: vi.line1,
+        line2: vi.line2
+      })),
+      nearby_attractions: data.nearbyAttractions.map(na => ({
+        icon: na.icon,
+        name: na.name,
+        distance: na.distance
+      })),
+    };
 
     try {
       const response = await fetch('http://localhost/sapphire_trails_server/locations', {
