@@ -130,10 +130,9 @@ export default function AddContentPage() {
   };
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
-    // NOTE: This assumes the server can handle data URIs for image URLs.
-    // In a real application, these would be uploaded to a storage service first.
+    // This payload is structured to match your PHP backend exactly.
     const payload = {
-      // Main location fields
+      // Main location fields (snake_case)
       slug: data.slug,
       title: data.title,
       subtitle: data.subtitle,
@@ -150,27 +149,32 @@ export default function AddContentPage() {
       map_embed_url: data.mapEmbedUrl,
       category: 'nature', // Hardcoding category as form doesn't have it
 
-      // Nested arrays for related tables
-      gallery_images: data.galleryImages.map(img => ({
-        src: img.src,
-        alt: img.alt,
-        hint: img.hint
+      // Nested arrays for related tables with correct keys and sort_order
+      gallery_images: data.galleryImages.map((img, index) => ({
+        image_url: img.src,
+        alt_text: img.alt,
+        hint: img.hint,
+        is_360: false, // Default value
+        sort_order: index + 1,
       })),
-      highlights: data.highlights.map(h => ({
+      highlights: data.highlights.map((h, index) => ({
         icon: h.icon,
         title: h.title,
-        description: h.description
+        description: h.description,
+        sort_order: index + 1,
       })),
-      visitor_info: data.visitorInfo.map(vi => ({
+      visitor_info: data.visitorInfo.map((vi, index) => ({
         icon: vi.icon,
         title: vi.title,
         line1: vi.line1,
-        line2: vi.line2
+        line2: vi.line2,
+        sort_order: index + 1,
       })),
-      nearby_attractions: data.nearbyAttractions.map(na => ({
+      nearby_attractions: data.nearbyAttractions.map((na, index) => ({
         icon: na.icon,
         name: na.name,
-        distance: na.distance
+        distance: na.distance,
+        sort_order: index + 1,
       })),
     };
 
