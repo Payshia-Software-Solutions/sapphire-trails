@@ -60,9 +60,9 @@ export default function AddPackagePage() {
       heroImage: '',
       heroImageHint: '',
       tourPageDescription: '',
-      tourHighlights: Array(3).fill(null).map(() => ({ icon: 'Star' as const, title: '', description: '' })),
+      tourHighlights: Array.from({ length: 3 }, () => ({ icon: 'Star' as const, title: '', description: '' })),
       inclusions: [{ text: '' }],
-      itinerary: Array(5).fill(null).map(() => ({ time: '', title: '', description: '' })),
+      itinerary: Array.from({ length: 5 }, () => ({ time: '', title: '', description: '' })),
       bookingLink: '/booking',
     },
   });
@@ -175,7 +175,7 @@ export default function AddPackagePage() {
     formData.append('inclusions', JSON.stringify(data.inclusions.map((inclusion, index) => ({
         icon: 'Star',
         title: inclusion.text,
-        description: '',
+        description: '', // description is not on the form, but backend might expect it
         sort_order: index + 1,
     }))));
     
@@ -185,7 +185,7 @@ export default function AddPackagePage() {
     }))));
 
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/tours', {
+      const response = await fetch('http://localhost/sapphire_trails_server/tours/', {
         method: 'POST',
         body: formData,
       });
