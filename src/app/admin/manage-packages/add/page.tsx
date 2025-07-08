@@ -35,8 +35,11 @@ export default function AddPackagePage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isClient, setIsClient] = useState(false);
   
+  // State for image previews and the actual file for upload
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
+  const [cardImageFile, setCardImageFile] = useState<File | null>(null);
+
 
   useEffect(() => {
     setIsClient(true);
@@ -47,7 +50,7 @@ export default function AddPackagePage() {
     mode: 'onBlur',
     defaultValues: {
       // Homepage
-      imageUrl: '',
+      imageUrl: '', // This will hold the filename for validation
       imageAlt: '',
       imageHint: '',
       homepageTitle: '',
@@ -57,7 +60,7 @@ export default function AddPackagePage() {
       duration: '',
       price: '',
       priceSuffix: 'per person',
-      heroImage: '',
+      heroImage: '', // This will hold a data URI
       heroImageHint: '',
       tourPageDescription: '',
       tourHighlights: Array.from({ length: 3 }, () => ({ icon: 'Star' as const, title: '', description: '' })),
@@ -82,7 +85,18 @@ export default function AddPackagePage() {
     name: "itinerary",
   });
 
-  const handleFileChange = (
+  // Handler for the main card image, which will be uploaded via FTP
+  const handleCardImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCardImageFile(file); // Store the actual file object for submission
+      setCardImagePreview(URL.createObjectURL(file)); // Create a temporary URL for preview
+      form.setValue('imageUrl', file.name, { shouldValidate: true }); // Use filename to satisfy validation
+    }
+  };
+  
+  // Handler for other images (like hero), which are sent as Data URLs
+  const handleDataUrlFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     onChange: (value: string) => void,
     setPreview: (value: string | null) => void
@@ -98,6 +112,7 @@ export default function AddPackagePage() {
       reader.readAsDataURL(file);
     }
   };
+
 
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
@@ -125,50 +140,64 @@ export default function AddPackagePage() {
 
 
   async function onSubmit(data: z.infer<typeof packageFormSchema>) {
-    try {
-      // This payload is structured to match your PHP backend exactly.
-      const payload = {
-        homepage_title: data.homepageTitle,
-        homepage_description: data.homepageDescription,
-        homepage_image_url: data.imageUrl,
-        homepage_image_alt: data.imageAlt,
-        homepage_image_hint: data.imageHint,
-        tour_page_title: data.tourPageTitle,
-        duration: data.duration,
-        price: data.price,
-        price_suffix: data.priceSuffix,
-        hero_image_url: data.heroImage,
-        hero_image_hint: data.heroImageHint,
-        tour_page_description: data.tourPageDescription,
-        booking_link: data.bookingLink,
-        highlights: data.tourHighlights.map((highlight, index) => ({
-          ...highlight,
-          sort_order: index,
-        })),
-        inclusions: data.inclusions.map((inclusion, index) => ({
-          icon: 'Star',
-          title: inclusion.text,
-          description: '',
-          sort_order: index,
-        })),
-        itinerary: data.itinerary.map((item, index) => ({
-          ...item,
-          sort_order: index,
-        })),
-      };
+     if (!cardImageFile) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Image',
+        description: 'Please upload a homepage card image to continue.',
+      });
+      setCurrentStep(1);
+      return;
+    }
 
+    const formData = new FormData();
+
+    // 1. Append the actual file for the homepage image
+    formData.append('homepage_image', cardImageFile);
+
+    // 2. Append all other string fields
+    formData.append('homepage_title', data.homepageTitle);
+    formData.append('homepage_description', data.homepageDescription);
+    formData.append('homepage_image_alt', data.imageAlt);
+    formData.append('homepage_image_hint', data.imageHint);
+    
+    formData.append('tour_page_title', data.tourPageTitle);
+    formData.append('duration', data.duration);
+    formData.append('price', data.price);
+    formData.append('price_suffix', data.priceSuffix);
+    formData.append('hero_image_url', data.heroImage); // Sent as a data URL string
+    formData.append('hero_image_hint', data.heroImageHint);
+    formData.append('tour_page_description', data.tourPageDescription);
+    formData.append('booking_link', data.bookingLink);
+
+    // 3. Stringify and append array fields, adding sort_order
+    formData.append('highlights', JSON.stringify(data.tourHighlights.map((highlight, index) => ({
+        ...highlight,
+        sort_order: index + 1,
+    }))));
+    
+    formData.append('inclusions', JSON.stringify(data.inclusions.map((inclusion, index) => ({
+        icon: 'Star', // Default icon as per backend structure
+        title: inclusion.text,
+        description: '', // Empty description
+        sort_order: index + 1,
+    }))));
+    
+    formData.append('itinerary', JSON.stringify(data.itinerary.map((item, index) => ({
+        ...item,
+        sort_order: index + 1,
+    }))));
+
+
+    try {
       const response = await fetch('http://localhost/sapphire_trails_server/tours', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: formData, // The browser will automatically set the 'Content-Type' to 'multipart/form-data'
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.error || 'An unexpected error occurred.';
+        const errorMessage = errorData?.error || 'An unexpected server error occurred.';
         toast({
             variant: 'destructive',
             title: 'Creation Failed',
@@ -187,7 +216,7 @@ export default function AddPackagePage() {
       console.error('Failed to save package:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Connection Error',
         description: 'Could not connect to the server. Please try again later.',
       });
     }
@@ -228,7 +257,8 @@ export default function AddPackagePage() {
                     <CardContent className="space-y-6">
                         <FormField control={form.control} name="homepageTitle" render={({ field }) => (<FormItem><FormLabel>Card Title</FormLabel><FormControl><Input placeholder="e.g., Exclusive Sapphire Mine Tour" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         <FormField control={form.control} name="homepageDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea placeholder="A short description for the homepage card..." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="imageUrl" render={({ field }) => ( <FormItem><FormLabel>Card Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setCardImagePreview)} /></FormControl><FormMessage /></FormItem>)} />
+                        {/* Use the new file handler for the card image */}
+                        <FormField control={form.control} name="imageUrl" render={() => ( <FormItem><FormLabel>Card Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={handleCardImageFileChange} /></FormControl><FormMessage /></FormItem>)} />
                         {cardImagePreview && <Image src={cardImagePreview} alt="Card preview" width={200} height={100} className="rounded-md object-cover border" />}
                         <div className="grid md:grid-cols-2 gap-4">
                             <FormField control={form.control} name="imageAlt" render={({ field }) => (<FormItem><FormLabel>Image Alt Text</FormLabel><FormControl><Input placeholder="Describe the image" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -254,7 +284,8 @@ export default function AddPackagePage() {
                         </div>
                         <FormField control={form.control} name="tourPageDescription" render={({ field }) => (<FormItem><FormLabel>Page Description</FormLabel><FormControl><Textarea placeholder="The main description for the tour highlights section..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                         <Separator />
-                        <FormField control={form.control} name="heroImage" render={({ field }) => (<FormItem><FormLabel>Page Hero Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setHeroImagePreview)} /></FormControl><FormMessage /></FormItem>)} />
+                        {/* Use the data URL handler for the hero image */}
+                        <FormField control={form.control} name="heroImage" render={({ field }) => (<FormItem><FormLabel>Page Hero Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleDataUrlFileChange(e, field.onChange, setHeroImagePreview)} /></FormControl><FormMessage /></FormItem>)} />
                         {heroImagePreview && <Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover border" />}
                         <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image AI Hint</FormLabel><FormControl><Input placeholder="e.g., happy tourists" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     </CardContent>
