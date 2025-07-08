@@ -51,6 +51,13 @@ export default function EditBookingPage() {
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      guests: 1,
+      message: '',
+    },
   });
 
   // Effect to fetch data from the server
@@ -102,6 +109,8 @@ export default function EditBookingPage() {
         date: parseISO(booking.date),
         guests: Number(booking.guests),
         tourType: Number(booking.tourType),
+        phone: booking.phone || '',
+        message: booking.message || '',
       });
     }
   }, [booking, form]);
