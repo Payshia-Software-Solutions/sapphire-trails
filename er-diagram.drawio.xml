@@ -148,6 +148,27 @@
         <mxCell id="lh-icon" value="icon: VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_highlights"><mxGeometry y="78" width="220" height="26" as="geometry" /></mxCell>
         <mxCell id="lh-title" value="title: VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_highlights"><mxGeometry y="104" width="220" height="26" as="geometry" /></mxCell>
         <mxCell id="lh-sort" value="sort_order: INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_highlights"><mxGeometry y="130" width="220" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="location_visitor_info" value="location_visitor_info" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fontColor=#FFFFFF;fillColor=#4527A0;" vertex="1" parent="1">
+            <mxGeometry x="960" y="960" width="220" height="214" as="geometry" />
+        </mxCell>
+        <mxCell id="lvi-id" value="id: INT (PK)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_visitor_info"><mxGeometry y="26" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lvi-slug" value="location_slug: VARCHAR (FK)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_visitor_info"><mxGeometry y="52" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lvi-icon" value="icon: VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_visitor_info"><mxGeometry y="78" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lvi-title" value="title: VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_visitor_info"><mxGeometry y="104" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lvi-line1" value="line1: VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_visitor_info"><mxGeometry y="130" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lvi-line2" value="line2: VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_visitor_info"><mxGeometry y="156" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lvi-sort" value="sort_order: INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_visitor_info"><mxGeometry y="182" width="220" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="location_nearby_attractions" value="location_nearby_attractions" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fontColor=#FFFFFF;fillColor=#4527A0;" vertex="1" parent="1">
+            <mxGeometry x="680" y="710" width="220" height="188" as="geometry" />
+        </mxCell>
+        <mxCell id="lna-id" value="id: INT (PK)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_nearby_attractions"><mxGeometry y="26" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lna-slug" value="location_slug: VARCHAR (FK)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_nearby_attractions"><mxGeometry y="52" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lna-icon" value="icon: VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_nearby_attractions"><mxGeometry y="78" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lna-name" value="name: VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_nearby_attractions"><mxGeometry y="104" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lna-distance" value="distance: VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_nearby_attractions"><mxGeometry y="130" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="lna-sort" value="sort_order: INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#BDBDBD;" vertex="1" parent="location_nearby_attractions"><mxGeometry y="156" width="220" height="26" as="geometry" /></mxCell>
         
         <!-- Relationships -->
         <mxCell id="rel-users-bookings" style="edgeStyle=entityRelationEdgeStyle;endArrow=ERmany;startArrow=ERone;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="users" target="bookings">
@@ -165,10 +186,16 @@
          <mxCell id="rel-tours-itinerary" style="edgeStyle=entityRelationEdgeStyle;endArrow=ERmany;startArrow=ERone;html=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;" edge="1" parent="1" source="tour_packages" target="tour_itinerary">
             <mxGeometry relative="1" as="geometry" />
         </mxCell>
-         <mxCell id="rel-loc-gallery" style="edgeStyle=entityRelationEdgeStyle;endArrow=ERmany;startArrow=ERone;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="locations" target="location_gallery_images">
+         <mxCell id="rel-loc-gallery" style="edgeStyle=entityRelationEdgeStyle;endArrow=ERmany;startArrow=ERone;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" edge="1" parent="1" source="locations" target="location_gallery_images">
             <mxGeometry relative="1" as="geometry" />
         </mxCell>
-         <mxCell id="rel-loc-highlights" style="edgeStyle=entityRelationEdgeStyle;endArrow=ERmany;startArrow=ERone;html=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;" edge="1" parent="1" source="locations" target="location_highlights">
+         <mxCell id="rel-loc-highlights" style="edgeStyle=entityRelationEdgeStyle;endArrow=ERmany;startArrow=ERone;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="locations" target="location_highlights">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-loc-visitorinfo" style="edgeStyle=entityRelationEdgeStyle;endArrow=ERmany;startArrow=ERone;html=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;" edge="1" parent="1" source="locations" target="location_visitor_info">
+            <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-loc-nearby" style="edgeStyle=entityRelationEdgeStyle;endArrow=ERmany;startArrow=ERone;html=1;exitX=0;exitY=1;entryX=1;entryY=0.5;" edge="1" parent="1" source="locations" target="location_nearby_attractions">
             <mxGeometry relative="1" as="geometry" />
         </mxCell>
         
