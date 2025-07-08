@@ -22,6 +22,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
 export default function EditBookingPage() {
   const router = useRouter();
@@ -31,32 +32,73 @@ export default function EditBookingPage() {
 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
+
+  useEffect(() => {
+    async function fetchTourPackages() {
+        try {
+            const response = await fetch('http://localhost/sapphire_trails_server/tours');
+            if (response.ok) {
+                const serverData = await response.json();
+                if(Array.isArray(serverData)) {
+                    setTourPackages(serverData.map(mapServerPackageToClient));
+                }
+            }
+        } catch(e) { console.error("Could not fetch tour packages", e); }
+    }
+    fetchTourPackages();
+  }, []);
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      guests: 1,
+      message: '',
+    },
   });
 
-  // Effect to fetch data from localStorage
+  // Effect to fetch data from the server
   useEffect(() => {
     if (!id) {
       setIsLoading(false);
       return;
     }
+    
+    async function fetchBooking() {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${id}`);
+        if (!response.ok) {
+          throw new Error('Booking not found');
+        }
+        const serverBooking = await response.json();
+        const bookingData = serverBooking.booking || serverBooking;
 
-    try {
-      const decodedId = decodeURIComponent(id);
-      const storedBookingsRaw = localStorage.getItem('bookings');
-      if (storedBookingsRaw) {
-        const allBookings = JSON.parse(storedBookingsRaw) as Booking[];
-        const foundBooking = allBookings.find(b => b.id === decodedId);
-        setBooking(foundBooking || null);
+        const clientBooking: Booking = {
+          id: Number(bookingData.id),
+          user_id: bookingData.user_id,
+          name: bookingData.name,
+          email: bookingData.email,
+          phone: bookingData.phone,
+          tourType: Number(bookingData.tour_package_id),
+          guests: Number(bookingData.guests),
+          date: bookingData.tour_date,
+          message: bookingData.message,
+          status: bookingData.status,
+        };
+        setBooking(clientBooking);
+      } catch (error) {
+        console.error("Failed to load booking data:", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to load booking data.' });
+        setBooking(null);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to load booking data:", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to load booking data.' });
-    } finally {
-      setIsLoading(false);
     }
+    fetchBooking();
   }, [id, toast]);
 
   // Effect to populate the form once booking data is available
@@ -66,25 +108,74 @@ export default function EditBookingPage() {
         ...booking,
         date: parseISO(booking.date),
         guests: Number(booking.guests),
+        tourType: Number(booking.tourType),
+        phone: booking.phone || '',
+        message: booking.message || '',
       });
     }
   }, [booking, form]);
 
-  const updateBookingInStorage = (updatedBooking: Booking) => {
+  const updateBookingOnServer = async (bookingToUpdate: Booking) => {
     try {
-      const storedBookingsRaw = localStorage.getItem('bookings');
-      const allBookings = storedBookingsRaw ? JSON.parse(storedBookingsRaw) as Booking[] : [];
-      const bookingsToStore = allBookings.map(b => b.id === updatedBooking.id ? updatedBooking : b);
-      localStorage.setItem('bookings', JSON.stringify(bookingsToStore));
+        const payload = {
+            name: bookingToUpdate.name,
+            email: bookingToUpdate.email,
+            phone: bookingToUpdate.phone,
+            tour_package_id: bookingToUpdate.tourType,
+            guests: Number(bookingToUpdate.guests),
+            tour_date: bookingToUpdate.date, // Already in 'yyyy-MM-dd' format
+            status: bookingToUpdate.status,
+            message: bookingToUpdate.message,
+            user_id: bookingToUpdate.user_id,
+        };
+        
+        const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingToUpdate.id}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || 'Failed to update booking. Ensure the backend update method is implemented.');
+        }
+        return true;
+    } catch (error) {
+        console.error("Failed to save booking:", error);
+        const errorMessage = error instanceof Error ? error.message : "Could not save booking changes.";
+        toast({ variant: 'destructive', title: 'Error', description: errorMessage });
+        return false;
+    }
+  };
+
+  const updateStatusOnServer = async (bookingId: number, status: 'accepted' | 'rejected') => {
+    try {
+      const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingId}/status/`, {
+        method: 'PUT', // Changed from PATCH to PUT
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to update booking status.');
+      }
       return true;
     } catch (error) {
-      console.error("Failed to save booking:", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save booking changes.' });
+      console.error("Failed to update status:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not update booking status.";
+      toast({ variant: 'destructive', title: 'Error', description: errorMessage });
       return false;
     }
-  }
+  };
 
-  const handleUpdate = (data: z.infer<typeof bookingFormSchema>) => {
+  const handleUpdate = async (data: z.infer<typeof bookingFormSchema>) => {
     if (!booking) return;
 
     const updatedBooking: Booking = {
@@ -94,18 +185,18 @@ export default function EditBookingPage() {
       guests: Number(data.guests),
     };
     
-    if (updateBookingInStorage(updatedBooking)) {
+    const success = await updateBookingOnServer(updatedBooking);
+    if (success) {
       toast({ title: 'Success!', description: 'Booking details have been updated.' });
       router.push('/admin/booking-requests');
     }
   };
 
-  const handleStatusChange = (status: 'accepted' | 'rejected') => {
+  const handleStatusChange = async (status: 'accepted' | 'rejected') => {
     if (!booking) return;
     
-    const updatedBooking = { ...booking, status };
-
-    if (updateBookingInStorage(updatedBooking)) {
+    const success = await updateStatusOnServer(booking.id, status);
+    if (success) {
       toast({ title: `Booking ${status}`, description: `The booking has been marked as ${status}.` });
       router.push('/admin/booking-requests');
     }
@@ -149,11 +240,12 @@ export default function EditBookingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="tourType" render={({ field }) => (
                         <FormItem><FormLabel>Tour Package</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={String(field.value)}>
                             <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                             <SelectContent>
-                                <SelectItem value="gem-explorer-day-tour">Gem Explorer Day Tour</SelectItem>
-                                <SelectItem value="sapphire-trails-deluxe">Sapphire Trails Deluxe</SelectItem>
+                                {tourPackages.map(pkg => (
+                                    <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         <FormMessage />

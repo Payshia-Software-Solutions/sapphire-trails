@@ -23,7 +23,7 @@ import { Progress } from '@/components/ui/progress';
 const iconOptions = ['MapPin', 'Gem', 'Landmark', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble', 'Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Waves', 'Camera', 'Tent', 'Thermometer'];
 
 const steps = [
-  { id: 1, name: 'Homepage Card', fields: ['id', 'homepageTitle', 'homepageDescription', 'imageUrl', 'imageAlt', 'imageHint'] as const },
+  { id: 1, name: 'Homepage Card', fields: ['homepageTitle', 'homepageDescription', 'imageUrl', 'imageAlt', 'imageHint'] as const },
   { id: 2, name: 'Tour Page Details', fields: ['tourPageTitle', 'duration', 'price', 'priceSuffix', 'tourPageDescription', 'heroImage', 'heroImageHint'] as const },
   { id: 3, name: 'Highlights & Inclusions', fields: ['tourHighlights', 'inclusions'] as const },
   { id: 4, name: 'Itinerary & Booking Link', fields: ['itinerary', 'bookingLink'] as const },
@@ -35,7 +35,9 @@ export default function AddPackagePage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isClient, setIsClient] = useState(false);
   
+  const [cardImageFile, setCardImageFile] = useState<File | null>(null);
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,14 +48,11 @@ export default function AddPackagePage() {
     resolver: zodResolver(packageFormSchema),
     mode: 'onBlur',
     defaultValues: {
-      id: '',
-      // Homepage
-      imageUrl: '',
+      imageUrl: '', 
       imageAlt: '',
       imageHint: '',
       homepageTitle: '',
       homepageDescription: '',
-      // Detail Page
       tourPageTitle: '',
       duration: '',
       price: '',
@@ -61,9 +60,9 @@ export default function AddPackagePage() {
       heroImage: '',
       heroImageHint: '',
       tourPageDescription: '',
-      tourHighlights: Array(3).fill({ icon: 'Star', title: '', description: '' }),
+      tourHighlights: Array.from({ length: 3 }, () => ({ icon: 'Star' as const, title: '', description: '' })),
       inclusions: [{ text: '' }],
-      itinerary: Array(5).fill({ time: '', title: '', description: '' }),
+      itinerary: Array.from({ length: 5 }, () => ({ time: '', title: '', description: '' })),
       bookingLink: '/booking',
     },
   });
@@ -83,22 +82,24 @@ export default function AddPackagePage() {
     name: "itinerary",
   });
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    onChange: (value: string) => void,
-    setPreview: (value: string | null) => void
-  ) => {
+  const handleCardImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const dataUrl = reader.result as string;
-        onChange(dataUrl);
-        setPreview(dataUrl);
-      };
-      reader.readAsDataURL(file);
+      setCardImageFile(file);
+      setCardImagePreview(URL.createObjectURL(file));
+      form.setValue('imageUrl', file.name, { shouldValidate: true });
     }
   };
+  
+  const handleHeroImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setHeroImageFile(file);
+      setHeroImagePreview(URL.createObjectURL(file));
+      form.setValue('heroImage', file.name, { shouldValidate: true });
+    }
+  };
+
 
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
@@ -126,52 +127,80 @@ export default function AddPackagePage() {
 
 
   async function onSubmit(data: z.infer<typeof packageFormSchema>) {
-    try {
-      const payload = {
-        id: data.id,
-        homepage_title: data.homepageTitle,
-        homepage_description: data.homepageDescription,
-        homepage_image_url: data.imageUrl,
-        homepage_image_alt: data.imageAlt,
-        homepage_image_hint: data.imageHint,
-        tour_page_title: data.tourPageTitle,
-        duration: data.duration,
-        price: data.price,
-        price_suffix: data.priceSuffix,
-        hero_image_url: data.heroImage,
-        hero_image_hint: data.heroImageHint,
-        tour_page_description: data.tourPageDescription,
-        booking_link: data.bookingLink,
-      };
+     if (!cardImageFile) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Card Image',
+        description: 'Please upload a homepage card image to continue.',
+      });
+      setCurrentStep(1);
+      return;
+    }
+    if (!heroImageFile) {
+       toast({
+        variant: 'destructive',
+        title: 'Missing Hero Image',
+        description: 'Please upload a hero image for the tour page.',
+      });
+      setCurrentStep(2);
+      return;
+    }
 
-      const response = await fetch('http://localhost/sapphire_trails_server/tours', {
+    const formData = new FormData();
+
+    // 1. Append the actual files
+    formData.append('homepage_image', cardImageFile);
+    formData.append('hero_image', heroImageFile);
+
+    // 2. Append all other string fields
+    formData.append('homepage_title', data.homepageTitle);
+    formData.append('homepage_description', data.homepageDescription);
+    formData.append('homepage_image_alt', data.imageAlt);
+    formData.append('homepage_image_hint', data.imageHint);
+    
+    formData.append('tour_page_title', data.tourPageTitle);
+    formData.append('duration', data.duration);
+    formData.append('price', data.price);
+    formData.append('price_suffix', data.priceSuffix);
+    formData.append('hero_image_hint', data.heroImageHint);
+    formData.append('tour_page_description', data.tourPageDescription);
+    formData.append('booking_link', data.bookingLink);
+
+    // 3. Stringify and append array fields, adding sort_order
+    formData.append('highlights', JSON.stringify(data.tourHighlights.map((highlight, index) => ({
+        ...highlight,
+        sort_order: index + 1,
+    }))));
+    
+    formData.append('inclusions', JSON.stringify(data.inclusions.map((inclusion, index) => ({
+        icon: 'Star',
+        title: inclusion.text,
+        description: '', // description is not on the form, but backend might expect it
+        sort_order: index + 1,
+    }))));
+    
+    formData.append('itinerary', JSON.stringify(data.itinerary.map((item, index) => ({
+        ...item,
+        sort_order: index + 1,
+    }))));
+
+    try {
+      const response = await fetch('http://localhost/sapphire_trails_server/tours/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || 'An unexpected error occurred.';
-        
-        if (response.status === 422 && errorMessage.toLowerCase().includes('id')) {
-            form.setError('id', { type: 'manual', message: 'This ID already exists. Please use a unique one.' });
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Creation Failed',
-                description: errorMessage,
-            });
-        }
+        const errorMessage = errorData?.error || 'An unexpected server error occurred.';
+        toast({
+            variant: 'destructive',
+            title: 'Creation Failed',
+            description: errorMessage,
+        });
         return;
       }
       
-      // Note: After creating the main package, separate API calls would be needed
-      // to post highlights, inclusions, and itinerary items, associating them with the new package ID.
-
       toast({
         title: 'Package Added!',
         description: `Package "${data.homepageTitle}" has been saved successfully.`,
@@ -182,7 +211,7 @@ export default function AddPackagePage() {
       console.error('Failed to save package:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Connection Error',
         description: 'Could not connect to the server. Please try again later.',
       });
     }
@@ -221,11 +250,12 @@ export default function AddPackagePage() {
                         <CardDescription>Content that appears on the homepage and tour listing cards.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <FormField control={form.control} name="id" render={({ field }) => (<FormItem><FormLabel>Unique ID (Slug)</FormLabel><FormControl><Input placeholder="e.g., new-deluxe-tour" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         <FormField control={form.control} name="homepageTitle" render={({ field }) => (<FormItem><FormLabel>Card Title</FormLabel><FormControl><Input placeholder="e.g., Exclusive Sapphire Mine Tour" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         <FormField control={form.control} name="homepageDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea placeholder="A short description for the homepage card..." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="imageUrl" render={({ field }) => ( <FormItem><FormLabel>Card Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setCardImagePreview)} /></FormControl><FormMessage /></FormItem>)} />
+                        
+                        <FormField control={form.control} name="imageUrl" render={() => ( <FormItem><FormLabel>Card Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={handleCardImageFileChange} /></FormControl><FormMessage /></FormItem>)} />
                         {cardImagePreview && <Image src={cardImagePreview} alt="Card preview" width={200} height={100} className="rounded-md object-cover border" />}
+
                         <div className="grid md:grid-cols-2 gap-4">
                             <FormField control={form.control} name="imageAlt" render={({ field }) => (<FormItem><FormLabel>Image Alt Text</FormLabel><FormControl><Input placeholder="Describe the image" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <FormField control={form.control} name="imageHint" render={({ field }) => (<FormItem><FormLabel>Image AI Hint</FormLabel><FormControl><Input placeholder="e.g., tourists mining" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -250,8 +280,10 @@ export default function AddPackagePage() {
                         </div>
                         <FormField control={form.control} name="tourPageDescription" render={({ field }) => (<FormItem><FormLabel>Page Description</FormLabel><FormControl><Textarea placeholder="The main description for the tour highlights section..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                         <Separator />
-                        <FormField control={form.control} name="heroImage" render={({ field }) => (<FormItem><FormLabel>Page Hero Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setHeroImagePreview)} /></FormControl><FormMessage /></FormItem>)} />
+                        
+                        <FormField control={form.control} name="heroImage" render={() => ( <FormItem><FormLabel>Page Hero Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={handleHeroImageFileChange} /></FormControl><FormMessage /></FormItem>)} />
                         {heroImagePreview && <Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover border" />}
+
                         <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image AI Hint</FormLabel><FormControl><Input placeholder="e.g., happy tourists" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     </CardContent>
                 </Card>

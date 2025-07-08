@@ -12,69 +12,58 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { AlertTriangle, Plus, ShieldCheck, UserCog } from 'lucide-react';
+import { AlertTriangle, Plus, ShieldCheck, UserCog, LoaderCircle } from 'lucide-react';
 import type { AdminUser } from '@/lib/schemas';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-}
-
-const ALL_USERS_KEY = 'sapphire-all-users';
-const ADMIN_USERS_KEY = 'sapphire-admins';
+import { useToast } from '@/hooks/use-toast';
 
 export default function UserManagementPage() {
-  const [clientUsers, setClientUsers] = useState<User[]>([]);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Load client users
-    try {
-      const storedUsersRaw = localStorage.getItem(ALL_USERS_KEY);
-      if (storedUsersRaw) {
-        const storedUsers = JSON.parse(storedUsersRaw);
-        if (Array.isArray(storedUsers)) {
-          setClientUsers(storedUsers);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load client users from localStorage', error);
-    }
-    
-    // Load admin users
-    try {
-        const storedAdminsRaw = localStorage.getItem(ADMIN_USERS_KEY);
-        if (storedAdminsRaw) {
-            const storedAdmins = JSON.parse(storedAdminsRaw);
-            if (Array.isArray(storedAdmins)) {
-                setAdminUsers(storedAdmins);
+    async function fetchAdminUsers() {
+        setIsLoading(true);
+        try {
+            const response = await fetch('http://localhost/sapphire_trails_server/admins');
+            if (!response.ok) {
+                throw new Error('Failed to fetch admin users from the server.');
             }
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                setAdminUsers(data);
+            }
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not load admin users. Please ensure the server is running.',
+            });
+        } finally {
+            setIsLoading(false);
         }
-    } catch (error) {
-        console.error('Failed to load admin users from localStorage', error);
     }
-  }, []);
+    fetchAdminUsers();
+  }, [toast]);
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight text-primary">User Management</h1>
-            <p className="text-muted-foreground">View client accounts and manage administrator roles.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-primary">Admin User Management</h1>
+            <p className="text-muted-foreground">View, create, or manage users with access to this admin dashboard.</p>
         </div>
       </div>
       
-      {/* Admin Users Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Admin Accounts</CardTitle>
             <CardDescription>
-              Manage users with access to this admin dashboard.
+              This list is fetched from your server.
             </CardDescription>
           </div>
           <Button asChild>
@@ -85,17 +74,23 @@ export default function UserManagementPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          {adminUsers.length > 0 ? (
+          {isLoading ? (
+            <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+              <LoaderCircle className="h-12 w-12 text-muted-foreground/50 animate-spin" />
+              <p>Loading admin users from server...</p>
+            </div>
+          ) : adminUsers.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Username</TableHead>
                   <TableHead>Role</TableHead>
+                  <TableHead className="hidden sm:table-cell">Created At</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {adminUsers.map((user) => (
-                  <TableRow key={user.username}>
+                  <TableRow key={user.id}>
                     <TableCell className="font-medium break-words">{user.username}</TableCell>
                     <TableCell>
                       <Badge variant={user.role === 'superadmin' ? 'default' : 'secondary'} className="capitalize">
@@ -104,6 +99,7 @@ export default function UserManagementPage() {
                         {user.role}
                       </Badge>
                     </TableCell>
+                    <TableCell className="hidden sm:table-cell">{new Date(user.created_at).toLocaleDateString()}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -111,47 +107,7 @@ export default function UserManagementPage() {
           ) : (
              <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
               <AlertTriangle className="h-12 w-12 text-muted-foreground/50" />
-              <p>No admin users found. A default superadmin is created on first login.</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-
-      {/* Client Users Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Registered Client Users</CardTitle>
-          <CardDescription>
-            This is a list of all users who have signed up through the client-facing website.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {clientUsers.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="hidden sm:table-cell">User ID</TableHead>
-                  <TableHead>Full Name</TableHead>
-                  <TableHead>Email Address</TableHead>
-                  <TableHead>Phone Number</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {clientUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="hidden sm:table-cell font-mono text-xs">{user.id}</TableCell>
-                    <TableCell className="font-medium break-words">{user.name}</TableCell>
-                    <TableCell className="break-all">{user.email}</TableCell>
-                    <TableCell className="break-all">{user.phone || 'N/A'}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
-              <AlertTriangle className="h-12 w-12 text-muted-foreground/50" />
-              <p>No client users have signed up yet.</p>
+              <p>No admin users found on the server.</p>
             </div>
           )}
         </CardContent>

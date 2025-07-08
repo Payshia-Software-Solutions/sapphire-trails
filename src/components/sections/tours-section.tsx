@@ -9,7 +9,7 @@ import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import useEmblaCarousel from 'embla-carousel-react';
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { initialTourPackages, type TourPackage } from '@/lib/packages-data';
+import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
   <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
@@ -32,57 +32,28 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
   </Card>
 );
 
-const mapServerPackageToClient = (pkg: any): TourPackage => ({
-  id: pkg.id,
-  imageUrl: pkg.homepage_image_url,
-  imageAlt: pkg.homepage_image_alt || '',
-  imageHint: pkg.homepage_image_hint || '',
-  homepageTitle: pkg.homepage_title,
-  homepageDescription: pkg.homepage_description,
-  tourPageTitle: pkg.tour_page_title,
-  duration: pkg.duration,
-  price: pkg.price,
-  priceSuffix: pkg.price_suffix,
-  heroImage: pkg.hero_image_url,
-  heroImageHint: pkg.hero_image_hint,
-  tourPageDescription: pkg.tour_page_description,
-  tourHighlights: pkg.highlights || [],
-  inclusions: pkg.inclusions ? pkg.inclusions.map((i: { text: string }) => i.text) : [],
-  itinerary: pkg.itinerary || [],
-  bookingLink: pkg.booking_link,
-});
-
 export function ToursSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
-  const [tours, setTours] = useState<TourPackage[]>(initialTourPackages);
+  const [tours, setTours] = useState<TourPackage[]>([]);
 
   useEffect(() => {
     async function fetchTours() {
       try {
         const response = await fetch('http://localhost/sapphire_trails_server/tours');
         if (!response.ok) {
-            console.error("Failed to fetch tour packages, using static data as fallback.");
+            console.error("Failed to fetch tour packages.");
             return;
         }
         
         const data = await response.json();
         if (Array.isArray(data)) {
-            const combinedTours = [...initialTourPackages];
-            const serverTours = data.map(mapServerPackageToClient);
-            
-            const uniqueTours: { [key: string]: TourPackage } = {};
-            for (const pkg of combinedTours) {
-                uniqueTours[pkg.id] = pkg;
-            }
-            for (const pkg of serverTours) {
-                uniqueTours[pkg.id] = pkg;
-            }
-            setTours(Object.values(uniqueTours));
+            const serverPackages = data.map(mapServerPackageToClient);
+            setTours(serverPackages);
         } else {
-            console.error("Server response was not an array, using static data.");
+            console.error("Server response was not an array.");
         }
       } catch (e) {
-        console.error("Failed to fetch or parse packages, using static data as fallback.", e);
+        console.error("Failed to fetch or parse packages.", e);
       }
     }
     fetchTours();

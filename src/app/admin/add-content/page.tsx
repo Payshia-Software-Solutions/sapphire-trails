@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { locationFormSchema } from '@/lib/schemas';
-import type { Location } from '@/lib/locations-data';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -32,6 +30,13 @@ const steps = [
   { id: 5, name: 'Visitor Information', fields: ['visitorInfo'] as const },
   { id: 6, name: 'Map & Nearby', fields: ['mapEmbedUrl', 'nearbyAttractions'] as const },
 ];
+
+const toKebabCase = (str: string) =>
+  str &&
+  str
+    .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+    ?.map(x => x.toLowerCase())
+    .join('-') || '';
 
 export default function AddContentPage() {
   const { toast } = useToast();
@@ -73,6 +78,16 @@ export default function AddContentPage() {
       nearbyAttractions: Array.from({ length: 3 }, () => ({ icon: 'Gem' as const, name: '', distance: '' })),
     },
   });
+  
+  const title = form.watch('title');
+  const isSlugManuallyEdited = form.formState.dirtyFields.slug;
+
+  useEffect(() => {
+    if (!isSlugManuallyEdited) {
+      form.setValue('slug', toKebabCase(title), { shouldValidate: true });
+    }
+  }, [title, form, isSlugManuallyEdited]);
+
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -130,49 +145,104 @@ export default function AddContentPage() {
     }
   };
 
-  function onSubmit(data: z.infer<typeof locationFormSchema>) {
-    const newLocation: Location = {
-      title: data.title,
+  async function onSubmit(data: z.infer<typeof locationFormSchema>) {
+     // Safeguard against empty slug submission
+    if (!data.slug || data.slug.trim().length < 3) {
+      toast({
+        variant: "destructive",
+        title: "Missing Slug",
+        description: "Please provide a unique slug for the location on Step 1.",
+      });
+      setCurrentStep(1);
+      return;
+    }
+
+    // This payload is structured to match your PHP backend exactly.
+    const payload = {
+      // Main location fields (snake_case)
       slug: data.slug,
-      cardDescription: data.cardDescription,
-      cardImage: data.cardImage,
-      imageHint: data.imageHint,
-      distance: data.distance,
+      title: data.title,
       subtitle: data.subtitle,
-      heroImage: data.heroImage,
-      heroImageHint: data.heroImageHint,
-      intro: {
-        title: data.introTitle,
-        description: data.introDescription,
-        imageUrl: data.introImageUrl,
-        imageHint: data.introImageHint,
-      },
-      galleryImages: data.galleryImages,
-      highlights: data.highlights,
-      visitorInfo: data.visitorInfo,
-      map: {
-        embedUrl: data.mapEmbedUrl,
-        nearbyAttractions: data.nearbyAttractions,
-      },
-      category: 'nature',
+      card_description: data.cardDescription,
+      card_image_url: data.cardImage,
+      card_image_hint: data.imageHint,
+      distance: data.distance,
+      hero_image_url: data.heroImage,
+      hero_image_hint: data.heroImageHint,
+      intro_title: data.introTitle,
+      intro_description: data.introDescription,
+      intro_image_url: data.introImageUrl,
+      intro_image_hint: data.introImageHint,
+      map_embed_url: data.mapEmbedUrl,
+      category: 'nature', // Hardcoding category as form doesn't have it
+
+      // Nested arrays for related tables with correct keys and sort_order
+      gallery_images: data.galleryImages.map((img, index) => ({
+        image_url: img.src,
+        alt_text: img.alt,
+        hint: img.hint,
+        is_360: false, // Default value
+        sort_order: index + 1,
+      })),
+      highlights: data.highlights.map((h, index) => ({
+        icon: h.icon,
+        title: h.title,
+        description: h.description,
+        sort_order: index + 1,
+      })),
+      visitor_info: data.visitorInfo.map((vi, index) => ({
+        icon: vi.icon,
+        title: vi.title,
+        line1: vi.line1,
+        line2: vi.line2,
+        sort_order: index + 1,
+      })),
+      nearby_attractions: data.nearbyAttractions.map((na, index) => ({
+        icon: na.icon,
+        name: na.name,
+        distance: na.distance,
+        sort_order: index + 1,
+      })),
     };
 
     try {
-      const storedLocationsRaw = localStorage.getItem('customLocations');
-      const storedLocations = storedLocationsRaw ? JSON.parse(storedLocationsRaw) : [];
-      const updatedLocations = [...storedLocations, newLocation];
-      localStorage.setItem('customLocations', JSON.stringify(updatedLocations));
+      const response = await fetch('http://localhost/sapphire_trails_server/locations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.message || 'An unexpected error occurred.';
+        
+        if (response.status === 422 && errorMessage.toLowerCase().includes('slug')) {
+          form.setError('slug', { type: 'manual', message: 'This slug already exists. Please use a unique one.' });
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Creation Failed',
+            description: errorMessage,
+          });
+        }
+        return;
+      }
+
       toast({
-        title: 'Content Added!',
-        description: `Location "${data.title}" has been saved successfully.`,
+        title: 'Location Added!',
+        description: `Location "${data.title}" has been created successfully.`,
       });
       router.push('/admin/manage-content');
+
     } catch (error) {
-      console.error('Failed to save to localStorage', error);
+      console.error('Failed to create location:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'There was a problem saving the new content.',
+        description: 'Could not connect to the server. Please try again later.',
       });
     }
   }

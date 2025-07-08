@@ -3,10 +3,9 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import type { Location } from '@/lib/locations-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, AlertTriangle, Plus } from 'lucide-react';
+import { Trash2, AlertTriangle, Plus, LoaderCircle } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,47 +20,73 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
-const ADMIN_SESSION_KEY = 'adminUser';
+// Simplified type for this page's needs
+interface ManagedLocation {
+    slug: string;
+    title: string;
+    card_image_url: string;
+}
 
 export default function ManageContentPage() {
   const { toast } = useToast();
-  const [customLocations, setCustomLocations] = useState<Location[]>([]);
+  const [locations, setLocations] = useState<ManagedLocation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const storedLocationsRaw = localStorage.getItem('customLocations');
-      if (storedLocationsRaw) {
-        const storedLocations = JSON.parse(storedLocationsRaw) as Location[];
-        if (Array.isArray(storedLocations)) {
-          setCustomLocations(storedLocations);
+    async function fetchLocations() {
+      setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost/sapphire_trails_server/locations');
+        if (!response.ok) {
+          throw new Error('Failed to fetch locations from the server.');
         }
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setLocations(data);
+        }
+      } catch (error) {
+        console.error(error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not load locations. Please ensure the server is running.',
+        });
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to load custom locations from localStorage', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Could not load custom locations.',
-      });
     }
+    fetchLocations();
   }, [toast]);
 
-  const handleDelete = (slug: string) => {
-    const updatedLocations = customLocations.filter(loc => loc.slug !== slug);
+  const handleDelete = async (slug: string) => {
     try {
-      localStorage.setItem('customLocations', JSON.stringify(updatedLocations));
-      setCustomLocations(updatedLocations);
-      toast({
-        title: 'Content Deleted!',
-        description: `The location has been successfully removed.`,
-      });
+        const response = await fetch(`http://localhost/sapphire_trails_server/locations/${slug}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || 'Failed to delete the location.');
+        }
+
+        // Remove the location from the local state to update the UI instantly
+        setLocations(prevLocations => prevLocations.filter(location => location.slug !== slug));
+
+        toast({
+            title: 'Location Deleted',
+            description: `The location "${slug}" has been successfully deleted.`,
+        });
+
     } catch (error) {
-      console.error('Failed to save to localStorage', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'There was a problem deleting the content.',
-      });
+        console.error('Failed to delete location:', error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: error instanceof Error ? error.message : 'Could not connect to the server.',
+        });
     }
   };
 
@@ -84,20 +109,25 @@ export default function ManageContentPage() {
         <CardHeader>
           <CardTitle>Custom Added Locations</CardTitle>
           <CardDescription>
-            Only locations added via the &apos;Add Content&apos; form are listed here. Deleting an item is permanent.
+            This list is fetched from your server. Deleting an item is permanent.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {customLocations.length > 0 ? (
+          {isLoading ? (
+             <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+              <LoaderCircle className="h-12 w-12 text-muted-foreground/50 animate-spin" />
+              <p>Loading locations from server...</p>
+            </div>
+          ) : locations.length > 0 ? (
             <div className="grid gap-6">
-              {customLocations.map((location) => (
+              {locations.map((location) => (
                 <div key={location.slug} className="flex items-center gap-4 p-4 border rounded-lg">
                   <Image
-                    src={location.cardImage}
+                    src={location.card_image_url}
                     alt={location.title}
                     width={80}
                     height={80}
-                    className="rounded-md object-cover aspect-square"
+                    className="rounded-md object-cover aspect-square bg-muted"
                   />
                   <div className="grid gap-1 text-sm flex-1">
                     <div className="font-medium text-lg break-words">{location.title}</div>

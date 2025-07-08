@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -35,14 +36,32 @@ import {
 } from "@/components/ui/popover"
 import { bookingFormSchema } from "@/lib/schemas"
 import { Card, CardContent } from "@/components/ui/card"
-import type { Booking } from "@/lib/bookings-data"
 import { useAuth } from "@/contexts/auth-context"
+import { useToast } from "@/hooks/use-toast"
+import { mapServerPackageToClient, type TourPackage } from "@/lib/packages-data"
 
 export function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const searchParams = useSearchParams();
   const tourTypeParam = searchParams.get('tourType');
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
+
+  useEffect(() => {
+    async function fetchTourPackages() {
+        try {
+            const response = await fetch('http://localhost/sapphire_trails_server/tours');
+            if (response.ok) {
+                const serverData = await response.json();
+                if(Array.isArray(serverData)) {
+                    setTourPackages(serverData.map(mapServerPackageToClient));
+                }
+            }
+        } catch(e) { console.error("Could not fetch tour packages", e); }
+    }
+    fetchTourPackages();
+  }, []);
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -50,7 +69,7 @@ export function BookingForm() {
       name: "",
       email: "",
       phone: "",
-      tourType: tourTypeParam === 'gem-explorer-day-tour' || tourTypeParam === 'sapphire-trails-deluxe' ? tourTypeParam : undefined,
+      tourType: tourTypeParam ? Number(tourTypeParam) : undefined,
       guests: 1,
       message: "",
     },
@@ -61,8 +80,8 @@ export function BookingForm() {
       form.reset({
         name: user.name,
         email: user.email,
-        phone: "",
-        tourType: tourTypeParam === 'gem-explorer-day-tour' || tourTypeParam === 'sapphire-trails-deluxe' ? tourTypeParam : form.getValues('tourType'),
+        phone: user.phone || "",
+        tourType: tourTypeParam ? Number(tourTypeParam) : form.getValues('tourType'),
         guests: form.getValues('guests') || 1,
         date: form.getValues('date'),
         message: form.getValues('message') || "",
@@ -70,26 +89,57 @@ export function BookingForm() {
     }
   }, [user, form, tourTypeParam]);
 
-  function onSubmit(data: z.infer<typeof bookingFormSchema>) {
-    const storedBookingsRaw = localStorage.getItem('bookings');
-    const storedBookings = storedBookingsRaw ? JSON.parse(storedBookingsRaw) : [];
+  async function onSubmit(data: z.infer<typeof bookingFormSchema>) {
+     if (!user) {
+        toast({
+            variant: "destructive",
+            title: "Authentication Error",
+            description: "You must be logged in to make a booking.",
+        });
+        return;
+    }
 
-    const newBooking: Booking = {
-        id: new Date().toISOString() + Math.random(),
+    const payload = {
+        user_id: user.id,
+        tour_package_id: data.tourType,
         name: data.name,
         email: data.email,
         phone: data.phone,
-        tourType: data.tourType,
         guests: Number(data.guests),
-        date: format(data.date, 'yyyy-MM-dd'),
+        tour_date: format(data.date, 'yyyy-MM-dd'),
         message: data.message,
-        status: 'pending',
     };
-
-    const updatedBookings = [...storedBookings, newBooking];
-    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
     
-    setIsSubmitted(true);
+    try {
+        const response = await fetch('http://localhost/sapphire_trails_server/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: "An unknown error occurred."}));
+            throw new Error(errorData.message || 'Failed to submit booking request.');
+        }
+
+        setIsSubmitted(true);
+        form.reset();
+        toast({
+          title: "Request Sent!",
+          description: "Your booking request has been submitted successfully.",
+        });
+
+    } catch (error) {
+        console.error("Booking submission failed:", error);
+        toast({
+            variant: "destructive",
+            title: "Submission Failed",
+            description: error instanceof Error ? error.message : "Could not connect to the server.",
+        });
+    }
   }
 
   return (
@@ -105,7 +155,7 @@ export function BookingForm() {
           {isSubmitted ? (
              <div className="text-center rounded-lg border bg-card text-card-foreground shadow-sm p-12">
                 <h3 className="text-2xl font-bold text-primary">Thank You!</h3>
-                <p className="text-muted-foreground mt-4">Your booking request has been sent successfully. We will contact you shortly to confirm.</p>
+                <p className="text-muted-foreground mt-4">Your booking request has been sent successfully. We will contact you shortly.</p>
              </div>
           ) : (
             <Card>
@@ -158,15 +208,16 @@ export function BookingForm() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Tour Package</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                            <Select onValueChange={field.onChange} value={String(field.value)}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select a tour" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="gem-explorer-day-tour">Gem Explorer Day Tour</SelectItem>
-                                <SelectItem value="sapphire-trails-deluxe">Sapphire Trails Deluxe</SelectItem>
+                                {tourPackages.map(pkg => (
+                                    <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                             <FormMessage />

@@ -5,22 +5,15 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useRouter, usePathname } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
-// Mock user data and types
+// User data type
 interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phone?: string;
 }
 
-// A mock user database
-const initialMockUsers: User[] = [
-  { id: '1', name: 'Test User', email: 'user@test.com', phone: '123-456-7890' },
-];
-const MOCK_PASSWORD = 'password123';
 const USER_SESSION_KEY = 'sapphire-user';
-const ALL_USERS_KEY = 'sapphire-all-users';
-
 
 interface AuthContextType {
   user: User | null;
@@ -45,13 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
-      
-      const allUsers = localStorage.getItem(ALL_USERS_KEY);
-      if (!allUsers) {
-        localStorage.setItem(ALL_USERS_KEY, JSON.stringify(initialMockUsers));
-      }
     } catch (error) {
-      console.error('Failed to initialize user data', error);
+      console.error('Failed to parse user session data', error);
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -60,30 +48,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, pass: string): Promise<boolean> => {
     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    const allUsersRaw = localStorage.getItem(ALL_USERS_KEY);
-    const allUsers: User[] = allUsersRaw ? JSON.parse(allUsersRaw) : [];
-    const foundUser = allUsers.find(u => u.email === email);
+    try {
+      const response = await fetch('http://localhost/sapphire_trails_server/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ email: email, password: pass }),
+      });
 
-    if (foundUser && pass === MOCK_PASSWORD) {
-      setUser(foundUser);
-      sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(foundUser));
-      setIsLoading(false);
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(data?.message || 'Login failed. Please check your credentials.');
+      }
+      
+      const loggedInUser: User = data.user;
+      if (!loggedInUser) {
+        throw new Error('Login successful, but no user data was returned from the server.');
+      }
+
+      setUser(loggedInUser);
+      sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(loggedInUser));
       toast({ title: 'Success!', description: 'You have logged in successfully.' });
       return true;
-    }
 
-    setIsLoading(false);
-    toast({ variant: 'destructive', title: 'Error', description: 'Invalid email or password.' });
-    return false;
+    } catch (error) {
+      console.error('Login failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during login.';
+      toast({ variant: 'destructive', title: 'Error', description: errorMessage });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const signup = async (name: string, email: string, phone: string | undefined, pass: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const userId = crypto.randomUUID();
       const response = await fetch('http://localhost/sapphire_trails_server/users', {
         method: 'POST',
         headers: {
@@ -91,7 +94,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          id: userId,
           name: name,
           email: email,
           password: pass,
@@ -99,14 +101,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }),
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || `Sign-up failed. Please try again.`;
+        const errorMessage = data?.message || `Sign-up failed. Please try again.`;
         throw new Error(errorMessage);
       }
 
-      // On successful creation, create a session for the new user with the data we sent.
-      const newUser: User = { id: userId, name, email, phone };
+      // Use the user data returned from the server as the source of truth
+      const newUser: User = data.user;
+      if (!newUser) {
+          throw new Error('Sign-up successful, but no user data was returned from the server.');
+      }
       
       setUser(newUser);
       sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(newUser));
@@ -127,7 +133,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     sessionStorage.removeItem(USER_SESSION_KEY);
     toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
-    // Redirect to home page unless on a non-auth-required page
     if (pathname.startsWith('/profile') || pathname.startsWith('/booking')) {
          router.push('/');
     }

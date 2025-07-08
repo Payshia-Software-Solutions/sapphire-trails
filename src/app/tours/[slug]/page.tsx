@@ -5,33 +5,13 @@ import { useEffect, useState } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { initialTourPackages, type TourPackage } from '@/lib/packages-data';
+import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TourDetailHero } from '@/components/sections/tour-detail-hero';
 import { TourDetailHighlights } from '@/components/sections/tour-detail-highlights';
 import { TourDetailInclusions } from '@/components/sections/tour-detail-inclusions';
 import { BookingSection } from '@/components/sections/booking-section';
 import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary';
-
-const mapServerPackageToClient = (pkg: any): TourPackage => ({
-  id: pkg.id,
-  imageUrl: pkg.homepage_image_url,
-  imageAlt: pkg.homepage_image_alt || '',
-  imageHint: pkg.homepage_image_hint || '',
-  homepageTitle: pkg.homepage_title,
-  homepageDescription: pkg.homepage_description,
-  tourPageTitle: pkg.tour_page_title,
-  duration: pkg.duration,
-  price: pkg.price,
-  priceSuffix: pkg.price_suffix,
-  heroImage: pkg.hero_image_url,
-  heroImageHint: pkg.hero_image_hint,
-  tourPageDescription: pkg.tour_page_description,
-  tourHighlights: pkg.highlights || [],
-  inclusions: pkg.inclusions ? pkg.inclusions.map((i: { text: string }) => i.text) : [],
-  itinerary: pkg.itinerary || [],
-  bookingLink: pkg.booking_link,
-});
 
 
 function LoadingSkeleton() {
@@ -65,15 +45,8 @@ export default function TourDetailPage() {
         try {
             const response = await fetch(`http://localhost/sapphire_trails_server/tours/${params.slug}`);
             if (!response.ok) {
-                if (response.status === 404) {
-                     // Try finding in initial static packages as a fallback
-                    const staticPackage = initialTourPackages.find(p => p.id === params.slug);
-                    if (staticPackage) {
-                        setTourPackage(staticPackage);
-                    } else {
-                        setTourPackage(undefined);
-                    }
-                }
+                // If not found or any other error, set to undefined to trigger notFound()
+                setTourPackage(undefined);
                 return;
             }
             const data = await response.json();
@@ -81,9 +54,7 @@ export default function TourDetailPage() {
             setTourPackage(mappedPackage);
         } catch (error) {
             console.error("Failed to fetch tour package", error);
-             // Try finding in initial static packages as a fallback
-            const staticPackage = initialTourPackages.find(p => p.id === params.slug);
-            setTourPackage(staticPackage);
+            setTourPackage(undefined);
         } finally {
             setIsLoading(false);
         }

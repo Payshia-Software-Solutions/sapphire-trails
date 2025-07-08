@@ -4,13 +4,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { mockBookings, type Booking } from '@/lib/bookings-data';
+import { type Booking } from '@/lib/bookings-data';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import {
   Table,
   TableBody,
@@ -28,16 +28,49 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
 
 const ADMIN_SESSION_KEY = 'adminUser';
 const ITEMS_PER_PAGE = 4;
+
+const mapServerBookingToClient = (serverBooking: any): Booking => ({
+  id: Number(serverBooking.id),
+  user_id: serverBooking.user_id,
+  name: serverBooking.name,
+  email: serverBooking.email,
+  phone: serverBooking.phone,
+  tourType: Number(serverBooking.tour_package_id),
+  tourTitle: serverBooking.tour_title,
+  guests: Number(serverBooking.guests),
+  date: serverBooking.tour_date,
+  message: serverBooking.message,
+  status: serverBooking.status,
+});
 
 export default function BookingRequestsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
+  const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
+
+  useEffect(() => {
+    async function fetchTourPackages() {
+      try {
+        const response = await fetch('http://localhost/sapphire_trails_server/tours');
+        if (response.ok) {
+            const serverData = await response.json();
+            if(Array.isArray(serverData)) {
+                setTourPackages(serverData.map(mapServerPackage));
+            }
+        }
+      } catch (e) { console.error("Could not fetch tour packages", e); }
+    }
+    fetchTourPackages();
+  }, []);
 
   useEffect(() => {
     const adminUser = sessionStorage.getItem(ADMIN_SESSION_KEY);
@@ -45,27 +78,34 @@ export default function BookingRequestsPage() {
       router.push('/admin/login');
     } else {
       setIsAuthenticated(true);
-      const storedBookingsRaw = localStorage.getItem('bookings');
-      if (storedBookingsRaw) {
-        try {
-            const parsed = JSON.parse(storedBookingsRaw);
-            if(Array.isArray(parsed)) {
-                setBookings(parsed);
-            } else {
-                setBookings(mockBookings);
-                localStorage.setItem('bookings', JSON.stringify(mockBookings));
-            }
-        } catch {
-            setBookings(mockBookings);
-            localStorage.setItem('bookings', JSON.stringify(mockBookings));
-        }
-      } else {
-        setBookings(mockBookings);
-        localStorage.setItem('bookings', JSON.stringify(mockBookings));
-      }
     }
   }, [router]);
   
+  useEffect(() => {
+    async function fetchBookings() {
+      try {
+        const response = await fetch('http://localhost/sapphire_trails_server/bookings');
+        if (!response.ok) {
+          throw new Error('Failed to fetch bookings.');
+        }
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setBookings(data.map(mapServerBookingToClient).sort((a,b) => parseISO(b.date).getTime() - parseISO(a.date).getTime()));
+        }
+      } catch (error) {
+        console.error("Failed to fetch bookings:", error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Could not load bookings from the server.'
+        });
+      }
+    }
+    if (isAuthenticated) {
+      fetchBookings();
+    }
+  }, [isAuthenticated, toast]);
+
   const bookingStats = useMemo(() => {
     if (!bookings) return { pending: 0, accepted: 0, rejected: 0, total: 0 };
     const pending = bookings.filter((b) => b.status === 'pending').length;
@@ -93,6 +133,12 @@ export default function BookingRequestsPage() {
         return 'secondary';
     }
   };
+  
+  const getTourTitle = (tourId: number) => {
+    const tour = tourPackages.find(p => p.id === tourId);
+    return tour ? tour.homepageTitle : `Tour ID: ${tourId}`;
+  };
+
 
   if (!isAuthenticated) {
     return null;
@@ -168,9 +214,9 @@ export default function BookingRequestsPage() {
                                 <div className="text-sm text-muted-foreground hidden md:block break-all">{booking.email}</div>
                             </TableCell>
                             <TableCell className="hidden md:table-cell break-all">
-                                {booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}
+                                {getTourTitle(booking.tourType)}
                             </TableCell>
-                            <TableCell>{format(new Date(booking.date), 'PPP')}</TableCell>
+                            <TableCell>{format(parseISO(booking.date), 'PPP')}</TableCell>
                             <TableCell className="hidden sm:table-cell">{booking.guests}</TableCell>
                             <TableCell>
                                 <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">
@@ -217,7 +263,7 @@ export default function BookingRequestsPage() {
                     <DialogHeader>
                         <DialogTitle>Booking Details</DialogTitle>
                         <DialogDescription className="break-words">
-                            Request from {selectedBooking.name} on {format(new Date(selectedBooking.date), 'PPP')}.
+                            Request from {selectedBooking.name} on {format(parseISO(selectedBooking.date), 'PPP')}.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
@@ -245,7 +291,7 @@ export default function BookingRequestsPage() {
                         )}
                         <div className="space-y-1">
                             <Label className="text-muted-foreground">Tour</Label>
-                            <p>{selectedBooking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}</p>
+                            <p>{getTourTitle(selectedBooking.tourType)}</p>
                         </div>
                          <div className="space-y-1">
                             <Label className="text-muted-foreground">Guests</Label>

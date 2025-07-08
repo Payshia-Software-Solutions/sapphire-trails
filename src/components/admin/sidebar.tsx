@@ -1,11 +1,10 @@
+
 'use client';
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Home, CalendarCheck, Settings, Users, type LucideIcon, LayoutGrid, LogOut, Package, FileText } from 'lucide-react';
-import type { AdminUser } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 
 export interface NavLink {
@@ -25,31 +24,10 @@ export const navLinks: NavLink[] = [
 
 const ADMIN_SESSION_KEY = 'adminUser';
 
-export function AdminSidebar() {
+export function AdminSidebar({ visibleNavLinks }: { visibleNavLinks: NavLink[] }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [visibleNavLinks, setVisibleNavLinks] = useState<NavLink[]>([]);
 
-  useEffect(() => {
-    const adminUserRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
-    if (adminUserRaw) {
-      const adminUser: AdminUser = JSON.parse(adminUserRaw);
-      // 'superadmin' sees all links
-      if (adminUser.role === 'superadmin') {
-        setVisibleNavLinks(navLinks);
-      } 
-      // 'admin' sees only booking requests and dashboard
-      else if (adminUser.role === 'admin') {
-        const adminLinks = navLinks.filter(
-          link => link.href === '/admin/booking-requests' || link.href === '/admin/dashboard'
-        );
-        setVisibleNavLinks(adminLinks);
-      }
-    } else {
-        router.push('/admin/login');
-    }
-  }, [pathname, router]);
-  
   const handleLogout = () => {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
     router.push('/admin/login');
