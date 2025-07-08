@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -31,6 +30,13 @@ const steps = [
   { id: 5, name: 'Visitor Information', fields: ['visitorInfo'] as const },
   { id: 6, name: 'Map & Nearby', fields: ['mapEmbedUrl', 'nearbyAttractions'] as const },
 ];
+
+const toKebabCase = (str: string) =>
+  str &&
+  str
+    .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+    ?.map(x => x.toLowerCase())
+    .join('-') || '';
 
 export default function AddContentPage() {
   const { toast } = useToast();
@@ -72,6 +78,16 @@ export default function AddContentPage() {
       nearbyAttractions: Array.from({ length: 3 }, () => ({ icon: 'Gem' as const, name: '', distance: '' })),
     },
   });
+  
+  const title = form.watch('title');
+  const isSlugManuallyEdited = form.formState.dirtyFields.slug;
+
+  useEffect(() => {
+    if (!isSlugManuallyEdited) {
+      form.setValue('slug', toKebabCase(title), { shouldValidate: true });
+    }
+  }, [title, form, isSlugManuallyEdited]);
+
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -130,6 +146,17 @@ export default function AddContentPage() {
   };
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
+     // Safeguard against empty slug submission
+    if (!data.slug || data.slug.trim().length < 3) {
+      toast({
+        variant: "destructive",
+        title: "Missing Slug",
+        description: "Please provide a unique slug for the location on Step 1.",
+      });
+      setCurrentStep(1);
+      return;
+    }
+
     // This payload is structured to match your PHP backend exactly.
     const payload = {
       // Main location fields (snake_case)
