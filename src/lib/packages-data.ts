@@ -43,9 +43,21 @@ export interface TourPackage {
     bookingLink: string;
 }
 
+const IMAGE_BASE_URL = 'https://content-provider.payshia.com/sapphire-trail';
+
+// Helper to construct full URL from a relative path
+const getFullImageUrl = (path: string | null | undefined) => {
+    // If the path is empty, or already a full URL, return it as is.
+    if (!path || path.startsWith('http')) {
+        return path || '';
+    }
+    // Otherwise, prepend the base URL.
+    return `${IMAGE_BASE_URL}${path}`;
+}
+
 export const mapServerPackageToClient = (pkg: any): TourPackage => ({
   id: Number(pkg.id),
-  imageUrl: pkg.homepage_image_url || '',
+  imageUrl: getFullImageUrl(pkg.homepage_image_url),
   imageAlt: pkg.homepage_image_alt || '',
   imageHint: pkg.homepage_image_hint || '',
   homepageTitle: pkg.homepage_title || '',
@@ -54,11 +66,11 @@ export const mapServerPackageToClient = (pkg: any): TourPackage => ({
   duration: pkg.duration || '',
   price: pkg.price || '',
   priceSuffix: pkg.price_suffix || '',
-  heroImage: pkg.hero_image_url || '',
+  heroImage: getFullImageUrl(pkg.hero_image_url),
   heroImageHint: pkg.hero_image_hint || '',
   tourPageDescription: pkg.tour_page_description || '',
   tourHighlights: pkg.highlights || [],
-  inclusions: pkg.inclusions ? pkg.inclusions.map((i: { text: string }) => i.text) : [],
+  inclusions: pkg.inclusions ? pkg.inclusions.map((i: { title: string }) => i.title) : [],
   itinerary: pkg.itinerary || [],
   bookingLink: pkg.booking_link || '/booking',
 });
