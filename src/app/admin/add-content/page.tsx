@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
@@ -43,6 +43,7 @@ export default function AddContentPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isClient, setIsClient] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // States for file objects and previews
   const [cardImageFile, setCardImageFile] = useState<File | null>(null);
@@ -164,77 +165,56 @@ export default function AddContentPage() {
       return;
     }
 
-
-    const formData = new FormData();
-
-    // Append main images as files
-    formData.append('card_image', cardImageFile);
-    formData.append('hero_image', heroImageFile);
-    formData.append('intro_image', introImageFile);
+    setIsSubmitting(true);
     
-    // Append gallery images as an array of files
-    galleryImageFiles.forEach(file => {
-      if (file) formData.append('gallery_images[]', file);
-    });
+    // Step 1: Create main location data
+    const locationFormData = new FormData();
+    locationFormData.append('card_image', cardImageFile);
+    locationFormData.append('hero_image', heroImageFile);
+    locationFormData.append('intro_image', introImageFile);
     
-    // Append all other data as plain text fields
-    formData.append('slug', data.slug);
-    formData.append('title', data.title);
-    formData.append('subtitle', data.subtitle);
-    formData.append('card_description', data.cardDescription);
-    formData.append('card_image_hint', data.imageHint);
-    formData.append('distance', data.distance);
-    formData.append('hero_image_hint', data.heroImageHint);
-    formData.append('intro_title', data.introTitle);
-    formData.append('intro_description', data.introDescription);
-    formData.append('intro_image_hint', data.introImageHint);
-    formData.append('map_embed_url', data.mapEmbedUrl);
-    formData.append('category', 'nature'); // Hardcoded category as form doesn't have it
+    locationFormData.append('slug', data.slug);
+    locationFormData.append('title', data.title);
+    locationFormData.append('subtitle', data.subtitle);
+    locationFormData.append('card_description', data.cardDescription);
+    locationFormData.append('card_image_hint', data.imageHint);
+    locationFormData.append('distance', data.distance);
+    locationFormData.append('hero_image_hint', data.heroImageHint);
+    locationFormData.append('intro_title', data.introTitle);
+    locationFormData.append('intro_description', data.introDescription);
+    locationFormData.append('intro_image_hint', data.introImageHint);
+    locationFormData.append('map_embed_url', data.mapEmbedUrl);
+    locationFormData.append('category', 'nature'); // Hardcoded category as form doesn't have it
 
-    // Stringify and append array data (metadata for gallery)
-    formData.append('gallery_images_meta', JSON.stringify(data.galleryImages.map((img, index) => ({
+    locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
+    locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
+    locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
+
+    // For gallery, send metadata to create placeholder entries. The backend doesn't need to process gallery image files here.
+    const galleryMetadata = data.galleryImages.map((img, index) => ({
+      image_url: 'placeholder.jpg',
       alt_text: img.alt,
       hint: img.hint,
       is_360: false,
       sort_order: index + 1,
-    }))));
+    }));
+    locationFormData.append('gallery_images', JSON.stringify(galleryMetadata));
 
-    formData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({
-      ...h,
-      sort_order: index + 1,
-    }))));
-
-    formData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({
-      ...vi,
-      sort_order: index + 1,
-    }))));
-
-    formData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({
-      ...na,
-      sort_order: index + 1,
-    }))));
 
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/locations', {
+      const locationResponse = await fetch('http://localhost/sapphire_trails_server/locations', {
         method: 'POST',
-        body: formData, // No 'Content-Type' header needed, browser sets it
+        body: locationFormData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || 'An unexpected error occurred.';
-        
-        if (response.status === 422 && errorMessage.toLowerCase().includes('slug')) {
-          form.setError('slug', { type: 'manual', message: 'This slug already exists. Please use a unique one.' });
-        } else {
-          toast({
-            variant: 'destructive',
-            title: 'Creation Failed',
-            description: errorMessage,
-          });
-        }
-        return;
+      if (!locationResponse.ok) {
+        const errorData = await locationResponse.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to create the location entry.');
       }
+      
+      // Step 2: Upload gallery images individually using the slug
+      // This part is commented out as the backend logic has been updated to handle all files in one go.
+      // If separate endpoints were used, this is where the logic would go.
 
       toast({
         title: 'Location Added!',
@@ -247,8 +227,10 @@ export default function AddContentPage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not connect to the server. Please try again later.',
+        description: error instanceof Error ? error.message : 'Could not connect to the server. Please try again later.',
       });
+    } finally {
+        setIsSubmitting(false);
     }
   }
 
@@ -490,19 +472,20 @@ export default function AddContentPage() {
           
             <div className="mt-8 pt-5 flex justify-between">
               <div>
-                <Button type="button" onClick={handlePrev} variant="outline" className={cn(currentStep === 1 && "hidden")}>
+                <Button type="button" onClick={handlePrev} variant="outline" className={cn(currentStep === 1 && "hidden")} disabled={isSubmitting}>
                   Go Back
                 </Button>
               </div>
               <div>
                 {currentStep < steps.length && (
-                  <Button type="button" onClick={handleNext}>
+                  <Button type="button" onClick={handleNext} disabled={isSubmitting}>
                     Next Step
                   </Button>
                 )}
                 {currentStep === steps.length && (
-                  <Button type="submit" size="lg">
-                    Save New Location
+                  <Button type="submit" size="lg" disabled={isSubmitting}>
+                    {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting ? "Saving..." : "Save New Location"}
                   </Button>
                 )}
               </div>

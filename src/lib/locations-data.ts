@@ -62,8 +62,8 @@ const getFullImageUrl = (path: string | null | undefined) => {
     }
     // This robustly joins the base URL and the relative path, avoiding double slashes.
     const cleanBase = IMAGE_BASE_URL.endsWith('/') ? IMAGE_BASE_URL.slice(0, -1) : IMAGE_BASE_URL;
-    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-    return `${cleanBase}/${cleanPath}`;
+    const cleanPath = path.startsWith('/') ? path : '/' + path;
+    return `${cleanBase}${cleanPath}`;
 };
 
 
