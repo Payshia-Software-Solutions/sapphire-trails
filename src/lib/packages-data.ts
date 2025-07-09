@@ -47,13 +47,13 @@ const IMAGE_BASE_URL = 'https://content-provider.payshia.com/sapphire-trail';
 
 // Helper to construct full URL from a relative path
 const getFullImageUrl = (path: string | null | undefined) => {
-    if (!path || path.startsWith('http')) {
+    if (!path || path.startsWith('http') || path.startsWith('data:')) {
         return path || '';
     }
     // Robustly join the paths, avoiding double slashes.
-    const cleanBase = IMAGE_BASE_URL.endsWith('/') ? IMAGE_BASE_URL.slice(0, -1) : IMAGE_BASE_URL;
-    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-    return `${cleanBase}/${cleanPath}`;
+    const cleanBase = IMAGE_BASE_URL.replace(/\/$/, ""); // Remove trailing slash from base
+    const cleanPath = path.startsWith('/') ? path : `/${path}`; // Add leading slash to path if missing
+    return `${cleanBase}${cleanPath}`;
 }
 
 export const mapServerPackageToClient = (pkg: any): TourPackage => ({

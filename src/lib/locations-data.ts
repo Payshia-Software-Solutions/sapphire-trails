@@ -1,3 +1,4 @@
+
 import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves, Landmark, Camera, Tent, Thermometer } from 'lucide-react';
 
 export interface GalleryImage {
@@ -60,9 +61,9 @@ const getFullImageUrl = (path: string | null | undefined) => {
         return path || '';
     }
     // Robustly join the paths, avoiding double slashes.
-    const cleanBase = IMAGE_BASE_URL.endsWith('/') ? IMAGE_BASE_URL.slice(0, -1) : IMAGE_BASE_URL;
-    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-    return `${cleanBase}/${cleanPath}`;
+    const cleanBase = IMAGE_BASE_URL.replace(/\/$/, ""); // Remove trailing slash from base
+    const cleanPath = path.startsWith('/') ? path : `/${path}`; // Add leading slash to path if missing
+    return `${cleanBase}${cleanPath}`;
 };
 
 

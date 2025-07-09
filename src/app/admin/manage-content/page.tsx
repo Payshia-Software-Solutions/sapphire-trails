@@ -19,12 +19,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import Image from 'next/image';
 import Link from 'next/link';
+import { mapServerLocationToClient } from '@/lib/locations-data';
 
 // Simplified type for this page's needs
 interface ManagedLocation {
     slug: string;
     title: string;
-    card_image_url: string;
+    cardImage: string;
 }
 
 export default function ManageContentPage() {
@@ -42,7 +43,14 @@ export default function ManageContentPage() {
         }
         const data = await response.json();
         if (Array.isArray(data)) {
-          setLocations(data);
+          setLocations(data.map(loc => {
+            const mapped = mapServerLocationToClient(loc);
+            return {
+              slug: mapped.slug,
+              title: mapped.title,
+              cardImage: mapped.cardImage,
+            };
+          }));
         }
       } catch (error) {
         console.error(error);
@@ -123,7 +131,7 @@ export default function ManageContentPage() {
               {locations.map((location) => (
                 <div key={location.slug} className="flex items-center gap-4 p-4 border rounded-lg">
                   <Image
-                    src={location.card_image_url}
+                    src={location.cardImage}
                     alt={location.title}
                     width={80}
                     height={80}
