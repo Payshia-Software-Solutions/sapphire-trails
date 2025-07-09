@@ -48,6 +48,7 @@ export default function AddContentPage() {
   const [cardImageFile, setCardImageFile] = useState<File | null>(null);
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [introImageFile, setIntroImageFile] = useState<File | null>(null);
+  const [galleryImageFiles, setGalleryImageFiles] = useState<(File | null)[]>(Array(4).fill(null));
   
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
@@ -107,19 +108,18 @@ export default function AddContentPage() {
     }
   };
 
-  // Convert gallery images to Data URLs for JSON transport
   const handleGalleryFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-     const file = e.target.files?.[0];
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const dataUrl = reader.result as string;
-        form.setValue(`galleryImages.${index}.src`, dataUrl, { shouldValidate: true });
+        const newFiles = [...galleryImageFiles];
+        newFiles[index] = file;
+        setGalleryImageFiles(newFiles);
+
         const newPreviews = [...galleryImagePreviews];
-        newPreviews[index] = dataUrl;
+        newPreviews[index] = URL.createObjectURL(file);
         setGalleryImagePreviews(newPreviews);
-      };
-      reader.readAsDataURL(file);
+        
+        form.setValue(`galleryImages.${index}.src`, file.name, { shouldValidate: true });
     }
   };
 
@@ -155,8 +155,15 @@ export default function AddContentPage() {
     }
      if (!cardImageFile || !heroImageFile || !introImageFile) {
         toast({ variant: "destructive", title: "Missing Images", description: "Please upload all three main images (Card, Hero, Intro)." });
+        setCurrentStep(2);
         return;
     }
+    if (galleryImageFiles.some(file => file === null)) {
+      toast({ variant: "destructive", title: "Missing Gallery Images", description: "Please upload all four gallery images." });
+      setCurrentStep(3);
+      return;
+    }
+
 
     const formData = new FormData();
 
@@ -164,6 +171,11 @@ export default function AddContentPage() {
     formData.append('card_image', cardImageFile);
     formData.append('hero_image', heroImageFile);
     formData.append('intro_image', introImageFile);
+    
+    // Append gallery images as an array of files
+    galleryImageFiles.forEach(file => {
+      if (file) formData.append('gallery_images[]', file);
+    });
     
     // Append all other data as plain text fields
     formData.append('slug', data.slug);
@@ -179,9 +191,8 @@ export default function AddContentPage() {
     formData.append('map_embed_url', data.mapEmbedUrl);
     formData.append('category', 'nature'); // Hardcoded category as form doesn't have it
 
-    // Stringify and append array data
-    formData.append('gallery_images', JSON.stringify(data.galleryImages.map((img, index) => ({
-      image_url: img.src, // This will be a Data URL
+    // Stringify and append array data (metadata for gallery)
+    formData.append('gallery_images_meta', JSON.stringify(data.galleryImages.map((img, index) => ({
       alt_text: img.alt,
       hint: img.hint,
       is_360: false,
