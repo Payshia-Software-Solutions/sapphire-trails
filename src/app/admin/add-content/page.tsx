@@ -44,7 +44,11 @@ export default function AddContentPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isClient, setIsClient] = useState(false);
 
-  // States for image previews
+  // States for file objects and previews
+  const [cardImageFile, setCardImageFile] = useState<File | null>(null);
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+  const [introImageFile, setIntroImageFile] = useState<File | null>(null);
+  
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
   const [introImagePreview, setIntroImagePreview] = useState<string | null>(null);
@@ -89,23 +93,21 @@ export default function AddContentPage() {
   }, [title, form, isSlugManuallyEdited]);
 
 
-  const handleFileChange = (
+  const handleMainImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    onChange: (value: string) => void,
-    setPreview: (value: string | null) => void
+    setFile: (file: File | null) => void,
+    setPreview: (url: string | null) => void,
+    fieldName: 'cardImage' | 'heroImage' | 'introImageUrl'
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const dataUrl = reader.result as string;
-        onChange(dataUrl);
-        setPreview(dataUrl);
-      };
-      reader.readAsDataURL(file);
+      setFile(file);
+      setPreview(URL.createObjectURL(file));
+      form.setValue(fieldName, file.name, { shouldValidate: true });
     }
   };
 
+  // Convert gallery images to Data URLs for JSON transport
   const handleGalleryFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
      const file = e.target.files?.[0];
     if (file) {
@@ -146,73 +148,65 @@ export default function AddContentPage() {
   };
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
-     // Safeguard against empty slug submission
     if (!data.slug || data.slug.trim().length < 3) {
-      toast({
-        variant: "destructive",
-        title: "Missing Slug",
-        description: "Please provide a unique slug for the location on Step 1.",
-      });
+      toast({ variant: "destructive", title: "Missing Slug", description: "Please provide a unique slug on Step 1." });
       setCurrentStep(1);
       return;
     }
+     if (!cardImageFile || !heroImageFile || !introImageFile) {
+        toast({ variant: "destructive", title: "Missing Images", description: "Please upload all three main images (Card, Hero, Intro)." });
+        return;
+    }
 
-    // This payload is structured to match your PHP backend exactly.
-    const payload = {
-      // Main location fields (snake_case)
-      slug: data.slug,
-      title: data.title,
-      subtitle: data.subtitle,
-      card_description: data.cardDescription,
-      card_image_url: data.cardImage,
-      card_image_hint: data.imageHint,
-      distance: data.distance,
-      hero_image_url: data.heroImage,
-      hero_image_hint: data.heroImageHint,
-      intro_title: data.introTitle,
-      intro_description: data.introDescription,
-      intro_image_url: data.introImageUrl,
-      intro_image_hint: data.introImageHint,
-      map_embed_url: data.mapEmbedUrl,
-      category: 'nature', // Hardcoding category as form doesn't have it
+    const formData = new FormData();
 
-      // Nested arrays for related tables with correct keys and sort_order
-      gallery_images: data.galleryImages.map((img, index) => ({
-        image_url: img.src,
-        alt_text: img.alt,
-        hint: img.hint,
-        is_360: false, // Default value
-        sort_order: index + 1,
-      })),
-      highlights: data.highlights.map((h, index) => ({
-        icon: h.icon,
-        title: h.title,
-        description: h.description,
-        sort_order: index + 1,
-      })),
-      visitor_info: data.visitorInfo.map((vi, index) => ({
-        icon: vi.icon,
-        title: vi.title,
-        line1: vi.line1,
-        line2: vi.line2,
-        sort_order: index + 1,
-      })),
-      nearby_attractions: data.nearbyAttractions.map((na, index) => ({
-        icon: na.icon,
-        name: na.name,
-        distance: na.distance,
-        sort_order: index + 1,
-      })),
-    };
+    // Append main images as files
+    formData.append('card_image', cardImageFile);
+    formData.append('hero_image', heroImageFile);
+    formData.append('intro_image', introImageFile);
+    
+    // Append all other data as plain text fields
+    formData.append('slug', data.slug);
+    formData.append('title', data.title);
+    formData.append('subtitle', data.subtitle);
+    formData.append('card_description', data.cardDescription);
+    formData.append('card_image_hint', data.imageHint);
+    formData.append('distance', data.distance);
+    formData.append('hero_image_hint', data.heroImageHint);
+    formData.append('intro_title', data.introTitle);
+    formData.append('intro_description', data.introDescription);
+    formData.append('intro_image_hint', data.introImageHint);
+    formData.append('map_embed_url', data.mapEmbedUrl);
+    formData.append('category', 'nature'); // Hardcoded category as form doesn't have it
+
+    // Stringify and append array data
+    formData.append('gallery_images', JSON.stringify(data.galleryImages.map((img, index) => ({
+      image_url: img.src, // This will be a Data URL
+      alt_text: img.alt,
+      hint: img.hint,
+      is_360: false,
+      sort_order: index + 1,
+    }))));
+
+    formData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({
+      ...h,
+      sort_order: index + 1,
+    }))));
+
+    formData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({
+      ...vi,
+      sort_order: index + 1,
+    }))));
+
+    formData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({
+      ...na,
+      sort_order: index + 1,
+    }))));
 
     try {
       const response = await fetch('http://localhost/sapphire_trails_server/locations', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: formData, // No 'Content-Type' header needed, browser sets it
       });
 
       if (!response.ok) {
@@ -287,11 +281,11 @@ export default function AddContentPage() {
                   <div className="space-y-4">
                     <FormField
                       control={form.control} name="cardImage"
-                      render={({ field }) => (
+                      render={() => (
                         <FormItem>
                           <FormLabel>Card Image</FormLabel>
                           <FormControl>
-                            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setCardImagePreview)} className="text-sm" />
+                            <Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setCardImageFile, setCardImagePreview, 'cardImage')} className="text-sm" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -321,7 +315,7 @@ export default function AddContentPage() {
                 <CardContent className="space-y-4">
                     <FormField control={form.control} name="subtitle" render={({ field }) => (<FormItem><FormLabel>Hero Subtitle</FormLabel><FormControl><Input placeholder="e.g., Nature's Unspoiled Wonder" {...field} /></FormControl><FormMessage /></FormItem>)} />
                      <div className="space-y-4">
-                        <FormField control={form.control} name="heroImage" render={({ field }) => (<FormItem><FormLabel>Hero Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setHeroImagePreview)} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="heroImage" render={() => (<FormItem><FormLabel>Hero Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setHeroImageFile, setHeroImagePreview, 'heroImage')} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
                         {heroImagePreview && (<div><FormLabel>Preview</FormLabel><Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover mt-2 border" /></div>)}
                     </div>
                     <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image Hint</FormLabel><FormControl><Input placeholder="e.g., rainforest misty mountains" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -329,7 +323,7 @@ export default function AddContentPage() {
                     <FormField control={form.control} name="introTitle" render={({ field }) => (<FormItem><FormLabel>Intro Title</FormLabel><FormControl><Input placeholder="e.g., UNESCO World Heritage Wonder" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="introDescription" render={({ field }) => (<FormItem><FormLabel>Intro Description</FormLabel><FormControl><Textarea placeholder="Full description for the intro section..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                      <div className="space-y-4">
-                        <FormField control={form.control} name="introImageUrl" render={({ field }) => (<FormItem><FormLabel>Intro Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setIntroImagePreview)} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="introImageUrl" render={() => (<FormItem><FormLabel>Intro Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setIntroImageFile, setIntroImagePreview, 'introImageUrl')} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
                         {introImagePreview && (<div><FormLabel>Preview</FormLabel><Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover mt-2 border" /></div>)}
                     </div>
                     <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input placeholder="e.g., jungle river rocks" {...field} /></FormControl><FormMessage /></FormItem>)} />
