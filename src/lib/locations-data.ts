@@ -59,7 +59,10 @@ const getFullImageUrl = (path: string | null | undefined) => {
     if (!path || path.startsWith('http') || path.startsWith('data:')) {
         return path || '';
     }
-    return `${IMAGE_BASE_URL}${path}`;
+    // Robustly join the paths, avoiding double slashes.
+    const cleanBase = IMAGE_BASE_URL.endsWith('/') ? IMAGE_BASE_URL.slice(0, -1) : IMAGE_BASE_URL;
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${cleanBase}/${cleanPath}`;
 };
 
 
