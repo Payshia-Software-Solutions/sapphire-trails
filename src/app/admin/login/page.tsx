@@ -34,10 +34,10 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed. Please check your credentials.');
+        throw new Error(data?.message || 'Login failed. Please check your credentials.');
       }
 
       if (data.admin) {
