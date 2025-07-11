@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
 
 export default function CreateAdminPage() {
@@ -22,7 +21,6 @@ export default function CreateAdminPage() {
     defaultValues: {
       username: '',
       password: '',
-      role: 'admin',
     },
   });
 
@@ -37,7 +35,7 @@ export default function CreateAdminPage() {
         body: JSON.stringify({
           username: data.username,
           password: data.password,
-          role: data.role,
+          role: 'admin', // Always create as standard admin
         }),
       });
 
@@ -46,7 +44,6 @@ export default function CreateAdminPage() {
       if (!response.ok) {
         let errorMessage = responseData?.message || 'An unexpected error occurred.';
         
-        // Handle specific duplicate username error if server provides it
         if (response.status === 422 && errorMessage.toLowerCase().includes('username')) {
              form.setError('username', { type: 'manual', message: 'This username already exists.' });
         } else {
@@ -83,7 +80,7 @@ export default function CreateAdminPage() {
         </Button>
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-primary">Create New Admin</h1>
-          <p className="text-muted-foreground">Add a new administrator with specific privileges.</p>
+          <p className="text-muted-foreground">Add a new administrator to the system.</p>
         </div>
       </div>
       
@@ -119,27 +116,6 @@ export default function CreateAdminPage() {
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Admin Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin (Handles booking requests only)</SelectItem>
-                        <SelectItem value="superadmin">Super Admin (Full access)</SelectItem>
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
