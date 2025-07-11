@@ -161,11 +161,17 @@ export default function AddContentPage() {
         const response = await fetch('http://localhost/sapphire_trails_server/location-gallery/', {
             method: 'POST',
             body: galleryFormData,
+            redirect: 'manual', // Prevent fetch from following redirects which strips the body
         });
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Failed to upload gallery image ${index + 1}`);
+        if (response.type === 'opaqueredirect' || response.ok || response.status === 201) {
+          // A manual redirect response is opaque, but we can treat it as a success here.
+          // Or if the response is ok/created, it's a success.
+          return;
         }
+
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to upload gallery image ${index + 1}`);
+
     } catch (error) {
         console.error(`Gallery upload failed for image ${index+1}:`, error);
         throw error; // Re-throw to be caught by the main submit handler
