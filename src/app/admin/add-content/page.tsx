@@ -148,6 +148,30 @@ export default function AddContentPage() {
     }
   };
 
+  const uploadGalleryImage = async (file: File, slug: string, alt: string, hint: string, index: number) => {
+    const galleryFormData = new FormData();
+    galleryFormData.append('image', file);
+    galleryFormData.append('location_slug', slug);
+    galleryFormData.append('alt_text', alt);
+    galleryFormData.append('hint', hint);
+    galleryFormData.append('is_360', '0');
+    galleryFormData.append('sort_order', String(index + 1));
+    
+    try {
+        const response = await fetch('http://localhost/sapphire_trails_server/location-gallery', {
+            method: 'POST',
+            body: galleryFormData,
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Failed to upload gallery image ${index + 1}`);
+        }
+    } catch (error) {
+        console.error(`Gallery upload failed for image ${index+1}:`, error);
+        throw error; // Re-throw to be caught by the main submit handler
+    }
+  };
+
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     if (!data.slug || data.slug.trim().length < 3) {
       toast({ variant: "destructive", title: "Missing Slug", description: "Please provide a unique slug on Step 1." });
@@ -184,22 +208,11 @@ export default function AddContentPage() {
     locationFormData.append('intro_description', data.introDescription);
     locationFormData.append('intro_image_hint', data.introImageHint);
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
-    locationFormData.append('category', 'nature'); // Hardcoded category as form doesn't have it
+    locationFormData.append('category', 'nature');
 
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
     locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
-
-    // For gallery, send metadata to create placeholder entries. The backend doesn't need to process gallery image files here.
-    const galleryMetadata = data.galleryImages.map((img, index) => ({
-      image_url: 'placeholder.jpg',
-      alt_text: img.alt,
-      hint: img.hint,
-      is_360: false,
-      sort_order: index + 1,
-    }));
-    locationFormData.append('gallery_images', JSON.stringify(galleryMetadata));
-
 
     try {
       const locationResponse = await fetch('http://localhost/sapphire_trails_server/locations', {
@@ -212,9 +225,25 @@ export default function AddContentPage() {
         throw new Error(errorData?.message || 'Failed to create the location entry.');
       }
       
-      // Step 2: Upload gallery images individually using the slug
-      // This part is commented out as the backend logic has been updated to handle all files in one go.
-      // If separate endpoints were used, this is where the logic would go.
+      // Step 2: Upload gallery images individually
+      try {
+        const galleryUploadPromises = galleryImageFiles.map((file, index) => {
+          if (file) {
+            return uploadGalleryImage(file, data.slug, data.galleryImages[index].alt, data.galleryImages[index].hint, index);
+          }
+          return Promise.resolve();
+        });
+        await Promise.all(galleryUploadPromises);
+      } catch (galleryError) {
+        // Even if gallery fails, the main location was created.
+        // We'll show an error but still consider the main part a success.
+         toast({
+            variant: 'destructive',
+            title: 'Gallery Upload Failed',
+            description: galleryError instanceof Error ? galleryError.message : 'Some gallery images could not be uploaded.',
+        });
+      }
+
 
       toast({
         title: 'Location Added!',
@@ -495,3 +524,5 @@ export default function AddContentPage() {
     </div>
   );
 }
+
+    
