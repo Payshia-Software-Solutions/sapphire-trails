@@ -158,7 +158,7 @@ export default function AddContentPage() {
     galleryFormData.append('sort_order', String(index + 1));
     
     try {
-        const response = await fetch('http://localhost/sapphire_trails_server/location-gallery', {
+        const response = await fetch('http://localhost/sapphire_trails_server/location-gallery/', {
             method: 'POST',
             body: galleryFormData,
         });
@@ -215,7 +215,7 @@ export default function AddContentPage() {
     locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
 
     try {
-      const locationResponse = await fetch('http://localhost/sapphire_trails_server/locations', {
+      const locationResponse = await fetch('http://localhost/sapphire_trails_server/locations/', {
         method: 'POST',
         body: locationFormData,
       });
@@ -524,5 +524,3 @@ export default function AddContentPage() {
     </div>
   );
 }
-
-    
