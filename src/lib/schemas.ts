@@ -92,7 +92,6 @@ export const adminCreationSchema = z.object({
 export interface AdminUser {
   id: number;
   username: string;
-  role: 'admin' | 'superadmin';
   created_at: string;
 }
 
