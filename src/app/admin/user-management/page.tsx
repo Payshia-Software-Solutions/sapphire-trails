@@ -12,11 +12,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { AlertTriangle, Plus, ShieldCheck, UserCog, LoaderCircle } from 'lucide-react';
+import { AlertTriangle, Plus, ShieldCheck, UserCog, LoaderCircle, Trash2 } from 'lucide-react';
 import type { AdminUser } from '@/lib/schemas';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export default function UserManagementPage() {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
@@ -48,6 +59,32 @@ export default function UserManagementPage() {
     }
     fetchAdminUsers();
   }, [toast]);
+
+  const handleDelete = async (userId: number, username: string) => {
+    try {
+        const response = await fetch(`http://localhost/sapphire_trails_server/admins/${userId}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Failed to delete user ${username}.`);
+        }
+
+        setAdminUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+        toast({
+            title: 'User Deleted',
+            description: `Admin user "${username}" has been successfully deleted.`,
+        });
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Deletion Failed',
+            description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+        });
+    }
+  };
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -86,6 +123,7 @@ export default function UserManagementPage() {
                   <TableHead>Username</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead className="hidden sm:table-cell">Created At</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -100,6 +138,30 @@ export default function UserManagementPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-right">
+                       <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="icon" disabled={user.role === 'superadmin'}>
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete</span>
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete the admin user <span className="font-semibold text-foreground">&quot;{user.username}&quot;</span>.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(user.id, user.username)}>
+                              Yes, delete user
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
