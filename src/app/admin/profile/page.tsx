@@ -13,8 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ShieldCheck, UserCog } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { ArrowLeft } from 'lucide-react';
 
 const ADMIN_SESSION_KEY = 'adminUser';
 
@@ -80,16 +79,6 @@ export default function AdminProfilePage() {
               <div className="space-y-1">
                   <Label>Username</Label>
                   <p className="text-sm font-medium">{adminUser.username}</p>
-              </div>
-              <div className="space-y-1">
-                  <Label>Role</Label>
-                  <div>
-                    <Badge variant={adminUser.role === 'superadmin' ? 'default' : 'secondary'} className="capitalize">
-                         {adminUser.role === 'superadmin' && <ShieldCheck className="mr-1 h-3.5 w-3.5" />}
-                         {adminUser.role === 'admin' && <UserCog className="mr-1 h-3.5 w-3.5" />}
-                        {adminUser.role}
-                    </Badge>
-                  </div>
               </div>
           </CardContent>
         </Card>

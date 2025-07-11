@@ -63,17 +63,6 @@ export default function AdminLayout({
     }
   }, [pathname, isLoginPage, router]);
   
-  let visibleNavLinks: NavLink[] = [];
-  if (adminUser) {
-    if (adminUser.role === 'superadmin') {
-      visibleNavLinks = navLinks;
-    } else {
-      visibleNavLinks = navLinks.filter(link => 
-        link.href === '/admin/dashboard' || link.href === '/admin/booking-requests'
-      );
-    }
-  }
-
 
   const handleLogout = () => {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
@@ -86,7 +75,7 @@ export default function AdminLayout({
         <>{children}</>
       ) : (
         <div className="grid h-screen w-full overflow-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-          <AdminSidebar visibleNavLinks={visibleNavLinks} />
+          <AdminSidebar visibleNavLinks={navLinks} />
           <div className="grid grid-rows-[auto_1fr] overflow-hidden">
             <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
                 <Sheet>
@@ -111,7 +100,7 @@ export default function AdminLayout({
                             >
                                 <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
                             </Link>
-                            {visibleNavLinks.map((link) => (
+                            {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}

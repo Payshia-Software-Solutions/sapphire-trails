@@ -24,24 +24,6 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    // Hardcoded superadmin login for development/testing
-    if (username === 'admin' && password === 'admin123') {
-      const superAdminUser: AdminUser = {
-        id: 0,
-        username: 'admin',
-        role: 'superadmin',
-        created_at: new Date().toISOString(),
-      };
-      sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(superAdminUser));
-      toast({
-        title: 'Login Successful',
-        description: `Logged in as Super Admin.`,
-      });
-      router.push('/admin/dashboard');
-      return;
-    }
-
-    // Default server-side login for all other users
     try {
       const response = await fetch('http://localhost/sapphire_trails_server/admin/login/', {
         method: 'POST',
@@ -52,10 +34,10 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed. Please check your credentials.');
+        throw new Error(data?.message || 'Login failed. Please check your credentials.');
       }
 
       if (data.admin) {

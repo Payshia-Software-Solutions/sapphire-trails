@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import type { TourPackage } from '@/lib/packages-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, AlertTriangle, Plus, Package as PackageIcon, LoaderCircle } from 'lucide-react';
@@ -20,6 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import Image from 'next/image';
 import Link from 'next/link';
+import { mapServerPackageToClient } from '@/lib/packages-data';
 
 // A leaner type for what this page needs to display
 interface ManagedPackage {
@@ -43,11 +43,14 @@ export default function ManagePackagesPage() {
             }
             const data = await response.json();
             if (Array.isArray(data)) {
-                const mappedPackages = data.map((pkg: any) => ({
-                    id: Number(pkg.id),
-                    homepageTitle: pkg.homepage_title,
-                    imageUrl: pkg.homepage_image_url,
-                }));
+                const mappedPackages = data.map((pkg: any) => {
+                  const mapped = mapServerPackageToClient(pkg);
+                  return {
+                    id: mapped.id,
+                    homepageTitle: mapped.homepageTitle,
+                    imageUrl: mapped.imageUrl,
+                  };
+                });
                 setPackages(mappedPackages);
             }
         } catch (error) {

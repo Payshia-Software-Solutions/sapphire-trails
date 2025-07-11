@@ -12,10 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { AlertTriangle, Plus, ShieldCheck, UserCog, LoaderCircle } from 'lucide-react';
+import { AlertTriangle, Plus, LoaderCircle, User } from 'lucide-react';
 import type { AdminUser } from '@/lib/schemas';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
 export default function UserManagementPage() {
@@ -54,7 +53,7 @@ export default function UserManagementPage() {
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Admin User Management</h1>
-            <p className="text-muted-foreground">View, create, or manage users with access to this admin dashboard.</p>
+            <p className="text-muted-foreground">View and create users with access to this admin dashboard.</p>
         </div>
       </div>
       
@@ -84,7 +83,6 @@ export default function UserManagementPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Username</TableHead>
-                  <TableHead>Role</TableHead>
                   <TableHead className="hidden sm:table-cell">Created At</TableHead>
                 </TableRow>
               </TableHeader>
@@ -92,13 +90,6 @@ export default function UserManagementPage() {
                 {adminUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium break-words">{user.username}</TableCell>
-                    <TableCell>
-                      <Badge variant={user.role === 'superadmin' ? 'default' : 'secondary'} className="capitalize">
-                         {user.role === 'superadmin' && <ShieldCheck className="mr-1 h-3.5 w-3.5" />}
-                         {user.role === 'admin' && <UserCog className="mr-1 h-3.5 w-3.5" />}
-                        {user.role}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="hidden sm:table-cell">{new Date(user.created_at).toLocaleDateString()}</TableCell>
                   </TableRow>
                 ))}
@@ -106,8 +97,11 @@ export default function UserManagementPage() {
             </Table>
           ) : (
              <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
-              <AlertTriangle className="h-12 w-12 text-muted-foreground/50" />
+              <User className="h-12 w-12 text-muted-foreground/50" />
               <p>No admin users found on the server.</p>
+               <Button asChild variant="link" className="text-primary">
+                <Link href="/admin/user-management/create-admin">Create the first admin</Link>
+              </Button>
             </div>
           )}
         </CardContent>

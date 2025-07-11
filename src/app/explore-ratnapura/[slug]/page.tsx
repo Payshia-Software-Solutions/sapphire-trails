@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { locationsData as staticLocationsData, type Location } from '@/lib/locations-data';
+import { locationsData as staticLocationsData, mapServerLocationToClient, type Location } from '@/lib/locations-data';
 import { LocationHero } from '@/components/sections/location-hero';
 import { LocationIntro } from '@/components/sections/location-intro';
 import { LocationGallery } from '@/components/sections/location-gallery';
@@ -13,32 +13,6 @@ import { LocationVisitorInfo } from '@/components/sections/location-visitor-info
 import { LocationNearby } from '@/components/sections/location-nearby';
 import { LocationCta } from '@/components/sections/location-cta';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const mapServerLocationToClient = (loc: any): Location => ({
-  slug: loc.slug,
-  title: loc.title,
-  cardDescription: loc.card_description,
-  cardImage: loc.card_image_url,
-  imageHint: loc.card_image_hint,
-  distance: loc.distance,
-  subtitle: loc.subtitle,
-  heroImage: loc.hero_image_url,
-  heroImageHint: loc.hero_image_hint,
-  intro: {
-    title: loc.intro_title,
-    description: loc.intro_description,
-    imageUrl: loc.intro_image_url,
-    imageHint: loc.intro_image_hint,
-  },
-  galleryImages: loc.gallery_images || [],
-  highlights: loc.highlights || [],
-  visitorInfo: loc.visitor_info || [],
-  map: {
-    embedUrl: loc.map_embed_url,
-    nearbyAttractions: loc.nearby_attractions || [],
-  },
-  category: loc.category,
-});
 
 
 function LoadingSkeleton() {

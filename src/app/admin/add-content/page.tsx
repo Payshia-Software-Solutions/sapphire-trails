@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
@@ -43,8 +43,14 @@ export default function AddContentPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isClient, setIsClient] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // States for image previews
+  // States for file objects and previews
+  const [cardImageFile, setCardImageFile] = useState<File | null>(null);
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+  const [introImageFile, setIntroImageFile] = useState<File | null>(null);
+  const [galleryImageFiles, setGalleryImageFiles] = useState<(File | null)[]>(Array(4).fill(null));
+  
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
   const [introImagePreview, setIntroImagePreview] = useState<string | null>(null);
@@ -89,35 +95,32 @@ export default function AddContentPage() {
   }, [title, form, isSlugManuallyEdited]);
 
 
-  const handleFileChange = (
+  const handleMainImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    onChange: (value: string) => void,
-    setPreview: (value: string | null) => void
+    setFile: (file: File | null) => void,
+    setPreview: (url: string | null) => void,
+    fieldName: 'cardImage' | 'heroImage' | 'introImageUrl'
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const dataUrl = reader.result as string;
-        onChange(dataUrl);
-        setPreview(dataUrl);
-      };
-      reader.readAsDataURL(file);
+      setFile(file);
+      setPreview(URL.createObjectURL(file));
+      form.setValue(fieldName, file.name, { shouldValidate: true });
     }
   };
 
   const handleGalleryFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-     const file = e.target.files?.[0];
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const dataUrl = reader.result as string;
-        form.setValue(`galleryImages.${index}.src`, dataUrl, { shouldValidate: true });
+        const newFiles = [...galleryImageFiles];
+        newFiles[index] = file;
+        setGalleryImageFiles(newFiles);
+
         const newPreviews = [...galleryImagePreviews];
-        newPreviews[index] = dataUrl;
+        newPreviews[index] = URL.createObjectURL(file);
         setGalleryImagePreviews(newPreviews);
-      };
-      reader.readAsDataURL(file);
+        
+        form.setValue(`galleryImages.${index}.src`, file.name, { shouldValidate: true });
     }
   };
 
@@ -145,91 +148,108 @@ export default function AddContentPage() {
     }
   };
 
+  const uploadGalleryImage = async (file: File, slug: string, alt: string, hint: string, index: number) => {
+    const galleryFormData = new FormData();
+    galleryFormData.append('image', file);
+    galleryFormData.append('location_slug', slug);
+    galleryFormData.append('alt_text', alt);
+    galleryFormData.append('hint', hint);
+    galleryFormData.append('is_360', '0');
+    galleryFormData.append('sort_order', String(index + 1));
+    
+    try {
+        const response = await fetch('http://localhost/sapphire_trails_server/location-gallery/', {
+            method: 'POST',
+            body: galleryFormData,
+            redirect: 'manual', // Prevent fetch from following redirects which strips the body
+        });
+        if (response.type === 'opaqueredirect' || response.ok || response.status === 201) {
+          // A manual redirect response is opaque, but we can treat it as a success here.
+          // Or if the response is ok/created, it's a success.
+          return;
+        }
+
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to upload gallery image ${index + 1}`);
+
+    } catch (error) {
+        console.error(`Gallery upload failed for image ${index+1}:`, error);
+        throw error; // Re-throw to be caught by the main submit handler
+    }
+  };
+
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
-     // Safeguard against empty slug submission
     if (!data.slug || data.slug.trim().length < 3) {
-      toast({
-        variant: "destructive",
-        title: "Missing Slug",
-        description: "Please provide a unique slug for the location on Step 1.",
-      });
+      toast({ variant: "destructive", title: "Missing Slug", description: "Please provide a unique slug on Step 1." });
       setCurrentStep(1);
       return;
     }
+     if (!cardImageFile || !heroImageFile || !introImageFile) {
+        toast({ variant: "destructive", title: "Missing Images", description: "Please upload all three main images (Card, Hero, Intro)." });
+        setCurrentStep(2);
+        return;
+    }
+    if (galleryImageFiles.some(file => file === null)) {
+      toast({ variant: "destructive", title: "Missing Gallery Images", description: "Please upload all four gallery images." });
+      setCurrentStep(3);
+      return;
+    }
 
-    // This payload is structured to match your PHP backend exactly.
-    const payload = {
-      // Main location fields (snake_case)
-      slug: data.slug,
-      title: data.title,
-      subtitle: data.subtitle,
-      card_description: data.cardDescription,
-      card_image_url: data.cardImage,
-      card_image_hint: data.imageHint,
-      distance: data.distance,
-      hero_image_url: data.heroImage,
-      hero_image_hint: data.heroImageHint,
-      intro_title: data.introTitle,
-      intro_description: data.introDescription,
-      intro_image_url: data.introImageUrl,
-      intro_image_hint: data.introImageHint,
-      map_embed_url: data.mapEmbedUrl,
-      category: 'nature', // Hardcoding category as form doesn't have it
+    setIsSubmitting(true);
+    
+    // Step 1: Create main location data
+    const locationFormData = new FormData();
+    locationFormData.append('card_image', cardImageFile);
+    locationFormData.append('hero_image', heroImageFile);
+    locationFormData.append('intro_image', introImageFile);
+    
+    locationFormData.append('slug', data.slug);
+    locationFormData.append('title', data.title);
+    locationFormData.append('subtitle', data.subtitle);
+    locationFormData.append('card_description', data.cardDescription);
+    locationFormData.append('card_image_hint', data.imageHint);
+    locationFormData.append('distance', data.distance);
+    locationFormData.append('hero_image_hint', data.heroImageHint);
+    locationFormData.append('intro_title', data.introTitle);
+    locationFormData.append('intro_description', data.introDescription);
+    locationFormData.append('intro_image_hint', data.introImageHint);
+    locationFormData.append('map_embed_url', data.mapEmbedUrl);
+    locationFormData.append('category', 'nature');
 
-      // Nested arrays for related tables with correct keys and sort_order
-      gallery_images: data.galleryImages.map((img, index) => ({
-        image_url: img.src,
-        alt_text: img.alt,
-        hint: img.hint,
-        is_360: false, // Default value
-        sort_order: index + 1,
-      })),
-      highlights: data.highlights.map((h, index) => ({
-        icon: h.icon,
-        title: h.title,
-        description: h.description,
-        sort_order: index + 1,
-      })),
-      visitor_info: data.visitorInfo.map((vi, index) => ({
-        icon: vi.icon,
-        title: vi.title,
-        line1: vi.line1,
-        line2: vi.line2,
-        sort_order: index + 1,
-      })),
-      nearby_attractions: data.nearbyAttractions.map((na, index) => ({
-        icon: na.icon,
-        name: na.name,
-        distance: na.distance,
-        sort_order: index + 1,
-      })),
-    };
+    locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
+    locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
+    locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
 
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/locations', {
+      const locationResponse = await fetch('http://localhost/sapphire_trails_server/locations/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: locationFormData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || 'An unexpected error occurred.';
-        
-        if (response.status === 422 && errorMessage.toLowerCase().includes('slug')) {
-          form.setError('slug', { type: 'manual', message: 'This slug already exists. Please use a unique one.' });
-        } else {
-          toast({
-            variant: 'destructive',
-            title: 'Creation Failed',
-            description: errorMessage,
-          });
-        }
-        return;
+      if (!locationResponse.ok) {
+        const errorData = await locationResponse.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to create the location entry.');
       }
+      
+      // Step 2: Upload gallery images individually
+      try {
+        const galleryUploadPromises = galleryImageFiles.map((file, index) => {
+          if (file) {
+            return uploadGalleryImage(file, data.slug, data.galleryImages[index].alt, data.galleryImages[index].hint, index);
+          }
+          return Promise.resolve();
+        });
+        await Promise.all(galleryUploadPromises);
+      } catch (galleryError) {
+        // Even if gallery fails, the main location was created.
+        // We'll show an error but still consider the main part a success.
+         toast({
+            variant: 'destructive',
+            title: 'Gallery Upload Failed',
+            description: galleryError instanceof Error ? galleryError.message : 'Some gallery images could not be uploaded.',
+        });
+      }
+
 
       toast({
         title: 'Location Added!',
@@ -242,8 +262,10 @@ export default function AddContentPage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not connect to the server. Please try again later.',
+        description: error instanceof Error ? error.message : 'Could not connect to the server. Please try again later.',
       });
+    } finally {
+        setIsSubmitting(false);
     }
   }
 
@@ -287,11 +309,11 @@ export default function AddContentPage() {
                   <div className="space-y-4">
                     <FormField
                       control={form.control} name="cardImage"
-                      render={({ field }) => (
+                      render={() => (
                         <FormItem>
                           <FormLabel>Card Image</FormLabel>
                           <FormControl>
-                            <Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setCardImagePreview)} className="text-sm" />
+                            <Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setCardImageFile, setCardImagePreview, 'cardImage')} className="text-sm" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -321,7 +343,7 @@ export default function AddContentPage() {
                 <CardContent className="space-y-4">
                     <FormField control={form.control} name="subtitle" render={({ field }) => (<FormItem><FormLabel>Hero Subtitle</FormLabel><FormControl><Input placeholder="e.g., Nature's Unspoiled Wonder" {...field} /></FormControl><FormMessage /></FormItem>)} />
                      <div className="space-y-4">
-                        <FormField control={form.control} name="heroImage" render={({ field }) => (<FormItem><FormLabel>Hero Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setHeroImagePreview)} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="heroImage" render={() => (<FormItem><FormLabel>Hero Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setHeroImageFile, setHeroImagePreview, 'heroImage')} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
                         {heroImagePreview && (<div><FormLabel>Preview</FormLabel><Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover mt-2 border" /></div>)}
                     </div>
                     <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image Hint</FormLabel><FormControl><Input placeholder="e.g., rainforest misty mountains" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -329,7 +351,7 @@ export default function AddContentPage() {
                     <FormField control={form.control} name="introTitle" render={({ field }) => (<FormItem><FormLabel>Intro Title</FormLabel><FormControl><Input placeholder="e.g., UNESCO World Heritage Wonder" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="introDescription" render={({ field }) => (<FormItem><FormLabel>Intro Description</FormLabel><FormControl><Textarea placeholder="Full description for the intro section..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                      <div className="space-y-4">
-                        <FormField control={form.control} name="introImageUrl" render={({ field }) => (<FormItem><FormLabel>Intro Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setIntroImagePreview)} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="introImageUrl" render={() => (<FormItem><FormLabel>Intro Image</FormLabel><FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setIntroImageFile, setIntroImagePreview, 'introImageUrl')} className="text-sm" /></FormControl><FormMessage /></FormItem>)} />
                         {introImagePreview && (<div><FormLabel>Preview</FormLabel><Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover mt-2 border" /></div>)}
                     </div>
                     <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input placeholder="e.g., jungle river rocks" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -485,19 +507,20 @@ export default function AddContentPage() {
           
             <div className="mt-8 pt-5 flex justify-between">
               <div>
-                <Button type="button" onClick={handlePrev} variant="outline" className={cn(currentStep === 1 && "hidden")}>
+                <Button type="button" onClick={handlePrev} variant="outline" className={cn(currentStep === 1 && "hidden")} disabled={isSubmitting}>
                   Go Back
                 </Button>
               </div>
               <div>
                 {currentStep < steps.length && (
-                  <Button type="button" onClick={handleNext}>
+                  <Button type="button" onClick={handleNext} disabled={isSubmitting}>
                     Next Step
                   </Button>
                 )}
                 {currentStep === steps.length && (
-                  <Button type="submit" size="lg">
-                    Save New Location
+                  <Button type="submit" size="lg" disabled={isSubmitting}>
+                    {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting ? "Saving..." : "Save New Location"}
                   </Button>
                 )}
               </div>

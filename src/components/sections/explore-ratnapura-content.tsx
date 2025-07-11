@@ -5,35 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { locationsData as staticLocationsData } from "@/lib/locations-data";
+import { locationsData as staticLocationsData, mapServerLocationToClient } from "@/lib/locations-data";
 import type { Location } from '@/lib/locations-data';
-
-const mapServerLocationToClient = (loc: any): Location => ({
-  slug: loc.slug,
-  title: loc.title,
-  cardDescription: loc.card_description,
-  cardImage: loc.card_image_url,
-  imageHint: loc.card_image_hint,
-  distance: loc.distance,
-  subtitle: loc.subtitle,
-  heroImage: loc.hero_image_url,
-  heroImageHint: loc.hero_image_hint,
-  intro: {
-    title: loc.intro_title,
-    description: loc.intro_description,
-    imageUrl: loc.intro_image_url,
-    imageHint: loc.intro_image_hint,
-  },
-  galleryImages: loc.gallery_images || [],
-  highlights: loc.highlights || [],
-  visitorInfo: loc.visitor_info || [],
-  map: {
-    embedUrl: loc.map_embed_url,
-    nearbyAttractions: loc.nearby_attractions || [],
-  },
-  category: loc.category,
-});
-
 
 const LocationCard = ({ location }: { location: Location }) => (
   <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
