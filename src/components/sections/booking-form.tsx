@@ -39,6 +39,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { mapServerPackageToClient, type TourPackage } from "@/lib/packages-data"
+import { Separator } from "../ui/separator"
 
 export function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -47,6 +48,7 @@ export function BookingForm() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
+  const [totalPrice, setTotalPrice] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchTourPackages() {
@@ -74,6 +76,27 @@ export function BookingForm() {
       message: "",
     },
   });
+
+  const watchedTourType = form.watch('tourType');
+  const watchedGuests = form.watch('guests');
+
+  useEffect(() => {
+    if (watchedTourType && watchedGuests > 0) {
+      const selectedPackage = tourPackages.find(p => p.id === Number(watchedTourType));
+      if (selectedPackage && selectedPackage.price) {
+        const pricePerPerson = parseFloat(selectedPackage.price.replace(/[^0-9.-]+/g,""));
+        if (!isNaN(pricePerPerson)) {
+          setTotalPrice(pricePerPerson * watchedGuests);
+        } else {
+          setTotalPrice(null);
+        }
+      } else {
+        setTotalPrice(null);
+      }
+    } else {
+      setTotalPrice(null);
+    }
+  }, [watchedTourType, watchedGuests, tourPackages]);
 
   useEffect(() => {
     if (user) {
@@ -296,6 +319,18 @@ export function BookingForm() {
                         </FormItem>
                       )}
                     />
+                    
+                    {totalPrice !== null && (
+                      <div className="space-y-4 pt-4 border-t border-border">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Total Estimated Price:</span>
+                          <span className="text-2xl font-bold text-primary">
+                            ${totalPrice.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Submit Booking Request</Button>
                   </form>
                 </Form>
