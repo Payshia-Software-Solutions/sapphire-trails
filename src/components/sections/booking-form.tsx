@@ -46,7 +46,6 @@ interface ConfirmationDetails {
     date: Date;
     guests: number;
     totalPrice: number;
-    bookingReference: string;
 }
 
 function BookingConfirmation({ details, onClose }: { details: ConfirmationDetails, onClose: () => void }) {
@@ -99,10 +98,6 @@ function BookingConfirmation({ details, onClose }: { details: ConfirmationDetail
                       <div className="flex justify-between items-center text-sm border-b border-border pb-3">
                          <span className="text-muted-foreground">Total Paid</span>
                          <span className="font-semibold text-primary">${details.totalPrice.toFixed(2)}</span>
-                     </div>
-                      <div className="flex justify-between items-center text-sm bg-black/20 p-3 rounded-md">
-                         <span className="text-muted-foreground">Booking Reference</span>
-                         <span className="font-mono text-primary">{details.bookingReference}</span>
                      </div>
                 </div>
 
@@ -173,7 +168,6 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
             date: data.date,
             guests: data.guests,
             totalPrice: totalPrice,
-            bookingReference: `#STX${responseData.booking_id || new Date().getTime()}`
         });
 
         setIsSubmitted(true);
