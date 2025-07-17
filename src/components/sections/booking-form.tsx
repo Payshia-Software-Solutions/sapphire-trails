@@ -1,19 +1,17 @@
 
+
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useState } from "react"
+import { useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Clock, Users, DollarSign } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -35,82 +33,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { bookingFormSchema } from "@/lib/schemas"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
-import { mapServerPackageToClient, type TourPackage } from "@/lib/packages-data"
-import { Separator } from "../ui/separator"
+import { type TourPackage } from "@/lib/packages-data"
 
-export function BookingForm() {
+export function BookingForm({ tourPackages, selectedTour }: { tourPackages: TourPackage[], selectedTour?: TourPackage }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const searchParams = useSearchParams();
-  const tourTypeParam = searchParams.get('tourType');
   const { user } = useAuth();
   const { toast } = useToast();
-  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
-  const [totalPrice, setTotalPrice] = useState<number | null>(null);
-
-  useEffect(() => {
-    async function fetchTourPackages() {
-        try {
-            const response = await fetch('http://localhost/sapphire_trails_server/tours');
-            if (response.ok) {
-                const serverData = await response.json();
-                if(Array.isArray(serverData)) {
-                    setTourPackages(serverData.map(mapServerPackageToClient));
-                }
-            }
-        } catch(e) { console.error("Could not fetch tour packages", e); }
-    }
-    fetchTourPackages();
-  }, []);
-
-  const form = useForm<z.infer<typeof bookingFormSchema>>({
-    resolver: zodResolver(bookingFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      tourType: tourTypeParam ? Number(tourTypeParam) : undefined,
-      guests: 1,
-      message: "",
-    },
-  });
-
-  const watchedTourType = form.watch('tourType');
-  const watchedGuests = form.watch('guests');
-
-  useEffect(() => {
-    if (watchedTourType && watchedGuests > 0) {
-      const selectedPackage = tourPackages.find(p => p.id === Number(watchedTourType));
-      if (selectedPackage && selectedPackage.price) {
-        const pricePerPerson = parseFloat(selectedPackage.price.replace(/[^0-9.-]+/g,""));
-        if (!isNaN(pricePerPerson)) {
-          setTotalPrice(pricePerPerson * watchedGuests);
-        } else {
-          setTotalPrice(null);
-        }
-      } else {
-        setTotalPrice(null);
-      }
-    } else {
-      setTotalPrice(null);
-    }
-  }, [watchedTourType, watchedGuests, tourPackages]);
-
-  useEffect(() => {
-    if (user) {
-      form.reset({
-        name: user.name,
-        email: user.email,
-        phone: user.phone || "",
-        tourType: tourTypeParam ? Number(tourTypeParam) : form.getValues('tourType'),
-        guests: form.getValues('guests') || 1,
-        date: form.getValues('date'),
-        message: form.getValues('message') || "",
-      });
-    }
-  }, [user, form, tourTypeParam]);
+  const form = useFormContext<z.infer<typeof bookingFormSchema>>();
 
   async function onSubmit(data: z.infer<typeof bookingFormSchema>) {
      if (!user) {
@@ -165,180 +97,189 @@ export function BookingForm() {
     }
   }
 
-  return (
-    <section id="booking-form" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-headline font-bold tracking-tighter sm:text-5xl">Confirm Your Details</h2>
-          <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
-            Fill out the form below to book your tour. We will get back to you shortly to confirm your reservation.
-          </p>
+  if (isSubmitted) {
+    return (
+        <div className="text-center rounded-lg border bg-card text-card-foreground shadow-sm p-12 h-full flex flex-col justify-center items-center">
+        <h3 className="text-2xl font-bold text-primary">Thank You!</h3>
+        <p className="text-muted-foreground mt-4">Your booking request has been sent successfully. We will contact you shortly.</p>
         </div>
-        <div className="mx-auto mt-12 max-w-xl">
-          {isSubmitted ? (
-             <div className="text-center rounded-lg border bg-card text-card-foreground shadow-sm p-12">
-                <h3 className="text-2xl font-bold text-primary">Thank You!</h3>
-                <p className="text-muted-foreground mt-4">Your booking request has been sent successfully. We will contact you shortly.</p>
-             </div>
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Your Name" {...field} disabled={!!user} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input placeholder="your.email@example.com" {...field} disabled={!!user} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone Number (Optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Your Phone Number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="tourType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Tour Package</FormLabel>
-                            <Select onValueChange={field.onChange} value={String(field.value)}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a tour" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {tourPackages.map(pkg => (
-                                    <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="guests"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Number of Guests</FormLabel>
+    )
+  }
+  
+  return (
+    <form id="booking-form-main" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-2xl text-primary">{selectedTour?.tourPageTitle || 'Select a Tour'}</CardTitle>
+                 {selectedTour && (
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
+                        <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> {selectedTour.duration}</span>
+                        <span className="flex items-center gap-1.5"><DollarSign className="h-4 w-4" /> {selectedTour.price} per person</span>
+                    </div>
+                 )}
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Select Date</FormLabel>
+                        <Popover>
+                        <PopoverTrigger asChild>
                             <FormControl>
-                              <Input type="number" min="1" placeholder="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))}/>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                                )}
+                            >
+                                {field.value ? (
+                                format(field.value, "PPP")
+                                ) : (
+                                <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                            </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                                date < new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                            />
+                        </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                 <FormItem>
+                    <FormLabel>Select Time</FormLabel>
+                    <Select defaultValue="08:00">
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="08:00">8:00 AM</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </FormItem>
+                <FormField
+                    control={form.control}
+                    name="guests"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Participants</FormLabel>
+                        <Select onValueChange={(val) => field.onChange(parseInt(val))} value={String(field.value)}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {[...Array(10)].map((_, i) => (
+                                <SelectItem key={i+1} value={String(i+1)}>{i+1} Person</SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Traveler Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                            <Input placeholder="Your Name" {...field} disabled={!!user} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                            <Input placeholder="your.email@example.com" {...field} disabled={!!user} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Phone Number</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Your Phone Number" {...field} />
                             </FormControl>
                             <FormMessage />
-                          </FormItem>
+                            </FormItem>
                         )}
-                      />
-                    </div>
-                     <FormField
-                      control={form.control}
-                      name="date"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Preferred Tour Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground"
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, "PPP")
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date < new Date() || date < new Date("1900-01-01")
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Additional Message (Optional)</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Any special requests or questions?"
-                              className="min-h-[120px]"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    {totalPrice !== null && (
-                      <div className="space-y-4 pt-4 border-t border-border">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Total Estimated Price:</span>
-                          <span className="text-2xl font-bold text-primary">
-                            ${totalPrice.toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
+                        />
+                    <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <Select>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Country"/>
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="lk">Sri Lanka</SelectItem>
+                                <SelectItem value="us">United States</SelectItem>
+                                <SelectItem value="gb">United Kingdom</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </FormItem>
+                 </div>
+                 <FormField
+                    control={form.control}
+                    name="message"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Special Requests (Optional)</FormLabel>
+                        <FormControl>
+                        <Textarea
+                            placeholder="Dietary requirements, accessibility needs, etc."
+                            className="min-h-[120px]"
+                            {...field}
+                        />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
                     )}
-
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Submit Booking Request</Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </div>
-    </section>
-  );
+                />
+            </CardContent>
+        </Card>
+    </form>
+  )
 }

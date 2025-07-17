@@ -1,3 +1,6 @@
+
+// This component is no longer used on the main booking page after the redesign.
+// It can be safely removed or kept for other potential uses.
 import Image from 'next/image';
 
 export function BookingHero() {
