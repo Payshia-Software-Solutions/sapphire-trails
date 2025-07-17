@@ -51,23 +51,9 @@ class Booking
     {
         $userId = $data['user_id'] ?? null;
 
-        // Handle guest users or find existing user by email
+        // If it's a guest booking (no user_id provided), find or create a user.
         if (is_null($userId) && isset($data['email'])) {
-            $existingUser = $this->userModel->getByEmail($data['email']);
-            if ($existingUser) {
-                // User already exists, use their ID
-                $userId = $existingUser['id'];
-            } else {
-                // Guest user does not exist, create a new one
-                $newUserData = [
-                    'name' => $data['name'],
-                    'email' => $data['email'],
-                    'phone' => $data['phone'] ?? null,
-                    'password' => bin2hex(random_bytes(16)), // Create a secure random password
-                    'type' => 'client'
-                ];
-                $userId = $this->userModel->create($newUserData);
-            }
+            $userId = $this->userModel->findOrCreateGuest($data);
         }
 
         $stmt = $this->pdo->prepare("
