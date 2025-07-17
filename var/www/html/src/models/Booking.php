@@ -52,7 +52,7 @@ class Booking
         $userId = $data['user_id'] ?? null;
 
         // Handle guest users or find existing user by email
-        if (is_null($userId)) {
+        if (is_null($userId) && isset($data['email'])) {
             $existingUser = $this->userModel->getByEmail($data['email']);
             if ($existingUser) {
                 // User already exists, use their ID
