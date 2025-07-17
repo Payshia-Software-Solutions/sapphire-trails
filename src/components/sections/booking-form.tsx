@@ -6,7 +6,7 @@ import { useState }from "react"
 import { useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Check, Clock, DollarSign, Gem, Mail, X } from "lucide-react"
+import { CalendarIcon, Check, Gem, Mail, X } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import { cn } from "@/lib/utils"
@@ -143,6 +143,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
         guests: Number(data.guests),
         tour_date: format(data.date, 'yyyy-MM-dd'),
         message: data.message,
+        type: user ? user.type : 'client',
     };
     
     try {
@@ -159,8 +160,6 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
             const errorData = await response.json().catch(() => ({ message: "An unknown error occurred."}));
             throw new Error(errorData.message || 'Failed to submit booking request.');
         }
-        
-        const responseData = await response.json();
         
         setConfirmationDetails({
             tourName: selectedTour.tourPageTitle,
@@ -390,3 +389,5 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     </form>
   )
 }
+
+    
