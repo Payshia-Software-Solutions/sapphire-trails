@@ -21,6 +21,8 @@ import {
 } from '@/components/ui/accordion';
 import { LoaderCircle } from 'lucide-react';
 
+const CMS_DATA_KEY = 'sapphire-cms-data';
+
 const defaultValues = {
   hero: {
     headline: "Sri Lanka's Only Luxury Gem Experience",
@@ -177,6 +179,9 @@ export default function CmsPage() {
             form.reset(processedData);
             setHeroImagePreview(processedData.hero.imageUrl);
             setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
+            
+            // Save the updated data to localStorage so the homepage updates
+            localStorage.setItem(CMS_DATA_KEY, JSON.stringify(processedData));
         }
 
     } catch (error) {
