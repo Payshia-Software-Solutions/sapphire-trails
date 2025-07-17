@@ -37,6 +37,8 @@ $bookingRoutes = require_once './routes/bookingRoutes.php';
 $locationRoutes = require_once './routes/locationRoutes.php';
 $locationGalleryRoutes = require_once './routes/locationgalleryimageRoutes.php';
 $adminRoutes = require_once './routes/adminRoutes.php';
+$siteContentRoutes = require_once './routes/sitecontentRoutes.php';
+
 
 // Register all route groups with the router
 $router->group('/users', $userRoutes);
@@ -45,6 +47,7 @@ $router->group('/bookings', $bookingRoutes);
 $router->group('/locations', $locationRoutes);
 $router->group('/location-gallery', $locationGalleryRoutes);
 $router->group('/admin', $adminRoutes);
+$router->group('/content', $siteContentRoutes);
 
 // Special case for login which is not under a group
 $router->post('/login', function() {
