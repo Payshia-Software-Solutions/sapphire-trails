@@ -111,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(errorMessage);
       }
 
-      const newUser: User = data.user;
+      const newUser: User = data;
       if (!newUser) {
           throw new Error('Sign-up successful, but no user data was returned from the server.');
       }
