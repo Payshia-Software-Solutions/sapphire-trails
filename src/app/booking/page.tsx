@@ -95,7 +95,7 @@ function BookingSummary({
 
 
 function BookingContent() {
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const tourTypeParam = searchParams.get('tourType');
@@ -120,9 +120,9 @@ function BookingContent() {
   const methods = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
       tourType: tourTypeParam ? Number(tourTypeParam) : undefined,
       guests: 1,
       message: "",
@@ -154,10 +154,6 @@ function BookingContent() {
   }, [selectedTour, watchedGuests]);
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      const destination = tourTypeParam ? `/auth?redirect=/booking?tourType=${encodeURIComponent(tourTypeParam)}` : '/auth?redirect=/booking';
-      router.push(destination);
-    }
      if (user) {
       methods.reset({
         name: user.name,
@@ -168,16 +164,18 @@ function BookingContent() {
         date: methods.getValues('date'),
         message: methods.getValues('message') || "",
       });
+    } else {
+       methods.reset({
+        name: "",
+        email: "",
+        phone: "",
+        tourType: tourTypeParam ? Number(tourTypeParam) : methods.getValues('tourType'),
+        guests: methods.getValues('guests') || 1,
+        date: methods.getValues('date'),
+        message: methods.getValues('message') || "",
+      });
     }
-  }, [user, isLoading, router, searchParams, tourTypeParam, methods]);
-
-  if (isLoading || !user) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
+  }, [user, tourTypeParam, methods]);
 
   return (
     <div className="flex-1 bg-background-alt py-12 md:py-24">
@@ -226,4 +224,3 @@ export default function BookingPage() {
     </div>
   );
 }
-

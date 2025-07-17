@@ -6,8 +6,8 @@ import { useState }from "react"
 import { useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Check, Clock, DollarSign, Gem, Instagram, Mail, X } from "lucide-react"
-import Link from "next/link"
+import { CalendarIcon, Check, Clock, DollarSign, Gem, Mail, X } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -38,7 +38,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { type TourPackage } from "@/lib/packages-data"
-import { useRouter } from "next/navigation"
 
 
 interface ConfirmationDetails {
@@ -95,7 +94,7 @@ function BookingConfirmation({ details, onClose }: { details: ConfirmationDetail
                          <span className="text-muted-foreground">Guests</span>
                          <span className="font-semibold text-white">{details.guests} Adults</span>
                      </div>
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                      <div className="flex justify-between items-center text-sm">
                          <span className="text-muted-foreground">Total Paid</span>
                          <span className="font-semibold text-primary">${details.totalPrice.toFixed(2)}</span>
                      </div>
@@ -123,11 +122,11 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
   const form = useFormContext<z.infer<typeof bookingFormSchema>>();
 
   async function onSubmit(data: z.infer<typeof bookingFormSchema>) {
-     if (!user || !selectedTour) {
+     if (!selectedTour) {
         toast({
             variant: "destructive",
             title: "Error",
-            description: "You must be logged in and have a tour selected.",
+            description: "You must have a tour selected.",
         });
         return;
     }
@@ -136,7 +135,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     const totalPrice = !isNaN(pricePerPerson) ? pricePerPerson * data.guests : 0;
 
     const payload = {
-        user_id: user.id,
+        user_id: user ? user.id : null,
         tour_package_id: data.tourType,
         name: data.name,
         email: data.email,
@@ -161,8 +160,6 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
             throw new Error(errorData.message || 'Failed to submit booking request.');
         }
         
-        const responseData = await response.json();
-
         setConfirmationDetails({
             tourName: selectedTour.tourPageTitle,
             date: data.date,
