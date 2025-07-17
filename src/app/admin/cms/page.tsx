@@ -20,6 +20,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { LoaderCircle } from 'lucide-react';
+import { getFullImageUrl } from '@/lib/utils';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -47,18 +48,6 @@ const defaultValues = {
 };
 
 type CmsFormValues = z.infer<typeof cmsFormSchema>;
-
-const IMAGE_BASE_URL = 'https://content-provider.payshia.com/sapphire-trail';
-
-// Helper to construct full URL from a relative path
-const getFullImageUrl = (path: string | null | undefined) => {
-    if (!path || path.startsWith('http') || path.startsWith('data:')) {
-        return path || '';
-    }
-    const cleanBase = IMAGE_BASE_URL.replace(/\/$/, "");
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    return `${cleanBase}${cleanPath}`;
-};
 
 export default function CmsPage() {
   const { toast } = useToast();

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { getFullImageUrl } from '@/lib/utils';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -33,10 +34,12 @@ export function HeroSection() {
     }
   }, []);
 
+  const finalImageUrl = getFullImageUrl(content.imageUrl);
+
   return (
     <section className="relative h-screen w-full flex items-center justify-center">
       <Image
-        src={content.imageUrl}
+        src={finalImageUrl}
         alt={content.imageAlt}
         data-ai-hint={content.imageHint}
         fill
