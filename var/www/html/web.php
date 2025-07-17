@@ -37,7 +37,7 @@ $bookingRoutes = require_once './routes/bookingRoutes.php';
 $locationRoutes = require_once './routes/locationRoutes.php';
 $locationGalleryRoutes = require_once './routes/locationgalleryimageRoutes.php';
 $adminRoutes = require_once './routes/adminRoutes.php';
-$siteContentRoutes = require_once './routes/siteContentRoutes.php';
+$siteContentRoutes = require_once './routes/sitecontentRoutes.php';
 
 
 // Register all route groups with the router

@@ -1,24 +1,22 @@
 <?php
 require_once './controllers/UserController.php';
 
-$pdo = $GLOBALS['pdo'];
-$userController = new UserController($pdo);
+return function ($router) {
+    $controller = new UserController($GLOBALS['pdo']);
 
-return [
-    'GET /users/' => function () use ($userController) {
-        $userController->getAll();
-    },
-    'GET /users/type/{type}/' => function ($type) use ($userController) {
-        $userController->getByType($type);
-    },
-    'GET /users/{id}/' => function ($id) use ($userController) {
-        $userController->getById($id);
-    },
-    'POST /users/' => function () use ($userController) {
-        $userController->create();
-    },
-    'DELETE /users/{id}/' => function ($id) use ($userController) {
-        $userController->delete($id);
-    }
-];
+    // Route to get all users
+    $router->get('/', [$controller, 'getAll']);
+
+    // Route to get a specific user by ID
+    $router->get('/{id}', [$controller, 'getById']);
+    
+    // Route to get users by type (e.g., 'admin' or 'client')
+    $router->get('/type/{type}', [$controller, 'getByType']);
+
+    // Route to create a new user
+    $router->post('/', [$controller, 'create']);
+
+    // Route to delete a user
+    $router->delete('/{id}', [$controller, 'delete']);
+};
 ?>
