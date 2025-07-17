@@ -4,14 +4,14 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { AdminSidebar, navLinks, type NavLink } from '@/components/admin/sidebar';
+import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/shared/theme-provider';
 import { ThemeToggle } from '@/components/shared/theme-toggle';
-import type { AdminUser } from '@/lib/schemas';
+import type { User as AuthUser } from '@/contexts/auth-context';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +23,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
-const ADMIN_SESSION_KEY = 'adminUser';
+const ADMIN_SESSION_KEY = 'adminUser'; // Corrected key
 
 export default function AdminLayout({
   children,
@@ -34,7 +34,7 @@ export default function AdminLayout({
   const router = useRouter();
   const isLoginPage = pathname === '/admin/login';
   const [isLoading, setIsLoading] = useState(false);
-  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
   const isMounted = useRef(false);
 
   useEffect(() => {
@@ -48,13 +48,20 @@ export default function AdminLayout({
   }, [pathname]);
 
    useEffect(() => {
-    const adminUserRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
-    if (adminUserRaw) {
+    const userSessionRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    if (userSessionRaw) {
       try {
-        const user = JSON.parse(adminUserRaw);
-        setAdminUser(user);
+        const user: AuthUser = JSON.parse(userSessionRaw);
+        // CRITICAL: Ensure the user is actually an admin.
+        if (user && user.type === 'admin') {
+          setAdminUser(user);
+        } else {
+          // If a non-admin is logged in, log them out of the admin context and redirect.
+          sessionStorage.removeItem(ADMIN_SESSION_KEY);
+          if (!isLoginPage) router.push('/admin/login');
+        }
       } catch (e) {
-        console.error("Failed to parse admin user from session storage", e);
+        console.error("Failed to parse user session", e);
         sessionStorage.removeItem(ADMIN_SESSION_KEY);
         if (!isLoginPage) router.push('/admin/login');
       }
@@ -75,7 +82,7 @@ export default function AdminLayout({
         <>{children}</>
       ) : (
         <div className="grid h-screen w-full overflow-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-          <AdminSidebar visibleNavLinks={navLinks} />
+          <AdminSidebar />
           <div className="grid grid-rows-[auto_1fr] overflow-hidden">
             <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
                 <Sheet>
@@ -118,7 +125,7 @@ export default function AdminLayout({
                             <div className="flex items-center justify-between">
                                 <ThemeToggle />
                                 {adminUser && (
-                                    <span className='text-sm text-muted-foreground'>Hi, {adminUser.username}</span>
+                                    <span className='text-sm text-muted-foreground'>Hi, {adminUser.name}</span>
                                 )}
                             </div>
                             <Button asChild variant="outline">
@@ -143,14 +150,14 @@ export default function AdminLayout({
                       <DropdownMenuTrigger asChild>
                         <Button variant="secondary" size="icon" className="rounded-full">
                           <Avatar>
-                            <AvatarImage src={`https://placehold.co/100x100.png?text=${adminUser.username.charAt(0).toUpperCase()}`} />
-                            <AvatarFallback>{adminUser.username.charAt(0).toUpperCase()}</AvatarFallback>
+                            <AvatarImage src={`https://placehold.co/100x100.png?text=${adminUser.name.charAt(0).toUpperCase()}`} />
+                            <AvatarFallback>{adminUser.name.charAt(0).toUpperCase()}</AvatarFallback>
                           </Avatar>
                           <span className="sr-only">Toggle user menu</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Hi, {adminUser.username}!</DropdownMenuLabel>
+                        <DropdownMenuLabel>Hi, {adminUser.name}!</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild className="cursor-pointer">
                            <Link href="/admin/profile">Profile</Link>

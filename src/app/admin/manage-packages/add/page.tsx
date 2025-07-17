@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, LoaderCircle } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -34,6 +34,7 @@ export default function AddPackagePage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isClient, setIsClient] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [cardImageFile, setCardImageFile] = useState<File | null>(null);
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
@@ -145,6 +146,8 @@ export default function AddPackagePage() {
       setCurrentStep(2);
       return;
     }
+    
+    setIsSubmitting(true);
 
     const formData = new FormData();
 
@@ -214,6 +217,8 @@ export default function AddPackagePage() {
         title: 'Connection Error',
         description: 'Could not connect to the server. Please try again later.',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -375,19 +380,20 @@ export default function AddPackagePage() {
           
             <div className="mt-8 pt-5 flex justify-between">
               <div>
-                <Button type="button" onClick={handlePrev} variant="outline" className={cn(currentStep === 1 && "hidden")}>
+                <Button type="button" onClick={handlePrev} variant="outline" className={cn(currentStep === 1 && "hidden")} disabled={isSubmitting}>
                   Go Back
                 </Button>
               </div>
               <div>
                 {currentStep < steps.length && (
-                  <Button type="button" onClick={handleNext}>
+                  <Button type="button" onClick={handleNext} disabled={isSubmitting}>
                     Next Step
                   </Button>
                 )}
                 {currentStep === steps.length && (
-                  <Button type="submit" size="lg">
-                    Save New Package
+                  <Button type="submit" size="lg" disabled={isSubmitting}>
+                    {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting ? "Saving..." : "Save New Package"}
                   </Button>
                 )}
               </div>

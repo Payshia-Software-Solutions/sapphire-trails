@@ -1,19 +1,18 @@
 
+
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useState }from "react"
+import { useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Check, Clock, DollarSign, Gem, Instagram, Mail, X } from "lucide-react"
+import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -35,69 +34,111 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { bookingFormSchema } from "@/lib/schemas"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
-import { mapServerPackageToClient, type TourPackage } from "@/lib/packages-data"
+import { type TourPackage } from "@/lib/packages-data"
+import { useRouter } from "next/navigation"
 
-export function BookingForm() {
+
+interface ConfirmationDetails {
+    tourName: string;
+    date: Date;
+    guests: number;
+    totalPrice: number;
+    bookingReference: string;
+}
+
+function BookingConfirmation({ details, onClose }: { details: ConfirmationDetails, onClose: () => void }) {
+    const router = useRouter();
+
+    const handleViewBooking = () => {
+        router.push('/profile');
+    };
+    
+    const handleExploreTours = () => {
+        router.push('/tours');
+    };
+    
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 animate-in fade-in-0">
+            <div className="relative w-full max-w-2xl bg-background rounded-2xl p-8 md:p-12 text-center text-white/90 shadow-2xl shadow-primary/20">
+                <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-muted-foreground hover:text-white" onClick={onClose}>
+                    <X className="h-6 w-6" />
+                </Button>
+                
+                <div className="flex flex-col items-center">
+                    <div className="h-20 w-20 flex items-center justify-center rounded-full bg-primary mb-4">
+                        <Check className="h-12 w-12 text-primary-foreground" />
+                    </div>
+                    <div className="flex gap-2 text-primary mb-4">
+                        <Gem className="h-5 w-5 fill-primary" />
+                        <Gem className="h-5 w-5 fill-primary" />
+                        <Gem className="h-5 w-5 fill-primary" />
+                    </div>
+                    <h2 className="text-4xl font-headline font-bold text-white mb-2">Your Booking is Confirmed!</h2>
+                    <p className="text-muted-foreground max-w-md">
+                        Thank you for booking the {details.tourName}. A confirmation email has been sent to you.
+                    </p>
+                </div>
+
+                <div className="my-8 text-left bg-card/50 border border-border rounded-lg p-6 space-y-4">
+                     <h3 className="text-xl font-headline font-semibold text-primary mb-4">Booking Summary</h3>
+                     <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                         <span className="text-muted-foreground">Tour Name</span>
+                         <span className="font-semibold text-white">{details.tourName}</span>
+                     </div>
+                     <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                         <span className="text-muted-foreground">Date & Time</span>
+                         <span className="font-semibold text-white">{format(details.date, "MMMM dd, yyyy")} • 9:00 AM</span>
+                     </div>
+                      <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                         <span className="text-muted-foreground">Guests</span>
+                         <span className="font-semibold text-white">{details.guests} Adults</span>
+                     </div>
+                      <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                         <span className="text-muted-foreground">Total Paid</span>
+                         <span className="font-semibold text-primary">${details.totalPrice.toFixed(2)}</span>
+                     </div>
+                      <div className="flex justify-between items-center text-sm bg-black/20 p-3 rounded-md">
+                         <span className="text-muted-foreground">Booking Reference</span>
+                         <span className="font-mono text-primary">{details.bookingReference}</span>
+                     </div>
+                </div>
+
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-6">
+                    <Mail className="h-4 w-4 text-primary" />
+                    <span>Check your inbox for full details</span>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                    <Button size="lg" className="w-full" onClick={handleViewBooking}>View My Booking</Button>
+                    <Button size="lg" variant="outline" className="w-full" onClick={handleExploreTours}>Explore More Tours</Button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function BookingForm({ tourPackages, selectedTour }: { tourPackages: TourPackage[], selectedTour?: TourPackage }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const searchParams = useSearchParams();
-  const tourTypeParam = searchParams.get('tourType');
+  const [confirmationDetails, setConfirmationDetails] = useState<ConfirmationDetails | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
-  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
-
-  useEffect(() => {
-    async function fetchTourPackages() {
-        try {
-            const response = await fetch('http://localhost/sapphire_trails_server/tours');
-            if (response.ok) {
-                const serverData = await response.json();
-                if(Array.isArray(serverData)) {
-                    setTourPackages(serverData.map(mapServerPackageToClient));
-                }
-            }
-        } catch(e) { console.error("Could not fetch tour packages", e); }
-    }
-    fetchTourPackages();
-  }, []);
-
-  const form = useForm<z.infer<typeof bookingFormSchema>>({
-    resolver: zodResolver(bookingFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      tourType: tourTypeParam ? Number(tourTypeParam) : undefined,
-      guests: 1,
-      message: "",
-    },
-  });
-
-  useEffect(() => {
-    if (user) {
-      form.reset({
-        name: user.name,
-        email: user.email,
-        phone: user.phone || "",
-        tourType: tourTypeParam ? Number(tourTypeParam) : form.getValues('tourType'),
-        guests: form.getValues('guests') || 1,
-        date: form.getValues('date'),
-        message: form.getValues('message') || "",
-      });
-    }
-  }, [user, form, tourTypeParam]);
+  const form = useFormContext<z.infer<typeof bookingFormSchema>>();
 
   async function onSubmit(data: z.infer<typeof bookingFormSchema>) {
-     if (!user) {
+     if (!user || !selectedTour) {
         toast({
             variant: "destructive",
-            title: "Authentication Error",
-            description: "You must be logged in to make a booking.",
+            title: "Error",
+            description: "You must be logged in and have a tour selected.",
         });
         return;
     }
+    
+    const pricePerPerson = parseFloat(selectedTour.price.replace(/[^0-9.-]+/g,""));
+    const totalPrice = !isNaN(pricePerPerson) ? pricePerPerson * data.guests : 0;
 
     const payload = {
         user_id: user.id,
@@ -124,6 +165,16 @@ export function BookingForm() {
             const errorData = await response.json().catch(() => ({ message: "An unknown error occurred."}));
             throw new Error(errorData.message || 'Failed to submit booking request.');
         }
+        
+        const responseData = await response.json();
+
+        setConfirmationDetails({
+            tourName: selectedTour.tourPageTitle,
+            date: data.date,
+            guests: data.guests,
+            totalPrice: totalPrice,
+            bookingReference: `#STX${responseData.booking_id || new Date().getTime()}`
+        });
 
         setIsSubmitted(true);
         form.reset();
@@ -142,168 +193,189 @@ export function BookingForm() {
     }
   }
 
+  const handleCloseConfirmation = () => {
+    setIsSubmitted(false);
+    setConfirmationDetails(null);
+  };
+  
+  if (isSubmitted && confirmationDetails) {
+    return <BookingConfirmation details={confirmationDetails} onClose={handleCloseConfirmation} />
+  }
+  
   return (
-    <section id="booking-form" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-headline font-bold tracking-tighter sm:text-5xl">Confirm Your Details</h2>
-          <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
-            Fill out the form below to book your tour. We will get back to you shortly to confirm your reservation.
-          </p>
-        </div>
-        <div className="mx-auto mt-12 max-w-xl">
-          {isSubmitted ? (
-             <div className="text-center rounded-lg border bg-card text-card-foreground shadow-sm p-12">
-                <h3 className="text-2xl font-bold text-primary">Thank You!</h3>
-                <p className="text-muted-foreground mt-4">Your booking request has been sent successfully. We will contact you shortly.</p>
-             </div>
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Your Name" {...field} disabled={!!user} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input placeholder="your.email@example.com" {...field} disabled={!!user} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone Number (Optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Your Phone Number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="tourType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Tour Package</FormLabel>
-                            <Select onValueChange={field.onChange} value={String(field.value)}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a tour" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {tourPackages.map(pkg => (
-                                    <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="guests"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Number of Guests</FormLabel>
+    <form id="booking-form-main" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-2xl text-primary">{selectedTour?.tourPageTitle || 'Select a Tour'}</CardTitle>
+                 {selectedTour && (
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
+                        <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> {selectedTour.duration}</span>
+                        <span className="flex items-center gap-1.5"><DollarSign className="h-4 w-4" /> {selectedTour.price} per person</span>
+                    </div>
+                 )}
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Select Date</FormLabel>
+                        <Popover>
+                        <PopoverTrigger asChild>
                             <FormControl>
-                              <Input type="number" min="1" placeholder="1" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))}/>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                                )}
+                            >
+                                {field.value ? (
+                                format(field.value, "PPP")
+                                ) : (
+                                <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                            </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                                date < new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                            />
+                        </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                 <FormItem>
+                    <FormLabel>Select Time</FormLabel>
+                    <Select defaultValue="08:00">
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="08:00">8:00 AM</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </FormItem>
+                <FormField
+                    control={form.control}
+                    name="guests"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Participants</FormLabel>
+                        <Select onValueChange={(val) => field.onChange(parseInt(val))} value={String(field.value)}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {[...Array(10)].map((_, i) => (
+                                <SelectItem key={i+1} value={String(i+1)}>{i+1} Person</SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Traveler Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                            <Input placeholder="Your Name" {...field} disabled={!!user} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                            <Input placeholder="your.email@example.com" {...field} disabled={!!user} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Phone Number</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Your Phone Number" {...field} />
                             </FormControl>
                             <FormMessage />
-                          </FormItem>
+                            </FormItem>
                         )}
-                      />
-                    </div>
-                     <FormField
-                      control={form.control}
-                      name="date"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Preferred Tour Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground"
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, "PPP")
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date < new Date() || date < new Date("1900-01-01")
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Additional Message (Optional)</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Any special requests or questions?"
-                              className="min-h-[120px]"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Submit Booking Request</Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </div>
-    </section>
-  );
+                        />
+                    <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <Select>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Country"/>
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="lk">Sri Lanka</SelectItem>
+                                <SelectItem value="us">United States</SelectItem>
+                                <SelectItem value="gb">United Kingdom</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </FormItem>
+                 </div>
+                 <FormField
+                    control={form.control}
+                    name="message"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Special Requests (Optional)</FormLabel>
+                        <FormControl>
+                        <Textarea
+                            placeholder="Dietary requirements, accessibility needs, etc."
+                            className="min-h-[120px]"
+                            {...field}
+                        />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+            </CardContent>
+        </Card>
+    </form>
+  )
 }

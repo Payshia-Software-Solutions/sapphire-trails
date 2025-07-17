@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Home, CalendarCheck, Settings, Users, type LucideIcon, LayoutGrid, LogOut, Package, FileText } from 'lucide-react';
+import { LayoutGrid, CalendarCheck, FileText, Settings, Package, Users, LogOut, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface NavLink {
@@ -24,7 +24,7 @@ export const navLinks: NavLink[] = [
 
 const ADMIN_SESSION_KEY = 'adminUser';
 
-export function AdminSidebar({ visibleNavLinks }: { visibleNavLinks: NavLink[] }) {
+export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -43,7 +43,7 @@ export function AdminSidebar({ visibleNavLinks }: { visibleNavLinks: NavLink[] }
         </div>
         <div className="flex-1 overflow-auto py-2">
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-            {visibleNavLinks.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

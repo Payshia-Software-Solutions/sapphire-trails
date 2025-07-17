@@ -43,17 +43,16 @@ export default function TourDetailPage() {
     async function fetchTourPackage() {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost/sapphire_trails_server/tours/${params.slug}`);
+            const response = await fetch(`http://localhost/sapphire_trails_server/tours/slug/${params.slug}/`);
             if (!response.ok) {
-                // If not found or any other error, set to undefined to trigger notFound()
                 setTourPackage(undefined);
-                return;
+            } else {
+                const data = await response.json();
+                const mappedPackage = mapServerPackageToClient(data);
+                setTourPackage(mappedPackage);
             }
-            const data = await response.json();
-            const mappedPackage = mapServerPackageToClient(data);
-            setTourPackage(mappedPackage);
         } catch (error) {
-            console.error("Failed to fetch tour package", error);
+            console.error("Failed to fetch tour package by slug", error);
             setTourPackage(undefined);
         } finally {
             setIsLoading(false);
@@ -89,7 +88,7 @@ export default function TourDetailPage() {
         />
         <TourDetailItinerary itinerary={tourPackage.itinerary} />
         <TourDetailInclusions
-            inclusions={tourPackage.inclusions}
+            inclusions={tourPackage.inclusions.map(i => i.title)}
         />
         <BookingSection />
       </main>
