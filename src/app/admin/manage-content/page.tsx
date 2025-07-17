@@ -103,7 +103,7 @@ export default function ManageContentPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Content</h1>
-            <p className="text-muted-foreground">Add or delete custom locations for the &quot;Explore Ratnapura&quot; page.</p>
+            <p className="text-muted-foreground">Add, edit, or delete custom locations for the &quot;Explore Ratnapura&quot; page.</p>
         </div>
         <Button asChild>
           <Link href="/admin/add-content">
@@ -143,9 +143,11 @@ export default function ManageContentPage() {
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon">
-                      <Pencil className="h-4 w-4" />
-                      <span className="sr-only">Edit {location.title}</span>
+                    <Button asChild variant="outline" size="icon">
+                      <Link href={`/admin/edit-content/${location.slug}`}>
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Edit {location.title}</span>
+                      </Link>
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
