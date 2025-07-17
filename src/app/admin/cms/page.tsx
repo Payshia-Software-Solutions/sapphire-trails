@@ -157,19 +157,19 @@ export default function CmsPage() {
             description: 'Your homepage and footer content has been updated successfully.',
         });
         
-        // Refetch data after saving to get new image URLs
-        const newData = await response.json();
-        if (newData.data) {
+        const serverResponse = await response.json();
+        if (serverResponse.data) {
+             const serverData = serverResponse.data;
              const processedData = {
-                ...newData.data,
-                hero: { ...newData.data.hero, imageUrl: getFullImageUrl(newData.data.hero.imageUrl) },
-                discover: { ...newData.data.discover, images: newData.data.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
+                ...serverData,
+                hero: { ...serverData.hero, imageUrl: getFullImageUrl(serverData.hero.imageUrl) },
+                discover: { ...serverData.discover, images: serverData.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
             }
             form.reset(processedData);
             setHeroImagePreview(processedData.hero.imageUrl);
             setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
             
-            // Save the updated data to localStorage so the homepage updates
+            // Save the updated data with full URLs to localStorage so the homepage updates
             localStorage.setItem(CMS_DATA_KEY, JSON.stringify(processedData));
         }
 
