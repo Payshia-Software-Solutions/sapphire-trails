@@ -72,7 +72,26 @@ export default function EditContentPage() {
   const form = useForm<z.infer<typeof locationFormSchema>>({
     resolver: zodResolver(locationFormSchema),
     mode: 'onBlur',
-    // Default values are set once data is fetched
+    defaultValues: {
+      title: '',
+      slug: '',
+      cardDescription: '',
+      cardImage: '',
+      imageHint: '',
+      distance: '',
+      subtitle: '',
+      heroImage: '',
+      heroImageHint: '',
+      introTitle: '',
+      introDescription: '',
+      introImageUrl: '',
+      introImageHint: '',
+      galleryImages: Array(4).fill({ src: '', alt: '', hint: '' }),
+      highlights: Array(4).fill({ icon: 'Leaf', title: '', description: '' }),
+      visitorInfo: Array(4).fill({ icon: 'Clock', title: '', line1: '', line2: '' }),
+      mapEmbedUrl: '',
+      nearbyAttractions: Array(3).fill({ icon: 'Gem', name: '', distance: '' }),
+    },
   });
   
   useEffect(() => {
