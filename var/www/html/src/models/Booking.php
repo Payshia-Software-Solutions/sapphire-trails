@@ -1,3 +1,4 @@
+
 <?php
 class Booking
 {
@@ -27,21 +28,23 @@ class Booking
     {
         $userId = $data['user_id'] ?? null;
 
-        // If it's a guest booking (no user_id), create a user first
-        if (!$userId) {
-            // Check if user already exists by email
+        // If it's a guest booking (no user_id), find or create a user.
+        if (is_null($userId)) {
             $existingUser = $this->userModel->getByEmail($data['email']);
             if ($existingUser) {
+                // User already exists, use their ID.
                 $userId = $existingUser['id'];
             } else {
-                // Create a new user with a random password
+                // User does not exist, create a new one.
                 $userData = [
                     'name' => $data['name'],
                     'email' => $data['email'],
                     'phone' => $data['phone'] ?? null,
-                    'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT),
+                    // Create a random, secure password for the guest account
+                    'password' => password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT),
                     'type' => 'client'
                 ];
+                // The create method in userModel will handle the actual insertion
                 $userId = $this->userModel->create($userData);
             }
         }
