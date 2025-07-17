@@ -2,11 +2,12 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState }from "react"
 import { useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Clock, Users, DollarSign } from "lucide-react"
+import { CalendarIcon, Check, Clock, DollarSign, Gem, Instagram, Mail, X } from "lucide-react"
+import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -33,26 +34,111 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { bookingFormSchema } from "@/lib/schemas"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { type TourPackage } from "@/lib/packages-data"
+import { useRouter } from "next/navigation"
+
+
+interface ConfirmationDetails {
+    tourName: string;
+    date: Date;
+    guests: number;
+    totalPrice: number;
+    bookingReference: string;
+}
+
+function BookingConfirmation({ details, onClose }: { details: ConfirmationDetails, onClose: () => void }) {
+    const router = useRouter();
+
+    const handleViewBooking = () => {
+        router.push('/profile');
+    };
+    
+    const handleExploreTours = () => {
+        router.push('/tours');
+    };
+    
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 animate-in fade-in-0">
+            <div className="relative w-full max-w-2xl bg-background rounded-2xl p-8 md:p-12 text-center text-white/90 shadow-2xl shadow-primary/20">
+                <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-muted-foreground hover:text-white" onClick={onClose}>
+                    <X className="h-6 w-6" />
+                </Button>
+                
+                <div className="flex flex-col items-center">
+                    <div className="h-20 w-20 flex items-center justify-center rounded-full bg-primary mb-4">
+                        <Check className="h-12 w-12 text-primary-foreground" />
+                    </div>
+                    <div className="flex gap-2 text-primary mb-4">
+                        <Gem className="h-5 w-5 fill-primary" />
+                        <Gem className="h-5 w-5 fill-primary" />
+                        <Gem className="h-5 w-5 fill-primary" />
+                    </div>
+                    <h2 className="text-4xl font-headline font-bold text-white mb-2">Your Booking is Confirmed!</h2>
+                    <p className="text-muted-foreground max-w-md">
+                        Thank you for booking the {details.tourName}. A confirmation email has been sent to you.
+                    </p>
+                </div>
+
+                <div className="my-8 text-left bg-card/50 border border-border rounded-lg p-6 space-y-4">
+                     <h3 className="text-xl font-headline font-semibold text-primary mb-4">Booking Summary</h3>
+                     <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                         <span className="text-muted-foreground">Tour Name</span>
+                         <span className="font-semibold text-white">{details.tourName}</span>
+                     </div>
+                     <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                         <span className="text-muted-foreground">Date & Time</span>
+                         <span className="font-semibold text-white">{format(details.date, "MMMM dd, yyyy")} • 9:00 AM</span>
+                     </div>
+                      <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                         <span className="text-muted-foreground">Guests</span>
+                         <span className="font-semibold text-white">{details.guests} Adults</span>
+                     </div>
+                      <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                         <span className="text-muted-foreground">Total Paid</span>
+                         <span className="font-semibold text-primary">${details.totalPrice.toFixed(2)}</span>
+                     </div>
+                      <div className="flex justify-between items-center text-sm bg-black/20 p-3 rounded-md">
+                         <span className="text-muted-foreground">Booking Reference</span>
+                         <span className="font-mono text-primary">{details.bookingReference}</span>
+                     </div>
+                </div>
+
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-6">
+                    <Mail className="h-4 w-4 text-primary" />
+                    <span>Check your inbox for full details</span>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                    <Button size="lg" className="w-full" onClick={handleViewBooking}>View My Booking</Button>
+                    <Button size="lg" variant="outline" className="w-full" onClick={handleExploreTours}>Explore More Tours</Button>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export function BookingForm({ tourPackages, selectedTour }: { tourPackages: TourPackage[], selectedTour?: TourPackage }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [confirmationDetails, setConfirmationDetails] = useState<ConfirmationDetails | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
   const form = useFormContext<z.infer<typeof bookingFormSchema>>();
 
   async function onSubmit(data: z.infer<typeof bookingFormSchema>) {
-     if (!user) {
+     if (!user || !selectedTour) {
         toast({
             variant: "destructive",
-            title: "Authentication Error",
-            description: "You must be logged in to make a booking.",
+            title: "Error",
+            description: "You must be logged in and have a tour selected.",
         });
         return;
     }
+    
+    const pricePerPerson = parseFloat(selectedTour.price.replace(/[^0-9.-]+/g,""));
+    const totalPrice = !isNaN(pricePerPerson) ? pricePerPerson * data.guests : 0;
 
     const payload = {
         user_id: user.id,
@@ -79,6 +165,16 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
             const errorData = await response.json().catch(() => ({ message: "An unknown error occurred."}));
             throw new Error(errorData.message || 'Failed to submit booking request.');
         }
+        
+        const responseData = await response.json();
+
+        setConfirmationDetails({
+            tourName: selectedTour.tourPageTitle,
+            date: data.date,
+            guests: data.guests,
+            totalPrice: totalPrice,
+            bookingReference: `#STX${responseData.booking_id || new Date().getTime()}`
+        });
 
         setIsSubmitted(true);
         form.reset();
@@ -97,13 +193,13 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     }
   }
 
-  if (isSubmitted) {
-    return (
-        <div className="text-center rounded-lg border bg-card text-card-foreground shadow-sm p-12 h-full flex flex-col justify-center items-center">
-        <h3 className="text-2xl font-bold text-primary">Thank You!</h3>
-        <p className="text-muted-foreground mt-4">Your booking request has been sent successfully. We will contact you shortly.</p>
-        </div>
-    )
+  const handleCloseConfirmation = () => {
+    setIsSubmitted(false);
+    setConfirmationDetails(null);
+  };
+  
+  if (isSubmitted && confirmationDetails) {
+    return <BookingConfirmation details={confirmationDetails} onClose={handleCloseConfirmation} />
   }
   
   return (
