@@ -164,8 +164,8 @@ export default function AddContentPage() {
             redirect: 'manual', // Prevent fetch from following redirects which strips the body
         });
         if (response.type === 'opaqueredirect' || response.ok || response.status === 201) {
-          // A manual redirect response is opaque, but we can treat it as a success here.
-          // Or if the response is ok/created, it's a success.
+          // An opaqueredirect response means the server successfully processed the request
+          // and redirected. We can treat this as a success.
           return;
         }
 
