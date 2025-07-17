@@ -84,16 +84,10 @@ export const locationFormSchema = z.object({
 
 // Admin Schemas
 export const adminCreationSchema = z.object({
-  username: z.string().min(3, { message: 'Username must be at least 3 characters.' }),
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 });
-
-// This represents the admin user object stored in session/state
-export interface AdminUser {
-  id: number;
-  username: string;
-  created_at: string;
-}
 
 export const adminProfilePasswordSchema = z.object({
   currentPassword: z.string().min(1, { message: 'Current password is required.' }),

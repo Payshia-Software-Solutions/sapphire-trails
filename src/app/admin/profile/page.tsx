@@ -7,7 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { adminProfilePasswordSchema, type AdminUser } from '@/lib/schemas';
+import { adminProfilePasswordSchema } from '@/lib/schemas';
+import type { User as AuthUser } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -15,17 +16,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft } from 'lucide-react';
 
-const ADMIN_SESSION_KEY = 'adminUser';
+const USER_SESSION_KEY = 'sapphire-user';
 
 export default function AdminProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    const adminUserRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
-    if (adminUserRaw) {
-      setAdminUser(JSON.parse(adminUserRaw));
+    const userSessionRaw = sessionStorage.getItem(USER_SESSION_KEY);
+    if (userSessionRaw) {
+      const user: AuthUser = JSON.parse(userSessionRaw);
+      if (user && user.type === 'admin') {
+        setAdminUser(user);
+      } else {
+         router.push('/admin/login');
+      }
     } else {
       router.push('/admin/login');
     }
@@ -48,7 +54,7 @@ export default function AdminProfilePage() {
         description: 'Password change functionality needs to be connected to the server.',
     });
     // This would be a server call, e.g.
-    // fetch(`/api/admins/${adminUser.id}/change-password`, { ... })
+    // fetch(`/api/users/${adminUser.id}`, { method: 'PUT', body: ... })
   };
 
   if (!adminUser) {
@@ -77,9 +83,19 @@ export default function AdminProfilePage() {
           </CardHeader>
           <CardContent className="space-y-4">
               <div className="space-y-1">
-                  <Label>Username</Label>
-                  <p className="text-sm font-medium">{adminUser.username}</p>
+                  <Label>Name</Label>
+                  <p className="text-sm font-medium">{adminUser.name}</p>
               </div>
+              <div className="space-y-1">
+                  <Label>Email</Label>
+                  <p className="text-sm font-medium">{adminUser.email}</p>
+              </div>
+               {adminUser.phone && (
+                <div className="space-y-1">
+                  <Label>Phone</Label>
+                  <p className="text-sm font-medium">{adminUser.phone}</p>
+                </div>
+              )}
           </CardContent>
         </Card>
         

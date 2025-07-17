@@ -9,12 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import type { AdminUser } from '@/lib/schemas';
+import type { User as AuthUser } from '@/contexts/auth-context';
 
-const ADMIN_SESSION_KEY = 'adminUser';
+const USER_SESSION_KEY = 'sapphire-user';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
@@ -25,13 +25,13 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/admin/login/', {
+      const response = await fetch('http://localhost/sapphire_trails_server/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json().catch(() => null);
@@ -39,16 +39,18 @@ export default function LoginPage() {
       if (!response.ok) {
         throw new Error(data?.message || 'Login failed. Please check your credentials.');
       }
+      
+      const loggedInUser: AuthUser = data.user;
 
-      if (data.admin) {
-        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(data.admin));
+      if (loggedInUser && loggedInUser.type === 'admin') {
+        sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(loggedInUser));
         toast({
           title: 'Login Successful',
-          description: `Welcome back, ${data.admin.username}!`,
+          description: `Welcome back, ${loggedInUser.name}!`,
         });
         router.push('/admin/dashboard');
       } else {
-         throw new Error('Login successful, but no admin data was returned.');
+         throw new Error('Access Denied. Only admin users can log in here.');
       }
 
     } catch (error) {
@@ -75,14 +77,14 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleLogin} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
-                type="text"
-                placeholder="admin"
+                id="email"
+                type="email"
+                placeholder="admin@example.com"
                 required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="grid gap-2">

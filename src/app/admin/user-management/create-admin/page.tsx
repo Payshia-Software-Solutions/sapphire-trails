@@ -19,33 +19,35 @@ export default function CreateAdminPage() {
   const form = useForm<z.infer<typeof adminCreationSchema>>({
     resolver: zodResolver(adminCreationSchema),
     defaultValues: {
-      username: '',
+      name: '',
+      email: '',
       password: '',
     },
   });
 
   const onSubmit = async (data: z.infer<typeof adminCreationSchema>) => {
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/admins', {
+      const response = await fetch('http://localhost/sapphire_trails_server/users/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          username: data.username,
+          name: data.name,
+          email: data.email,
           password: data.password,
-          role: 'admin', // Always create as standard admin
+          type: 'admin', // Explicitly create user as 'admin' type
         }),
       });
 
       const responseData = await response.json().catch(() => null);
 
       if (!response.ok) {
-        let errorMessage = responseData?.message || 'An unexpected error occurred.';
+        const errorMessage = responseData?.error || 'An unexpected error occurred.';
         
-        if (response.status === 422 && errorMessage.toLowerCase().includes('username')) {
-             form.setError('username', { type: 'manual', message: 'This username already exists.' });
+        if (response.status === 409) { // Conflict for existing email
+             form.setError('email', { type: 'manual', message: 'This email already exists.' });
         } else {
              toast({
                 variant: 'destructive',
@@ -58,7 +60,7 @@ export default function CreateAdminPage() {
 
       toast({
         title: 'Admin Created',
-        description: `Admin user "${data.username}" has been successfully created.`,
+        description: `Admin user "${data.name}" has been successfully created.`,
       });
       router.push('/admin/user-management');
 
@@ -96,12 +98,25 @@ export default function CreateAdminPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="username"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., john.doe" {...field} />
+                      <Input placeholder="e.g., Jane Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="e.g., jane.doe@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
