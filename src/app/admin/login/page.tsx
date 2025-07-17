@@ -24,6 +24,25 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
+    // Hardcoded check for super admin credentials
+    if (email === 'admin@gmail.com' && password === 'admin123') {
+        const superAdminUser: AuthUser = {
+            id: 0, // A special ID for the hardcoded user
+            name: 'Super Admin',
+            email: 'admin@gmail.com',
+            type: 'admin',
+            created_at: new Date().toISOString(),
+        };
+        sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(superAdminUser));
+        toast({
+            title: 'Login Successful',
+            description: `Welcome back, Super Admin!`,
+        });
+        router.push('/admin/dashboard');
+        return;
+    }
+
+
     try {
       const response = await fetch('http://localhost/sapphire_trails_server/login/', {
         method: 'POST',
