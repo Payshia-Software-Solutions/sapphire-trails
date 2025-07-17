@@ -2,10 +2,12 @@
 class Booking
 {
     private $pdo;
+    private $userModel;
 
-    public function __construct($pdo)
+    public function __construct($pdo, $userModel)
     {
         $this->pdo = $pdo;
+        $this->userModel = $userModel; // Store the user model
     }
 
     public function getAll()
@@ -23,12 +25,33 @@ class Booking
 
     public function create($data)
     {
+        $userId = $data['user_id'] ?? null;
+
+        // If it's a guest booking (no user_id), create a user first
+        if (!$userId) {
+            // Check if user already exists by email
+            $existingUser = $this->userModel->getByEmail($data['email']);
+            if ($existingUser) {
+                $userId = $existingUser['id'];
+            } else {
+                // Create a new user with a random password
+                $userData = [
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'phone' => $data['phone'] ?? null,
+                    'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT),
+                    'type' => 'client'
+                ];
+                $userId = $this->userModel->create($userData);
+            }
+        }
+
         $stmt = $this->pdo->prepare("
             INSERT INTO bookings (user_id, tour_package_id, name, email, phone, guests, tour_date, message, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
-            $data['user_id'] ?? null,
+            $userId,
             $data['tour_package_id'],
             $data['name'],
             $data['email'],

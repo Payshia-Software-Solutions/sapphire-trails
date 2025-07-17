@@ -1,13 +1,16 @@
 <?php
 require_once './models/Booking.php';
+require_once './models/User.php'; // Include the User model
 
 class BookingController
 {
     private $model;
+    private $userModel;
 
     public function __construct($pdo)
     {
-        $this->model = new Booking($pdo);
+        $this->userModel = new User($pdo); // Instantiate the User model
+        $this->model = new Booking($pdo, $this->userModel); // Pass the User model to the Booking model
     }
 
     public function getAll()
@@ -44,6 +47,9 @@ class BookingController
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode(['error' => $e->getMessage()]);
         }
     }
 
