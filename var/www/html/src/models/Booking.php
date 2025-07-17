@@ -6,10 +6,10 @@ class Booking
     private $pdo;
     private $userModel;
 
-    public function __construct($pdo)
+    public function __construct($pdo, $userModel)
     {
         $this->pdo = $pdo;
-        $this->userModel = new User($pdo);
+        $this->userModel = $userModel;
     }
 
     // Get all bookings with joined user and tour info
