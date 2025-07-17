@@ -43,27 +43,16 @@ export default function TourDetailPage() {
     async function fetchTourPackage() {
         setIsLoading(true);
         try {
-            // Your backend controller seems to be fetching by ID, not slug.
-            // If it should be by slug, you may need to update the server endpoint.
-            // For now, assuming the slug is a numeric ID string for this endpoint.
-            const response = await fetch(`http://localhost/sapphire_trails_server/tours/${params.slug}`);
+            const response = await fetch(`http://localhost/sapphire_trails_server/tours/slug/${params.slug}/`);
             if (!response.ok) {
-                // Try fetching by slug if fetching by ID fails. This provides a fallback.
-                 const bySlugResponse = await fetch(`http://localhost/sapphire_trails_server/tours/slug/${params.slug}`);
-                 if (!bySlugResponse.ok) {
-                    setTourPackage(undefined);
-                    return;
-                 }
-                 const slugData = await bySlugResponse.json();
-                 setTourPackage(mapServerPackageToClient(slugData));
-
+                setTourPackage(undefined);
             } else {
                 const data = await response.json();
                 const mappedPackage = mapServerPackageToClient(data);
                 setTourPackage(mappedPackage);
             }
         } catch (error) {
-            console.error("Failed to fetch tour package", error);
+            console.error("Failed to fetch tour package by slug", error);
             setTourPackage(undefined);
         } finally {
             setIsLoading(false);
