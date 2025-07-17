@@ -12,6 +12,13 @@ export interface TourHighlight {
   description: string;
 }
 
+export interface TourInclusion {
+    icon: string;
+    title: string;
+    description: string;
+    sort_order: number;
+}
+
 export interface ItineraryItem {
   time: string;
   title: string;
@@ -19,7 +26,8 @@ export interface ItineraryItem {
 }
 
 export interface TourPackage {
-    id: number; // slug
+    id: number;
+    slug: string;
     
     // Homepage & Tour Grid
     imageUrl: string;
@@ -37,7 +45,7 @@ export interface TourPackage {
     heroImageHint: string;
     tourPageDescription: string;
     tourHighlights: TourHighlight[];
-    inclusions: string[];
+    inclusions: TourInclusion[];
     itinerary: ItineraryItem[];
     
     bookingLink: string;
@@ -58,6 +66,7 @@ const getFullImageUrl = (path: string | null | undefined) => {
 
 export const mapServerPackageToClient = (pkg: any): TourPackage => ({
   id: Number(pkg.id),
+  slug: pkg.slug,
   imageUrl: getFullImageUrl(pkg.homepage_image_url),
   imageAlt: pkg.homepage_image_alt || '',
   imageHint: pkg.homepage_image_hint || '',
@@ -71,7 +80,7 @@ export const mapServerPackageToClient = (pkg: any): TourPackage => ({
   heroImageHint: pkg.hero_image_hint || '',
   tourPageDescription: pkg.tour_page_description || '',
   tourHighlights: pkg.highlights || [],
-  inclusions: pkg.inclusions ? pkg.inclusions.map((i: { title: string }) => i.title) : [],
+  inclusions: pkg.inclusions || [],
   itinerary: pkg.itinerary || [],
   bookingLink: pkg.booking_link || '/booking',
 });
