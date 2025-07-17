@@ -22,14 +22,14 @@ export const navLinks: NavLink[] = [
   { href: '/admin/user-management', label: 'User Management', icon: Users },
 ];
 
-const USER_SESSION_KEY = 'sapphire-user';
+const ADMIN_SESSION_KEY = 'adminUser';
 
 export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = () => {
-    sessionStorage.removeItem(USER_SESSION_KEY);
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
     router.push('/admin/login');
   };
 

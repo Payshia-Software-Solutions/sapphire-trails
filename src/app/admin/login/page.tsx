@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import type { User as AuthUser } from '@/contexts/auth-context';
 
-const USER_SESSION_KEY = 'sapphire-user';
+const ADMIN_SESSION_KEY = 'adminUser';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -33,7 +33,7 @@ export default function LoginPage() {
             type: 'admin',
             created_at: new Date().toISOString(),
         };
-        sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(superAdminUser));
+        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(superAdminUser));
         toast({
             title: 'Login Successful',
             description: `Welcome back, Super Admin!`,
@@ -62,7 +62,7 @@ export default function LoginPage() {
       const loggedInUser: AuthUser = data.user;
 
       if (loggedInUser && loggedInUser.type === 'admin') {
-        sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(loggedInUser));
+        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(loggedInUser));
         toast({
           title: 'Login Successful',
           description: `Welcome back, ${loggedInUser.name}!`,
