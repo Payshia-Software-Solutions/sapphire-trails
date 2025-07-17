@@ -7,6 +7,7 @@ import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { getFullImageUrl } from '@/lib/utils';
 
 // A unique key used to store and retrieve CMS data from localStorage.
 const CMS_DATA_KEY = 'sapphire-cms-data';
@@ -111,7 +112,7 @@ export function DiscoverSection() {
                     {content.images.map((image, index) => (
                       <div className="flex-grow-0 flex-shrink-0 basis-4/5 min-w-0 pl-4" key={index}>
                         <Image
-                          src={image.src}
+                          src={getFullImageUrl(image.src)}
                           alt={image.alt}
                           data-ai-hint={image.hint}
                           width={600}
@@ -166,7 +167,7 @@ export function DiscoverSection() {
                             }}
                         >
                             <Image
-                                src={image.src}
+                                src={getFullImageUrl(image.src)}
                                 alt={image.alt}
                                 data-ai-hint={image.hint}
                                 width={600}

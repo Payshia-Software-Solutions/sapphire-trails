@@ -30,31 +30,36 @@ export const bookingFormSchema = z.object({
 
 const iconEnum = z.enum(['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer', 'MapPin', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble']);
 
+// Schema for both Add and Edit
 export const locationFormSchema = z.object({
   // Basic info
   title: z.string().min(3, "Title must be at least 3 characters."),
   slug: z.string().min(3, "Slug is required and must be unique (e.g., location-name).").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens."),
   cardDescription: z.string().min(10, "Card description must be at least 10 characters."),
-  cardImage: z.string().min(1, "An image is required."),
-  imageHint: z.string().min(2, "Image hint is required."),
   distance: z.string().min(2, "Distance is required."),
 
   // Hero
   subtitle: z.string().min(3, "Subtitle is required."),
-  heroImage: z.string().min(1, "An image is required."),
   heroImageHint: z.string().min(2, "Hero image hint is required."),
 
   // Intro
   introTitle: z.string().min(3, "Intro title is required."),
   introDescription: z.string().min(10, "Intro description is required."),
-  introImageUrl: z.string().min(1, "An image is required."),
   introImageHint: z.string().min(2, "Intro image hint is required."),
   
+  // These image fields are handled separately for add/edit but need to be in the schema for type consistency
+  cardImage: z.string().min(1, "A card image is required."),
+  heroImage: z.string().min(1, "A hero image is required."),
+  introImageUrl: z.string().min(1, "An intro image is required."),
+
   // Gallery (4 images)
   galleryImages: z.array(z.object({
     src: z.string().min(1, "An image is required."),
     alt: z.string().min(3, "Alt text is required."),
     hint: z.string().min(2, "Hint is required."),
+    // Added optional fields from server response to avoid type errors on `reset`
+    image_url: z.string().optional(),
+    alt_text: z.string().optional(),
   })).length(4, "Please provide exactly 4 gallery images."),
 
   // Highlights (4 items)

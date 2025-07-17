@@ -6,8 +6,8 @@ import { useState }from "react"
 import { useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Check, Clock, DollarSign, Gem, Instagram, Mail, X } from "lucide-react"
-import Link from "next/link"
+import { CalendarIcon, Check, Gem, Mail, X } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -34,11 +34,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { bookingFormSchema } from "@/lib/schemas"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { type TourPackage } from "@/lib/packages-data"
-import { useRouter } from "next/navigation"
 
 
 interface ConfirmationDetails {
@@ -46,7 +45,6 @@ interface ConfirmationDetails {
     date: Date;
     guests: number;
     totalPrice: number;
-    bookingReference: string;
 }
 
 function BookingConfirmation({ details, onClose }: { details: ConfirmationDetails, onClose: () => void }) {
@@ -96,13 +94,9 @@ function BookingConfirmation({ details, onClose }: { details: ConfirmationDetail
                          <span className="text-muted-foreground">Guests</span>
                          <span className="font-semibold text-white">{details.guests} Adults</span>
                      </div>
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                      <div className="flex justify-between items-center text-sm">
                          <span className="text-muted-foreground">Total Paid</span>
                          <span className="font-semibold text-primary">${details.totalPrice.toFixed(2)}</span>
-                     </div>
-                      <div className="flex justify-between items-center text-sm bg-black/20 p-3 rounded-md">
-                         <span className="text-muted-foreground">Booking Reference</span>
-                         <span className="font-mono text-primary">{details.bookingReference}</span>
                      </div>
                 </div>
 
@@ -128,11 +122,11 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
   const form = useFormContext<z.infer<typeof bookingFormSchema>>();
 
   async function onSubmit(data: z.infer<typeof bookingFormSchema>) {
-     if (!user || !selectedTour) {
+     if (!selectedTour) {
         toast({
             variant: "destructive",
             title: "Error",
-            description: "You must be logged in and have a tour selected.",
+            description: "You must have a tour selected.",
         });
         return;
     }
@@ -141,7 +135,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     const totalPrice = !isNaN(pricePerPerson) ? pricePerPerson * data.guests : 0;
 
     const payload = {
-        user_id: user.id,
+        user_id: user ? user.id : null,
         tour_package_id: data.tourType,
         name: data.name,
         email: data.email,
@@ -149,6 +143,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
         guests: Number(data.guests),
         tour_date: format(data.date, 'yyyy-MM-dd'),
         message: data.message,
+        type: user ? user.type : 'client',
     };
     
     try {
@@ -166,14 +161,11 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
             throw new Error(errorData.message || 'Failed to submit booking request.');
         }
         
-        const responseData = await response.json();
-
         setConfirmationDetails({
             tourName: selectedTour.tourPageTitle,
             date: data.date,
             guests: data.guests,
             totalPrice: totalPrice,
-            bookingReference: `#STX${responseData.booking_id || new Date().getTime()}`
         });
 
         setIsSubmitted(true);
@@ -206,15 +198,33 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     <form id="booking-form-main" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card>
             <CardHeader>
-                <CardTitle className="text-2xl text-primary">{selectedTour?.tourPageTitle || 'Select a Tour'}</CardTitle>
-                 {selectedTour && (
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
-                        <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> {selectedTour.duration}</span>
-                        <span className="flex items-center gap-1.5"><DollarSign className="h-4 w-4" /> {selectedTour.price} per person</span>
-                    </div>
-                 )}
+                <CardTitle>Select Tour &amp; Date</CardTitle>
+                <CardDescription>Choose your adventure and preferred date.</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <FormField
+                    control={form.control}
+                    name="tourType"
+                    render={({ field }) => (
+                    <FormItem className="lg:col-span-3">
+                        <FormLabel>Tour Package</FormLabel>
+                        <Select onValueChange={(val) => field.onChange(parseInt(val))} value={String(field.value)}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a tour package..." />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {tourPackages.map(pkg => (
+                                <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+
                 <FormField
                     control={form.control}
                     name="date"
@@ -379,3 +389,5 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     </form>
   )
 }
+
+    

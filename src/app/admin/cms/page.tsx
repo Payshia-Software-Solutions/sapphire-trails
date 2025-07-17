@@ -19,10 +19,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { LoaderCircle } from 'lucide-react';
+import { getFullImageUrl } from '@/lib/utils';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
-// These defaults are extracted from the current hardcoded content
 const defaultValues = {
   hero: {
     headline: "Sri Lanka's Only Luxury Gem Experience",
@@ -50,6 +51,12 @@ type CmsFormValues = z.infer<typeof cmsFormSchema>;
 
 export default function CmsPage() {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+  const [discoverImageFiles, setDiscoverImageFiles] = useState<(File | null)[]>([null, null, null]);
+  
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
   const [discoverImagePreviews, setDiscoverImagePreviews] = useState<(string | null)[]>([null, null, null]);
 
@@ -59,59 +66,132 @@ export default function CmsPage() {
   });
 
   useEffect(() => {
-    try {
-      const storedDataRaw = localStorage.getItem(CMS_DATA_KEY);
-      if (storedDataRaw) {
-        const storedData = JSON.parse(storedDataRaw);
-        form.reset(storedData);
-        if (storedData.hero?.imageUrl) {
-          setHeroImagePreview(storedData.hero.imageUrl);
+    async function fetchCmsData() {
+        setIsLoading(true);
+        try {
+            const response = await fetch('http://localhost/sapphire_trails_server/content/homepage');
+            if (response.ok) {
+                const data = await response.json();
+                const processedData = {
+                    ...data,
+                    hero: { ...data.hero, imageUrl: getFullImageUrl(data.hero.imageUrl) },
+                    discover: { ...data.discover, images: data.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
+                }
+                form.reset(processedData);
+                setHeroImagePreview(processedData.hero.imageUrl);
+                setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
+            } else {
+                 setHeroImagePreview(defaultValues.hero.imageUrl);
+                 setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
+                 toast({ variant: 'destructive', title: 'Could not load data', description: 'Using default content. Please save to create the record.'});
+            }
+        } catch (error) {
+            console.error("Failed to fetch CMS data", error);
+            setHeroImagePreview(defaultValues.hero.imageUrl);
+            setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not connect to server.' });
+        } finally {
+            setIsLoading(false);
         }
-        if (storedData.discover?.images) {
-          setDiscoverImagePreviews(storedData.discover.images.map((img: { src: string }) => img.src || null));
-        }
-      } else {
-        // Set initial previews from defaults if no stored data
-        setHeroImagePreview(defaultValues.hero.imageUrl);
-        setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
-      }
-    } catch (error) {
-      console.error("Failed to load CMS data from localStorage", error);
     }
-  }, [form]);
+    fetchCmsData();
+  }, [form, toast]);
+
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    onChange: (value: string) => void,
-    setPreview: (value: string | null) => void
+    setFile: (file: File | null) => void,
+    setPreview: (value: string | null) => void,
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const dataUrl = reader.result as string;
-        onChange(dataUrl);
-        setPreview(dataUrl);
-      };
-      reader.readAsDataURL(file);
+      setFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+  
+  const handleDiscoverFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        const newFiles = [...discoverImageFiles];
+        newFiles[index] = file;
+        setDiscoverImageFiles(newFiles);
+
+        const newPreviews = [...discoverImagePreviews];
+        newPreviews[index] = URL.createObjectURL(file);
+        setDiscoverImagePreviews(newPreviews);
     }
   };
 
-  function onSubmit(data: CmsFormValues) {
-    try {
-      localStorage.setItem(CMS_DATA_KEY, JSON.stringify(data));
-      toast({
-        title: 'Content Saved!',
-        description: 'Your homepage and footer content has been updated successfully.',
-      });
-    } catch (error) {
-      console.error('Failed to save to localStorage', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'There was a problem saving your content.',
-      });
+
+  async function onSubmit(data: CmsFormValues) {
+    setIsSubmitting(true);
+    const formData = new FormData();
+
+    // Append JSON data first
+    formData.append('content', JSON.stringify(data));
+
+    // Append files with structured keys
+    if (heroImageFile) {
+      formData.append('hero.imageUrl', heroImageFile);
     }
+    discoverImageFiles.forEach((file, index) => {
+      if (file) {
+        formData.append(`discover.images.${index}.src`, file);
+      }
+    });
+
+    try {
+        const response = await fetch('http://localhost/sapphire_trails_server/content/homepage', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || 'Failed to save content.');
+        }
+
+        toast({
+            title: 'Content Saved!',
+            description: 'Your homepage and footer content has been updated successfully.',
+        });
+        
+        const serverResponse = await response.json();
+        if (serverResponse.data) {
+             const serverData = serverResponse.data;
+             const processedData = {
+                ...serverData,
+                hero: { ...serverData.hero, imageUrl: getFullImageUrl(serverData.hero.imageUrl) },
+                discover: { ...serverData.discover, images: serverData.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
+            }
+            form.reset(processedData);
+            setHeroImagePreview(processedData.hero.imageUrl);
+            setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
+            
+            // Save the updated data with full URLs to localStorage so the homepage updates
+            localStorage.setItem(CMS_DATA_KEY, JSON.stringify(processedData));
+        }
+
+    } catch (error) {
+        console.error('Failed to save content', error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: error instanceof Error ? error.message : 'Could not save your content.',
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
+  }
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-4">Loading CMS data...</p>
+      </div>
+    );
   }
 
   return (
@@ -126,7 +206,6 @@ export default function CmsPage() {
           
           <Accordion type="single" collapsible className="w-full space-y-6" defaultValue="hero">
             
-            {/* Hero Section Accordion */}
             <AccordionItem value="hero" className="border-none">
               <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                 <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">
@@ -139,14 +218,11 @@ export default function CmsPage() {
                    <div className="space-y-4 border-t pt-6">
                       <FormField control={form.control} name="hero.headline" render={({ field }) => (<FormItem><FormLabel>Headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                       <FormField control={form.control} name="hero.subheadline" render={({ field }) => (<FormItem><FormLabel>Sub-headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name="hero.imageUrl" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Background Image</FormLabel>
-                            <FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, field.onChange, setHeroImagePreview)} className="text-sm" /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <FormItem>
+                        <FormLabel>Background Image</FormLabel>
+                        <FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setHeroImageFile, setHeroImagePreview)} className="text-sm" /></FormControl>
+                        <FormMessage />
+                      </FormItem>
                       {heroImagePreview && (
                         <div className="mt-2">
                           <FormLabel>Preview</FormLabel>
@@ -162,7 +238,6 @@ export default function CmsPage() {
               </div>
             </AccordionItem>
             
-            {/* Discover Section Accordion */}
             <AccordionItem value="discover" className="border-none">
               <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                 <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">
@@ -176,24 +251,13 @@ export default function CmsPage() {
                     <FormField control={form.control} name="discover.description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator />
                     <p className="font-medium">Section Images (3)</p>
-                    {defaultValues.discover.images.map((_, index) => (
+                    {form.getValues('discover.images').map((_, index) => (
                       <div key={index} className="space-y-4 p-4 border rounded-md">
                         <p className="font-medium text-sm text-muted-foreground">Image {index + 1}</p>
-                        <FormField control={form.control} name={`discover.images.${index}.src`} render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Upload Image</FormLabel>
-                              <FormControl>
-                                <Input type="file" accept="image/*"
-                                  onChange={(e) => handleFileChange(e, field.onChange, (preview) => {
-                                    const newPreviews = [...discoverImagePreviews];
-                                    newPreviews[index] = preview;
-                                    setDiscoverImagePreviews(newPreviews);
-                                  })} className="text-sm" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        <FormItem>
+                          <FormLabel>Upload Image</FormLabel>
+                          <FormControl><Input type="file" accept="image/*" onChange={(e) => handleDiscoverFileChange(e, index)} className="text-sm" /></FormControl>
+                        </FormItem>
                         {discoverImagePreviews[index] && (
                           <div className="mt-2">
                               <FormLabel>Preview</FormLabel>
@@ -211,7 +275,6 @@ export default function CmsPage() {
               </div>
             </AccordionItem>
 
-            {/* Footer Section Accordion */}
             <AccordionItem value="footer" className="border-none">
               <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                 <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">
@@ -232,7 +295,10 @@ export default function CmsPage() {
           </Accordion>
 
           <div className="mt-8 pt-5 flex justify-end">
-            <Button type="submit" size="lg">Save All Changes</Button>
+            <Button type="submit" size="lg" disabled={isSubmitting}>
+              {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting ? "Saving..." : "Save All Changes"}
+            </Button>
           </div>
         </form>
       </Form>

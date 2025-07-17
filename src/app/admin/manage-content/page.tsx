@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, AlertTriangle, Plus, LoaderCircle } from 'lucide-react';
+import { Trash2, AlertTriangle, Plus, LoaderCircle, Pencil } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -103,7 +103,7 @@ export default function ManageContentPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Content</h1>
-            <p className="text-muted-foreground">Add or delete custom locations for the &quot;Explore Ratnapura&quot; page.</p>
+            <p className="text-muted-foreground">Add, edit, or delete custom locations for the &quot;Explore Ratnapura&quot; page.</p>
         </div>
         <Button asChild>
           <Link href="/admin/add-content">
@@ -142,28 +142,36 @@ export default function ManageContentPage() {
                     <div className="text-muted-foreground break-all">Slug: {location.slug}</div>
                   </div>
                   
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                       <Button variant="destructive" size="icon">
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete {location.title}</span>
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription className="break-words">
-                          This action cannot be undone. This will permanently delete the content for <span className="font-semibold text-foreground">&quot;{location.title}&quot;</span>.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(location.slug)}>
-                          Yes, delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <div className="flex items-center gap-2">
+                    <Button asChild variant="outline" size="icon">
+                      <Link href={`/admin/edit-content/${location.slug}`}>
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Edit {location.title}</span>
+                      </Link>
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                         <Button variant="destructive" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Delete {location.title}</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription className="break-words">
+                            This action cannot be undone. This will permanently delete the content for <span className="font-semibold text-foreground">&quot;{location.title}&quot;</span>.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(location.slug)}>
+                            Yes, delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                   
                 </div>
               ))}
