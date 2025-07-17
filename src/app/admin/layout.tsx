@@ -23,7 +23,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
-const ADMIN_SESSION_KEY = 'sapphire-user'; // Use the same key as client auth
+const ADMIN_SESSION_KEY = 'adminUser'; // Corrected key
 
 export default function AdminLayout({
   children,
