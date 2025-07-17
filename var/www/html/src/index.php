@@ -24,12 +24,21 @@ $route_path = str_replace($base_path, '', $request_uri);
 $router = new Router();
 
 // Modular route inclusion
-$router->group('/users', require_once './routes/user.php');
+$router->group('/users', require_once './routes/userRoutes.php');
 $router->group('/bookings', require_once './routes/booking.php');
-$router->group('/login', require_once './routes/login.php');
+// The login route is handled separately below
 $router->group('/tours', require_once './routes/tourpackage.php');
 $router->group('/locations', require_once './routes/location.php');
 $router->group('/location-gallery', require_once './routes/locationgallery.php');
+$router->group('/content', require_once './routes/siteContentRoutes.php');
+
+
+// Special case for login which is not under a group
+$router->post('/login', function() {
+    require_once './controllers/UserController.php';
+    $controller = new UserController($GLOBALS['pdo']);
+    $controller->login();
+});
 
 
 $router->dispatch($route_path);
