@@ -8,7 +8,7 @@ import { BookingForm } from '@/components/sections/booking-form';
 import { Suspense, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, HelpCircle } from 'lucide-react';
+import { ArrowLeft, HelpCircle, Clock, DollarSign, Gem, Shield, Users } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +18,48 @@ import { bookingFormSchema } from '@/lib/schemas';
 import type { z } from 'zod';
 import { format } from "date-fns"
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import Image from 'next/image';
+
+function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
+    if (!selectedTour) return null;
+
+    return (
+        <Card className="overflow-hidden relative shadow-lg">
+            <Image
+                src="https://content-provider.payshia.com/sapphire-trail/images/img4.webp"
+                alt={selectedTour.tourPageTitle}
+                width={800}
+                height={400}
+                className="w-full object-cover aspect-[2/1]"
+                data-ai-hint="tourists gems"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+            <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
+                <div>
+                    <h2 className="text-3xl font-bold font-headline">{selectedTour.tourPageTitle}</h2>
+                    <div className="flex items-center gap-4 text-sm mt-2 opacity-90">
+                        <div className="flex items-center gap-1.5"><Clock size={16} /> {selectedTour.duration}</div>
+                        <div className="flex items-center gap-1.5"><DollarSign size={16} /> {selectedTour.price} {selectedTour.priceSuffix}</div>
+                    </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                    <div className="flex flex-col items-center">
+                        <div className="p-3 rounded-full bg-white/10 backdrop-blur-sm mb-1"><Gem size={20} /></div>
+                        <p className="text-xs font-semibold">Gem Discovery</p>
+                    </div>
+                     <div className="flex flex-col items-center">
+                        <div className="p-3 rounded-full bg-white/10 backdrop-blur-sm mb-1"><Users size={20} /></div>
+                        <p className="text-xs font-semibold">Expert Guides</p>
+                    </div>
+                     <div className="flex flex-col items-center">
+                        <div className="p-3 rounded-full bg-white/10 backdrop-blur-sm mb-1"><Shield size={20} /></div>
+                        <p className="text-xs font-semibold">Underground Adventure</p>
+                    </div>
+                </div>
+            </div>
+        </Card>
+    );
+}
 
 
 function BookingSummary({
@@ -188,7 +230,8 @@ function BookingContent() {
         </div>
         <FormProvider {...methods}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-8">
+               <TourDisplayCard selectedTour={selectedTour} />
               <BookingForm tourPackages={tourPackages} selectedTour={selectedTour} />
             </div>
             <div>
