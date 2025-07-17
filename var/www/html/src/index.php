@@ -1,0 +1,37 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+require_once './config/database.php';
+require_once './lib/router.php';
+
+$database = new Database();
+$GLOBALS['pdo'] = $database->getConnection();
+
+$request_uri = $_SERVER['REQUEST_URI'];
+$base_path = '/sapphire_trails_server';
+$route_path = str_replace($base_path, '', $request_uri);
+
+$router = new Router();
+
+// Modular route inclusion
+$router->group('/users', require_once './routes/user.php');
+$router->group('/bookings', require_once './routes/booking.php');
+$router->group('/login', require_once './routes/login.php');
+$router->group('/tours', require_once './routes/tourpackage.php');
+$router->group('/locations', require_once './routes/location.php');
+$router->group('/location-gallery', require_once './routes/locationgallery.php');
+
+
+$router->dispatch($route_path);
+
+?>
