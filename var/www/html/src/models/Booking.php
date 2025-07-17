@@ -126,5 +126,6 @@ class Booking
     {
         $stmt = $this->pdo->prepare("DELETE FROM bookings WHERE id = ?");
         $stmt->execute([$id]);
+        return $stmt->rowCount();
     }
 }

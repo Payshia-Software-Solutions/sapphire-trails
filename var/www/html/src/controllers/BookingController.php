@@ -22,7 +22,7 @@ class BookingController
     {
         $booking = $this->model->getById($id);
         if ($booking) {
-            echo json_encode($booking);
+            echo json_encode(['booking' => $booking]);
         } else {
             http_response_code(404);
             echo json_encode(['error' => 'Booking not found']);
