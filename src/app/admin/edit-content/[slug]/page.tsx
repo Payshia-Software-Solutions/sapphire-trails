@@ -23,6 +23,7 @@ import { mapServerLocationToClient, type Location } from '@/lib/locations-data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const steps = [
   { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'cardDescription', 'distance'] as const },
@@ -104,7 +105,7 @@ export default function EditContentPage() {
 
     async function fetchLocation() {
         try {
-            const response = await fetch(`http://localhost/sapphire_trails_server/locations/${slug}`);
+            const response = await fetch(`${API_BASE_URL}/locations/${slug}`);
             if (!response.ok) throw new Error('Failed to fetch location data');
             
             const serverData = await response.json();
@@ -172,7 +173,7 @@ export default function EditContentPage() {
     });
     console.log("Form data to be sent for update:", data);
     // In a real implementation, you would send this data to a PUT/PATCH endpoint
-    // e.g., await fetch(`http://localhost/sapphire_trails_server/locations/${slug}`, { method: 'PUT', body: JSON.stringify(data) });
+    // e.g., await fetch(`${API_BASE_URL}/locations/${slug}`, { method: 'PUT', body: JSON.stringify(data) });
     setIsSubmitting(false);
   }
 

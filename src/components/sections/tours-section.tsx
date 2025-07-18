@@ -11,6 +11,8 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 const TourCard = ({ tour }: { tour: TourPackage }) => (
   <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
     <div className="relative h-64 w-full">
@@ -42,7 +44,7 @@ export function ToursSection() {
   useEffect(() => {
     async function fetchTours() {
       try {
-        const response = await fetch('http://localhost/sapphire_trails_server/tours');
+        const response = await fetch(`${API_BASE_URL}/tours`);
         if (!response.ok) {
             console.error("Failed to fetch tour packages.");
             return;

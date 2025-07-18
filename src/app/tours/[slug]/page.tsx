@@ -13,6 +13,7 @@ import { TourDetailInclusions } from '@/components/sections/tour-detail-inclusio
 import { BookingSection } from '@/components/sections/booking-section';
 import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 function LoadingSkeleton() {
     return (
@@ -43,7 +44,7 @@ export default function TourDetailPage() {
     async function fetchTourPackage() {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost/sapphire_trails_server/tours/slug/${params.slug}/`);
+            const response = await fetch(`${API_BASE_URL}/tours/slug/${params.slug}/`);
             if (!response.ok) {
                 setTourPackage(undefined);
             } else {

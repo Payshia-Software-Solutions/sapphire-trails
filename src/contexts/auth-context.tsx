@@ -16,6 +16,7 @@ export interface User {
 }
 
 const USER_SESSION_KEY = 'sapphire-user';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 interface AuthContextType {
   user: User | null;
@@ -51,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, pass: string): Promise<{ success: boolean; user: User | null }> => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/login/', {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = async (name: string, email: string, phone: string | undefined, pass: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/users/', {
+      const response = await fetch(`${API_BASE_URL}/users/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

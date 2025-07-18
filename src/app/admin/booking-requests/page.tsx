@@ -33,6 +33,7 @@ import { mapServerPackageToClient as mapServerPackage, type TourPackage } from '
 
 const ADMIN_SESSION_KEY = 'adminUser';
 const ITEMS_PER_PAGE = 4;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const mapServerBookingToClient = (serverBooking: any): Booking => ({
   id: Number(serverBooking.id),
@@ -60,7 +61,7 @@ export default function BookingRequestsPage() {
   useEffect(() => {
     async function fetchTourPackages() {
       try {
-        const response = await fetch('http://localhost/sapphire_trails_server/tours');
+        const response = await fetch(`${API_BASE_URL}/tours`);
         if (response.ok) {
             const serverData = await response.json();
             if(Array.isArray(serverData)) {
@@ -84,7 +85,7 @@ export default function BookingRequestsPage() {
   useEffect(() => {
     async function fetchBookings() {
       try {
-        const response = await fetch('http://localhost/sapphire_trails_server/bookings');
+        const response = await fetch(`${API_BASE_URL}/bookings`);
         if (!response.ok) {
           throw new Error('Failed to fetch bookings.');
         }

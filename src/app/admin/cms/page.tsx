@@ -23,6 +23,7 @@ import { LoaderCircle } from 'lucide-react';
 import { getFullImageUrl } from '@/lib/utils';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const defaultValues = {
   hero: {
@@ -69,7 +70,7 @@ export default function CmsPage() {
     async function fetchCmsData() {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost/sapphire_trails_server/content/homepage');
+            const response = await fetch(`${API_BASE_URL}/content/homepage`);
             if (response.ok) {
                 const data = await response.json();
                 const processedData = {
@@ -142,7 +143,7 @@ export default function CmsPage() {
     });
 
     try {
-        const response = await fetch('http://localhost/sapphire_trails_server/content/homepage', {
+        const response = await fetch(`${API_BASE_URL}/content/homepage`, {
             method: 'POST',
             body: formData,
         });

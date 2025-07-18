@@ -20,6 +20,8 @@ import { format } from "date-fns"
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import Image from 'next/image';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
     if (!selectedTour) return null;
 
@@ -147,7 +149,7 @@ function BookingContent() {
   useEffect(() => {
     async function fetchTourPackages() {
         try {
-            const response = await fetch('http://localhost/sapphire_trails_server/tours');
+            const response = await fetch(`${API_BASE_URL}/tours`);
             if (response.ok) {
                 const serverData = await response.json();
                 if(Array.isArray(serverData)) {

@@ -38,6 +38,8 @@ const toKebabCase = (str: string) =>
     ?.map(x => x.toLowerCase())
     .join('-') || '';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function AddContentPage() {
   const { toast } = useToast();
   const router = useRouter();
@@ -158,7 +160,7 @@ export default function AddContentPage() {
     galleryFormData.append('sort_order', String(index + 1));
     
     try {
-        await fetch('http://localhost/sapphire_trails_server/location-gallery/', {
+        await fetch(`${API_BASE_URL}/location-gallery/`, {
             method: 'POST',
             body: galleryFormData,
             mode: 'no-cors', // Important for handling cross-origin form data uploads that redirect
@@ -218,7 +220,7 @@ export default function AddContentPage() {
     locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
 
     try {
-      const locationResponse = await fetch('http://localhost/sapphire_trails_server/locations/', {
+      const locationResponse = await fetch(`${API_BASE_URL}/locations/`, {
         method: 'POST',
         body: locationFormData,
       });
@@ -527,5 +529,3 @@ export default function AddContentPage() {
     </div>
   );
 }
-
-    
