@@ -18,19 +18,18 @@ $database = new Database();
 $GLOBALS['pdo'] = $database->getConnection();
 
 $request_uri = $_SERVER['REQUEST_URI'];
-$base_path = '/sapphire_trails_server';
+$base_path = '/sapphire_trails_server'; // Adjust if your app is in a subdirectory on the server
 $route_path = str_replace($base_path, '', $request_uri);
+$route_path = parse_url($route_path, PHP_URL_PATH);
 
 $router = new Router();
 
 // Modular route inclusion
 $router->group('/users', require_once './routes/userRoutes.php');
-$router->group('/bookings', require_once './routes/booking.php');
-// The login route is handled separately below
-$router->group('/tours', require_once './routes/tourpackage.php');
-$router->group('/locations', require_once './routes/location.php');
-$router->group('/location-gallery', require_once './routes/locationgallery.php');
-$router->group('/content', require_once './routes/siteContentRoutes.php');
+$router->group('/bookings', require_once './routes/bookingRoutes.php');
+$router->group('/tours', require_once './routes/tourpackageRoutes.php');
+$router->group('/locations', require_once './routes/locationRoutes.php');
+$router->group('/content', require_once './routes/sitecontentRoutes.php');
 
 
 // Special case for login which is not under a group
