@@ -1,10 +1,11 @@
+
 "use client";
 
 import Image from 'next/image';
 import { useState, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
-import useEmblaCarousel from 'embla-carousel-react';
+import useEmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType } from 'embla-carousel-react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { getFullImageUrl } from '@/lib/utils';
@@ -34,24 +35,75 @@ const defaultContent = {
   ]
 };
 
-// The DiscoverSection component displays a text description and an interactive image carousel.
-// It features a "cover-flow" effect on desktop and a standard swiper on mobile.
-export function DiscoverSection() {
-  // `content` state holds the description and images, initialized with default values.
-  const [content, setContent] = useState(defaultContent);
-  // `activeIndex` tracks the currently centered image in the carousel.
-  const [activeIndex, setActiveIndex] = useState(0);
-  // `emblaRef` and `emblaApi` are from the useEmblaCarousel hook for managing the mobile swiper.
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
+const TWEEN_FACTOR = 1.2;
 
-  // This effect runs once on the client to load dynamic content from localStorage.
+const setTweenFactor = (emblaApi: EmblaCarouselType) => {
+  const engine = emblaApi.internalEngine();
+  engine.scrollBody.useMass(1 / TWEEN_FACTOR);
+  engine.scrollBody.useSpeed(TWEEN_FACTOR);
+  engine.dragHandler.useSpeed(TWEEN_FACTOR);
+};
+
+const useTweenScale = (emblaApi: EmblaCarouselType | undefined) => {
+  const [tweenValues, setTweenValues] = useState<number[]>([]);
+
+  const onScroll = useCallback(() => {
+    if (!emblaApi) return;
+    const engine = emblaApi.internalEngine();
+    const scrollProgress = emblaApi.scrollProgress();
+
+    const styles = emblaApi.scrollSnapList().map((scrollSnap, index) => {
+      if (!emblaApi.slidesInView().includes(index)) return 0;
+      let diffToTarget = scrollSnap - scrollProgress;
+
+      if (engine.options.loop) {
+        engine.slideLooper.loopPoints.forEach((loopItem) => {
+          const target = loopItem.target();
+          if (index === loopItem.index && target !== 0) {
+            const sign = Math.sign(target);
+            if (sign === -1) diffToTarget = scrollSnap - (1 + scrollProgress);
+            if (sign === 1) diffToTarget = scrollSnap + (1 - scrollProgress);
+          }
+        });
+      }
+      return 1 - Math.abs(diffToTarget * 0.5);
+    });
+    setTweenValues(styles);
+  }, [emblaApi, setTweenValues]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    setTweenFactor(emblaApi);
+    onScroll();
+    emblaApi.on('scroll', onScroll);
+    emblaApi.on('reInit', onScroll);
+    
+    return () => {
+        emblaApi.off('scroll', onScroll);
+    }
+  }, [emblaApi, onScroll]);
+
+  return tweenValues;
+};
+
+
+// The DiscoverSection component displays a text description and an interactive image carousel.
+export function DiscoverSection() {
+  const [content, setContent] = useState(defaultContent);
+  const [activeIndex, setActiveIndex] = useState(0);
+  
+  const OPTIONS: EmblaOptionsType = { loop: true, align: 'center', skipSnaps: false };
+  const [emblaRef, emblaApi] = useEmblaCarousel(OPTIONS);
+
+  const tweenValues = useTweenScale(emblaApi);
+
   useEffect(() => {
     try {
       const storedDataRaw = localStorage.getItem(CMS_DATA_KEY);
       if (storedDataRaw) {
         const storedData = JSON.parse(storedDataRaw);
         if (storedData.discover) {
-          // Ensure there are exactly 3 images, otherwise fall back to defaults.
           const images = storedData.discover.images?.length === 3 ? storedData.discover.images : defaultContent.images;
           setContent({ ...defaultContent, ...storedData.discover, images });
         }
@@ -59,9 +111,8 @@ export function DiscoverSection() {
     } catch (error) {
       console.error("Failed to load discover section CMS data", error);
     }
-  }, []); // The empty dependency array ensures this runs only once after the component mounts.
+  }, []);
 
-  // Callback functions to control the mobile carousel.
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev()
   }, [emblaApi]);
@@ -70,7 +121,6 @@ export function DiscoverSection() {
     if (emblaApi) emblaApi.scrollNext()
   }, [emblaApi]);
   
-  // This effect syncs the `activeIndex` state with the Embla carousel's state when the user swipes.
   useEffect(() => {
     if (!emblaApi) return;
     const onSelect = () => {
@@ -80,9 +130,7 @@ export function DiscoverSection() {
     return () => { emblaApi.off('select', onSelect) };
   }, [emblaApi]);
 
-  // This function handles clicks on the dots, updating both the activeIndex and the carousel's position.
   const handleDotClick = (index: number) => {
-    setActiveIndex(index);
     if (emblaApi) {
         emblaApi.scrollTo(index);
     }
@@ -104,79 +152,31 @@ export function DiscoverSection() {
         <ScrollAnimate 
             className="mt-16 w-full overflow-hidden"
         >
-            {/* Mobile View: A standard swipeable carousel using the Embla library. */}
-            <div className="md:hidden">
-              <div className="relative">
+            <div className="relative">
                 <div className="overflow-hidden" ref={emblaRef}>
-                  <div className="flex -ml-4">
-                    {content.images.map((image, index) => (
-                      <div className="flex-grow-0 flex-shrink-0 basis-4/5 min-w-0 pl-4" key={index}>
-                        <Image
-                          src={getFullImageUrl(image.src)}
-                          alt={image.alt}
-                          data-ai-hint={image.hint}
-                          width={600}
-                          height={400}
-                          className="rounded-2xl object-cover w-full h-60"
-                        />
-                      </div>
-                    ))}
-                  </div>
+                    <div className="flex -ml-4">
+                        {content.images.map((image, index) => (
+                            <div className="flex-grow-0 flex-shrink-0 basis-full md:basis-1/2 lg:basis-1/3 min-w-0 pl-4" key={index}>
+                                <div className="h-full w-full transition-transform duration-200 ease-out" style={{transform: `scale(${tweenValues[index] || 0})`}}>
+                                    <Image
+                                    src={getFullImageUrl(image.src)}
+                                    alt={image.alt}
+                                    data-ai-hint={image.hint}
+                                    width={600}
+                                    height={400}
+                                    className="rounded-2xl object-cover w-full h-60 md:h-80 shadow-2xl"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <Button onClick={scrollPrev} className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
-                  <ArrowLeft className="h-4 w-4" />
+                <Button onClick={scrollPrev} className="absolute left-0 md:left-8 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
+                    <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <Button onClick={scrollNext} className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
-                  <ArrowRight className="h-4 w-4" />
+                <Button onClick={scrollNext} className="absolute right-0 md:right-8 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
+                    <ArrowRight className="h-5 w-5" />
                 </Button>
-              </div>
-            </div>
-
-            {/* 
-              Desktop View: A "cover-flow" style carousel.
-              This is achieved by mapping over the images and calculating CSS transforms based on their
-              position relative to the `activeIndex`. The image at the activeIndex is centered and scaled up,
-              while others are moved to the side, scaled down, and slightly faded.
-            */}
-            <div className="relative h-[400px] w-full max-w-4xl mx-auto hidden md:block">
-                {content.images.map((image, index) => {
-                    // Calculate the offset of the current image from the active one.
-                    const rawOffset = index - activeIndex;
-                    // This logic handles wrapping around (e.g., from the last image to the first).
-                    const directedOffset = Math.abs(rawOffset) > content.images.length / 2 
-                        ? rawOffset - Math.sign(rawOffset) * content.images.length 
-                        : rawOffset;
-
-                    const isCenter = directedOffset === 0;
-                    // CSS properties are calculated based on the offset.
-                    const translateX = directedOffset * 50; // Move non-active images to the side.
-                    const scale = isCenter ? 1 : 0.8; // Scale down non-active images.
-                    const zIndex = content.images.length - Math.abs(directedOffset); // Ensure the center image is on top.
-                    const opacity = Math.abs(directedOffset) > 1 ? 0 : 1; // Fade out images that are far from the center.
-                    const filter = isCenter ? 'none' : 'brightness(0.7)'; // Dim non-active images.
-                    
-                    return (
-                        <div
-                            key={index}
-                            className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center transition-all duration-1000 ease-out"
-                            style={{
-                                transform: `translateX(${translateX}%) scale(${scale})`,
-                                zIndex: zIndex,
-                                opacity: opacity,
-                                filter: filter,
-                            }}
-                        >
-                            <Image
-                                src={getFullImageUrl(image.src)}
-                                alt={image.alt}
-                                data-ai-hint={image.hint}
-                                width={600}
-                                height={400}
-                                className="rounded-2xl object-cover shadow-2xl"
-                            />
-                        </div>
-                    );
-                })}
             </div>
         </ScrollAnimate>
 
