@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 require_once './config/database.php';
-require_once './lib/router.php'; // Assuming this router library exists
+require_once './lib/router.php'; 
 
 // Establish database connection and make it globally available
 $database = new Database();
@@ -26,28 +26,19 @@ $request_uri = $_SERVER['REQUEST_URI'];
 $base_path = '/sapphire_trails_server';
 $route_path = str_replace($base_path, '', $request_uri);
 $route_path = parse_url($route_path, PHP_URL_PATH); // Strip query parameters
+$route_path = rtrim($route_path, '/'); // Remove trailing slash
+if (empty($route_path)) {
+    $route_path = '/';
+}
+
 
 $router = new Router();
 
 // Modular route inclusion
-// Each file should return a function that accepts the router instance
-$userRoutes = require_once './routes/userRoutes.php';
-$tourRoutes = require_once './routes/tourpackageRoutes.php';
-$bookingRoutes = require_once './routes/bookingRoutes.php';
-$locationRoutes = require_once './routes/locationRoutes.php';
-$locationGalleryRoutes = require_once './routes/locationgalleryimageRoutes.php';
-$adminRoutes = require_once './routes/adminRoutes.php';
-$siteContentRoutes = require_once './routes/sitecontentRoutes.php';
-
-
-// Register all route groups with the router
-$router->group('/users', $userRoutes);
-$router->group('/tours', $tourRoutes);
-$router->group('/bookings', $bookingRoutes);
-$router->group('/locations', $locationRoutes);
-$router->group('/location-gallery', $locationGalleryRoutes);
-$router->group('/admin', $adminRoutes);
-$router->group('/content', $siteContentRoutes);
+$router->group('/users', require_once './routes/userRoutes.php');
+$router->group('/tours', require_once './routes/tourpackageRoutes.php');
+$router->group('/bookings', require_once './routes/bookingRoutes.php');
+$router->group('/content', require_once './routes/sitecontentRoutes.php');
 
 // Special case for login which is not under a group
 $router->post('/login', function() {
@@ -58,7 +49,7 @@ $router->post('/login', function() {
 
 // Home route
 $router->get('/', function() {
-    // Serve the index.html file
+    header('Content-Type: text/html');
     if (file_exists('./views/index.html')) {
         readfile('./views/index.html');
     } else {
