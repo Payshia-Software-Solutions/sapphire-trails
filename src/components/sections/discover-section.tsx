@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import useEmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType } from 'embla-carousel-react';
 import { getFullImageUrl } from '@/lib/utils';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -34,9 +36,11 @@ const defaultContent = {
 export function DiscoverSection() {
   const [content, setContent] = useState(defaultContent);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' });
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  
   useEffect(() => {
     try {
       const storedDataRaw = localStorage.getItem(CMS_DATA_KEY);
@@ -52,31 +56,18 @@ export function DiscoverSection() {
     }
   }, []);
 
-  const onScroll = useCallback((emblaApi: EmblaCarouselType) => {
-    setScrollProgress(emblaApi.scrollProgress());
+  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
   }, []);
 
   useEffect(() => {
-    if (!emblaApi) return;
-    
-    const onSelect = (emblaApi: EmblaCarouselType) => {
-      setActiveIndex(emblaApi.selectedScrollSnap());
-    };
+      if (!emblaApi) return;
+      onSelect(emblaApi);
+      emblaApi.on('select', onSelect);
+      emblaApi.on('reInit', onSelect);
+  }, [emblaApi, onSelect]);
 
-    emblaApi.on('scroll', onScroll);
-    emblaApi.on('select', onSelect);
-    emblaApi.on('reInit', onSelect);
-
-    onSelect(emblaApi);
-    return () => {
-      emblaApi.off('scroll', onScroll);
-      emblaApi.off('select', onSelect);
-    };
-  }, [emblaApi, onScroll]);
-
-  const handleDotClick = (index: number) => {
-    emblaApi?.scrollTo(index);
-  }
 
   return (
     <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
@@ -91,57 +82,47 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-16 w-full max-w-5xl"
+            className="mt-16 w-full max-w-5xl relative"
         >
             <div className="overflow-hidden" ref={emblaRef}>
                 <div className="flex -ml-4" style={{ backfaceVisibility: 'hidden' }}>
-                    {content.images.map((image, index) => {
-                         const slideProgress = emblaApi ? emblaApi.scrollProgress() * emblaApi.scrollSnapList().length : 0;
-                         const slideDistance = (slideProgress - index) * 100;
-
-                         const scale = 1 - Math.abs(slideDistance / 200);
-                         const opacity = 1 - Math.abs(slideDistance / 100);
-                         const zIndex = 10 - Math.abs(index - activeIndex);
-
-                        return (
-                           <div className="flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0 pl-4" key={index} style={{ position: 'relative' }}>
-                                <div
-                                    className="relative h-full w-full transition-transform duration-200 ease-out"
-                                     style={{
-                                         transform: `scale(${Math.max(0.8, scale)})`,
-                                         opacity: Math.max(0, opacity),
-                                         zIndex: zIndex,
-                                     }}
-                                >
-                                    <Image
-                                        src={getFullImageUrl(image.src)}
-                                        alt={image.alt}
-                                        data-ai-hint={image.hint}
-                                        width={600}
-                                        height={400}
-                                        className="rounded-2xl object-cover w-full h-60 md:h-80 shadow-2xl"
-                                    />
-                                </div>
+                    {content.images.map((image, index) => (
+                        <div
+                            className="flex-[0_0_90%] sm:flex-[0_0_70%] md:flex-[0_0_60%] lg:flex-[0_0_50%] min-w-0 pl-4"
+                            key={index}
+                        >
+                            <div
+                                className={cn(
+                                    "relative aspect-[4/3] w-full transition-transform duration-500 ease-out",
+                                    index === selectedIndex ? 'z-10' : 'z-0'
+                                )}
+                                style={{
+                                    transform: `scale(${index === selectedIndex ? 1 : 0.8})`,
+                                }}
+                            >
+                                <Image
+                                    src={getFullImageUrl(image.src)}
+                                    alt={image.alt}
+                                    data-ai-hint={image.hint}
+                                    fill
+                                    className={cn(
+                                        "rounded-2xl object-cover w-full h-full shadow-2xl transition-all duration-500 ease-out",
+                                        index !== selectedIndex && 'brightness-50'
+                                    )}
+                                />
                             </div>
-                        )
-                    })}
+                        </div>
+                    ))}
                 </div>
             </div>
+             <Button onClick={scrollPrev} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full h-10 w-10 p-0 z-20">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <Button onClick={scrollNext} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 rounded-full h-10 w-10 p-0 z-20">
+              <ArrowRight className="h-5 w-5" />
+            </Button>
         </ScrollAnimate>
 
-        <div className="mt-12 flex justify-center gap-3">
-          {content.images.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => handleDotClick(index)}
-              className={cn(
-                'h-2.5 w-2.5 rounded-full transition-colors',
-                activeIndex === index ? 'bg-primary' : 'bg-muted/50'
-              )}
-              aria-label={`Go to image ${index + 1}`}
-            />
-          ))}
-        </div>
       </div>
     </section>
   );
