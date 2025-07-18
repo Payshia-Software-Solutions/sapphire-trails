@@ -24,6 +24,8 @@ import { CalendarIcon, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function EditBookingPage() {
   const router = useRouter();
   const params = useParams();
@@ -37,7 +39,7 @@ export default function EditBookingPage() {
   useEffect(() => {
     async function fetchTourPackages() {
         try {
-            const response = await fetch('http://localhost/sapphire_trails_server/tours');
+            const response = await fetch(`${API_BASE_URL}/tours`);
             if (response.ok) {
                 const serverData = await response.json();
                 if(Array.isArray(serverData)) {
@@ -70,7 +72,7 @@ export default function EditBookingPage() {
     async function fetchBooking() {
       setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${id}`);
+        const response = await fetch(`${API_BASE_URL}/bookings/${id}`);
         if (!response.ok) {
           throw new Error('Booking not found');
         }
@@ -129,7 +131,7 @@ export default function EditBookingPage() {
             user_id: bookingToUpdate.user_id,
         };
         
-        const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingToUpdate.id}/`, {
+        const response = await fetch(`${API_BASE_URL}/bookings/${bookingToUpdate.id}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -153,7 +155,7 @@ export default function EditBookingPage() {
 
   const updateStatusOnServer = async (bookingId: number, status: 'accepted' | 'rejected') => {
     try {
-      const response = await fetch(`http://localhost/sapphire_trails_server/bookings/${bookingId}/status/`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}/status/`, {
         method: 'PUT', // Changed from PATCH to PUT
         headers: {
           'Content-Type': 'application/json',

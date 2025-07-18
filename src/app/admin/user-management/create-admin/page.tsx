@@ -12,6 +12,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function CreateAdminPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -27,7 +29,7 @@ export default function CreateAdminPage() {
 
   const onSubmit = async (data: z.infer<typeof adminCreationSchema>) => {
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/users/', {
+      const response = await fetch(`${API_BASE_URL}/users/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -14,6 +14,7 @@ import { LocationNearby } from '@/components/sections/location-nearby';
 import { LocationCta } from '@/components/sections/location-cta';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 function LoadingSkeleton() {
     return (
@@ -48,7 +49,7 @@ export default function LocationPage() {
     async function fetchLocation() {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost/sapphire_trails_server/locations/${params.slug}`);
+            const response = await fetch(`${API_BASE_URL}/locations/${params.slug}`);
             if (response.ok) {
                 const data = await response.json();
                 const mappedLocation = mapServerLocationToClient(data);

@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { locationsData as staticLocationsData, mapServerLocationToClient } from "@/lib/locations-data";
 import type { Location } from '@/lib/locations-data';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 const LocationCard = ({ location }: { location: Location }) => (
   <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
     <Card className="bg-transparent border-0 shadow-none flex flex-col h-full">
@@ -36,7 +38,7 @@ export function ExploreRatnapuraContent() {
   useEffect(() => {
     async function fetchLocations() {
       try {
-        const response = await fetch('http://localhost/sapphire_trails_server/locations');
+        const response = await fetch(`${API_BASE_URL}/locations`);
         if (!response.ok) {
           console.error('Failed to fetch from server, using static data.');
           return;

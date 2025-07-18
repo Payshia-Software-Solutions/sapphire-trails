@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { User as AuthUser } from '@/contexts/auth-context';
 
 const ADMIN_SESSION_KEY = 'adminUser';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -44,7 +45,7 @@ export default function LoginPage() {
 
 
     try {
-      const response = await fetch('http://localhost/sapphire_trails_server/login/', {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

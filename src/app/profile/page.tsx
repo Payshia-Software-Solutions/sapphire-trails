@@ -16,6 +16,8 @@ import { Badge } from '@/components/ui/badge';
 import { format, parseISO } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function ProfilePage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
@@ -34,7 +36,7 @@ export default function ProfilePage() {
         try {
             // In a real-world scenario, you'd have an endpoint like /api/bookings?userId=...
             // For now, we fetch all and filter on the client.
-            const response = await fetch('http://localhost/sapphire_trails_server/bookings');
+            const response = await fetch(`${API_BASE_URL}/bookings`);
             if (!response.ok) {
                 throw new Error("Could not fetch bookings.");
             }

@@ -21,6 +21,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { mapServerPackageToClient } from '@/lib/packages-data';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 // A leaner type for what this page needs to display
 interface ManagedPackage {
     id: number;
@@ -37,7 +39,7 @@ export default function ManagePackagesPage() {
     async function fetchPackages() {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost/sapphire_trails_server/tours');
+            const response = await fetch(`${API_BASE_URL}/tours`);
             if (!response.ok) {
                 throw new Error('Failed to fetch packages from the server.');
             }

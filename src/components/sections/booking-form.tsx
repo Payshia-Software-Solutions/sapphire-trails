@@ -39,6 +39,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { type TourPackage } from "@/lib/packages-data"
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 interface ConfirmationDetails {
     tourName: string;
@@ -147,7 +148,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     };
     
     try {
-        const response = await fetch('http://localhost/sapphire_trails_server/bookings', {
+        const response = await fetch(`${API_BASE_URL}/bookings`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -389,5 +390,3 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     </form>
   )
 }
-
-    

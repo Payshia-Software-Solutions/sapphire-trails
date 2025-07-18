@@ -28,6 +28,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function UserManagementPage() {
   const [adminUsers, setAdminUsers] = useState<AuthUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,7 +39,7 @@ export default function UserManagementPage() {
     async function fetchAdminUsers() {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost/sapphire_trails_server/users/type/admin/');
+            const response = await fetch(`${API_BASE_URL}/users/type/admin/`);
             if (!response.ok) {
                 throw new Error('Failed to fetch admin users from the server.');
             }
@@ -61,7 +63,7 @@ export default function UserManagementPage() {
   
   const handleDelete = async (userId: number, userName: string) => {
     try {
-        const response = await fetch(`http://localhost/sapphire_trails_server/users/${userId}/`, {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}/`, {
             method: 'DELETE',
         });
         if (!response.ok) {

@@ -21,6 +21,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { mapServerLocationToClient } from '@/lib/locations-data';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 // Simplified type for this page's needs
 interface ManagedLocation {
     slug: string;
@@ -37,7 +39,7 @@ export default function ManageContentPage() {
     async function fetchLocations() {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost/sapphire_trails_server/locations');
+        const response = await fetch(`${API_BASE_URL}/locations`);
         if (!response.ok) {
           throw new Error('Failed to fetch locations from the server.');
         }
@@ -68,7 +70,7 @@ export default function ManageContentPage() {
 
   const handleDelete = async (slug: string) => {
     try {
-        const response = await fetch(`http://localhost/sapphire_trails_server/locations/${slug}`, {
+        const response = await fetch(`${API_BASE_URL}/locations/${slug}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
