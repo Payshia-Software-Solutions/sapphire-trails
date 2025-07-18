@@ -40,7 +40,7 @@ export function DiscoverSection() {
   const [content, setContent] = useState(defaultContent);
   const [activeIndex, setActiveIndex] = useState(0);
   
-  const OPTIONS: EmblaOptionsType = { loop: true, align: 'center', skipSnaps: false };
+  const OPTIONS: EmblaOptionsType = { loop: true };
   const [emblaRef, emblaApi] = useEmblaCarousel(OPTIONS);
 
   useEffect(() => {
@@ -68,12 +68,13 @@ export function DiscoverSection() {
   
   useEffect(() => {
     if (!emblaApi) return;
-    const onSelect = () => {
+    const onSelect = (emblaApi: EmblaCarouselType) => {
       setActiveIndex(emblaApi.selectedScrollSnap());
     };
     emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
     // Ensure the initial active index is set correctly
-    onSelect();
+    onSelect(emblaApi);
     return () => { emblaApi.off('select', onSelect) };
   }, [emblaApi]);
 
@@ -82,7 +83,6 @@ export function DiscoverSection() {
         emblaApi.scrollTo(index);
     }
   }
-
 
   return (
     <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
@@ -111,26 +111,24 @@ export function DiscoverSection() {
                                     data-ai-hint={image.hint}
                                     width={600}
                                     height={400}
-                                    className={cn(
-                                        "rounded-2xl object-cover w-full h-60 md:h-80 shadow-2xl transition-opacity duration-300",
-                                        activeIndex === index ? "opacity-100" : "opacity-50"
-                                    )}
+                                    className="rounded-2xl object-cover w-full h-60 md:h-80 shadow-2xl"
                                     />
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
-                <Button onClick={scrollPrev} className="absolute left-0 md:left-8 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <Button onClick={scrollNext} className="absolute right-0 md:right-8 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
-                    <ArrowRight className="h-5 w-5" />
-                </Button>
+                <div className="hidden md:block">
+                  <Button onClick={scrollPrev} className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
+                      <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                  <Button onClick={scrollNext} className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
+                      <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </div>
             </div>
         </ScrollAnimate>
 
-        {/* The navigation dots for the carousel. The active dot is highlighted. */}
         <div className="mt-12 flex justify-center gap-3">
           {content.images.map((_, index) => (
             <button
