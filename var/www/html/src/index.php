@@ -32,12 +32,7 @@ $router->group('/locations', require_once './routes/locationRoutes.php');
 $router->group('/content', require_once './routes/sitecontentRoutes.php');
 
 
-// Special case for login which is not under a group
-$router->post('/login', function() {
-    require_once './controllers/UserController.php';
-    $controller = new UserController($GLOBALS['pdo']);
-    $controller->login();
-});
+// The login route is now handled within userRoutes.php, so the special case is removed.
 
 
 $router->dispatch($route_path);
