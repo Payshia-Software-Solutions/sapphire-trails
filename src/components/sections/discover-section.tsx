@@ -6,14 +6,10 @@ import { useState, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import useEmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType } from 'embla-carousel-react';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { getFullImageUrl } from '@/lib/utils';
 
-// A unique key used to store and retrieve CMS data from localStorage.
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
-// Default content for this section, used as a fallback if no data is in localStorage.
 const defaultContent = {
   description: "Embark on an exclusive journey through the heart of Sri Lanka's gem country. The Sapphire Trails offers an immersive experience into Ratnapura's rich heritage, from dazzling gem mines and lush tea estates to exquisite dining and vibrant local culture. Let us guide you on a luxurious adventure that unveils the true treasures of the island.",
   images: [
@@ -35,13 +31,11 @@ const defaultContent = {
   ]
 };
 
-// The DiscoverSection component displays a text description and an interactive image carousel.
 export function DiscoverSection() {
   const [content, setContent] = useState(defaultContent);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' });
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
-  
-  const OPTIONS: EmblaOptionsType = { loop: true };
-  const [emblaRef, emblaApi] = useEmblaCarousel(OPTIONS);
 
   useEffect(() => {
     try {
@@ -58,30 +52,30 @@ export function DiscoverSection() {
     }
   }, []);
 
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev()
-  }, [emblaApi]);
+  const onScroll = useCallback((emblaApi: EmblaCarouselType) => {
+    setScrollProgress(emblaApi.scrollProgress());
+  }, []);
 
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext()
-  }, [emblaApi]);
-  
   useEffect(() => {
     if (!emblaApi) return;
+    
     const onSelect = (emblaApi: EmblaCarouselType) => {
       setActiveIndex(emblaApi.selectedScrollSnap());
     };
+
+    emblaApi.on('scroll', onScroll);
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
-    // Ensure the initial active index is set correctly
+
     onSelect(emblaApi);
-    return () => { emblaApi.off('select', onSelect) };
-  }, [emblaApi]);
+    return () => {
+      emblaApi.off('scroll', onScroll);
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi, onScroll]);
 
   const handleDotClick = (index: number) => {
-    if (emblaApi) {
-        emblaApi.scrollTo(index);
-    }
+    emblaApi?.scrollTo(index);
   }
 
   return (
@@ -97,34 +91,40 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-16 w-full"
+            className="mt-16 w-full max-w-5xl"
         >
-            <div className="relative">
-                <div className="overflow-hidden" ref={emblaRef}>
-                    <div className="flex -ml-4">
-                        {content.images.map((image, index) => (
-                            <div className="flex-grow-0 flex-shrink-0 basis-full md:basis-1/2 lg:basis-1/3 min-w-0 pl-4" key={index}>
-                                <div className="h-full w-full">
+            <div className="overflow-hidden" ref={emblaRef}>
+                <div className="flex -ml-4" style={{ backfaceVisibility: 'hidden' }}>
+                    {content.images.map((image, index) => {
+                         const slideProgress = emblaApi ? emblaApi.scrollProgress() * emblaApi.scrollSnapList().length : 0;
+                         const slideDistance = (slideProgress - index) * 100;
+
+                         const scale = 1 - Math.abs(slideDistance / 200);
+                         const opacity = 1 - Math.abs(slideDistance / 100);
+                         const zIndex = 10 - Math.abs(index - activeIndex);
+
+                        return (
+                           <div className="flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0 pl-4" key={index} style={{ position: 'relative' }}>
+                                <div
+                                    className="relative h-full w-full transition-transform duration-200 ease-out"
+                                     style={{
+                                         transform: `scale(${Math.max(0.8, scale)})`,
+                                         opacity: Math.max(0, opacity),
+                                         zIndex: zIndex,
+                                     }}
+                                >
                                     <Image
-                                    src={getFullImageUrl(image.src)}
-                                    alt={image.alt}
-                                    data-ai-hint={image.hint}
-                                    width={600}
-                                    height={400}
-                                    className="rounded-2xl object-cover w-full h-60 md:h-80 shadow-2xl"
+                                        src={getFullImageUrl(image.src)}
+                                        alt={image.alt}
+                                        data-ai-hint={image.hint}
+                                        width={600}
+                                        height={400}
+                                        className="rounded-2xl object-cover w-full h-60 md:h-80 shadow-2xl"
                                     />
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                </div>
-                <div className="hidden md:block">
-                  <Button onClick={scrollPrev} className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
-                      <ArrowLeft className="h-5 w-5" />
-                  </Button>
-                  <Button onClick={scrollNext} className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
-                      <ArrowRight className="h-5 w-5" />
-                  </Button>
+                        )
+                    })}
                 </div>
             </div>
         </ScrollAnimate>
