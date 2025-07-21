@@ -1,10 +1,11 @@
+
 'use client';
 
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, User, LogOut } from 'lucide-react';
+import { Menu, User, LogOut, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
@@ -41,6 +42,11 @@ export function Header() {
     router.push('/profile');
     setIsMenuOpen(false);
   }
+  
+  const handleAdminClick = () => {
+    router.push('/admin/dashboard');
+    setIsMenuOpen(false);
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background border-t border-white/10">
@@ -66,11 +72,20 @@ export function Header() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push('/profile')}>
-                    Profile
+                  {user.type === 'admin' && (
+                    <DropdownMenuItem onClick={() => router.push('/admin/dashboard')} className="cursor-pointer">
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Admin Panel</span>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => router.push('/profile')} className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => logout()}>
-                    Log out
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => logout()} className="cursor-pointer">
+                     <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -118,6 +133,12 @@ export function Header() {
               <div className="mt-auto pt-6 border-t border-border">
                 {user ? (
                   <div className="flex flex-col items-center gap-4">
+                     {user.type === 'admin' && (
+                        <Button variant="ghost" className="w-full" onClick={handleAdminClick}>
+                           <Shield className="mr-2 h-5 w-5" />
+                           Admin Panel
+                        </Button>
+                     )}
                      <Button variant="ghost" className="w-full" onClick={handleProfileClick}>
                         <User className="mr-2 h-5 w-5" />
                         Profile
