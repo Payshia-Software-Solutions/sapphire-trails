@@ -68,29 +68,33 @@ const getFullImageUrl = (path: string | null | undefined) => {
 
 
 export const mapServerLocationToClient = (loc: any): Location => ({
-  slug: loc.slug,
-  title: loc.title,
-  cardDescription: loc.card_description,
+  slug: loc.slug || '',
+  title: loc.title || '',
+  cardDescription: loc.card_description || '',
   cardImage: getFullImageUrl(loc.card_image_url),
-  imageHint: loc.card_image_hint,
-  distance: loc.distance,
-  subtitle: loc.subtitle,
+  imageHint: loc.card_image_hint || '',
+  distance: loc.distance || '',
+  subtitle: loc.subtitle || '',
   heroImage: getFullImageUrl(loc.hero_image_url),
-  heroImageHint: loc.hero_image_hint,
+  heroImageHint: loc.hero_image_hint || '',
   intro: {
-    title: loc.intro_title,
-    description: loc.intro_description,
+    title: loc.intro_title || '',
+    description: loc.intro_description || '',
     imageUrl: getFullImageUrl(loc.intro_image_url),
-    imageHint: loc.intro_image_hint,
+    imageHint: loc.intro_image_hint || '',
   },
-  galleryImages: (loc.gallery_images || []).map((img: any) => ({ ...img, src: getFullImageUrl(img.image_url), alt: img.alt_text })),
+  galleryImages: (loc.gallery_images || []).map((img: any) => ({ 
+      src: getFullImageUrl(img.image_url), 
+      alt: img.alt_text || '', 
+      hint: img.hint || '' 
+  })),
   highlights: loc.highlights || [],
   visitorInfo: loc.visitor_info || [],
   map: {
-    embedUrl: loc.map_embed_url,
+    embedUrl: loc.map_embed_url || '',
     nearbyAttractions: loc.nearby_attractions || [],
   },
-  category: loc.category,
+  category: loc.category || 'nature',
 });
 
 
