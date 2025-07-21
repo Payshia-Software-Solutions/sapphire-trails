@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ThemeToggle } from '@/components/shared/theme-toggle';
 import type { User as AuthUser } from '@/contexts/auth-context';
 import {
   DropdownMenu,
@@ -20,8 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useTheme } from 'next-themes';
-
 
 const ADMIN_SESSION_KEY = 'adminUser';
 
@@ -32,16 +29,10 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
   const isMounted = useRef(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-
-  useEffect(() => {
-    setTheme('light');
-  }, [setTheme]);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -76,7 +67,6 @@ export default function AdminLayout({
   
 
   const handleLogout = () => {
-    setTheme('dark');
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
     sessionStorage.removeItem('sapphire-user'); // Also remove main user key
     setAdminUser(null);
@@ -127,12 +117,9 @@ export default function AdminLayout({
                             ))}
                         </nav>
                         <div className="mt-auto flex flex-col gap-2">
-                            <div className="flex items-center justify-between">
-                                <ThemeToggle />
-                                {adminUser && (
-                                    <span className='text-sm text-muted-foreground'>Hi, {adminUser.name}</span>
-                                )}
-                            </div>
+                            {adminUser && (
+                                <span className='text-sm text-muted-foreground text-center'>Hi, {adminUser.name}</span>
+                            )}
                             <Button asChild variant="outline" onClick={() => setIsSheetOpen(false)}>
                                 <Link href="/admin/profile">
                                     <User className="mr-2 h-4 w-4" /> Profile
@@ -149,7 +136,6 @@ export default function AdminLayout({
                     {/* Can add search or breadcrumbs here */}
                 </div>
                  <div className="flex items-center gap-4">
-                  <ThemeToggle />
                    {adminUser && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LayoutGrid, CalendarCheck, FileText, Settings, Package, Users, LogOut, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTheme } from 'next-themes';
 
 export interface NavLink {
   href: string;
@@ -28,10 +27,8 @@ const ADMIN_SESSION_KEY = 'adminUser';
 export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { setTheme } = useTheme();
 
   const handleLogout = () => {
-    setTheme('dark');
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
     sessionStorage.removeItem('sapphire-user'); // Also remove main user key
     router.push('/auth');
