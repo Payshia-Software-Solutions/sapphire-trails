@@ -5,7 +5,7 @@ import { PreloaderProvider } from '@/components/shared/preloader-provider';
 import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { AuthProvider } from '@/contexts/auth-context';
-import { ThemeProvider } from '@/components/shared/theme-provider';
+import { WhatsAppButton } from '@/components/shared/whatsapp-button';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -43,25 +43,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={cn(
         "font-body antialiased bg-background text-foreground",
         poppins.variable,
         montserrat.variable,
         cinzel.variable
         )}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={false}
-          >
             <AuthProvider>
               <PreloaderProvider>
                 {children}
               </PreloaderProvider>
             </AuthProvider>
+            <WhatsAppButton />
             <Toaster />
-          </ThemeProvider>
       </body>
     </html>
   );

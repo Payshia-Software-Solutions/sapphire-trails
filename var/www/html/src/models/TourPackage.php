@@ -89,6 +89,59 @@ class TourPackage
 
         return $packageId;
     }
+    
+    public function update($id, $data) {
+        $stmt = $this->pdo->prepare("
+            UPDATE tour_packages SET
+                homepage_title = :homepage_title,
+                homepage_description = :homepage_description,
+                homepage_image_url = :homepage_image_url,
+                homepage_image_alt = :homepage_image_alt,
+                homepage_image_hint = :homepage_image_hint,
+                tour_page_title = :tour_page_title,
+                duration = :duration,
+                price = :price,
+                price_suffix = :price_suffix,
+                hero_image_url = :hero_image_url,
+                hero_image_hint = :hero_image_hint,
+                tour_page_description = :tour_page_description,
+                booking_link = :booking_link,
+                updated_at = NOW()
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            ':id' => $id,
+            ':homepage_title' => $data['homepage_title'],
+            ':homepage_description' => $data['homepage_description'],
+            ':homepage_image_url' => $data['homepage_image_url'],
+            ':homepage_image_alt' => $data['homepage_image_alt'],
+            ':homepage_image_hint' => $data['homepage_image_hint'],
+            ':tour_page_title' => $data['tour_page_title'],
+            ':duration' => $data['duration'],
+            ':price' => $data['price'],
+            ':price_suffix' => $data['price_suffix'],
+            ':hero_image_url' => $data['hero_image_url'],
+            ':hero_image_hint' => $data['hero_image_hint'],
+            ':tour_page_description' => $data['tour_page_description'],
+            ':booking_link' => $data['booking_link']
+        ]);
+
+        // Clear and re-insert related data
+        $this->pdo->prepare("DELETE FROM tour_highlights WHERE tour_package_id = ?")->execute([$id]);
+        $this->pdo->prepare("DELETE FROM tour_inclusions WHERE tour_package_id = ?")->execute([$id]);
+        $this->pdo->prepare("DELETE FROM tour_itinerary WHERE tour_package_id = ?")->execute([$id]);
+
+        $this->insertHighlights($id, $data['highlights']);
+        $this->insertInclusions($id, $data['inclusions']);
+        foreach ($data['itinerary'] as $item) {
+            $item['tour_package_id'] = $id;
+            $this->tourItinerary->create($item);
+        }
+
+        return $stmt->rowCount();
+    }
+
 
     public function updateImagePaths($id, $homepageImageUrl, $heroImageUrl)
     {
