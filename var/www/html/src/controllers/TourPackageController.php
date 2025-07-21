@@ -131,6 +131,7 @@ class TourPackageController
             $data['itinerary'] = json_decode($data['itinerary'], true);
 
             try {
+                // Set placeholder URLs to create the record first and get an ID
                 $data['homepage_image_url'] = 'default_home.jpg';
                 $data['hero_image_url'] = 'default_hero.jpg';
 
@@ -172,14 +173,10 @@ class TourPackageController
                     }
                 }
 
+                // Now update the record with the real image URLs
                 $this->model->updateImagePaths($packageId, $data['homepage_image_url'], $data['hero_image_url']);
 
                 $fullPackage = $this->model->getById($packageId);
-
-                // Add slug URL to response
-                $slug = $fullPackage['slug'];
-                $baseUrl = 'https://yourdomain.com/tours/'; // Replace with actual domain
-                $fullPackage['slug_url'] = $baseUrl . $slug;
 
                 http_response_code(201);
                 echo json_encode([
@@ -195,6 +192,69 @@ class TourPackageController
             echo json_encode(['error' => 'Only multipart/form-data is supported']);
         }
     }
+    
+    public function update($id)
+    {
+        // Use POST for updates due to PHP limitations with PUT and multipart/form-data
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['_method']) || $_POST['_method'] !== 'PUT') {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed or missing _method=PUT field.']);
+            return;
+        }
+
+        $data = $_POST;
+        $homepageFile = $_FILES['homepage_image'] ?? null;
+        $heroFile = $_FILES['hero_image'] ?? null;
+
+        // Fetch existing package to get current image URLs
+        $existingPackage = $this->model->getById($id);
+        if (!$existingPackage) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Tour package not found.']);
+            return;
+        }
+
+        $data['homepage_image_url'] = $existingPackage['homepage_image_url'];
+        $data['hero_image_url'] = $existingPackage['hero_image_url'];
+
+        if ($homepageFile && $homepageFile['error'] === UPLOAD_ERR_OK) {
+            $fileName = $this->generateUniqueFileName($homepageFile['name']);
+            $localPath = './uploads/' . $fileName;
+            $ftpPath = '/tour-images/' . $id . '/' . $fileName;
+            if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
+            move_uploaded_file($homepageFile['tmp_name'], $localPath);
+            if ($this->uploadToFTP($localPath, $ftpPath)) {
+                $data['homepage_image_url'] = $ftpPath;
+                unlink($localPath);
+            }
+        }
+
+        if ($heroFile && $heroFile['error'] === UPLOAD_ERR_OK) {
+            $fileName = $this->generateUniqueFileName($heroFile['name']);
+            $localPath = './uploads/' . $fileName;
+            $ftpPath = '/tour-images/' . $id . '/' . $fileName;
+            if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
+            move_uploaded_file($heroFile['tmp_name'], $localPath);
+            if ($this->uploadToFTP($localPath, $ftpPath)) {
+                $data['hero_image_url'] = $ftpPath;
+                unlink($localPath);
+            }
+        }
+        
+        $data['highlights'] = json_decode($data['highlights'], true);
+        $data['inclusions'] = json_decode($data['inclusions'], true);
+        $data['itinerary'] = json_decode($data['itinerary'], true);
+        
+        try {
+            $this->model->update($id, $data);
+            $updatedPackage = $this->model->getById($id);
+            echo json_encode($updatedPackage);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+        }
+    }
+
 
     public function delete($id)
     {

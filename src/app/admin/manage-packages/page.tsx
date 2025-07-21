@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, AlertTriangle, Plus, Package as PackageIcon, LoaderCircle } from 'lucide-react';
+import { Trash2, AlertTriangle, Plus, Package as PackageIcon, LoaderCircle, Pencil } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,13 +69,27 @@ export default function ManagePackagesPage() {
     fetchPackages();
   }, [toast]);
 
-  // Note: Delete functionality would require a DELETE endpoint on the server.
-  const handleDelete = (id: number) => {
-    // This would be a fetch('.../tours/{id}', { method: 'DELETE' }) call
-    toast({
-        title: 'Delete Not Implemented',
-        description: 'Please implement a DELETE endpoint on the server.',
-    });
+  const handleDelete = async (id: number, title: string) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/tours/${id}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Failed to delete package.');
+        }
+        setPackages(prev => prev.filter(p => p.id !== id));
+        toast({
+            title: 'Package Deleted',
+            description: `Package "${title}" has been deleted.`,
+        });
+    } catch(e) {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: e instanceof Error ? e.message : 'Could not delete package.',
+        });
+    }
   };
 
   return (
@@ -83,7 +97,7 @@ export default function ManagePackagesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Tour Packages</h1>
-            <p className="text-muted-foreground">Add or delete custom tour packages for your website.</p>
+            <p className="text-muted-foreground">Add, edit, or delete custom tour packages for your website.</p>
         </div>
         <Button asChild>
           <Link href="/admin/manage-packages/add">
@@ -122,28 +136,36 @@ export default function ManagePackagesPage() {
                     <div className="text-muted-foreground break-all">ID: {pkg.id}</div>
                   </div>
                   
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                       <Button variant="destructive" size="icon">
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete {pkg.homepageTitle}</span>
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription className="break-words">
-                          This action cannot be undone. This will permanently delete the package for <span className="font-semibold text-foreground">&quot;{pkg.homepageTitle}&quot;</span>.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(pkg.id)}>
-                          Yes, delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <div className="flex items-center gap-2">
+                    <Button asChild variant="outline" size="icon">
+                      <Link href={`/admin/manage-packages/edit/${pkg.id}`}>
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Edit {pkg.homepageTitle}</span>
+                      </Link>
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                         <Button variant="destructive" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Delete {pkg.homepageTitle}</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription className="break-words">
+                            This action cannot be undone. This will permanently delete the package for <span className="font-semibold text-foreground">&quot;{pkg.homepageTitle}&quot;</span>.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(pkg.id, pkg.homepageTitle)}>
+                            Yes, delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                   
                 </div>
               ))}
