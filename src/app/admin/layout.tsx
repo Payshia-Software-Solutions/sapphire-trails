@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useTheme } from 'next-themes';
 
 
 const ADMIN_SESSION_KEY = 'adminUser';
@@ -32,6 +33,7 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
   const isMounted = useRef(false);
@@ -71,6 +73,7 @@ export default function AdminLayout({
   
 
   const handleLogout = () => {
+    setTheme('dark');
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
     sessionStorage.removeItem('sapphire-user'); // Also remove main user key
     setAdminUser(null);
