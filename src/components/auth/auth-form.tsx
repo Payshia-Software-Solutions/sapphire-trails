@@ -61,8 +61,9 @@ export function AuthForm() {
   
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    setLoggedInUser(null);
+    setLoggedInUser(null); // Clear logged-in state when switching tabs
     loginForm.reset();
+    signupForm.reset();
   }
 
   return (
