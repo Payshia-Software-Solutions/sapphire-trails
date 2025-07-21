@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ThemeProvider } from '@/components/shared/theme-provider';
 import { ThemeToggle } from '@/components/shared/theme-toggle';
 import type { User as AuthUser } from '@/contexts/auth-context';
 import {
@@ -39,6 +38,10 @@ export default function AdminLayout({
   const isMounted = useRef(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
+
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -181,13 +184,9 @@ export default function AdminLayout({
   );
 
   return (
-     <ThemeProvider
-      attribute="class"
-      defaultTheme="light"
-      enableSystem={false}
-    >
+    <>
         {isLoading && <div className="fixed top-0 left-0 right-0 h-1 bg-primary z-[200] animate-top-loading" />}
         {adminUser && layout}
-    </ThemeProvider>
+    </>
   );
 }
