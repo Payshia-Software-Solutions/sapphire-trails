@@ -35,6 +35,8 @@ export default function AdminLayout({
   const [isLoading, setIsLoading] = useState(false);
   const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
   const isMounted = useRef(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
 
   useEffect(() => {
     if (isMounted.current) {
@@ -80,7 +82,7 @@ export default function AdminLayout({
           <AdminSidebar />
           <div className="grid grid-rows-[auto_1fr] overflow-hidden">
             <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
-                <Sheet>
+                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                     <SheetTrigger asChild>
                         <Button
                             variant="outline"
@@ -99,6 +101,7 @@ export default function AdminLayout({
                             <Link
                                 href="/admin/dashboard"
                                 className="flex items-center gap-2 text-lg font-semibold mb-4"
+                                onClick={() => setIsSheetOpen(false)}
                             >
                                 <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
                             </Link>
@@ -106,6 +109,7 @@ export default function AdminLayout({
                             <Link
                                 key={link.href}
                                 href={link.href}
+                                onClick={() => setIsSheetOpen(false)}
                                 className={cn(
                                 'mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground',
                                 (pathname.startsWith(link.href)) && 'bg-muted text-foreground'
@@ -123,12 +127,12 @@ export default function AdminLayout({
                                     <span className='text-sm text-muted-foreground'>Hi, {adminUser.name}</span>
                                 )}
                             </div>
-                            <Button asChild variant="outline">
+                            <Button asChild variant="outline" onClick={() => setIsSheetOpen(false)}>
                                 <Link href="/admin/profile">
                                     <User className="mr-2 h-4 w-4" /> Profile
                                 </Link>
                             </Button>
-                            <Button variant="ghost" className="justify-center" onClick={handleLogout}>
+                            <Button variant="ghost" className="justify-center" onClick={() => { handleLogout(); setIsSheetOpen(false); }}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Logout
                             </Button>
