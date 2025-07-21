@@ -74,7 +74,7 @@ export default function AdminLayout({
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
     sessionStorage.removeItem('sapphire-user'); // Also remove main user key
     setAdminUser(null);
-    router.push('/auth');
+    router.push('/');
   };
   
   const layout = (
