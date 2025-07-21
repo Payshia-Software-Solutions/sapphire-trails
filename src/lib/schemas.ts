@@ -94,6 +94,15 @@ export const adminCreationSchema = z.object({
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
+export const userEditSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email.' }),
+  phone: z.string().optional(),
+  type: z.enum(['client', 'admin'], { required_error: 'User type is required.' }),
+  password: z.string().min(6, { message: 'New password must be at least 6 characters.' }).optional().or(z.literal('')),
+});
+
+
 export const adminProfilePasswordSchema = z.object({
   currentPassword: z.string().min(1, { message: 'Current password is required.' }),
   newPassword: z.string().min(6, { message: 'New password must be at least 6 characters.' }),
