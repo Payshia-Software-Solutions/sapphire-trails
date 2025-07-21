@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -6,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LogOut, User } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { User as AuthUser } from '@/contexts/auth-context';
 import {
@@ -18,9 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { AdminThemeProvider } from '@/components/admin/admin-theme-provider';
-import { ThemeToggle } from '@/components/admin/theme-toggle';
 import './admin.css';
+
 
 const ADMIN_SESSION_KEY = 'adminUser';
 
@@ -35,6 +35,16 @@ export default function AdminLayout({
   const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
   const isMounted = useRef(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  useEffect(() => {
+    // Force light theme on the admin panel
+    document.documentElement.classList.add('light');
+    
+    // Cleanup function to remove the light theme when leaving the admin panel
+    return () => {
+      document.documentElement.classList.remove('light');
+    };
+  }, []);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -68,7 +78,6 @@ export default function AdminLayout({
   }, [pathname, router]);
 
   const layout = (
-    <AdminThemeProvider>
       <div className="grid h-screen w-full overflow-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <AdminSidebar />
         <div className="grid grid-rows-[auto_1fr] overflow-hidden">
@@ -117,7 +126,6 @@ export default function AdminLayout({
                   {/* Can add search or breadcrumbs here */}
               </div>
               <div className="flex items-center gap-4">
-                <ThemeToggle />
                 {adminUser && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -146,7 +154,6 @@ export default function AdminLayout({
           </main>
         </div>
       </div>
-    </AdminThemeProvider>
   );
 
   return (
