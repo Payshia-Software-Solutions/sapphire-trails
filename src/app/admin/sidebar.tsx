@@ -30,7 +30,7 @@ export function AdminSidebar() {
 
   const handleLogout = () => {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    router.push('/admin/login');
+    router.push('/');
   };
 
   return (
