@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, LoaderCircle, User, Trash2, Shield, UserCircle } from 'lucide-react';
+import { Plus, LoaderCircle, User, Trash2, Shield, UserCircle, Pencil } from 'lucide-react';
 import type { User as AuthUser } from '@/contexts/auth-context';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
@@ -138,7 +138,13 @@ export default function UserManagementPage() {
                         </Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right space-x-2">
+                        <Button variant="outline" size="icon" asChild>
+                            <Link href={`/admin/user-management/edit/${user.id}`}>
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit {user.name}</span>
+                            </Link>
+                        </Button>
                        <AlertDialog>
                             <AlertDialogTrigger asChild>
                                <Button variant="destructive" size="icon">
