@@ -34,6 +34,9 @@ html {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --radius: 0.5rem;
+    --color-pending: hsl(var(--chart-3));
+    --color-accepted: hsl(var(--chart-2));
+    --color-rejected: hsl(var(--chart-5));
   }
 }
 

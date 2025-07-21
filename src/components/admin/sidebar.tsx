@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -33,7 +32,7 @@ export function AdminSidebar() {
   const handleLogout = () => {
     setTheme('dark');
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    sessionStorage.removeItem('sapphire-user');
+    sessionStorage.removeItem('sapphire-user'); // Also remove main user key
     router.push('/auth');
   };
 
@@ -52,7 +51,8 @@ export function AdminSidebar() {
                                (pathname.startsWith(link.href) && link.href !== '/admin/dashboard') ||
                                (pathname.startsWith('/admin/edit-content') && link.href === '/admin/manage-content') ||
                                (pathname.startsWith('/admin/add-content') && link.href === '/admin/manage-content') ||
-                               (pathname.startsWith('/admin/manage-packages/add') && link.href === '/admin/manage-packages');
+                               (pathname.startsWith('/admin/manage-packages/add') && link.href === '/admin/manage-packages') ||
+                               (pathname.startsWith('/admin/manage-packages/edit') && link.href === '/admin/manage-packages');
               return (
               <Link
                 key={link.href}
