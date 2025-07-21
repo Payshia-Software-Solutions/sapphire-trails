@@ -15,28 +15,32 @@ const gallery = [
     alt: 'A collection of colorful polished gemstones.',
     hint: 'polished gemstones',
     title: 'Sinharaja Rainforest',
-    description: "Sinharaja Rainforest stands as Sri Lanka’s last viable area of primary tropical rainforest, harboring an extraordinary collection of endemic species."
+    description: "Sinharaja Rainforest stands as Sri Lanka’s last viable area of primary tropical rainforest, harboring an extraordinary collection of endemic species.",
+    slug: 'sinharaja-rainforest'
   },
   {
     src: 'https://content-provider.payshia.com/sapphire-trail/images/img34.webp',
     alt: 'A hand holding several large, uncut gemstones.',
     hint: 'uncut gemstones',
     title: 'Bopath Ella Falls',
-    description: "Bopath Ella, named for its perfect resemblance to a leaf from the sacred Bo tree, is one of Sri Lanka's most iconic waterfalls."
+    description: "Bopath Ella, named for its perfect resemblance to a leaf from the sacred Bo tree, is one of Sri Lanka's most iconic waterfalls.",
+    slug: 'bopath-ella-falls'
   },
   {
     src: 'https://content-provider.payshia.com/sapphire-trail/images/img29.webp',
     alt: 'A wide view of a beautiful cascading waterfall in a lush jungle.',
     hint: 'waterfall jungle',
     title: 'Kalthota Doowili ella',
-    description: "Known as 'Doowili Ella' or 'Dusty Falls' because its spray resembles a cloud of dust, this secluded waterfall is a reward for the adventurous traveler."
+    description: "Known as 'Doowili Ella' or 'Dusty Falls' because its spray resembles a cloud of dust, this secluded waterfall is a reward for the adventurous traveler.",
+    slug: 'kalthota-doowili-ella'
   },
   {
     src: 'https://content-provider.payshia.com/sapphire-trail/images/img39.webp',
     alt: 'Elephants at Udawalawe National Park',
     hint: 'elephants safari',
     title: 'Udawalawa National Park',
-    description: "Udawalawe National Park is an unparalleled destination for wildlife enthusiasts, particularly famous for its large population of Sri Lankan elephants."
+    description: "Udawalawe National Park is an unparalleled destination for wildlife enthusiasts, particularly famous for its large population of Sri Lankan elephants.",
+    slug: 'udawalawe-national-park'
   },
 ];
 
@@ -62,7 +66,7 @@ export function ExploreRatnapuraSection() {
           {/* Desktop view */}
           <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {gallery.map((image, index) => (
-              <div key={index} className="group relative overflow-hidden rounded-xl">
+              <Link key={index} href={`/explore-ratnapura/${image.slug}`} className="group relative overflow-hidden rounded-xl block">
                 <Image
                   src={image.src}
                   alt={image.alt}
@@ -75,7 +79,7 @@ export function ExploreRatnapuraSection() {
                     <h3 className="text-xl font-headline font-bold text-white">{image.title}</h3>
                     <p className="text-sm text-white/90 mt-2">{image.description}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           
@@ -85,7 +89,7 @@ export function ExploreRatnapuraSection() {
               <div className="flex -ml-4">
                 {gallery.map((image, index) => (
                   <div className="flex-grow-0 flex-shrink-0 basis-full min-w-0 pl-4" key={index}>
-                    <div className="group relative overflow-hidden rounded-xl">
+                    <Link href={`/explore-ratnapura/${image.slug}`} className="group relative overflow-hidden rounded-xl block">
                        <Image
                         src={image.src}
                         alt={image.alt}
@@ -98,7 +102,7 @@ export function ExploreRatnapuraSection() {
                          <h3 className="text-xl font-headline font-bold text-white">{image.title}</h3>
                          <p className="text-sm text-white/90 mt-2">{image.description}</p>
                        </div>
-                    </div>
+                    </Link>
                   </div>
                 ))}
               </div>
