@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ThemeProvider } from '@/components/shared/theme-provider';
 import { ThemeToggle } from '@/components/shared/theme-toggle';
 import type { User as AuthUser } from '@/contexts/auth-context';
 import {
@@ -21,9 +20,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useTheme } from 'next-themes';
 
 
-const ADMIN_SESSION_KEY = 'adminUser'; // Corrected key
+const ADMIN_SESSION_KEY = 'adminUser';
 
 export default function AdminLayout({
   children,
@@ -32,10 +32,16 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isLoginPage = pathname === '/admin/login';
+  const { setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
   const isMounted = useRef(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -52,40 +58,37 @@ export default function AdminLayout({
     if (userSessionRaw) {
       try {
         const user: AuthUser = JSON.parse(userSessionRaw);
-        // CRITICAL: Ensure the user is actually an admin.
         if (user && user.type === 'admin') {
           setAdminUser(user);
         } else {
-          // If a non-admin is logged in, log them out of the admin context and redirect.
           sessionStorage.removeItem(ADMIN_SESSION_KEY);
-          if (!isLoginPage) router.push('/admin/login');
+          router.push('/auth?redirect=/admin/dashboard');
         }
       } catch (e) {
         console.error("Failed to parse user session", e);
         sessionStorage.removeItem(ADMIN_SESSION_KEY);
-        if (!isLoginPage) router.push('/admin/login');
+        router.push('/auth?redirect=/admin/dashboard');
       }
-    } else if (!isLoginPage) {
-        router.push('/admin/login');
+    } else {
+        router.push('/auth?redirect=/admin/dashboard');
     }
-  }, [pathname, isLoginPage, router]);
+  }, [pathname, router]);
   
 
   const handleLogout = () => {
+    setTheme('dark');
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    sessionStorage.removeItem('sapphire-user'); // Also remove main user key
     setAdminUser(null);
-    router.push('/admin/login');
+    router.push('/auth');
   };
   
   const layout = (
-      isLoginPage ? (
-        <>{children}</>
-      ) : (
         <div className="grid h-screen w-full overflow-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
           <AdminSidebar />
           <div className="grid grid-rows-[auto_1fr] overflow-hidden">
             <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
-                <Sheet>
+                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                     <SheetTrigger asChild>
                         <Button
                             variant="outline"
@@ -104,6 +107,7 @@ export default function AdminLayout({
                             <Link
                                 href="/admin/dashboard"
                                 className="flex items-center gap-2 text-lg font-semibold mb-4"
+                                onClick={() => setIsSheetOpen(false)}
                             >
                                 <span className="font-serif text-xl tracking-[0.1em] text-primary">ADMIN</span>
                             </Link>
@@ -111,6 +115,7 @@ export default function AdminLayout({
                             <Link
                                 key={link.href}
                                 href={link.href}
+                                onClick={() => setIsSheetOpen(false)}
                                 className={cn(
                                 'mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground',
                                 (pathname.startsWith(link.href)) && 'bg-muted text-foreground'
@@ -128,12 +133,12 @@ export default function AdminLayout({
                                     <span className='text-sm text-muted-foreground'>Hi, {adminUser.name}</span>
                                 )}
                             </div>
-                            <Button asChild variant="outline">
+                            <Button asChild variant="outline" onClick={() => setIsSheetOpen(false)}>
                                 <Link href="/admin/profile">
                                     <User className="mr-2 h-4 w-4" /> Profile
                                 </Link>
                             </Button>
-                            <Button variant="ghost" className="justify-center" onClick={handleLogout}>
+                            <Button variant="ghost" className="justify-center" onClick={() => { handleLogout(); setIsSheetOpen(false); }}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Logout
                             </Button>
@@ -176,17 +181,12 @@ export default function AdminLayout({
             </main>
           </div>
         </div>
-      )
   );
 
   return (
-     <ThemeProvider
-      attribute="class"
-      defaultTheme="light"
-      enableSystem={false}
-    >
+    <>
         {isLoading && <div className="fixed top-0 left-0 right-0 h-1 bg-primary z-[200] animate-top-loading" />}
-        {layout}
-    </ThemeProvider>
+        {adminUser && layout}
+    </>
   );
 }

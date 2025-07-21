@@ -1,0 +1,111 @@
+<mxfile host="app.diagrams.net" modified="2024-07-27T10:00:00.000Z" agent="Firebase Studio" version="24.7.4" etag="userflow-v2">
+  <diagram name="User Booking Flow" id="BOOKING_FLOW_01">
+    <mxGraphModel dx="1600" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="start" value="Start" style="ellipse;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+          <mxGeometry x="40" y="40" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="click-book" value="User clicks 'Book Now' on any tour" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="40" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nav-booking" value="Navigate to /booking page" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#B77400;" parent="1" vertex="1">
+          <mxGeometry x="240" y="165" width="150" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="fill-form" value="User fills out booking form (date, guests, etc.)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="470" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+         <mxCell id="is-logged-in" value="User Logged In?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#B77400;" parent="1" vertex="1">
+          <mxGeometry x="455" y="300" width="150" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="prefill-info" value="Pre-fill user info (name, email)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="470" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="click-complete" value="User clicks 'Complete Booking'" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="670" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="post-booking" value="POST to /bookings" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" parent="1" vertex="1">
+          <mxGeometry x="870" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="server-check-user" value="Server: User Exists?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#B77400;" parent="1" vertex="1">
+          <mxGeometry x="1070" y="165" width="140" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="server-create-user" value="Server: Create new 'client' user" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" parent="1" vertex="1">
+          <mxGeometry x="1080" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="server-create-booking" value="Server: Create 'booking' record with 'pending' status" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" parent="1" vertex="1">
+          <mxGeometry x="1290" y="180" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="show-confirmation" value="Show Confirmation Popup to User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="1290" y="320" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="show-in-admin" value="New booking appears in Admin Panel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700B3;" parent="1" vertex="1">
+          <mxGeometry x="1290" y="440" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="end" value="End" style="ellipse;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+          <mxGeometry x="1305" y="550" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Edges -->
+        <mxCell id="edge-start-click" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="start" target="click-book" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="130" as="sourcePoint"/><mxPoint x="100" y="170" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="edge-click-nav" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="click-book" target="nav-booking" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="170" y="210" as="sourcePoint"/><mxPoint x="230" y="210" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="edge-nav-fill" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="nav-booking" target="fill-form" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="400" y="210" as="sourcePoint"/><mxPoint x="460" y="210" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="edge-fill-check" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="fill-form" target="is-logged-in" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="530" y="250" as="sourcePoint"/><mxPoint x="530" y="290" as="targetPoint"/></mxGeometry>
+        </mxCell>
+         <mxCell id="edge-check-yes" value="Yes" style="endArrow=classic;html=1;rounded=0;" parent="1" source="is-logged-in" target="prefill-info" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="530" y="400" as="sourcePoint"/><mxPoint x="530" y="430" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="edge-check-no" value="No" style="endArrow=classic;html=1;rounded=0;" parent="1" source="is-logged-in" target="click-complete" edge="1">
+            <mxGeometry relative="1" as="geometry">
+                <mxPoint x="615" y="345" as="sourcePoint"/>
+                <mxPoint x="730" y="250" as="targetPoint"/>
+                <Array as="points"><mxPoint x="730" y="345"/></Array>
+            </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-prefill-click" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="prefill-info" target="click-complete" edge="1">
+             <mxGeometry relative="1" as="geometry">
+                <mxPoint x="540" y="430" as="sourcePoint"/>
+                <mxPoint x="730" y="250" as="targetPoint"/>
+                <Array as="points"><mxPoint x="730" y="470"/></Array>
+            </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-click-post" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="click-complete" target="post-booking" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="800" y="210" as="sourcePoint"/><mxPoint x="860" y="210" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="edge-post-servercheck" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="post-booking" target="server-check-user" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="990" y="210" as="sourcePoint"/><mxPoint x="1060" y="210" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="edge-servercheck-no" value="No" style="endArrow=classic;html=1;rounded=0;" parent="1" source="server-check-user" target="server-create-user" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="1140" y="265" as="sourcePoint"/><mxPoint x="1140" y="310" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="edge-servercreate-main" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="server-create-user" target="server-create-booking" edge="1">
+             <mxGeometry relative="1" as="geometry">
+                <mxPoint x="1210" y="350" as="sourcePoint"/>
+                <mxPoint x="1365" y="250" as="targetPoint"/>
+                <Array as="points"><mxPoint x="1365" y="350"/></Array>
+            </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-servercheck-yes" value="Yes" style="endArrow=classic;html=1;rounded=0;" parent="1" source="server-check-user" target="server-create-booking" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="1220" y="210" as="sourcePoint"/><mxPoint x="1280" y="210" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="edge-createbooking-confirm" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="server-create-booking" target="show-confirmation" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="1365" y="250" as="sourcePoint"/><mxPoint x="1365" y="310" as="targetPoint"/></mxGeometry>
+        </mxCell>
+         <mxCell id="edge-confirm-admin" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="show-confirmation" target="show-in-admin" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="1365" y="390" as="sourcePoint"/><mxPoint x="1365" y="430" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="edge-admin-end" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="show-in-admin" target="end" edge="1">
+            <mxGeometry relative="1" as="geometry"><mxPoint x="1365" y="510" as="sourcePoint"/><mxPoint x="1365" y="540" as="targetPoint"/></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

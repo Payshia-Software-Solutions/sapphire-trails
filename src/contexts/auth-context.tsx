@@ -21,7 +21,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, pass: string) => Promise<{ success: boolean; user: User | null }>;
+  login: (email: string, pass: string) => Promise<User | null>;
   signup: (name: string, email: string, phone: string | undefined, pass: string) => Promise<boolean>;
   logout: () => void;
 }
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (email: string, pass: string): Promise<{ success: boolean; user: User | null }> => {
+  const login = async (email: string, pass: string): Promise<User | null> => {
     setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
@@ -74,14 +74,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(loggedInUser);
       sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(loggedInUser));
+      sessionStorage.setItem('adminUser', JSON.stringify(loggedInUser)); // Also set admin key for admin panel access
       toast({ title: 'Success!', description: 'You have logged in successfully.' });
-      return { success: true, user: loggedInUser };
+      return loggedInUser;
 
     } catch (error) {
       console.error('Login failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during login.';
       toast({ variant: 'destructive', title: 'Error', description: errorMessage });
-      return { success: false, user: null };
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -135,6 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem(USER_SESSION_KEY);
+    sessionStorage.removeItem('adminUser');
     toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
     if (pathname.startsWith('/profile') || pathname.startsWith('/booking') || pathname.startsWith('/admin')) {
          router.push('/');

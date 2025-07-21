@@ -1,0 +1,133 @@
+<mxfile host="app.diagrams.net" modified="2024-07-26T12:00:00.000Z" agent="Firebase Studio" version="24.7.4" etag="userflow-v1">
+  <diagram name="User Login Flow" id="LOGIN_FLOW_01">
+    <mxGraphModel dx="1434" dy="742" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="start" value="Start" style="ellipse;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+          <mxGeometry x="80" y="40" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="click-login" value="User clicks &lt;br&gt;Login button" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="80" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-page" value="Navigate to &lt;br&gt;/auth page" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#B77400;" parent="1" vertex="1">
+          <mxGeometry x="280" y="145" width="150" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="enter-creds" value="User enters email &amp; password" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="510" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="submit-login" value="POST to /login" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" parent="1" vertex="1">
+          <mxGeometry x="710" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="check-creds" value="Credentials Correct?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#B77400;" parent="1" vertex="1">
+          <mxGeometry x="910" y="140" width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="show-error" value="Show Error Toast" style="whiteSpace=wrap;html=1;rounded=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" parent="1" vertex="1">
+          <mxGeometry x="920" y="300" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="check-user-type" value="Admin User?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#B77400;" parent="1" vertex="1">
+          <mxGeometry x="1130" y="140" width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="show-admin-button" value="Show 'Admin Panel' Button" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="300" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="click-admin-button" value="User clicks 'Admin Panel' button" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="420" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="redirect-admin" value="Redirect to /admin/dashboard" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#B77400;" parent="1" vertex="1">
+          <mxGeometry x="1130" y="520" width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="redirect-profile" value="Redirect to /profile" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#B77400;" parent="1" vertex="1">
+          <mxGeometry x="1350" y="140" width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="end" value="End" style="ellipse;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="670" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="end-profile" value="End" style="ellipse;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+          <mxGeometry x="1360" y="300" width="120" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="edge-start-login" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="start" target="click-login" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="140" y="130" as="sourcePoint" />
+            <mxPoint x="140" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-click-page" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="click-login" target="auth-page" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="190" as="sourcePoint" />
+            <mxPoint x="270" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-page-creds" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="auth-page" target="enter-creds" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="190" as="sourcePoint" />
+            <mxPoint x="500" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-creds-post" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="enter-creds" target="submit-login" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="640" y="190" as="sourcePoint" />
+            <mxPoint x="700" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-post-check" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="submit-login" target="check-creds" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="840" y="190" as="sourcePoint" />
+            <mxPoint x="900" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-check-error" value="No" style="endArrow=classic;html=1;rounded=0;" parent="1" source="check-creds" target="show-error" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="980" y="250" as="sourcePoint" />
+            <mxPoint x="980" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-check-type" value="Yes" style="endArrow=classic;html=1;rounded=0;" parent="1" source="check-creds" target="check-user-type" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1060" y="190" as="sourcePoint" />
+            <mxPoint x="1120" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-type-admin" value="Yes" style="endArrow=classic;html=1;rounded=0;" parent="1" source="check-user-type" target="show-admin-button" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1200" y="250" as="sourcePoint" />
+            <mxPoint x="1200" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-type-client" value="No" style="endArrow=classic;html=1;rounded=0;" parent="1" source="check-user-type" target="redirect-profile" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1280" y="190" as="sourcePoint" />
+            <mxPoint x="1340" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-admin-button-click" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="show-admin-button" target="click-admin-button" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1200" y="370" as="sourcePoint" />
+            <mxPoint x="1200" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-click-redirect" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="click-admin-button" target="redirect-admin" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1200" y="490" as="sourcePoint" />
+            <mxPoint x="1200" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-redirect-end" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="redirect-admin" target="end" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1200" y="630" as="sourcePoint" />
+            <mxPoint x="1200" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+         <mxCell id="edge-profile-end" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="redirect-profile" target="end-profile" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1420" y="250" as="sourcePoint" />
+            <mxPoint x="1420" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+    
