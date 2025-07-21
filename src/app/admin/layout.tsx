@@ -23,7 +23,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
-const ADMIN_SESSION_KEY = 'adminUser'; // Corrected key
+const ADMIN_SESSION_KEY = 'adminUser';
 
 export default function AdminLayout({
   children,
@@ -32,7 +32,6 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isLoginPage = pathname === '/admin/login';
   const [isLoading, setIsLoading] = useState(false);
   const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
   const isMounted = useRef(false);
@@ -52,35 +51,31 @@ export default function AdminLayout({
     if (userSessionRaw) {
       try {
         const user: AuthUser = JSON.parse(userSessionRaw);
-        // CRITICAL: Ensure the user is actually an admin.
         if (user && user.type === 'admin') {
           setAdminUser(user);
         } else {
-          // If a non-admin is logged in, log them out of the admin context and redirect.
           sessionStorage.removeItem(ADMIN_SESSION_KEY);
-          if (!isLoginPage) router.push('/admin/login');
+          router.push('/auth?redirect=/admin/dashboard');
         }
       } catch (e) {
         console.error("Failed to parse user session", e);
         sessionStorage.removeItem(ADMIN_SESSION_KEY);
-        if (!isLoginPage) router.push('/admin/login');
+        router.push('/auth?redirect=/admin/dashboard');
       }
-    } else if (!isLoginPage) {
-        router.push('/admin/login');
+    } else {
+        router.push('/auth?redirect=/admin/dashboard');
     }
-  }, [pathname, isLoginPage, router]);
+  }, [pathname, router]);
   
 
   const handleLogout = () => {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    sessionStorage.removeItem('sapphire-user'); // Also remove main user key
     setAdminUser(null);
-    router.push('/admin/login');
+    router.push('/auth');
   };
   
   const layout = (
-      isLoginPage ? (
-        <>{children}</>
-      ) : (
         <div className="grid h-screen w-full overflow-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
           <AdminSidebar />
           <div className="grid grid-rows-[auto_1fr] overflow-hidden">
@@ -176,7 +171,6 @@ export default function AdminLayout({
             </main>
           </div>
         </div>
-      )
   );
 
   return (
@@ -186,7 +180,7 @@ export default function AdminLayout({
       enableSystem={false}
     >
         {isLoading && <div className="fixed top-0 left-0 right-0 h-1 bg-primary z-[200] animate-top-loading" />}
-        {layout}
+        {adminUser && layout}
     </ThemeProvider>
   );
 }
