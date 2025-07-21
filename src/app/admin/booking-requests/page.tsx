@@ -5,10 +5,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { type Booking } from '@/lib/bookings-data';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Users, Clock, CheckCircle, XCircle, RefreshCw, Search, ListFilter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import {
@@ -30,9 +30,13 @@ import {
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+
 
 const ADMIN_SESSION_KEY = 'adminUser';
-const ITEMS_PER_PAGE = 4;
+const ITEMS_PER_PAGE = 5;
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const mapServerBookingToClient = (serverBooking: any): Booking => ({
@@ -57,6 +61,9 @@ export default function BookingRequestsPage() {
   const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [tourTypeFilter, setTourTypeFilter] = useState('all');
 
   useEffect(() => {
     async function fetchTourPackages() {
@@ -116,12 +123,29 @@ export default function BookingRequestsPage() {
     return { pending, accepted, rejected, total };
   }, [bookings]);
 
+  const filteredBookings = useMemo(() => {
+    return bookings
+      .filter(booking => {
+        const searchMatch = searchTerm === '' ||
+          booking.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          booking.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          String(booking.id).includes(searchTerm);
+        const statusMatch = statusFilter === 'all' || booking.status === statusFilter;
+        const tourTypeMatch = tourTypeFilter === 'all' || String(booking.tourType) === tourTypeFilter;
+        return searchMatch && statusMatch && tourTypeMatch;
+      });
+  }, [bookings, searchTerm, statusFilter, tourTypeFilter]);
+
   const { paginatedBookings, totalPages } = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const paginated = bookings.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-    const total = Math.ceil(bookings.length / ITEMS_PER_PAGE);
-    return { paginatedBookings: paginated, totalPages: total };
-  }, [bookings, currentPage]);
+    const paginated = filteredBookings.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const total = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
+    return { paginatedBookings: paginated, totalPages: total > 0 ? total : 1 };
+  }, [filteredBookings, currentPage]);
+  
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, tourTypeFilter]);
   
   const getStatusBadgeVariant = (status: Booking['status']) => {
     switch (status) {
@@ -135,9 +159,17 @@ export default function BookingRequestsPage() {
     }
   };
   
-  const getTourTitle = (tourId: number) => {
-    const tour = tourPackages.find(p => p.id === tourId);
-    return tour ? tour.homepageTitle : `Tour ID: ${tourId}`;
+  const getTourPackage = (tourId: number) => {
+    return tourPackages.find(p => p.id === tourId);
+  };
+  
+  const getBookingAmount = (booking: Booking): string => {
+    const tour = getTourPackage(booking.tourType);
+    if (!tour || !tour.price) return "N/A";
+    const priceValue = parseFloat(tour.price.replace(/[^0-9.]/g, ''));
+    if (isNaN(priceValue)) return "N/A";
+    const total = priceValue * booking.guests;
+    return `$${total.toFixed(2)}`;
   };
 
 
@@ -152,7 +184,7 @@ export default function BookingRequestsPage() {
             <p className="text-muted-foreground">Manage all incoming tour booking requests from this panel.</p>
         </div>
         
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
@@ -164,7 +196,7 @@ export default function BookingRequestsPage() {
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
+                    <CardTitle className="text-sm font-medium">Pending</CardTitle>
                     <Clock className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -173,7 +205,7 @@ export default function BookingRequestsPage() {
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Accepted Bookings</CardTitle>
+                    <CardTitle className="text-sm font-medium">Accepted</CardTitle>
                     <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
@@ -182,7 +214,7 @@ export default function BookingRequestsPage() {
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Rejected Bookings</CardTitle>
+                    <CardTitle className="text-sm font-medium">Rejected</CardTitle>
                     <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
@@ -192,47 +224,119 @@ export default function BookingRequestsPage() {
         </div>
 
         <Card>
-            <CardHeader>
+            <CardHeader className="border-b">
                 <CardTitle>All Requests</CardTitle>
+                <CardDescription>
+                  Showing {paginatedBookings.length} of {filteredBookings.length} records.
+                </CardDescription>
             </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead className="hidden md:table-cell">Tour Package</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead className="hidden sm:table-cell">Guests</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
+            <CardContent className="p-0">
+                <div className="p-4 space-y-4">
+                    <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="Search by name, email, or ID..." className="pl-10" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                        </div>
+                        <Button variant="outline"><RefreshCw className="mr-2 h-4 w-4" /> Refresh</Button>
+                    </div>
+                     <div className="grid sm:grid-cols-2 gap-4">
+                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <SelectTrigger><SelectValue placeholder="Filter by status" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Statuses</SelectItem>
+                                <SelectItem value="pending">Pending</SelectItem>
+                                <SelectItem value="accepted">Accepted</SelectItem>
+                                <SelectItem value="rejected">Rejected</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Select value={tourTypeFilter} onValueChange={setTourTypeFilter}>
+                             <SelectTrigger><SelectValue placeholder="Filter by tour" /></SelectTrigger>
+                             <SelectContent>
+                                <SelectItem value="all">All Tours</SelectItem>
+                                {tourPackages.map(pkg => (
+                                    <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
+                                ))}
+                             </SelectContent>
+                        </Select>
+                     </div>
+                </div>
+                
+                {/* Mobile Card View */}
+                <div className="md:hidden p-4 space-y-4">
                     {paginatedBookings.map((booking) => (
-                        <TableRow key={booking.id}>
-                            <TableCell>
-                                <div className="font-medium break-words">{booking.name}</div>
-                                <div className="text-sm text-muted-foreground hidden md:block break-all">{booking.email}</div>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell break-all">
-                                {getTourTitle(booking.tourType)}
-                            </TableCell>
-                            <TableCell>{format(parseISO(booking.date), 'PPP')}</TableCell>
-                            <TableCell className="hidden sm:table-cell">{booking.guests}</TableCell>
-                            <TableCell>
-                                <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">
-                                {booking.status}
-                                </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                                <Button variant="outline" size="sm" onClick={() => setSelectedBooking(booking)}>View</Button>
-                            </TableCell>
-                        </TableRow>
+                        <Card key={booking.id} className="bg-background-alt/50">
+                            <CardContent className="p-4">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="font-bold text-lg">{booking.id}</p>
+                                        <p className="text-sm text-muted-foreground">ID: {booking.id}</p>
+                                        <p className="text-sm text-muted-foreground">{getTourPackage(booking.tourType)?.homepageTitle || 'Unknown Tour'}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">{booking.status}</Badge>
+                                        <Checkbox />
+                                    </div>
+                                </div>
+                                <div className="border-t my-4"></div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-muted-foreground">Amount</span>
+                                    <span className="font-bold">{getBookingAmount(booking)}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm mt-2">
+                                    <span className="text-muted-foreground">Tour Date</span>
+                                    <span className="font-bold">{format(parseISO(booking.date), 'MMM dd, yyyy')}</span>
+                                </div>
+                                <Button className="w-full mt-4" asChild>
+                                  <Link href={`/admin/booking-requests/${booking.id}`}>Manage</Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
                     ))}
-                    </TableBody>
-                </Table>
+                </div>
+
+
+                {/* Desktop Table View */}
+                <div className="hidden md:block">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Tour Package</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Guests</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                        {paginatedBookings.map((booking) => (
+                            <TableRow key={booking.id}>
+                                <TableCell>
+                                    <div className="font-medium break-words">{booking.name}</div>
+                                    <div className="text-sm text-muted-foreground hidden lg:block break-all">{booking.email}</div>
+                                </TableCell>
+                                <TableCell className="break-all">
+                                    {getTourPackage(booking.tourType)?.homepageTitle || `Tour ID: ${booking.tourType}`}
+                                </TableCell>
+                                <TableCell>{format(parseISO(booking.date), 'PPP')}</TableCell>
+                                <TableCell>{booking.guests}</TableCell>
+                                <TableCell>
+                                    <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">
+                                    {booking.status}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <Button variant="outline" size="sm" asChild>
+                                      <Link href={`/admin/booking-requests/${booking.id}`}>View/Manage</Link>
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
-             <CardFooter className="flex items-center justify-between border-t pt-6">
+             <CardFooter className="flex items-center justify-between border-t px-4 py-4">
                 <div className="text-sm text-muted-foreground">
                     Page {currentPage} of {totalPages || 1}
                 </div>
@@ -257,64 +361,6 @@ export default function BookingRequestsPage() {
             </CardFooter>
         </Card>
 
-        <Dialog open={!!selectedBooking} onOpenChange={(isOpen) => !isOpen && setSelectedBooking(null)}>
-            <DialogContent className="sm:max-w-lg">
-                {selectedBooking && (
-                <>
-                    <DialogHeader>
-                        <DialogTitle>Booking Details</DialogTitle>
-                        <DialogDescription className="break-words">
-                            Request from {selectedBooking.name} on {format(parseISO(selectedBooking.date), 'PPP')}.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                        <div className="space-y-1">
-                            <Label className="text-muted-foreground">Status</Label>
-                            <div>
-                                <Badge variant={getStatusBadgeVariant(selectedBooking.status)} className="capitalize">
-                                    {selectedBooking.status}
-                                </Badge>
-                            </div>
-                        </div>
-                        <div className="space-y-1">
-                            <Label className="text-muted-foreground">Name</Label>
-                            <p className="font-medium break-words">{selectedBooking.name}</p>
-                        </div>
-                        <div className="space-y-1">
-                            <Label className="text-muted-foreground">Email</Label>
-                            <p className="break-all">{selectedBooking.email}</p>
-                        </div>
-                        {selectedBooking.phone && (
-                            <div className="space-y-1">
-                                <Label className="text-muted-foreground">Phone</Label>
-                                <p>{selectedBooking.phone}</p>
-                            </div>
-                        )}
-                        <div className="space-y-1">
-                            <Label className="text-muted-foreground">Tour</Label>
-                            <p>{getTourTitle(selectedBooking.tourType)}</p>
-                        </div>
-                         <div className="space-y-1">
-                            <Label className="text-muted-foreground">Guests</Label>
-                            <p>{selectedBooking.guests}</p>
-                        </div>
-                        {selectedBooking.message && (
-                            <div className="space-y-1">
-                                <Label className="text-muted-foreground">Message</Label>
-                                <p className="text-sm italic break-words">&quot;{selectedBooking.message}&quot;</p>
-                            </div>
-                        )}
-                    </div>
-                    <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                        <Button variant="outline" onClick={() => setSelectedBooking(null)}>Close</Button>
-                        <Button asChild>
-                            <Link href={`/admin/booking-requests/${encodeURIComponent(selectedBooking.id)}`}>Edit Booking</Link>
-                        </Button>
-                    </DialogFooter>
-                </>
-                )}
-            </DialogContent>
-        </Dialog>
     </div>
   );
 }
