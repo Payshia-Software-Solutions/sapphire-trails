@@ -30,7 +30,8 @@ export function AdminSidebar() {
 
   const handleLogout = () => {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    router.push('/');
+    sessionStorage.removeItem('sapphire-user');
+    router.push('/auth');
   };
 
   return (
