@@ -126,24 +126,24 @@ class SiteContentController
         foreach ($files as $key => $file) {
             $newImageUrl = $this->handleImageUpload($file);
             if ($newImageUrl) {
-                // The key from the form-data should point to where the URL needs to be stored.
-                // e.g., key 'hero.imageUrl' would update $contentData['hero']['imageUrl']
                 $keys = explode('.', $key);
                 $temp = &$contentData;
                 foreach ($keys as $k) {
                     if (!isset($temp[$k])) {
-                        $temp[$k] = []; // Create nested structure if it doesn't exist
+                        $temp[$k] = []; 
                     }
                     $temp = &$temp[$k];
                 }
-                $temp = $newImageUrl; // Assign the new URL
+                $temp = $newImageUrl;
                 unset($temp);
             }
         }
 
         try {
             $this->model->update($section_key, $contentData);
-            echo json_encode(['success' => true, 'message' => 'Content updated successfully.', 'data' => $contentData]);
+            // After saving, fetch the data again to ensure we return the complete, latest version
+            $updatedData = $this->model->get($section_key);
+            echo json_encode(['success' => true, 'message' => 'Content updated successfully.', 'data' => $updatedData]);
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);

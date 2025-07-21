@@ -46,6 +46,9 @@ const defaultValues = {
     instagramUrl: 'https://instagram.com',
     youtubeUrl: 'https://youtube.com',
   },
+  general: {
+    whatsappNumber: '',
+  }
 };
 
 type CmsFormValues = z.infer<typeof cmsFormSchema>;
@@ -73,21 +76,31 @@ export default function CmsPage() {
             const response = await fetch(`${API_BASE_URL}/content/homepage`);
             if (response.ok) {
                 const data = await response.json();
+                // Merge fetched data with defaults to ensure all fields are present
+                const fullData = {
+                  hero: { ...defaultValues.hero, ...data.hero },
+                  discover: { ...defaultValues.discover, ...data.discover },
+                  footer: { ...defaultValues.footer, ...data.footer },
+                  general: { ...defaultValues.general, ...data.general },
+                };
+
                 const processedData = {
-                    ...data,
-                    hero: { ...data.hero, imageUrl: getFullImageUrl(data.hero.imageUrl) },
-                    discover: { ...data.discover, images: data.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
+                    ...fullData,
+                    hero: { ...fullData.hero, imageUrl: getFullImageUrl(fullData.hero.imageUrl) },
+                    discover: { ...fullData.discover, images: fullData.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
                 }
                 form.reset(processedData);
                 setHeroImagePreview(processedData.hero.imageUrl);
                 setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
             } else {
+                 form.reset(defaultValues); // Reset with full defaults
                  setHeroImagePreview(defaultValues.hero.imageUrl);
                  setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
                  toast({ variant: 'destructive', title: 'Could not load data', description: 'Using default content. Please save to create the record.'});
             }
         } catch (error) {
             console.error("Failed to fetch CMS data", error);
+            form.reset(defaultValues); // Reset with full defaults on error
             setHeroImagePreview(defaultValues.hero.imageUrl);
             setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
             toast({ variant: 'destructive', title: 'Error', description: 'Could not connect to server.' });
@@ -199,7 +212,7 @@ export default function CmsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-primary">Content Management System</h1>
-        <p className="text-muted-foreground">Manage content for the homepage and footer.</p>
+        <p className="text-muted-foreground">Manage content for the homepage and general site settings.</p>
       </div>
 
       <Form {...form}>
@@ -276,6 +289,22 @@ export default function CmsPage() {
               </div>
             </AccordionItem>
 
+            <AccordionItem value="settings" className="border-none">
+              <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+                <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">
+                  <div className="flex-1 text-left">
+                    <h3 className="text-xl font-semibold leading-none tracking-tight">General Settings</h3>
+                    <p className="text-sm text-muted-foreground mt-1.5">Manage site-wide settings like contact info.</p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="p-6 pt-0">
+                  <div className="space-y-4 border-t pt-6">
+                    <FormField control={form.control} name="general.whatsappNumber" render={({ field }) => (<FormItem><FormLabel>WhatsApp Number</FormLabel><FormControl><Input placeholder="e.g., 94771234567 (include country code)" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  </div>
+                </AccordionContent>
+              </div>
+            </AccordionItem>
+            
             <AccordionItem value="footer" className="border-none">
               <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                 <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">

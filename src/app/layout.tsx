@@ -5,6 +5,7 @@ import { PreloaderProvider } from '@/components/shared/preloader-provider';
 import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { AuthProvider } from '@/contexts/auth-context';
+import { WhatsAppButton } from '@/components/shared/whatsapp-button';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -54,6 +55,7 @@ export default function RootLayout({
                 {children}
               </PreloaderProvider>
             </AuthProvider>
+            <WhatsAppButton />
             <Toaster />
       </body>
     </html>

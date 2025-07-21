@@ -175,4 +175,7 @@ export const cmsFormSchema = z.object({
     instagramUrl: z.string().url("Please enter a valid URL for Instagram."),
     youtubeUrl: z.string().url("Please enter a valid URL for YouTube."),
   }),
+  general: z.object({
+    whatsappNumber: z.string().min(10, "Please enter a valid phone number with country code.").regex(/^\d+$/, "Phone number can only contain digits."),
+  }),
 });
