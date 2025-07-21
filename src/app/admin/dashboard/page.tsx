@@ -40,7 +40,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const adminUser = sessionStorage.getItem(ADMIN_SESSION_KEY);
     if (!adminUser) {
-      router.push('/admin/login');
+      router.push('/auth');
     } else {
       setIsAuthenticated(true);
     }
@@ -146,7 +146,7 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight text-primary">Dashboard</h1>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
