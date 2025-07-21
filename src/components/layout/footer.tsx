@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -103,9 +104,9 @@ export function Footer() {
           <p>
             © {new Date().getFullYear()} Sapphire Trails. All rights reserved.
           </p>
-          <p>
+          <Link href="https://payshia.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
             Powered by Payshia Software Solutions
-          </p>
+          </Link>
         </div>
       </div>
       <div className="h-1 bg-primary/80" />
