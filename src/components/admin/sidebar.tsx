@@ -51,7 +51,8 @@ export function AdminSidebar() {
               const isActive = (pathname === link.href) || 
                                (pathname.startsWith(link.href) && link.href !== '/admin/dashboard') ||
                                (pathname.startsWith('/admin/edit-content') && link.href === '/admin/manage-content') ||
-                               (pathname.startsWith('/admin/add-content') && link.href === '/admin/manage-content');
+                               (pathname.startsWith('/admin/add-content') && link.href === '/admin/manage-content') ||
+                               (pathname.startsWith('/admin/manage-packages/add') && link.href === '/admin/manage-packages');
               return (
               <Link
                 key={link.href}
