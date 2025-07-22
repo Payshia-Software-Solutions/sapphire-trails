@@ -32,6 +32,7 @@ function LoadingSkeleton() {
             <Card>
                 <CardHeader>
                     <Skeleton className="h-6 w-48" />
+                    <Skeleton className="h-4 w-72" />
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Skeleton className="h-10 w-full" />
@@ -145,7 +146,7 @@ export default function EditUserPage() {
                 <CardHeader>
                     <CardTitle>User Details</CardTitle>
                     <CardDescription>
-                        Update the user's information below. Leave the password field blank to keep the current password.
+                        Update the user&apos;s information below. Leave the password field blank to keep the current password.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
