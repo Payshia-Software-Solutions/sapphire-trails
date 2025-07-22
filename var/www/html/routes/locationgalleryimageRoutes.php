@@ -17,6 +17,9 @@ return [
     'DELETE /location-gallery/{id}/' => function($id) use ($galleryController) {
         $galleryController->deleteById($id);
     },
+    'POST /location-gallery/{id}' => function($id) use ($galleryController) {
+        $galleryController->update($id);
+    },
     'DELETE /location-gallery/location/{slug}/' => function ($slug) use ($galleryController) {
         $galleryController->deleteByLocationSlug($slug);
     }

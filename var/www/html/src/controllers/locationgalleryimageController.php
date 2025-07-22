@@ -120,54 +120,60 @@ class LocationGalleryImageController
                 http_response_code(500);
                 echo json_encode(['error' => 'FTP upload failed']);
             }
-        } elseif (strpos($contentType, 'application/json') !== false) {
-            $data = json_decode(file_get_contents("php://input"), true);
-            $slug = $data['location_slug'] ?? null;
-            $base64Image = $data['image_url'] ?? null;
-            $alt = $data['alt_text'] ?? '';
-            $hint = $data['hint'] ?? '';
-            $is360 = $data['is_360'] ?? 0;
-            $order = $data['sort_order'] ?? 0;
-
-            if (!$slug || !$base64Image) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Missing slug or image data']);
-                return;
-            }
-
-            if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
-                $imageData = base64_decode(substr($base64Image, strpos($base64Image, ',') + 1));
-                $ext = strtolower($type[1]);
-                $filename = 'gallery-' . uniqid() . '.' . $ext;
-                $localPath = './uploads/' . $filename;
-                file_put_contents($localPath, $imageData);
-                $ftpPath = '/location-images/' . $slug . '/gallery/' . $filename;
-
-                if ($this->uploadToFTP($localPath, $ftpPath)) {
-                    unlink($localPath);
-
-                    $id = $this->model->create([
-                        'location_slug' => $slug,
-                        'image_url' => $ftpPath,
-                        'alt_text' => $alt,
-                        'hint' => $hint,
-                        'is_360' => $is360,
-                        'sort_order' => $order
-                    ]);
-
-                    http_response_code(201);
-                    echo json_encode(['message' => 'Gallery image uploaded and saved', 'id' => $id]);
-                } else {
-                    http_response_code(500);
-                    echo json_encode(['error' => 'FTP upload failed']);
-                }
-            } else {
-                http_response_code(400);
-                echo json_encode(['error' => 'Invalid base64 image data']);
-            }
         } else {
             http_response_code(400);
             echo json_encode(['error' => 'Unsupported content type']);
+        }
+    }
+    
+    public function update($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || strtolower($_POST['_method'] ?? '') !== 'put') {
+            http_response_code(405);
+            echo json_encode(['error' => 'Invalid request method. Use POST with _method=PUT']);
+            return;
+        }
+
+        $image = $this->model->getById($id);
+        if (!$image) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Image not found']);
+            return;
+        }
+
+        $data = $_POST;
+        $file = $_FILES['image'] ?? null;
+
+        $updateData = [
+            'image_url' => $image['image_url'], // Default to old image
+            'alt_text' => $data['alt_text'] ?? $image['alt_text'],
+            'hint' => $data['hint'] ?? $image['hint'],
+            'is_360' => $data['is_360'] ?? $image['is_360'],
+            'sort_order' => $data['sort_order'] ?? $image['sort_order'],
+        ];
+
+        // If a new file is uploaded, replace the image
+        if ($file && $file['error'] === UPLOAD_ERR_OK) {
+            $filename = $this->generateUniqueFileName($file['name']);
+            $localPath = './uploads/' . $filename;
+            $ftpPath = '/location-images/' . $image['location_slug'] . '/gallery/' . $filename;
+
+            move_uploaded_file($file['tmp_name'], $localPath);
+            if ($this->uploadToFTP($localPath, $ftpPath)) {
+                unlink($localPath);
+                $updateData['image_url'] = $ftpPath;
+            } else {
+                 http_response_code(500);
+                 echo json_encode(['error' => 'FTP upload failed for new image.']);
+                 return;
+            }
+        }
+        
+        if ($this->model->updateById($id, $updateData)) {
+            echo json_encode(['message' => 'Gallery image updated successfully.']);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to update gallery image in database.']);
         }
     }
 

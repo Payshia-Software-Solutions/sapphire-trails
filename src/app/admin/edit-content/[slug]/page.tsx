@@ -35,6 +35,7 @@ const steps = [
 ];
 
 interface FormGalleryImage extends GalleryImage {
+  id?: number;
   file?: File;
   isNew?: boolean;
 }
@@ -199,7 +200,7 @@ export default function EditContentPage() {
   };
 
   const handleNext = async () => {
-    if (currentStep < steps.length) {
+     if (currentStep < steps.length) {
       setCurrentStep(prev => prev + 1);
     }
   };
@@ -210,9 +211,29 @@ export default function EditContentPage() {
     }
   };
 
-  async function uploadGalleryImage(file: File, locationSlug: string, meta: { alt: string, hint: string }, index: number) {
+  async function updateGalleryImage(galleryItem: FormGalleryImage) {
+      if (!galleryItem.id || !galleryItem.file) return; // Only update existing images with new files
+
+      const formData = new FormData();
+      formData.append('_method', 'PUT');
+      formData.append('image', galleryItem.file);
+      formData.append('alt_text', galleryItem.alt);
+      formData.append('hint', galleryItem.hint);
+      formData.append('sort_order', String(galleryFields.findIndex(f => f.id === galleryItem.id) + 1));
+      
+      const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}`, {
+          method: 'POST',
+          body: formData,
+      });
+
+      if (!response.ok) {
+          throw new Error(`Failed to update gallery image ${galleryItem.id}`);
+      }
+  }
+  
+  async function uploadGalleryImage(file: File, meta: { alt: string, hint: string }, index: number) {
     const galleryFormData = new FormData();
-    galleryFormData.append('location_slug', locationSlug);
+    galleryFormData.append('location_slug', slug);
     galleryFormData.append('image', file);
     galleryFormData.append('alt_text', meta.alt);
     galleryFormData.append('hint', meta.hint);
@@ -228,7 +249,6 @@ export default function EditContentPage() {
         throw new Error(`Failed to upload gallery image ${index + 1}: ${errorData.error || 'Server error'}`);
     }
   }
-
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     setIsSubmitting(true);
@@ -258,7 +278,7 @@ export default function EditContentPage() {
     locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
     
     try {
-        const response = await fetch(`${API_BASE_URL}/locations/${slug}/`, {
+        const response = await fetch(`${API_BASE_URL}/locations/${slug}`, {
             method: 'POST',
             body: locationFormData,
         });
@@ -268,20 +288,21 @@ export default function EditContentPage() {
             throw new Error(errorData?.error || 'Failed to update location.');
         }
 
-        // Step 2: Upload only the NEW gallery images
-        const newGalleryImages = data.galleryImages.filter((img: FormGalleryImage) => img.isNew && img.file);
-        const galleryUploadPromises = newGalleryImages.map((imgData: FormGalleryImage, index) => {
-            const originalIndex = data.galleryImages.findIndex(g => g.src === imgData.src);
-            if (imgData.file) {
-                 return uploadGalleryImage(imgData.file, slug, { alt: imgData.alt, hint: imgData.hint }, originalIndex);
+        // Step 2: Handle gallery updates - upload new images & update existing ones if file changed
+        const galleryPromises = data.galleryImages.map((img, index) => {
+            const formImg = img as FormGalleryImage;
+            if (formImg.isNew && formImg.file) {
+                // This is a brand new image, upload it.
+                return uploadGalleryImage(formImg.file, { alt: formImg.alt, hint: formImg.hint }, index);
+            } else if (formImg.file) {
+                // This is an existing image with a new file to replace it.
+                return updateGalleryImage(formImg);
             }
-            return null;
-        }).filter(p => p !== null);
+            return Promise.resolve(); // No file change for this image.
+        });
 
-        if (galleryUploadPromises.length > 0) {
-            await Promise.all(galleryUploadPromises);
-        }
-
+        await Promise.all(galleryPromises);
+        
         toast({
             title: 'Success!',
             description: `Location "${data.title}" has been updated.`,

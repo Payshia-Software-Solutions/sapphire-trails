@@ -21,6 +21,13 @@ class LocationGalleryImage
         $stmt->execute([$slug]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    public function getById($id)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM location_gallery_images WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     public function create($data)
     {
@@ -50,5 +57,25 @@ class LocationGalleryImage
     {
         $stmt = $this->pdo->prepare("DELETE FROM location_gallery_images WHERE id = ?");
         return $stmt->execute([$id]);
+    }
+    
+    public function updateById($id, $data)
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE location_gallery_images
+            SET image_url = ?, alt_text = ?, hint = ?, is_360 = ?, sort_order = ?, updated_at = NOW()
+            WHERE id = ?
+        ");
+
+        $stmt->execute([
+            $data['image_url'],
+            $data['alt_text'],
+            $data['hint'],
+            $data['is_360'],
+            $data['sort_order'],
+            $id
+        ]);
+
+        return $stmt->rowCount() > 0;
     }
 }
