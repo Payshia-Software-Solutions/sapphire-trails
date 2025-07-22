@@ -1,12 +1,10 @@
-
 "use client";
 
 import Image from 'next/image';
-import { useState, useCallback, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { ScrollAnimate } from '@/components/shared/scroll-animate';
-import useEmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType } from 'embla-carousel-react';
+import { useState, useEffect } from 'react';
 import { getFullImageUrl } from '@/lib/utils';
+import { ScrollAnimate } from '@/components/shared/scroll-animate';
+import { cn } from '@/lib/utils';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -19,28 +17,21 @@ const defaultContent = {
       hint: 'gem mining',
     },
     {
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/img37.webp',
+      alt: 'A vibrant collection of polished gemstones displayed in black trays.',
+      hint: 'gemstones collection'
+    },
+    {
       src: 'https://content-provider.payshia.com/sapphire-trail/images/img36.webp',
       alt: 'People swimming and enjoying the cool water at the base of a waterfall.',
       hint: 'waterfall swimming',
-    },
-    {
-      src: 'https://content-provider.payshia.com/sapphire-trail/images/img37.webp',
-      alt: 'A vibrant collection of polished gemstones displayed in black trays.',
-      hint: 'gemstones collection',
     },
   ]
 };
 
 export function DiscoverSection() {
   const [content, setContent] = useState(defaultContent);
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' });
-  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, []);
-  
   useEffect(() => {
     try {
       const storedDataRaw = localStorage.getItem(CMS_DATA_KEY);
@@ -56,14 +47,6 @@ export function DiscoverSection() {
     }
   }, []);
 
-  useEffect(() => {
-      if (!emblaApi) return;
-      onSelect(emblaApi);
-      emblaApi.on('select', onSelect);
-      emblaApi.on('reInit', onSelect);
-  }, [emblaApi, onSelect]);
-
-
   return (
     <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
       <div className="container mx-auto px-4 md:px-6 flex flex-col items-center">
@@ -77,35 +60,42 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-16 w-full max-w-5xl"
+            className="mt-16 w-full max-w-6xl"
         >
-            <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex" style={{ backfaceVisibility: 'hidden' }}>
-                    {content.images.map((image, index) => (
-                        <div
-                            className="flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0"
-                            key={index}
-                        >
-                            <div
-                                className={cn(
-                                    "relative aspect-[4/3] w-full transition-transform duration-500 ease-out",
-                                )}
-                            >
-                                <Image
-                                    src={getFullImageUrl(image.src)}
-                                    alt={image.alt}
-                                    data-ai-hint={image.hint}
-                                    fill
-                                    className={cn(
-                                        "rounded-2xl object-cover w-full h-full shadow-2xl transition-all duration-500 ease-out",
-                                        index === selectedIndex ? "scale-100" : "scale-75"
-                                    )}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
+          <div className="flex justify-center items-center gap-4 md:gap-6">
+            {/* Left Image */}
+            <div className="relative w-1/4 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl">
+              <Image
+                src={getFullImageUrl(content.images[0].src)}
+                alt={content.images[0].alt}
+                data-ai-hint={content.images[0].hint}
+                fill
+                className="object-cover"
+              />
             </div>
+
+            {/* Center Image */}
+            <div className="relative w-1/2 aspect-video rounded-2xl overflow-hidden shadow-2xl">
+              <Image
+                src={getFullImageUrl(content.images[1].src)}
+                alt={content.images[1].alt}
+                data-ai-hint={content.images[1].hint}
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            {/* Right Image */}
+            <div className="relative w-1/4 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl">
+              <Image
+                src={getFullImageUrl(content.images[2].src)}
+                alt={content.images[2].alt}
+                data-ai-hint={content.images[2].hint}
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
         </ScrollAnimate>
 
       </div>
