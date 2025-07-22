@@ -29,7 +29,7 @@ const steps = [
   { id: 1, name: 'Homepage Card', fields: ['homepageTitle', 'homepageDescription', 'imageAlt', 'imageHint'] as const },
   { id: 2, name: 'Tour Page Details', fields: ['tourPageTitle', 'duration', 'price', 'priceSuffix', 'tourPageDescription', 'heroImageHint'] as const },
   { id: 3, name: 'Highlights & Inclusions', fields: ['tourHighlights', 'inclusions'] as const },
-  { id: 4, name: 'Itinerary & Booking Link', fields: ['itinerary', 'bookingLink'] as const },
+  { id: 4, name: 'Itinerary, Gallery & Booking', fields: ['itinerary', 'experienceGallery', 'bookingLink'] as const },
 ];
 
 
@@ -74,6 +74,9 @@ export default function EditPackagePage() {
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
+
+  const [galleryImageFiles, setGalleryImageFiles] = useState<(File | null)[]>([]);
+  const [galleryImagePreviews, setGalleryImagePreviews] = useState<(string | null)[]>([]);
 
   const form = useForm<z.infer<typeof packageFormSchema>>({
     resolver: zodResolver(packageFormSchema),
@@ -137,6 +140,8 @@ export default function EditPackagePage() {
 
             setCardImagePreview(packageData.imageUrl);
             setHeroImagePreview(packageData.heroImage);
+            setGalleryImagePreviews(packageData.experienceGallery.map(img => img.src));
+            setGalleryImageFiles(Array(packageData.experienceGallery.length).fill(null));
 
         } catch (error) {
             console.error(error);
@@ -163,6 +168,11 @@ export default function EditPackagePage() {
     control: form.control,
     name: "itinerary",
   });
+  
+   const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({
+    control: form.control,
+    name: "experienceGallery",
+  });
 
   const handleCardImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -179,6 +189,21 @@ export default function EditPackagePage() {
       setHeroImageFile(file);
       setHeroImagePreview(URL.createObjectURL(file));
       form.setValue('heroImage', file.name, { shouldValidate: true });
+    }
+  };
+
+  const handleGalleryFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const newFiles = [...galleryImageFiles];
+      newFiles[index] = file;
+      setGalleryImageFiles(newFiles);
+
+      const newPreviews = [...galleryImagePreviews];
+      newPreviews[index] = URL.createObjectURL(file);
+      setGalleryImagePreviews(newPreviews);
+      
+      form.setValue(`experienceGallery.${index}.src`, file.name, { shouldValidate: true });
     }
   };
 
@@ -209,11 +234,9 @@ export default function EditPackagePage() {
     const formData = new FormData();
     formData.append('_method', 'PUT');
 
-    // Append files only if they've changed
     if (cardImageFile) formData.append('homepage_image', cardImageFile);
     if (heroImageFile) formData.append('hero_image', heroImageFile);
 
-    // Append all other string fields
     formData.append('homepage_title', data.homepageTitle);
     formData.append('homepage_description', data.homepageDescription);
     formData.append('homepage_image_alt', data.imageAlt);
@@ -227,15 +250,23 @@ export default function EditPackagePage() {
     formData.append('tour_page_description', data.tourPageDescription);
     formData.append('booking_link', data.bookingLink);
 
-    // Stringify and append array fields, adding sort_order
     formData.append('highlights', JSON.stringify(data.tourHighlights.map((h, i) => ({ ...h, sort_order: i + 1 }))));
     formData.append('inclusions', JSON.stringify(data.inclusions.map((inc, i) => ({ icon: 'Star', title: inc.text, description: '', sort_order: i + 1 }))));
     formData.append('itinerary', JSON.stringify(data.itinerary.map((item, i) => ({ ...item, sort_order: i + 1 }))));
     
-    // Note: Experience gallery updates on edit are not fully implemented.
-    // The backend logic is complex. This will update text fields but not re-upload images.
-    // A more robust solution would track new vs. existing images.
-    formData.append('experience_gallery_meta', JSON.stringify([]));
+    const galleryMeta: any[] = [];
+    data.experienceGallery.forEach((item, index) => {
+        // Only add newly uploaded files to the form data
+        if(galleryImageFiles[index]) {
+            formData.append(`experience_gallery_images[]`, galleryImageFiles[index]!);
+            galleryMeta.push({
+                alt_text: item.alt,
+                hint: item.hint,
+                sort_order: index + 1
+            });
+        }
+    });
+    formData.append('experience_gallery_meta', JSON.stringify(galleryMeta));
 
 
     try {
@@ -388,7 +419,7 @@ export default function EditPackagePage() {
                 </Card>
             </div>
 
-            {/* Step 4: Itinerary & Booking */}
+            {/* Step 4: Itinerary, Gallery & Booking */}
              <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
                 <Card>
                     <CardHeader>
@@ -413,6 +444,56 @@ export default function EditPackagePage() {
                         </Button>
                     </CardContent>
                 </Card>
+
+                <Card className="mt-8">
+                    <CardHeader>
+                        <CardTitle>Experience Gallery</CardTitle>
+                        <CardDescription>Manage images for the tour detail page gallery. Add new images to upload them.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {galleryFields.map((item, index) => (
+                           <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => { removeGallery(index); const newFiles = [...galleryImageFiles]; newFiles.splice(index, 1); setGalleryImageFiles(newFiles); const newPreviews = [...galleryImagePreviews]; newPreviews.splice(index, 1); setGalleryImagePreviews(newPreviews); }}>
+                               <Trash2 className="h-3 w-3" />
+                             </Button>
+                             <p className="font-medium">Image {index + 1}</p>
+                             <div className="flex items-center gap-4">
+                                {galleryImagePreviews[index] ? (
+                                    <div>
+                                        <FormLabel>Preview</FormLabel>
+                                        <Image src={galleryImagePreviews[index]!} alt={`Gallery ${index+1} preview`} width={100} height={100} className="rounded-md object-cover mt-2 border" />
+                                    </div>
+                                ) : (
+                                    <div className="w-[100px] h-[100px] bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">No Preview</div>
+                                )}
+                                <div className="flex-1 space-y-4">
+                                    <FormField
+                                        control={form.control}
+                                        name={`experienceGallery.${index}.src`}
+                                        render={() => (
+                                        <FormItem>
+                                            <FormLabel>New Image File (Optional)</FormLabel>
+                                            <FormControl>
+                                            <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                        )}
+                                    />
+                                </div>
+                             </div>
+                             <div className="grid md:grid-cols-2 gap-4">
+                                <FormField control={form.control} name={`experienceGallery.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name={`experienceGallery.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             </div>
+                        </div>
+                        ))}
+                         <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', hint: '' })} disabled={galleryFields.length >= 8}>
+                            <Plus className="mr-2 h-4 w-4" /> Add Gallery Image
+                        </Button>
+                    </CardContent>
+                </Card>
+
                 <Card className="mt-8">
                     <CardHeader>
                         <CardTitle>Final Details</CardTitle>
