@@ -67,12 +67,12 @@ function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
 function BookingSummary({
   selectedTour,
   selectedDate,
-  selectedGuests,
+  totalGuests,
   totalPrice
 } : {
   selectedTour?: TourPackage;
   selectedDate?: Date;
-  selectedGuests: number;
+  totalGuests: number;
   totalPrice: number | null;
 }) {
   return (
@@ -97,7 +97,7 @@ function BookingSummary({
             </div>
              <div className="flex justify-between">
                 <span className="text-muted-foreground">Guests:</span>
-                <span className="font-medium">{selectedGuests} Person(s)</span>
+                <span className="font-medium">{totalGuests} Person(s)</span>
             </div>
         </div>
 
@@ -164,24 +164,27 @@ function BookingContent() {
       email: user?.email || "",
       phone: user?.phone || "",
       tourType: tourTypeParam ? Number(tourTypeParam) : undefined,
-      guests: 1,
+      adults: 1,
+      children: 0,
       message: "",
     },
   });
 
   const watchedTourType = methods.watch('tourType');
-  const watchedGuests = methods.watch('guests');
+  const watchedAdults = methods.watch('adults');
+  const watchedChildren = methods.watch('children');
   const watchedDate = methods.watch('date');
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
 
   const selectedTour = tourPackages.find(p => p.id === Number(watchedTourType));
+  const totalGuests = (Number(watchedAdults) || 0) + (Number(watchedChildren) || 0);
 
   useEffect(() => {
-    if (selectedTour && watchedGuests > 0) {
-      if (selectedTour && selectedTour.price) {
+    if (selectedTour && totalGuests > 0) {
+      if (selectedTour.price) {
         const pricePerPerson = parseFloat(selectedTour.price.replace(/[^0-9.-]+/g,""));
         if (!isNaN(pricePerPerson)) {
-          setTotalPrice(pricePerPerson * watchedGuests);
+          setTotalPrice(pricePerPerson * totalGuests);
         } else {
           setTotalPrice(null);
         }
@@ -191,7 +194,7 @@ function BookingContent() {
     } else {
       setTotalPrice(null);
     }
-  }, [selectedTour, watchedGuests]);
+  }, [selectedTour, totalGuests]);
 
   useEffect(() => {
      if (user) {
@@ -200,7 +203,8 @@ function BookingContent() {
         email: user.email,
         phone: user.phone || "",
         tourType: tourTypeParam ? Number(tourTypeParam) : methods.getValues('tourType'),
-        guests: methods.getValues('guests') || 1,
+        adults: methods.getValues('adults') || 1,
+        children: methods.getValues('children') || 0,
         date: methods.getValues('date'),
         message: methods.getValues('message') || "",
       });
@@ -210,7 +214,8 @@ function BookingContent() {
         email: "",
         phone: "",
         tourType: tourTypeParam ? Number(tourTypeParam) : methods.getValues('tourType'),
-        guests: methods.getValues('guests') || 1,
+        adults: methods.getValues('adults') || 1,
+        children: methods.getValues('children') || 0,
         date: methods.getValues('date'),
         message: methods.getValues('message') || "",
       });
@@ -236,7 +241,7 @@ function BookingContent() {
               <BookingSummary 
                 selectedTour={selectedTour}
                 selectedDate={watchedDate}
-                selectedGuests={watchedGuests}
+                totalGuests={totalGuests}
                 totalPrice={totalPrice}
               />
             </div>

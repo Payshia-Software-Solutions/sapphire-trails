@@ -132,8 +132,9 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
         return;
     }
     
+    const totalGuests = data.adults + data.children;
     const pricePerPerson = parseFloat(selectedTour.price.replace(/[^0-9.-]+/g,""));
-    const totalPrice = !isNaN(pricePerPerson) ? pricePerPerson * data.guests : 0;
+    const totalPrice = !isNaN(pricePerPerson) ? pricePerPerson * totalGuests : 0;
 
     const payload = {
         user_id: user ? user.id : null,
@@ -142,7 +143,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
         email: data.email,
         phone: data.phone,
         address: data.address,
-        guests: Number(data.guests),
+        guests: totalGuests,
         tour_date: format(data.date, 'yyyy-MM-dd'),
         message: data.message,
         type: user ? user.type : 'client',
@@ -166,7 +167,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
         setConfirmationDetails({
             tourName: selectedTour.tourPageTitle,
             date: data.date,
-            guests: data.guests,
+            guests: totalGuests,
             totalPrice: totalPrice,
         });
 
@@ -269,28 +270,52 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
                     )}
                 />
                 
-                <FormField
-                    control={form.control}
-                    name="guests"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Participants</FormLabel>
-                        <Select onValueChange={(val) => field.onChange(parseInt(val))} value={String(field.value)}>
-                        <FormControl>
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            {[...Array(10)].map((_, i) => (
-                                <SelectItem key={i+1} value={String(i+1)}>{i+1} Person</SelectItem>
-                            ))}
-                        </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                      control={form.control}
+                      name="adults"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Adults</FormLabel>
+                          <Select onValueChange={(val) => field.onChange(parseInt(val))} defaultValue={String(field.value)}>
+                          <FormControl>
+                              <SelectTrigger>
+                                  <SelectValue />
+                              </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                              {[...Array(10)].map((_, i) => (
+                                  <SelectItem key={i+1} value={String(i+1)}>{i+1} Adult(s)</SelectItem>
+                              ))}
+                          </SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                  />
+                  <FormField
+                      control={form.control}
+                      name="children"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Children</FormLabel>
+                          <Select onValueChange={(val) => field.onChange(parseInt(val))} defaultValue={String(field.value)}>
+                          <FormControl>
+                              <SelectTrigger>
+                                  <SelectValue />
+                              </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                              {[...Array(6)].map((_, i) => (
+                                  <SelectItem key={i} value={String(i)}>{i} Child(ren)</SelectItem>
+                              ))}
+                          </SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                  />
+                </div>
             </CardContent>
         </Card>
 

@@ -21,11 +21,15 @@ export const bookingFormSchema = z.object({
   tourType: z.coerce.number({
     required_error: "You need to select a tour type.",
   }),
-  guests: z.coerce.number().int().min(1, { message: "Please enter at least 1 guest." }),
+  adults: z.coerce.number().int().min(1, { message: "At least one adult is required." }),
+  children: z.coerce.number().int().min(0, { message: "Children must be 0 or more."}),
   date: z.date({
     required_error: "A date for your tour is required.",
   }),
   message: z.string().optional(),
+}).refine(data => data.adults + data.children > 0, {
+  message: "There must be at least one participant.",
+  path: ["adults"],
 });
 
 
