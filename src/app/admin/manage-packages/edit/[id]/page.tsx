@@ -275,24 +275,40 @@ export default function EditPackagePage() {
     formData.append('inclusions', JSON.stringify(data.inclusions.map((inc, i) => ({ icon: 'Star', title: inc.text, description: '', sort_order: i + 1 }))));
     formData.append('itinerary', JSON.stringify(data.itinerary.map((item, i) => ({ ...item, sort_order: i + 1 }))));
     
+    // Construct the final gallery metadata and handle new file uploads
     const galleryItemsWithFiles = data.experienceGallery.map(item => item as GalleryField);
-    
-    // Separate new images to be uploaded from existing metadata
-    const newImages = galleryItemsWithFiles.filter(item => !!item.file);
-    const newImageFiles = newImages.map(item => item.file!);
-    const newImageMeta = newImages.map((item, index) => ({
-      alt_text: item.alt,
-      hint: item.hint,
-      sort_order: (data.experienceGallery.length - newImages.length) + index + 1 // Ensure new images are ordered last
-    }));
+    const newImageFiles: File[] = [];
+    const finalGalleryMeta: any[] = [];
+    const newGalleryMeta: any[] = [];
 
-    // Append new image files
+    galleryItemsWithFiles.forEach((item, index) => {
+        if (item.file) { // This is a new file to be uploaded
+            newImageFiles.push(item.file);
+            newGalleryMeta.push({
+                alt_text: item.alt,
+                hint: item.hint,
+                sort_order: index + 1
+            });
+        } else { // This is an existing image, just send its metadata back
+            finalGalleryMeta.push({
+                image_url: item.src,
+                alt_text: item.alt,
+                hint: item.hint,
+                sort_order: index + 1
+            });
+        }
+    });
+
+    // Append new image files if any
     newImageFiles.forEach((file) => {
       formData.append(`experience_gallery_images[]`, file);
     });
-
-    // Append metadata for the new images
-    formData.append('experience_gallery_meta', JSON.stringify(newImageMeta));
+    
+    // The server expects `experience_gallery_meta` only for NEW uploads
+    formData.append('experience_gallery_meta', JSON.stringify(newGalleryMeta));
+    
+    // The server expects `experience_gallery` with metadata for ALL images to keep
+    formData.append('experience_gallery', JSON.stringify(finalGalleryMeta));
     
     try {
       const response = await fetch(`${API_BASE_URL}/tours/${id}`, {
