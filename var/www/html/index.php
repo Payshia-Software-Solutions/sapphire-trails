@@ -1,41 +1,57 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
+// Set CORS headers for every response
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
+// Handle OPTIONS requests (preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
     exit();
 }
 
-require_once './config/database.php';
+ini_set('memory_limit', '256M');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once './lib/router.php';
 
-$database = new Database();
-$GLOBALS['pdo'] = $database->getConnection();
-
-$request_uri = $_SERVER['REQUEST_URI'];
-$base_path = '/sapphire_trails_server'; // Adjust if your app is in a subdirectory on the server
-$route_path = str_replace($base_path, '', $request_uri);
-$route_path = parse_url($route_path, PHP_URL_PATH);
+// Route files
+$routesConfig = [
+    '/users' => './routes/userRoutes.php',
+    '/admin' => './routes/adminRoutes.php',
+    '/tours' => './routes/tourpackageRoutes.php',
+    '/locations' => './routes/locationRoutes.php',
+    '/bookings' => './routes/bookingRoutes.php',
+    '/location-gallery' => './routes/locationgalleryimageRoutes.php',
+    '/site-content' => './routes/sitecontentRoutes.php',
+    '/experience-gallery' => './routes/tourexperiencegalleryRoutes.php',
+];
 
 $router = new Router();
+foreach ($routesConfig as $prefix => $file) {
+    if (file_exists($file)) {
+        $routeDefinition = require $file;
+        if (is_callable($routeDefinition)) {
+            $router->group($prefix, $routeDefinition);
+        }
+    }
+}
 
-// Modular route inclusion
-$router->group('/users', require_once './routes/userRoutes.php');
-$router->group('/bookings', require_once './routes/bookingRoutes.php');
-$router->group('/tours', require_once './routes/tourpackageRoutes.php');
-$router->group('/locations', require_once './routes/locationRoutes.php');
-$router->group('/content', require_once './routes/sitecontentRoutes.php');
-$router->group('/location-gallery', require_once './routes/locationGalleryImageRoutes.php');
+// Get request method and URI
+$method = $_SERVER['REQUEST_METHOD'];
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
+// Adjust URI if running in a subdirectory
+if (isset($_SERVER['CONTEXT_PREFIX']) && strpos($uri, $_SERVER['CONTEXT_PREFIX']) === 0) {
+    $uri = substr($uri, strlen($_SERVER['CONTEXT_PREFIX']));
+} elseif (strpos($uri, '/sapphire_trails_server') === 0) { // Fallback for localhost
+    $uri = str_replace('/sapphire_trails_server', '', $uri);
+}
+$uri = $uri ?: '/';
 
-// The login route is now handled within userRoutes.php, so the special case is removed.
+header('Content-Type: application/json');
 
-
-$router->dispatch($route_path);
-
+// Dispatch the request
+$router->dispatch($uri);
 ?>
