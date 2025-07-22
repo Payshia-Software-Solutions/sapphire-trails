@@ -57,7 +57,7 @@ export const locationFormSchema = z.object({
   heroImage: z.string().min(1, "A hero image is required."),
   introImageUrl: z.string().min(1, "An intro image is required."),
 
-  // Gallery (4 images)
+  // Gallery (dynamic length)
   galleryImages: z.array(z.object({
     src: z.string().min(1, "An image is required."),
     alt: z.string().min(3, "Alt text is required."),
@@ -65,7 +65,7 @@ export const locationFormSchema = z.object({
     // Added optional fields from server response to avoid type errors on `reset`
     image_url: z.string().optional(),
     alt_text: z.string().optional(),
-  })).length(4, "Please provide exactly 4 gallery images."),
+  })).min(1, "Please provide at least 1 gallery image."),
 
   // Highlights (4 items)
   highlights: z.array(z.object({

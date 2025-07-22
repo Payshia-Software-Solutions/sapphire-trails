@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { locationFormSchema } from '@/lib/schemas';
@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { ArrowLeft, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
@@ -51,12 +51,12 @@ export default function AddContentPage() {
   const [cardImageFile, setCardImageFile] = useState<File | null>(null);
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [introImageFile, setIntroImageFile] = useState<File | null>(null);
-  const [galleryImageFiles, setGalleryImageFiles] = useState<(File | null)[]>(Array(4).fill(null));
+  const [galleryImageFiles, setGalleryImageFiles] = useState<(File | null)[]>([]);
   
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
   const [introImagePreview, setIntroImagePreview] = useState<string | null>(null);
-  const [galleryImagePreviews, setGalleryImagePreviews] = useState<(string | null)[]>(Array(4).fill(null));
+  const [galleryImagePreviews, setGalleryImagePreviews] = useState<(string | null)[]>([]);
 
   useEffect(() => {
     setIsClient(true);
@@ -79,12 +79,17 @@ export default function AddContentPage() {
       introDescription: '',
       introImageUrl: '',
       introImageHint: '',
-      galleryImages: Array.from({ length: 4 }, () => ({ src: '', alt: '', hint: '' })),
+      galleryImages: [{ src: '', alt: '', hint: '' }], // Start with one
       highlights: Array.from({ length: 4 }, () => ({ icon: 'Leaf' as const, title: '', description: '' })),
       visitorInfo: Array.from({ length: 4 }, () => ({ icon: 'Clock' as const, title: '', line1: '', line2: '' })),
       mapEmbedUrl: '',
       nearbyAttractions: Array.from({ length: 3 }, () => ({ icon: 'Gem' as const, name: '', distance: '' })),
     },
+  });
+
+  const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({
+    control: form.control,
+    name: "galleryImages",
   });
   
   const title = form.watch('title');
@@ -146,7 +151,7 @@ export default function AddContentPage() {
 
   const handlePrev = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
 
@@ -189,7 +194,7 @@ export default function AddContentPage() {
         return;
     }
     if (galleryImageFiles.some(file => file === null)) {
-      toast({ variant: "destructive", title: "Missing Gallery Images", description: "Please upload all four gallery images." });
+      toast({ variant: "destructive", title: "Missing Gallery Images", description: "Please upload all gallery images." });
       setCurrentStep(3);
       return;
     }
@@ -360,10 +365,13 @@ export default function AddContentPage() {
 
             <div className={cn(currentStep === 3 ? 'block' : 'hidden')}>
               <Card>
-                <CardHeader><CardTitle>Gallery Images (4)</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Gallery Images</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
-                    {[...Array(4)].map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                    {galleryFields.map((item, index) => (
+                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => removeGallery(index)} disabled={galleryFields.length <= 1}>
+                                <Trash2 className="h-4 w-4" />
+                             </Button>
                              <p className="font-medium">Image {index + 1}</p>
                              <FormField
                                 control={form.control}
@@ -390,6 +398,9 @@ export default function AddContentPage() {
                              </div>
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', hint: '' })}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Image
+                    </Button>
                 </CardContent>
               </Card>
             </div>

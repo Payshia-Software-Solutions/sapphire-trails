@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { locationFormSchema } from '@/lib/schemas';
@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { ArrowLeft, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
@@ -87,12 +87,17 @@ export default function EditContentPage() {
       introDescription: '',
       introImageUrl: '',
       introImageHint: '',
-      galleryImages: Array(4).fill({ src: '', alt: '', hint: '' }),
+      galleryImages: [],
       highlights: Array(4).fill({ icon: 'Leaf', title: '', description: '' }),
       visitorInfo: Array(4).fill({ icon: 'Clock', title: '', line1: '', line2: '' }),
       mapEmbedUrl: '',
       nearbyAttractions: Array(3).fill({ icon: 'Gem', name: '', distance: '' }),
     },
+  });
+
+   const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({
+    control: form.control,
+    name: "galleryImages",
   });
   
   useEffect(() => {
@@ -239,12 +244,15 @@ export default function EditContentPage() {
             <div className={cn(currentStep === 3 ? 'block' : 'hidden')}>
               <Card>
                 <CardHeader>
-                    <CardTitle>Gallery Images (4)</CardTitle>
+                    <CardTitle>Gallery Images</CardTitle>
                     <CardDescription>Image URLs cannot be changed here. Update alt text and hints.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {[...Array(4)].map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                    {galleryFields.map((item, index) => (
+                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => removeGallery(index)}>
+                                <Trash2 className="h-4 w-4" />
+                             </Button>
                              <p className="font-medium">Image {index + 1}</p>
                              <Image src={form.getValues(`galleryImages.${index}.src`)} alt="gallery preview" width={100} height={50} className="rounded-md border object-cover"/>
                              <div className="grid md:grid-cols-2 gap-4">
@@ -253,6 +261,9 @@ export default function EditContentPage() {
                              </div>
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: 'https://placehold.co/600x400.png', alt: '', hint: '' })}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Image
+                    </Button>
                 </CardContent>
               </Card>
             </div>
