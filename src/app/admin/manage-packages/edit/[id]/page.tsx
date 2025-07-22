@@ -208,6 +208,22 @@ export default function EditPackagePage() {
 
   const handleGalleryDelete = async (index: number) => {
     const itemToDelete = galleryFields[index] as GalleryField;
+    const imageId = itemToDelete.id;
+
+    if (imageId) { // This is an existing image from the server
+        try {
+            const response = await fetch(`${API_BASE_URL}/experience-gallery/${imageId}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Failed to delete image from server.');
+            toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.'});
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not delete image.'});
+            return; // Stop if the server-side delete fails
+        }
+    }
+    
+    // If we reach here, either the server delete was successful, or it was a new (unsaved) image.
+    // So, we can safely remove it from the frontend form state.
     removeGallery(index);
   };
 
@@ -241,7 +257,7 @@ export default function EditPackagePage() {
 
     // Append main package files if they have been changed
     if (cardImageFile) formData.append('homepage_image', cardImageFile);
-    if (heroFile) formData.append('hero_image', heroFile);
+    if (heroImageFile) formData.append('hero_image', heroImageFile);
 
     // Append all other text/JSON data
     formData.append('homepage_title', data.homepageTitle);
@@ -259,17 +275,25 @@ export default function EditPackagePage() {
     formData.append('inclusions', JSON.stringify(data.inclusions.map((inc, i) => ({ icon: 'Star', title: inc.text, description: '', sort_order: i + 1 }))));
     formData.append('itinerary', JSON.stringify(data.itinerary.map((item, i) => ({ ...item, sort_order: i + 1 }))));
     
-    // ** FIX: Send the complete gallery list to be re-inserted by the backend **
-    formData.append('experience_gallery', JSON.stringify(data.experienceGallery.map((item, index) => ({
-        image_url: item.src,
-        alt_text: item.alt,
-        hint: item.hint,
-        sort_order: index + 1
-    }))));
+    const galleryItemsWithFiles = data.experienceGallery.map(item => item as GalleryField);
+    
+    // Separate new images to be uploaded from existing metadata
+    const newImages = galleryItemsWithFiles.filter(item => !!item.file);
+    const newImageFiles = newImages.map(item => item.file!);
+    const newImageMeta = newImages.map((item, index) => ({
+      alt_text: item.alt,
+      hint: item.hint,
+      sort_order: (data.experienceGallery.length - newImages.length) + index + 1 // Ensure new images are ordered last
+    }));
 
-    // For now, new gallery image uploads on edit are not handled as it adds significant complexity
-    // with your current "delete-and-reinsert" backend logic. The logic above preserves the existing set.
+    // Append new image files
+    newImageFiles.forEach((file) => {
+      formData.append(`experience_gallery_images[]`, file);
+    });
 
+    // Append metadata for the new images
+    formData.append('experience_gallery_meta', JSON.stringify(newImageMeta));
+    
     try {
       const response = await fetch(`${API_BASE_URL}/tours/${id}`, {
         method: 'POST',
@@ -466,7 +490,19 @@ export default function EditPackagePage() {
                                     <Image src={item.src} alt={item.alt || `Gallery image ${index + 1}`} width={100} height={100} className="rounded-md object-cover mt-2 border" />
                                 </div>
                                 <div className="flex-1 space-y-4">
-                                     <p className="text-xs text-muted-foreground">Image uploading on edit is not currently supported. To change an image, delete this one and add a new one.</p>
+                                     <FormField
+                                        control={form.control}
+                                        name={`experienceGallery.${index}.src`}
+                                        render={() => (
+                                            <FormItem>
+                                                <FormLabel>Replace Image</FormLabel>
+                                                <FormControl>
+                                                    <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
                              </div>
                              <div className="grid md:grid-cols-2 gap-4">
