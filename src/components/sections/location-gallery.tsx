@@ -2,7 +2,6 @@
 "use client"
 
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -37,7 +36,7 @@ export function LocationGallery({ images }: LocationGalleryProps) {
 
   const mainImage = images[0];
   const thumbImages = images.slice(1, 5);
-  const remainingCount = images.length - 5;
+  const remainingCount = images.length > 5 ? images.length - 5 : 0;
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
@@ -70,9 +69,9 @@ export function LocationGallery({ images }: LocationGalleryProps) {
                             fill
                             className="object-cover transition-transform duration-300 group-hover:scale-105 filter brightness-50"
                         />
-                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Plus className="h-10 w-10 text-white" />
-                            <span className="text-3xl font-bold text-white">{remainingCount}</span>
+                         <div className="absolute inset-0 flex items-center justify-center text-white">
+                            <Plus className="h-10 w-10" />
+                            <span className="text-3xl font-bold">{remainingCount}</span>
                         </div>
                     </div>
                  </DialogTrigger>
@@ -90,8 +89,8 @@ export function LocationGallery({ images }: LocationGalleryProps) {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-2" />
-                <CarouselNext className="right-2" />
+                <CarouselPrevious className="left-2 text-white" />
+                <CarouselNext className="right-2 text-white" />
              </Carousel>
           </DialogContent>
         </Dialog>
@@ -99,3 +98,5 @@ export function LocationGallery({ images }: LocationGalleryProps) {
     </section>
   );
 }
+
+    

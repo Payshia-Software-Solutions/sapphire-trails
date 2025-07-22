@@ -59,28 +59,28 @@ export const locationFormSchema = z.object({
 
   // Gallery (dynamic length)
   galleryImages: z.array(z.object({
+    id: z.number().optional(), // Include id for existing images
     src: z.string().min(1, "An image is required."),
     alt: z.string().min(3, "Alt text is required."),
     hint: z.string().min(2, "Hint is required."),
-    // Added optional fields from server response to avoid type errors on `reset`
-    image_url: z.string().optional(),
-    alt_text: z.string().optional(),
+    file: z.instanceof(File).optional(),
+    isNew: z.boolean().optional(),
   })).min(1, "Please provide at least 1 gallery image."),
 
-  // Highlights (4 items)
+  // Highlights (dynamic length)
   highlights: z.array(z.object({
     icon: iconEnum,
     title: z.string().min(3, "Highlight title is required."),
     description: z.string().min(10, "Highlight description is required."),
-  })).length(4, "Please provide exactly 4 highlights."),
+  })).min(1, "Please provide at least 1 highlight."),
 
-  // Visitor Info (4 items)
+  // Visitor Info (dynamic length)
   visitorInfo: z.array(z.object({
     icon: iconEnum,
     title: z.string().min(3, "Visitor info title is required."),
     line1: z.string().min(3, "Line 1 is required."),
     line2: z.string().min(3, "Line 2 is required."),
-  })).length(4, "Please provide exactly 4 visitor info items."),
+  })).min(1, "Please provide at least 1 visitor info item."),
 
   // Map & Nearby
   mapEmbedUrl: z.string().url("Please enter a valid map embed URL."),
@@ -88,7 +88,7 @@ export const locationFormSchema = z.object({
       icon: iconEnum,
       name: z.string().min(3, "Attraction name is required."),
       distance: z.string().min(2, "Distance is required."),
-  })).length(3, "Please provide exactly 3 nearby attractions."),
+  })).min(1, "Please provide at least 1 nearby attraction."),
 });
 
 
@@ -132,9 +132,11 @@ export const itineraryItemSchema = z.object({
 });
 
 export const galleryImageSchema = z.object({
+    id: z.number().optional(),
     src: z.string().min(1, "An image is required."),
     alt: z.string().min(3, "Alt text is required."),
     hint: z.string().min(2, "Hint is required."),
+    file: z.instanceof(File).optional(),
 });
 
 export const packageFormSchema = z.object({
@@ -192,3 +194,5 @@ export const cmsFormSchema = z.object({
     whatsappNumber: z.string().min(10, "Please enter a valid phone number with country code.").regex(/^\d+$/, "Phone number can only contain digits."),
   }),
 });
+
+    

@@ -19,7 +19,7 @@ import { ArrowLeft, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
-import { mapServerLocationToClient, type Location } from '@/lib/locations-data';
+import { mapServerLocationToClient, type Location, type GalleryImage } from '@/lib/locations-data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
@@ -33,6 +33,12 @@ const steps = [
   { id: 5, name: 'Visitor Information', fields: ['visitorInfo'] as const },
   { id: 6, name: 'Map & Nearby', fields: ['mapEmbedUrl', 'nearbyAttractions'] as const },
 ];
+
+// Extend the GalleryImage type for the form to handle new file uploads
+interface FormGalleryImage extends GalleryImage {
+  file?: File;
+  isNew?: boolean;
+}
 
 function LoadingFormSkeleton() {
     return (
@@ -70,6 +76,15 @@ export default function EditContentPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
+  // States for main image file objects and previews
+  const [cardImageFile, setCardImageFile] = useState<File | null>(null);
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+  const [introImageFile, setIntroImageFile] = useState<File | null>(null);
+
+  const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
+  const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
+  const [introImagePreview, setIntroImagePreview] = useState<string | null>(null);
+
   const form = useForm<z.infer<typeof locationFormSchema>>({
     resolver: zodResolver(locationFormSchema),
     mode: 'onBlur',
@@ -88,14 +103,14 @@ export default function EditContentPage() {
       introImageUrl: '',
       introImageHint: '',
       galleryImages: [],
-      highlights: Array(4).fill({ icon: 'Leaf', title: '', description: '' }),
-      visitorInfo: Array(4).fill({ icon: 'Clock', title: '', line1: '', line2: '' }),
+      highlights: [],
+      visitorInfo: [],
       mapEmbedUrl: '',
-      nearbyAttractions: Array(3).fill({ icon: 'Gem', name: '', distance: '' }),
+      nearbyAttractions: [],
     },
   });
 
-   const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({
+   const { fields: galleryFields, append: appendGallery, remove: removeGallery, update: updateGallery } = useFieldArray({
     control: form.control,
     name: "galleryImages",
   });
@@ -116,27 +131,19 @@ export default function EditContentPage() {
             const serverData = await response.json();
             const locationData = mapServerLocationToClient(serverData);
             
-            // Set form values from fetched data
             form.reset({
-                title: locationData.title,
-                slug: locationData.slug,
-                cardDescription: locationData.cardDescription,
-                cardImage: locationData.cardImage,
-                imageHint: locationData.imageHint,
-                distance: locationData.distance,
-                subtitle: locationData.subtitle,
-                heroImage: locationData.heroImage,
-                heroImageHint: locationData.heroImageHint,
+                ...locationData,
                 introTitle: locationData.intro.title,
                 introDescription: locationData.intro.description,
                 introImageUrl: locationData.intro.imageUrl,
                 introImageHint: locationData.intro.imageHint,
-                galleryImages: locationData.galleryImages,
-                highlights: locationData.highlights,
-                visitorInfo: locationData.visitorInfo,
                 mapEmbedUrl: locationData.map.embedUrl,
                 nearbyAttractions: locationData.map.nearbyAttractions,
             });
+
+            setCardImagePreview(locationData.cardImage);
+            setHeroImagePreview(locationData.heroImage);
+            setIntroImagePreview(locationData.intro.imageUrl);
 
         } catch (error) {
             console.error(error);
@@ -148,6 +155,31 @@ export default function EditContentPage() {
     }
     fetchLocation();
   }, [slug, form, router, toast]);
+
+   const handleMainImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFile: (file: File | null) => void,
+    setPreview: (url: string | null) => void,
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleGalleryFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const currentItem = form.getValues(`galleryImages.${index}`);
+      updateGallery(index, {
+        ...currentItem,
+        src: URL.createObjectURL(file), // Show a preview of the new image
+        file: file, // Store the file object to be uploaded
+      });
+    }
+  };
+
 
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
@@ -171,16 +203,92 @@ export default function EditContentPage() {
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     setIsSubmitting(true);
-    toast({
-        title: 'Update Not Implemented',
-        description: 'Frontend is ready, but the server needs an UPDATE endpoint.',
-        variant: 'destructive',
+    
+    const formData = new FormData();
+    formData.append('_method', 'PUT');
+
+    // Append main images if they've been changed by the user
+    if (cardImageFile) formData.append('card_image', cardImageFile);
+    if (heroImageFile) formData.append('hero_image', heroImageFile);
+    if (introImageFile) formData.append('intro_image', introImageFile);
+
+    // Append all text/JSON fields
+    formData.append('title', data.title);
+    formData.append('subtitle', data.subtitle);
+    formData.append('card_description', data.cardDescription);
+    formData.append('card_image_hint', data.imageHint);
+    formData.append('distance', data.distance);
+    formData.append('hero_image_hint', data.heroImageHint);
+    formData.append('intro_title', data.introTitle);
+    formData.append('intro_description', data.introDescription);
+    formData.append('intro_image_hint', data.introImageHint);
+    formData.append('map_embed_url', data.mapEmbedUrl);
+    formData.append('category', 'nature'); // Assuming static category for now
+
+    formData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
+    formData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
+    formData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
+    
+    const galleryMeta = data.galleryImages.map((img: FormGalleryImage, index) => {
+        if (img.file) { // This is a new file
+            // We will upload the file and server will generate the new URL.
+            // Sending meta is useful if the server handles it.
+            return {
+                alt_text: img.alt,
+                hint: img.hint,
+                sort_order: index + 1,
+                is_360: img.is360 ? 1: 0,
+            };
+        } else { // This is an existing image
+            return {
+                image_url: img.src, // Send back the original URL
+                alt_text: img.alt,
+                hint: img.hint,
+                sort_order: index + 1,
+                is_360: img.is360 ? 1: 0,
+            };
+        }
     });
-    console.log("Form data to be sent for update:", data);
-    // In a real implementation, you would send this data to a PUT/PATCH endpoint
-    // e.g., await fetch(`${API_BASE_URL}/locations/${slug}`, { method: 'PUT', body: JSON.stringify(data) });
-    setIsSubmitting(false);
+
+    formData.append('gallery_images', JSON.stringify(galleryMeta));
+    
+    // Append new gallery image files for upload
+    data.galleryImages.forEach((img: FormGalleryImage) => {
+        if (img.file) {
+            formData.append('gallery_files[]', img.file);
+        }
+    });
+
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/locations/${slug}`, {
+            method: 'POST', // Using POST to send multipart/form-data with _method override
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.error || 'Failed to update location.');
+        }
+
+        toast({
+            title: 'Success!',
+            description: `Location "${data.title}" has been updated.`,
+        });
+        router.push('/admin/manage-content');
+
+    } catch (error) {
+      console.error('Update failed:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'An unknown error occurred.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
+
 
   const progressValue = (currentStep / steps.length) * 100;
 
@@ -219,7 +327,15 @@ export default function EditContentPage() {
                     <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug (Cannot be changed)</FormLabel><FormControl><Input {...field} disabled /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                   <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <div className="space-y-4">
+                    <FormItem>
+                      <FormLabel>Card Image (Leave blank to keep current)</FormLabel>
+                      <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setCardImageFile, setCardImagePreview)} className="text-sm" /></FormControl>
+                    </FormItem>
+                    {cardImagePreview && <Image src={cardImagePreview} alt="Card preview" width={200} height={100} className="rounded-md object-cover border" />}
+                  </div>
                   <div className="grid md:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="imageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                 </CardContent>
@@ -230,13 +346,25 @@ export default function EditContentPage() {
               <Card>
                 <CardHeader>
                     <CardTitle>Hero & Intro Section</CardTitle>
-                    <CardDescription>Content for the top of the location detail page. Image URLs cannot be changed here.</CardDescription>
+                    <CardDescription>Content for the top of the location detail page.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <FormField control={form.control} name="subtitle" render={({ field }) => (<FormItem><FormLabel>Hero Subtitle</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormItem>
+                      <FormLabel>Hero Image (Leave blank to keep current)</FormLabel>
+                      <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setHeroImageFile, setHeroImagePreview)} className="text-sm" /></FormControl>
+                    </FormItem>
+                    {heroImagePreview && <Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover border" />}
+                    <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator/>
                     <FormField control={form.control} name="introTitle" render={({ field }) => (<FormItem><FormLabel>Intro Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="introDescription" render={({ field }) => (<FormItem><FormLabel>Intro Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormItem>
+                      <FormLabel>Intro Image (Leave blank to keep current)</FormLabel>
+                      <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setIntroImageFile, setIntroImagePreview)} className="text-sm" /></FormControl>
+                    </FormItem>
+                    {introImagePreview && <Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover border" />}
+                    <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </CardContent>
               </Card>
             </div>
@@ -245,7 +373,7 @@ export default function EditContentPage() {
               <Card>
                 <CardHeader>
                     <CardTitle>Gallery Images</CardTitle>
-                    <CardDescription>Image URLs cannot be changed here. Update alt text and hints.</CardDescription>
+                    <CardDescription>Add, remove, or replace gallery images.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     {galleryFields.map((item, index) => (
@@ -254,14 +382,24 @@ export default function EditContentPage() {
                                 <Trash2 className="h-4 w-4" />
                              </Button>
                              <p className="font-medium">Image {index + 1}</p>
-                             <Image src={form.getValues(`galleryImages.${index}.src`)} alt="gallery preview" width={100} height={50} className="rounded-md border object-cover"/>
+                             <div className="flex items-start gap-4">
+                               <Image src={item.src} alt="gallery preview" width={100} height={100} className="rounded-md border object-cover"/>
+                               <div className="flex-1 space-y-2">
+                                  <FormItem>
+                                    <FormLabel>Replace Image</FormLabel>
+                                    <FormControl>
+                                      <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
+                                    </FormControl>
+                                  </FormItem>
+                               </div>
+                             </div>
                              <div className="grid md:grid-cols-2 gap-4">
                                 <FormField control={form.control} name={`galleryImages.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={form.control} name={`galleryImages.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />
                              </div>
                         </div>
                     ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: 'https://placehold.co/600x400.png', alt: '', hint: '' })}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: 'https://placehold.co/600x400.png', alt: '', hint: '', file: new File([], 'placeholder.png'), isNew: true })}>
                         <Plus className="mr-2 h-4 w-4" /> Add Image
                     </Button>
                 </CardContent>
@@ -270,10 +408,10 @@ export default function EditContentPage() {
             
             <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
               <Card>
-                <CardHeader><CardTitle>Key Highlights (4)</CardTitle></CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-6">
-                    {[...Array(4)].map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    {form.getValues('highlights').map((_, index) => (
+                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
                              <p className="font-medium">Highlight {index + 1}</p>
                             <FormField
                                 control={form.control}
@@ -305,9 +443,9 @@ export default function EditContentPage() {
 
             <div className={cn(currentStep === 5 ? 'block' : 'hidden')}>
                <Card>
-                <CardHeader><CardTitle>Visitor Information (4)</CardTitle></CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-6">
-                    {[...Array(4)].map((_, index) => (
+                <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    {form.getValues('visitorInfo').map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md">
                              <p className="font-medium">Info Item {index + 1}</p>
                             <FormField
@@ -341,12 +479,12 @@ export default function EditContentPage() {
             
             <div className={cn(currentStep === 6 ? 'block' : 'hidden')}>
               <Card>
-                <CardHeader><CardTitle>Map & Nearby (3)</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
                     <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator/>
                     <p className="font-medium">Nearby Attractions</p>
-                    {[...Array(3)].map((_, index) => (
+                    {form.getValues('nearbyAttractions').map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md">
                             <div className="grid md:grid-cols-3 gap-4">
                                 <FormField
@@ -403,3 +541,5 @@ export default function EditContentPage() {
     </div>
   );
 }
+
+    
