@@ -5,8 +5,11 @@ export interface Booking {
   name: string;
   email: string;
   phone?: string;
+  address?: string;
   tourType: number;
   tourTitle?: string;
+  adults: number;
+  children: number;
   guests: number;
   date: string; // YYYY-MM-DD
   message?: string;

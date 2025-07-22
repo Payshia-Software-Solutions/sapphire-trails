@@ -74,6 +74,48 @@ class User
 
         return $this->pdo->lastInsertId();
     }
+    
+    public function update($id, $data) {
+        $fields = [
+            'name' => $data['name'] ?? null,
+            'email' => $data['email'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'type' => $data['type'] ?? null,
+        ];
+        
+        $password = $data['password'] ?? null;
+        if ($password) {
+            $fields['password_hash'] = password_hash($password, PASSWORD_DEFAULT);
+        }
+
+        $update_fields = [];
+        foreach ($fields as $key => $value) {
+            if ($value !== null) {
+                $update_fields[] = "$key = :$key";
+            }
+        }
+        
+        if (empty($update_fields)) {
+            return 0; // No fields to update
+        }
+        
+        $sql = "UPDATE users SET " . implode(', ', $update_fields) . " WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        
+        $fields['id'] = $id;
+        
+        // Bind only the non-null values
+        foreach($fields as $key => &$value) {
+             if ($value !== null) {
+                $stmt->bindParam(":$key", $value);
+            }
+        }
+        unset($value);
+        $stmt->bindParam(':id', $id);
+
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
 
     public function delete($id) {
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ?");

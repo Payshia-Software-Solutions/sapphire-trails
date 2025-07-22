@@ -69,6 +69,25 @@ class UserController
             echo json_encode(['message' => 'Invalid credentials']);
         }
     }
+    
+    public function update($id)
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid JSON']);
+            return;
+        }
+
+        try {
+            $this->model->update($id, $data);
+            $updatedUser = $this->model->getById($id);
+            echo json_encode($updatedUser);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+        }
+    }
 
     public function delete($id)
     {
