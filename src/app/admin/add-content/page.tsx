@@ -151,28 +151,7 @@ export default function AddContentPage() {
 
   const handlePrev = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev + 1);
-    }
-  };
-
-  const uploadGalleryImage = async (file: File, slug: string, alt: string, hint: string, index: number) => {
-    const galleryFormData = new FormData();
-    galleryFormData.append('image', file);
-    galleryFormData.append('location_slug', slug);
-    galleryFormData.append('alt_text', alt);
-    galleryFormData.append('hint', hint);
-    galleryFormData.append('is_360', '0');
-    galleryFormData.append('sort_order', String(index + 1));
-    
-    try {
-        await fetch(`${API_BASE_URL}/gallery-images/`, {
-            method: 'POST',
-            body: galleryFormData,
-        });
-        return;
-    } catch (error) {
-        console.error(`Gallery upload failed for image ${index+1}:`, error);
-        throw new Error(`Failed to send upload request for gallery image ${index + 1}. Check server logs.`);
+      setCurrentStep(prev => prev - 1);
     }
   };
 
@@ -221,6 +200,14 @@ export default function AddContentPage() {
     }));
     
     locationFormData.append('gallery_images', JSON.stringify(galleryMeta));
+    
+    // Append gallery image files to the main form data
+    galleryImageFiles.forEach((file) => {
+      if (file) {
+        locationFormData.append('gallery_files[]', file, file.name);
+      }
+    });
+
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
     locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
@@ -236,14 +223,6 @@ export default function AddContentPage() {
         throw new Error(errorData?.message || 'Failed to create the location entry.');
       }
       
-      const galleryUploadPromises = galleryImageFiles.map((file, index) => {
-        if (file) {
-          return uploadGalleryImage(file, data.slug, data.galleryImages[index].alt, data.galleryImages[index].hint, index);
-        }
-        return Promise.resolve();
-      });
-      await Promise.all(galleryUploadPromises);
-
       toast({
         title: 'Location Added!',
         description: `Location "${data.title}" has been created successfully.`,
@@ -529,5 +508,3 @@ export default function AddContentPage() {
     </div>
   );
 }
-
-    
