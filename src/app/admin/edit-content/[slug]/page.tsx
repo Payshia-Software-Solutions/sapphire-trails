@@ -30,7 +30,7 @@ const steps = [
   { id: 2, name: 'Hero & Intro', fields: ['subtitle', 'introTitle', 'introDescription'] as const },
   { id: 3, name: 'Gallery Images', fields: ['galleryImages'] as const },
   { id: 4, name: 'Key Highlights', fields: ['highlights'] as const },
-  { id: 5, name: 'Visitor Information', fields: ['visitorInfo'] as const },
+  { id: 5, 'name': 'Visitor Information', fields: ['visitorInfo'] as const },
   { id: 6, name: 'Map & Nearby', fields: ['mapEmbedUrl', 'nearbyAttractions'] as const },
 ];
 
@@ -176,9 +176,33 @@ export default function EditContentPage() {
         ...currentItem,
         src: URL.createObjectURL(file), // Show a preview of the new image
         file: file, // Store the file object to be uploaded
+        isNew: true, // Mark it as a new image
       });
     }
   };
+
+  const handleGalleryDelete = async (index: number) => {
+    const galleryItem = galleryFields[index] as FormGalleryImage;
+    if (galleryItem.isNew || !galleryItem.id) {
+        removeGallery(index); // Just remove from UI if it's not a saved image
+        return;
+    }
+    
+    // Call server to delete the image if it exists on the backend
+    try {
+        const response = await fetch(`${API_BASE_URL}/gallery-images/${galleryItem.id}/`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete image on server.');
+        }
+        removeGallery(index); // Remove from UI on successful deletion
+        toast({ title: 'Image Deleted', description: 'Gallery image has been removed.' });
+    } catch (error) {
+        console.error('Failed to delete gallery image:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not delete gallery image.' });
+    }
+  }
 
 
   const handleNext = async () => {
@@ -200,79 +224,75 @@ export default function EditContentPage() {
       setCurrentStep(prev => prev - 1);
     }
   };
+  
+  async function uploadGalleryImage(file: File, locationSlug: string, meta: { alt: string, hint: string }, index: number) {
+    const galleryFormData = new FormData();
+    galleryFormData.append('location_slug', locationSlug);
+    galleryFormData.append('image', file);
+    galleryFormData.append('alt_text', meta.alt);
+    galleryFormData.append('hint', meta.hint);
+    galleryFormData.append('is_360', '0');
+    galleryFormData.append('sort_order', String(index + 1));
+
+    const response = await fetch(`${API_BASE_URL}/gallery-images/`, {
+        method: 'POST',
+        body: galleryFormData,
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Failed to upload gallery image ${index + 1}: ${errorData.error || 'Server error'}`);
+    }
+  }
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     setIsSubmitting(true);
     
-    const formData = new FormData();
-    formData.append('_method', 'PUT');
+    // Step 1: Update the main location entry (without gallery images)
+    const locationFormData = new FormData();
+    locationFormData.append('_method', 'PUT');
 
-    // Append main images if they've been changed by the user
-    if (cardImageFile) formData.append('card_image', cardImageFile);
-    if (heroImageFile) formData.append('hero_image', heroImageFile);
-    if (introImageFile) formData.append('intro_image', introImageFile);
+    if (cardImageFile) locationFormData.append('card_image', cardImageFile);
+    if (heroImageFile) locationFormData.append('hero_image', heroImageFile);
+    if (introImageFile) locationFormData.append('intro_image', introImageFile);
 
-    // Append all text/JSON fields
-    formData.append('title', data.title);
-    formData.append('subtitle', data.subtitle);
-    formData.append('card_description', data.cardDescription);
-    formData.append('card_image_hint', data.imageHint);
-    formData.append('distance', data.distance);
-    formData.append('hero_image_hint', data.heroImageHint);
-    formData.append('intro_title', data.introTitle);
-    formData.append('intro_description', data.introDescription);
-    formData.append('intro_image_hint', data.introImageHint);
-    formData.append('map_embed_url', data.mapEmbedUrl);
-    formData.append('category', 'nature'); 
+    locationFormData.append('title', data.title);
+    locationFormData.append('subtitle', data.subtitle);
+    locationFormData.append('card_description', data.cardDescription);
+    locationFormData.append('card_image_hint', data.imageHint);
+    locationFormData.append('distance', data.distance);
+    locationFormData.append('hero_image_hint', data.heroImageHint);
+    locationFormData.append('intro_title', data.introTitle);
+    locationFormData.append('intro_description', data.introDescription);
+    locationFormData.append('intro_image_hint', data.introImageHint);
+    locationFormData.append('map_embed_url', data.mapEmbedUrl);
+    locationFormData.append('category', 'nature'); 
 
-    formData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
-    formData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
-    formData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
+    locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
+    locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
+    locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
     
-    // Construct the gallery data based on what the server expects
-    const galleryItems: any[] = [];
-    const newGalleryFiles: { file: File; index: number }[] = [];
-
-    data.galleryImages.forEach((img: FormGalleryImage, index) => {
-        if (img.file) { // This is a new file to be uploaded
-            newGalleryFiles.push({ file: img.file, index: index });
-        } else { // This is an existing image, just send its data back
-            galleryItems.push({
-                image_url: img.src, // Send back the original URL
-                alt_text: img.alt,
-                hint: img.hint,
-                sort_order: index + 1,
-                is_360: img.is360 ? 1 : 0,
-            });
-        }
-    });
-    
-    // Server expects a complete list of all gallery items (new and old metadata)
-    formData.append('gallery_images', JSON.stringify(data.galleryImages.map((img, index) => ({
-        image_url: img.src,
-        alt_text: img.alt,
-        hint: img.hint,
-        is_360: 0,
-        sort_order: index + 1,
-    }))));
-
-    // And it expects any new files to be appended for upload
-    data.galleryImages.forEach((img) => {
-        const formImg = img as FormGalleryImage;
-        if (formImg.file) {
-            formData.append('gallery_files[]', formImg.file);
-        }
-    });
-
     try {
-        const response = await fetch(`${API_BASE_URL}/locations/${slug}`, {
-            method: 'POST', // Using POST to send multipart/form-data with _method override
-            body: formData,
+        const response = await fetch(`${API_BASE_URL}/locations/${slug}/`, {
+            method: 'POST',
+            body: locationFormData,
         });
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => null);
             throw new Error(errorData?.error || 'Failed to update location.');
+        }
+
+        // Step 2: Upload only the NEW gallery images
+        const newGalleryImages = data.galleryImages.filter((img: FormGalleryImage) => img.isNew && img.file);
+        const galleryUploadPromises = newGalleryImages.map((imgData: FormGalleryImage, index) => {
+            if (imgData.file) {
+                 return uploadGalleryImage(imgData.file, slug, { alt: imgData.alt, hint: imgData.hint }, galleryFields.length + index);
+            }
+            return null;
+        }).filter(p => p !== null);
+
+        if (galleryUploadPromises.length > 0) {
+            await Promise.all(galleryUploadPromises);
         }
 
         toast({
@@ -382,7 +402,7 @@ export default function EditContentPage() {
                 <CardContent className="space-y-6">
                     {galleryFields.map((item, index) => (
                         <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
-                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => removeGallery(index)}>
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => handleGalleryDelete(index)}>
                                 <Trash2 className="h-4 w-4" />
                              </Button>
                              <p className="font-medium">Image {index + 1}</p>
