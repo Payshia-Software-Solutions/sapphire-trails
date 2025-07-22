@@ -131,6 +131,12 @@ export const itineraryItemSchema = z.object({
   description: z.string().min(10, "Description is required."),
 });
 
+export const galleryImageSchema = z.object({
+    src: z.string().min(1, "An image is required."),
+    alt: z.string().min(3, "Alt text is required."),
+    hint: z.string().min(2, "Hint is required."),
+});
+
 export const packageFormSchema = z.object({
   // Homepage Card
   imageUrl: z.string().min(1, "An image is required for the homepage card."),
@@ -153,6 +159,8 @@ export const packageFormSchema = z.object({
   inclusions: z.array(z.object({ text: z.string().min(3, 'Inclusion text is required.') })).min(1, "At least one inclusion is required."),
 
   itinerary: z.array(itineraryItemSchema).min(1, "At least one itinerary item is required."),
+
+  experienceGallery: z.array(galleryImageSchema).min(1, "At least one gallery image is required.").max(8, "You can upload a maximum of 8 gallery images."),
   
   bookingLink: z.string().min(1, "Booking link is required.").startsWith("/", { message: "Booking link must be a relative path starting with '/'." }),
 });
@@ -184,5 +192,3 @@ export const cmsFormSchema = z.object({
     whatsappNumber: z.string().min(10, "Please enter a valid phone number with country code.").regex(/^\d+$/, "Phone number can only contain digits."),
   }),
 });
-
-    

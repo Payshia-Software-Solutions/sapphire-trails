@@ -27,7 +27,8 @@ const steps = [
   { id: 1, name: 'Homepage Card', fields: ['homepageTitle', 'homepageDescription', 'imageUrl', 'imageAlt', 'imageHint'] as const },
   { id: 2, name: 'Tour Page Details', fields: ['tourPageTitle', 'duration', 'price', 'priceSuffix', 'tourPageDescription', 'heroImage', 'heroImageHint'] as const },
   { id: 3, name: 'Highlights & Inclusions', fields: ['tourHighlights', 'inclusions'] as const },
-  { id: 4, name: 'Itinerary & Booking Link', fields: ['itinerary', 'bookingLink'] as const },
+  { id: 4, name: 'Itinerary', fields: ['itinerary'] as const },
+  { id: 5, name: 'Experience Gallery & Booking', fields: ['experienceGallery', 'bookingLink'] as const },
 ];
 
 export default function AddPackagePage() {
@@ -41,6 +42,10 @@ export default function AddPackagePage() {
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
+  
+  const [galleryImageFiles, setGalleryImageFiles] = useState<(File | null)[]>([]);
+  const [galleryImagePreviews, setGalleryImagePreviews] = useState<(string | null)[]>([]);
+
 
   useEffect(() => {
     setIsClient(true);
@@ -65,6 +70,7 @@ export default function AddPackagePage() {
       tourHighlights: Array.from({ length: 3 }, () => ({ icon: 'Star' as const, title: '', description: '' })),
       inclusions: [{ text: '' }],
       itinerary: Array.from({ length: 5 }, () => ({ time: '', title: '', description: '' })),
+      experienceGallery: [{ src: '', alt: '', hint: '' }],
       bookingLink: '/booking',
     },
   });
@@ -83,6 +89,11 @@ export default function AddPackagePage() {
     control: form.control,
     name: "itinerary",
   });
+  
+  const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({
+    control: form.control,
+    name: "experienceGallery",
+  });
 
   const handleCardImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -99,6 +110,21 @@ export default function AddPackagePage() {
       setHeroImageFile(file);
       setHeroImagePreview(URL.createObjectURL(file));
       form.setValue('heroImage', file.name, { shouldValidate: true });
+    }
+  };
+  
+  const handleGalleryFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const newFiles = [...galleryImageFiles];
+      newFiles[index] = file;
+      setGalleryImageFiles(newFiles);
+
+      const newPreviews = [...galleryImagePreviews];
+      newPreviews[index] = URL.createObjectURL(file);
+      setGalleryImagePreviews(newPreviews);
+      
+      form.setValue(`experienceGallery.${index}.src`, file.name, { shouldValidate: true });
     }
   };
 
@@ -155,6 +181,11 @@ export default function AddPackagePage() {
     // 1. Append the actual files
     formData.append('homepage_image', cardImageFile);
     formData.append('hero_image', heroImageFile);
+    galleryImageFiles.forEach((file, index) => {
+      if (file) {
+        formData.append(`experience_gallery_images[${index}]`, file);
+      }
+    });
 
     // 2. Append all other string fields
     formData.append('homepage_title', data.homepageTitle);
@@ -179,11 +210,16 @@ export default function AddPackagePage() {
     formData.append('inclusions', JSON.stringify(data.inclusions.map((inclusion, index) => ({
         icon: 'Star',
         title: inclusion.text,
-        description: '', // description is not on the form, but backend might expect it
+        description: '', 
         sort_order: index + 1,
     }))));
     
     formData.append('itinerary', JSON.stringify(data.itinerary.map((item, index) => ({
+        ...item,
+        sort_order: index + 1,
+    }))));
+    
+    formData.append('experience_gallery', JSON.stringify(data.experienceGallery.map((item, index) => ({
         ...item,
         sort_order: index + 1,
     }))));
@@ -344,7 +380,7 @@ export default function AddPackagePage() {
                 </Card>
             </div>
 
-            {/* Step 4: Itinerary & Booking */}
+            {/* Step 4: Itinerary */}
              <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
                 <Card>
                     <CardHeader>
@@ -366,6 +402,52 @@ export default function AddPackagePage() {
                         ))}
                         <Button type="button" variant="outline" size="sm" onClick={() => appendItinerary({ time: '', title: '', description: '' })}>
                             <Plus className="mr-2 h-4 w-4" /> Add Itinerary Item
+                        </Button>
+                    </CardContent>
+                </Card>
+             </div>
+             
+             {/* Step 5: Gallery & Booking */}
+              <div className={cn(currentStep === 5 ? 'block' : 'hidden')}>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Experience Gallery</CardTitle>
+                        <CardDescription>Upload up to 8 images for the tour detail page gallery.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {galleryFields.map((item, index) => (
+                           <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => { removeGallery(index); const newFiles = [...galleryImageFiles]; newFiles.splice(index, 1); setGalleryImageFiles(newFiles); const newPreviews = [...galleryImagePreviews]; newPreviews.splice(index, 1); setGalleryImagePreviews(newPreviews); }} disabled={galleryFields.length <= 1}>
+                               <Trash2 className="h-3 w-3" />
+                             </Button>
+                             <p className="font-medium">Image {index + 1}</p>
+                             <FormField
+                                control={form.control}
+                                name={`experienceGallery.${index}.src`}
+                                render={() => (
+                                <FormItem>
+                                    <FormLabel>Upload Image</FormLabel>
+                                    <FormControl>
+                                    <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            {galleryImagePreviews[index] && (
+                                <div>
+                                <FormLabel>Preview</FormLabel>
+                                <Image src={galleryImagePreviews[index]!} alt={`Gallery ${index+1} preview`} width={200} height={100} className="rounded-md object-cover mt-2 border" />
+                                </div>
+                            )}
+                             <div className="grid md:grid-cols-2 gap-4">
+                                <FormField control={form.control} name={`experienceGallery.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name={`experienceGallery.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             </div>
+                        </div>
+                        ))}
+                         <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', hint: '' })} disabled={galleryFields.length >= 8}>
+                            <Plus className="mr-2 h-4 w-4" /> Add Gallery Image
                         </Button>
                     </CardContent>
                 </Card>
