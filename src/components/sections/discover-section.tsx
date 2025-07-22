@@ -80,10 +80,10 @@ export function DiscoverSection() {
             className="mt-16 w-full max-w-5xl"
         >
             <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex -ml-4" style={{ backfaceVisibility: 'hidden' }}>
+                <div className="flex" style={{ backfaceVisibility: 'hidden' }}>
                     {content.images.map((image, index) => (
                         <div
-                            className="flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0 pl-4"
+                            className="flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0"
                             key={index}
                         >
                             <div
