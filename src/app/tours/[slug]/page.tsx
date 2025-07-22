@@ -10,7 +10,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { TourDetailHero } from '@/components/sections/tour-detail-hero';
 import { TourDetailHighlights } from '@/components/sections/tour-detail-highlights';
 import { TourDetailInclusions } from '@/components/sections/tour-detail-inclusions';
-import { BookingSection } from '@/components/sections/booking-section';
 import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -92,7 +91,6 @@ export default function TourDetailPage() {
         <TourDetailInclusions
             inclusions={tourPackage.inclusions.map(i => i.title)}
         />
-        <BookingSection />
       </main>
       <Footer />
     </div>
