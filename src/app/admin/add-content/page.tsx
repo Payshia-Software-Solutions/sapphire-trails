@@ -151,7 +151,7 @@ export default function AddContentPage() {
 
   const handlePrev = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
 
@@ -234,8 +234,10 @@ export default function AddContentPage() {
         })
         .filter(promise => promise !== null);
 
-      await Promise.all(galleryUploadPromises);
-
+      if (galleryUploadPromises.length > 0) {
+        await Promise.all(galleryUploadPromises);
+      }
+      
       toast({
         title: 'Location Added!',
         description: `Location "${data.title}" and its gallery have been created successfully.`,
