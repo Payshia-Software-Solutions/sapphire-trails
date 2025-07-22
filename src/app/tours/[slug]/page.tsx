@@ -79,6 +79,7 @@ export default function TourDetailPage() {
             title={tourPackage.tourPageTitle}
             duration={tourPackage.duration}
             price={tourPackage.price}
+            priceSuffix={tourPackage.priceSuffix}
             imageUrl={tourPackage.heroImage}
             imageHint={tourPackage.heroImageHint}
             bookingLink={`${tourPackage.bookingLink}?tourType=${tourPackage.id}`}
