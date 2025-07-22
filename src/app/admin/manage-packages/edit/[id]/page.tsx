@@ -452,25 +452,22 @@ export default function EditPackagePage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {galleryFields.map((item, index) => (
-                           <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
-                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => { removeGallery(index); const newFiles = [...galleryImageFiles]; newFiles.splice(index, 1); setGalleryImageFiles(newFiles); const newPreviews = [...galleryImagePreviews]; newPreviews.splice(index, 1); setGalleryImagePreviews(newPreviews); }}>
-                               <Trash2 className="h-3 w-3" />
-                             </Button>
-                             <p className="font-medium">Image {index + 1}</p>
+                           <div key={item.id} className="space-y-4 p-4 border rounded-md">
+                             <div className="flex justify-between items-center">
+                                <p className="font-medium">Image {index + 1}</p>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => removeGallery(index)}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                             </div>
                              <div className="flex items-center gap-4">
-                                {galleryImagePreviews[index] ? (
+                                {galleryImagePreviews[index] && (
                                     <div>
                                         <FormLabel>Preview</FormLabel>
                                         <Image src={galleryImagePreviews[index]!} alt={`Gallery ${index+1} preview`} width={100} height={100} className="rounded-md object-cover mt-2 border" />
                                     </div>
-                                ) : (
-                                    <div className="w-[100px] h-[100px] bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">No Preview</div>
                                 )}
                                 <div className="flex-1 space-y-4">
-                                    <FormField
-                                        control={form.control}
-                                        name={`experienceGallery.${index}.src`}
-                                        render={() => (
+                                    <FormField control={form.control} name={`experienceGallery.${index}.src`} render={() => (
                                         <FormItem>
                                             <FormLabel>New Image File (Optional)</FormLabel>
                                             <FormControl>
@@ -478,8 +475,7 @@ export default function EditPackagePage() {
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                        )}
-                                    />
+                                    )} />
                                 </div>
                              </div>
                              <div className="grid md:grid-cols-2 gap-4">
