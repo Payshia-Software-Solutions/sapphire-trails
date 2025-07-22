@@ -60,10 +60,11 @@ function LoadingFormSkeleton() {
 }
 
 interface GalleryField {
+    id?: number; // Existing images will have an ID
     src: string;
     alt: string;
     hint: string;
-    file?: File | null;
+    file?: File | null; // New images will have a file object
 }
 
 export default function EditPackagePage() {
@@ -205,9 +206,34 @@ export default function EditPackagePage() {
     }
   };
 
+  const handleGalleryDelete = async (index: number) => {
+    const itemToDelete = galleryFields[index] as GalleryField;
+
+    // If the item has an ID, it's an existing image on the server.
+    if (itemToDelete.id) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/experience-gallery/${itemToDelete.id}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          throw new Error('Failed to delete image from server.');
+        }
+        toast({ title: 'Image Deleted', description: 'The gallery image has been removed.' });
+      } catch (error) {
+        console.error(error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not delete the image.' });
+        return; // Don't remove from UI if server delete fails
+      }
+    }
+    
+    // Remove from the form state
+    removeGallery(index);
+  };
+
+
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
-    const isValid = await form.trigger(fields, { shouldFocus: true });
+    const isValid = await form.trigger(fields as any, { shouldFocus: true });
     
     if (!isValid) {
         toast({ variant: "destructive", title: "Validation Error", description: "Please fill out all required fields before proceeding." });
@@ -252,28 +278,25 @@ export default function EditPackagePage() {
     formData.append('inclusions', JSON.stringify(data.inclusions.map((inc, i) => ({ icon: 'Star', title: inc.text, description: '', sort_order: i + 1 }))));
     formData.append('itinerary', JSON.stringify(data.itinerary.map((item, i) => ({ ...item, sort_order: i + 1 }))));
     
-    // Server expects a complete list of gallery items to save.
-    // We construct this list, but only upload new files.
-    const finalGalleryData = data.experienceGallery.map((item: GalleryField, index) => {
-        // If it's a new file, the `src` will be a blob URL. The real path will be set on the server.
-        // If it's an existing file, the `src` is the full server URL.
-        const imageUrl = item.file ? '' : item.src; 
-        return {
-            image_url: imageUrl,
-            alt_text: item.alt,
-            hint: item.hint,
-            sort_order: index + 1,
-        };
-    });
+    const newGalleryItems = data.experienceGallery.filter((item: any) => !!item.file);
+    const newGalleryFiles = newGalleryItems.map((item: any) => item.file);
+    const newGalleryMeta = newGalleryItems.map((item: any, index: number) => ({
+      alt_text: item.alt,
+      hint: item.hint,
+      sort_order: galleryFields.length + index, // Append after existing
+    }));
 
-    formData.append('experience_gallery', JSON.stringify(finalGalleryData));
+    if (newGalleryFiles.length > 0) {
+      newGalleryFiles.forEach(file => {
+        formData.append('experience_gallery_images[]', file);
+      });
+      formData.append('experience_gallery_meta', JSON.stringify(newGalleryMeta));
+    }
+    
+    // The main package data is now sent, but existing gallery items are handled via separate DELETE calls.
+    // The create method on the controller will add new ones.
+    formData.append('experience_gallery', JSON.stringify(data.experienceGallery.filter(item => !item.file).map((item, index) => ({...item, sort_order: index}))));
 
-    // Append only the NEW gallery image files for upload.
-    data.experienceGallery.forEach((item: GalleryField) => {
-        if (item.file) {
-            formData.append('experience_gallery_images[]', item.file);
-        }
-    });
 
     try {
       const response = await fetch(`${API_BASE_URL}/tours/${id}`, {
@@ -461,7 +484,7 @@ export default function EditPackagePage() {
                            <div key={item.id} className="space-y-4 p-4 border rounded-md">
                              <div className="flex justify-between items-center">
                                 <p className="font-medium">Image {index + 1}</p>
-                                <Button type="button" variant="ghost" size="icon" onClick={() => removeGallery(index)}>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => handleGalleryDelete(index)}>
                                     <Trash2 className="h-4 w-4 text-destructive" />
                                 </Button>
                              </div>
