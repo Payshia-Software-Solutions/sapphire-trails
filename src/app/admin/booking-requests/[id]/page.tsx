@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -134,6 +133,7 @@ export default function EditBookingPage() {
             tour_package_id: bookingToUpdate.tourType,
             adults: Number(bookingToUpdate.adults),
             children: Number(bookingToUpdate.children),
+            guests: Number(bookingToUpdate.adults) + Number(bookingToUpdate.children),
             tour_date: bookingToUpdate.date, // Already in 'yyyy-MM-dd' format
             status: bookingToUpdate.status,
             message: bookingToUpdate.message,
@@ -165,7 +165,7 @@ export default function EditBookingPage() {
   const updateStatusOnServer = async (bookingId: number, status: 'accepted' | 'rejected') => {
     try {
       const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}/status/`, {
-        method: 'PUT', // Changed from PATCH to PUT
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
