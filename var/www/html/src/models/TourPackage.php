@@ -1,14 +1,17 @@
 <?php
+require_once __DIR__ . '/TourExperienceGallery.php';
 
 class TourPackage
 {
     private $pdo;
     private $tourItinerary;
+    private $experienceGallery;
 
     public function __construct($pdo, $tourItinerary)
     {
         $this->pdo = $pdo;
         $this->tourItinerary = $tourItinerary;
+        $this->experienceGallery = new TourExperienceGallery($pdo);
     }
 
     public function getAll()
@@ -21,6 +24,7 @@ class TourPackage
             $pkg['highlights'] = $this->getHighlights($pkg['id']);
             $pkg['inclusions'] = $this->getInclusions($pkg['id']);
             $pkg['itinerary'] = $this->tourItinerary->getByTourPackageId($pkg['id']);
+            $pkg['experience_gallery'] = $this->experienceGallery->getByTourPackageId($pkg['id']);
         }
 
         return $packages;
@@ -36,6 +40,7 @@ class TourPackage
             $pkg['highlights'] = $this->getHighlights($id);
             $pkg['inclusions'] = $this->getInclusions($id);
             $pkg['itinerary'] = $this->tourItinerary->getByTourPackageId($id);
+            $pkg['experience_gallery'] = $this->experienceGallery->getByTourPackageId($id);
         }
 
         return $pkg;
@@ -51,6 +56,7 @@ class TourPackage
             $pkg['highlights'] = $this->getHighlights($pkg['id']);
             $pkg['inclusions'] = $this->getInclusions($pkg['id']);
             $pkg['itinerary'] = $this->tourItinerary->getByTourPackageId($pkg['id']);
+            $pkg['experience_gallery'] = $this->experienceGallery->getByTourPackageId($pkg['id']);
         }
 
         return $pkg;
@@ -81,6 +87,7 @@ class TourPackage
 
         $this->insertHighlights($packageId, $data['highlights']);
         $this->insertInclusions($packageId, $data['inclusions']);
+        $this->insertExperienceGallery($packageId, $data['experience_gallery']);
 
         foreach ($data['itinerary'] as $item) {
             $item['tour_package_id'] = $packageId;
@@ -131,9 +138,12 @@ class TourPackage
         $this->pdo->prepare("DELETE FROM tour_highlights WHERE tour_package_id = ?")->execute([$id]);
         $this->pdo->prepare("DELETE FROM tour_inclusions WHERE tour_package_id = ?")->execute([$id]);
         $this->pdo->prepare("DELETE FROM tour_itinerary WHERE tour_package_id = ?")->execute([$id]);
+        $this->experienceGallery->deleteByTourPackageId($id);
 
         $this->insertHighlights($id, $data['highlights']);
         $this->insertInclusions($id, $data['inclusions']);
+        $this->insertExperienceGallery($id, $data['experience_gallery']);
+
         foreach ($data['itinerary'] as $item) {
             $item['tour_package_id'] = $id;
             $this->tourItinerary->create($item);
@@ -157,6 +167,7 @@ class TourPackage
     {
         $this->pdo->prepare("DELETE FROM tour_highlights WHERE tour_package_id = ?")->execute([$id]);
         $this->pdo->prepare("DELETE FROM tour_inclusions WHERE tour_package_id = ?")->execute([$id]);
+        $this->experienceGallery->deleteByTourPackageId($id);
         $this->tourItinerary->deleteByTourPackageId($id);
         $this->pdo->prepare("DELETE FROM tour_packages WHERE id = ?")->execute([$id]);
     }
@@ -205,6 +216,20 @@ class TourPackage
                 $item['title'],
                 $item['description'],
                 $item['sort_order']
+            ]);
+        }
+    }
+    
+    private function insertExperienceGallery($packageId, $galleryData) {
+        if (!is_array($galleryData)) return;
+
+        foreach ($galleryData as $item) {
+            $this->experienceGallery->create([
+                'tour_package_id' => $packageId,
+                'image_url' => $item['image_url'],
+                'alt_text' => $item['alt_text'],
+                'hint' => $item['hint'],
+                'sort_order' => $item['sort_order']
             ]);
         }
     }
