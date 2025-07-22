@@ -178,15 +178,10 @@ export default function AddPackagePage() {
 
     const formData = new FormData();
 
-    // 1. Append the actual files
+    // 1. Append the main files
     formData.append('homepage_image', cardImageFile);
     formData.append('hero_image', heroImageFile);
-    galleryImageFiles.forEach((file, index) => {
-      if (file) {
-        formData.append(`experience_gallery_images[${index}]`, file);
-      }
-    });
-
+    
     // 2. Append all other string fields
     formData.append('homepage_title', data.homepageTitle);
     formData.append('homepage_description', data.homepageDescription);
@@ -201,28 +196,24 @@ export default function AddPackagePage() {
     formData.append('tour_page_description', data.tourPageDescription);
     formData.append('booking_link', data.bookingLink);
 
-    // 3. Stringify and append array fields, adding sort_order
-    formData.append('highlights', JSON.stringify(data.tourHighlights.map((highlight, index) => ({
-        ...highlight,
-        sort_order: index + 1,
-    }))));
-    
-    formData.append('inclusions', JSON.stringify(data.inclusions.map((inclusion, index) => ({
-        icon: 'Star',
-        title: inclusion.text,
-        description: '', 
-        sort_order: index + 1,
-    }))));
-    
-    formData.append('itinerary', JSON.stringify(data.itinerary.map((item, index) => ({
-        ...item,
-        sort_order: index + 1,
-    }))));
-    
-    formData.append('experience_gallery', JSON.stringify(data.experienceGallery.map((item, index) => ({
-        ...item,
-        sort_order: index + 1,
-    }))));
+    // 3. Stringify and append array fields
+    formData.append('highlights', JSON.stringify(data.tourHighlights.map((h, i) => ({ ...h, sort_order: i + 1 }))));
+    formData.append('inclusions', JSON.stringify(data.inclusions.map((inc, i) => ({ icon: 'Star', title: inc.text, description: '', sort_order: i + 1 }))));
+    formData.append('itinerary', JSON.stringify(data.itinerary.map((item, i) => ({ ...item, sort_order: i + 1 }))));
+
+    // 4. Handle Experience Gallery Files and Metadata
+    const galleryMeta = data.experienceGallery.map((item, index) => ({
+        alt_text: item.alt,
+        hint: item.hint,
+        sort_order: index + 1
+    }));
+    formData.append('experience_gallery_meta', JSON.stringify(galleryMeta));
+
+    galleryImageFiles.forEach((file) => {
+      if (file) {
+        formData.append(`experience_gallery_images[]`, file);
+      }
+    });
 
     try {
       const response = await fetch(`${API_BASE_URL}/tours/`, {
