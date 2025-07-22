@@ -202,12 +202,12 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
                 <CardTitle>Select Tour &amp; Date</CardTitle>
                 <CardDescription>Choose your adventure and preferred date.</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                     control={form.control}
                     name="tourType"
                     render={({ field }) => (
-                    <FormItem className="lg:col-span-3">
+                    <FormItem className="md:col-span-2">
                         <FormLabel>Tour Package</FormLabel>
                         <Select onValueChange={(val) => field.onChange(parseInt(val))} value={String(field.value)} disabled={!!selectedTour}>
                         <FormControl>
@@ -267,19 +267,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
                     </FormItem>
                     )}
                 />
-                 <FormItem>
-                    <FormLabel>Select Time</FormLabel>
-                    <Select defaultValue="08:00">
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            <SelectItem value="08:00">8:00 AM</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </FormItem>
+                
                 <FormField
                     control={form.control}
                     name="guests"

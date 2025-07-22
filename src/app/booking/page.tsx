@@ -96,10 +96,6 @@ function BookingSummary({
                 <span className="font-medium">{selectedDate ? format(selectedDate, "PPP") : 'N/A'}</span>
             </div>
              <div className="flex justify-between">
-                <span className="text-muted-foreground">Time:</span>
-                <span className="font-medium">8:00 AM</span>
-            </div>
-             <div className="flex justify-between">
                 <span className="text-muted-foreground">Guests:</span>
                 <span className="font-medium">{selectedGuests} Person(s)</span>
             </div>
