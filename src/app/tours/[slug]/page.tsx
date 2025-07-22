@@ -11,6 +11,7 @@ import { TourDetailHero } from '@/components/sections/tour-detail-hero';
 import { TourDetailHighlights } from '@/components/sections/tour-detail-highlights';
 import { TourDetailInclusions } from '@/components/sections/tour-detail-inclusions';
 import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary';
+import { TourFloatingBar } from '@/components/sections/tour-floating-bar';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -90,6 +91,12 @@ export default function TourDetailPage() {
         <TourDetailItinerary itinerary={tourPackage.itinerary} />
         <TourDetailInclusions
             inclusions={tourPackage.inclusions.map(i => i.title)}
+        />
+        <TourFloatingBar
+            price={tourPackage.price}
+            priceSuffix={tourPackage.priceSuffix}
+            duration={tourPackage.duration}
+            bookingLink={`${tourPackage.bookingLink}?tourType=${tourPackage.id}`}
         />
       </main>
       <Footer />
