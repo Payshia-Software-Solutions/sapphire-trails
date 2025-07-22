@@ -16,7 +16,7 @@ export const navLinks: NavLink[] = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutGrid },
   { href: '/admin/booking-requests', label: 'Booking Requests', icon: CalendarCheck },
   { href: '/admin/cms', label: 'CMS', icon: FileText },
-  { href: '/admin/manage-content', label: 'Manage Content', icon: Settings },
+  { href: '/admin/manage-content', label: 'Manage Locations', icon: Settings },
   { href: '/admin/manage-packages', label: 'Manage Packages', icon: Package },
   { href: '/admin/user-management', label: 'User Management', icon: Users },
 ];
