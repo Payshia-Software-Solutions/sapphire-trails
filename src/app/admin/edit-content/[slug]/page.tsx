@@ -182,25 +182,23 @@ export default function EditContentPage() {
 
   const handleGalleryDelete = async (index: number) => {
     const galleryItem = galleryFields[index] as FormGalleryImage;
-    if (galleryItem.isNew || !galleryItem.id) {
-        removeGallery(index); // Just remove from UI if it's not a saved image
-        return;
+    if (galleryItem.id && !galleryItem.isNew) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) throw new Error('Failed to delete image from server.');
+            toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.' });
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not delete the image from the server.' });
+            return; // Stop if the server-side delete fails
+        }
     }
-    
-    // For existing images, just remove from UI. Backend will handle re-sync on save.
     removeGallery(index);
-    toast({ title: 'Image Marked for Deletion', description: 'The image will be removed when you save your changes.' });
-  }
+  };
 
   const handleNext = async () => {
-    const fields = steps[currentStep - 1].fields;
-    const isValid = await form.trigger(fields as any, { shouldFocus: true });
-    
-    if (!isValid) {
-        toast({ variant: "destructive", title: "Validation Error", description: "Please fill out all required fields." });
-        return;
-    }
-
     if (currentStep < steps.length) {
       setCurrentStep(prev => prev + 1);
     }
@@ -235,7 +233,7 @@ export default function EditContentPage() {
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     setIsSubmitting(true);
     
-    // Step 1: Update the main location entry (without gallery images)
+    // Step 1: Update the main location entry
     const locationFormData = new FormData();
     locationFormData.append('_method', 'PUT');
 
@@ -253,17 +251,7 @@ export default function EditContentPage() {
     locationFormData.append('intro_description', data.introDescription);
     locationFormData.append('intro_image_hint', data.introImageHint);
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
-    locationFormData.append('category', 'nature'); 
-
-    // With the new backend, we must send ALL gallery images, not just new ones
-    // Your backend will handle deleting old and inserting the new state
-    const galleryMeta = data.galleryImages.map((img: FormGalleryImage) => ({
-        // Important: if it's an old image (not a new file), send the original URL
-        image_url: img.isNew ? '' : img.src, 
-        alt_text: img.alt,
-        hint: img.hint
-    }));
-    locationFormData.append('gallery_images', JSON.stringify(galleryMeta));
+    locationFormData.append('category', 'nature');
     
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
@@ -283,8 +271,9 @@ export default function EditContentPage() {
         // Step 2: Upload only the NEW gallery images
         const newGalleryImages = data.galleryImages.filter((img: FormGalleryImage) => img.isNew && img.file);
         const galleryUploadPromises = newGalleryImages.map((imgData: FormGalleryImage, index) => {
+            const originalIndex = data.galleryImages.findIndex(g => g.src === imgData.src);
             if (imgData.file) {
-                 return uploadGalleryImage(imgData.file, slug, { alt: imgData.alt, hint: imgData.hint }, galleryFields.length + index);
+                 return uploadGalleryImage(imgData.file, slug, { alt: imgData.alt, hint: imgData.hint }, originalIndex);
             }
             return null;
         }).filter(p => p !== null);
