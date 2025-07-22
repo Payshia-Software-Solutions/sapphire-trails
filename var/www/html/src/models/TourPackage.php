@@ -5,13 +5,13 @@ class TourPackage
 {
     private $pdo;
     private $tourItinerary;
-    private $experienceGallery;
+    private $tourExperienceGallery;
 
-    public function __construct($pdo, $tourItinerary)
+    public function __construct($pdo, $tourItinerary, $tourExperienceGallery)
     {
         $this->pdo = $pdo;
         $this->tourItinerary = $tourItinerary;
-        $this->experienceGallery = new TourExperienceGallery($pdo);
+        $this->tourExperienceGallery = $tourExperienceGallery;
     }
 
     public function getAll()
@@ -24,7 +24,7 @@ class TourPackage
             $pkg['highlights'] = $this->getHighlights($pkg['id']);
             $pkg['inclusions'] = $this->getInclusions($pkg['id']);
             $pkg['itinerary'] = $this->tourItinerary->getByTourPackageId($pkg['id']);
-            $pkg['experience_gallery'] = $this->experienceGallery->getByTourPackageId($pkg['id']);
+            $pkg['experience_gallery'] = $this->tourExperienceGallery->getByTourPackageId($pkg['id']);
         }
 
         return $packages;
@@ -40,12 +40,12 @@ class TourPackage
             $pkg['highlights'] = $this->getHighlights($id);
             $pkg['inclusions'] = $this->getInclusions($id);
             $pkg['itinerary'] = $this->tourItinerary->getByTourPackageId($id);
-            $pkg['experience_gallery'] = $this->experienceGallery->getByTourPackageId($id);
+            $pkg['experience_gallery'] = $this->tourExperienceGallery->getByTourPackageId($id);
         }
 
         return $pkg;
     }
-    
+
     public function getBySlug($slug)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM tour_packages WHERE slug = ?");
@@ -56,7 +56,7 @@ class TourPackage
             $pkg['highlights'] = $this->getHighlights($pkg['id']);
             $pkg['inclusions'] = $this->getInclusions($pkg['id']);
             $pkg['itinerary'] = $this->tourItinerary->getByTourPackageId($pkg['id']);
-            $pkg['experience_gallery'] = $this->experienceGallery->getByTourPackageId($pkg['id']);
+            $pkg['experience_gallery'] = $this->tourExperienceGallery->getByTourPackageId($pkg['id']);
         }
 
         return $pkg;
@@ -87,71 +87,62 @@ class TourPackage
 
         $this->insertHighlights($packageId, $data['highlights']);
         $this->insertInclusions($packageId, $data['inclusions']);
-        $this->insertExperienceGallery($packageId, $data['experience_gallery']);
 
         foreach ($data['itinerary'] as $item) {
             $item['tour_package_id'] = $packageId;
             $this->tourItinerary->create($item);
         }
 
+        if (!empty($data['experience_gallery'])) {
+            foreach ($data['experience_gallery'] as $item) {
+                $item['tour_package_id'] = $packageId;
+                $this->tourExperienceGallery->create($item);
+            }
+        }
+
         return $packageId;
     }
-    
-    public function update($id, $data) {
+
+    public function update($id, $data)
+    {
         $stmt = $this->pdo->prepare("
             UPDATE tour_packages SET
-                homepage_title = :homepage_title,
-                homepage_description = :homepage_description,
-                homepage_image_url = :homepage_image_url,
-                homepage_image_alt = :homepage_image_alt,
-                homepage_image_hint = :homepage_image_hint,
-                tour_page_title = :tour_page_title,
-                duration = :duration,
-                price = :price,
-                price_suffix = :price_suffix,
-                hero_image_url = :hero_image_url,
-                hero_image_hint = :hero_image_hint,
-                tour_page_description = :tour_page_description,
-                booking_link = :booking_link,
-                updated_at = NOW()
-            WHERE id = :id
+                homepage_title = ?, homepage_description = ?, homepage_image_url = ?,
+                homepage_image_alt = ?, homepage_image_hint = ?, tour_page_title = ?,
+                duration = ?, price = ?, price_suffix = ?, hero_image_url = ?,
+                hero_image_hint = ?, tour_page_description = ?, booking_link = ?, updated_at = NOW()
+            WHERE id = ?
         ");
 
         $stmt->execute([
-            ':id' => $id,
-            ':homepage_title' => $data['homepage_title'],
-            ':homepage_description' => $data['homepage_description'],
-            ':homepage_image_url' => $data['homepage_image_url'],
-            ':homepage_image_alt' => $data['homepage_image_alt'],
-            ':homepage_image_hint' => $data['homepage_image_hint'],
-            ':tour_page_title' => $data['tour_page_title'],
-            ':duration' => $data['duration'],
-            ':price' => $data['price'],
-            ':price_suffix' => $data['price_suffix'],
-            ':hero_image_url' => $data['hero_image_url'],
-            ':hero_image_hint' => $data['hero_image_hint'],
-            ':tour_page_description' => $data['tour_page_description'],
-            ':booking_link' => $data['booking_link']
+            $data['homepage_title'], $data['homepage_description'], $data['homepage_image_url'],
+            $data['homepage_image_alt'], $data['homepage_image_hint'], $data['tour_page_title'],
+            $data['duration'], $data['price'], $data['price_suffix'], $data['hero_image_url'],
+            $data['hero_image_hint'], $data['tour_page_description'], $data['booking_link'], $id
         ]);
 
-        // Clear and re-insert related data
+        // Delete old relational data
         $this->pdo->prepare("DELETE FROM tour_highlights WHERE tour_package_id = ?")->execute([$id]);
         $this->pdo->prepare("DELETE FROM tour_inclusions WHERE tour_package_id = ?")->execute([$id]);
-        $this->pdo->prepare("DELETE FROM tour_itinerary WHERE tour_package_id = ?")->execute([$id]);
-        $this->experienceGallery->deleteByTourPackageId($id);
+        $this->tourItinerary->deleteByTourPackageId($id);
+        
+        // ** FIX: Do NOT delete the experience gallery here. It's handled by its own controller. **
+        // $this->tourExperienceGallery->deleteByTourPackageId($id);
 
+        // Reinsert updated highlights, inclusions, itinerary
         $this->insertHighlights($id, $data['highlights']);
         $this->insertInclusions($id, $data['inclusions']);
-        $this->insertExperienceGallery($id, $data['experience_gallery']);
 
         foreach ($data['itinerary'] as $item) {
             $item['tour_package_id'] = $id;
             $this->tourItinerary->create($item);
         }
 
-        return $stmt->rowCount();
-    }
+        // The controller will handle adding NEW gallery images.
+        // This model method no longer needs to manage the gallery.
 
+        return true;
+    }
 
     public function updateImagePaths($id, $homepageImageUrl, $heroImageUrl)
     {
@@ -167,8 +158,8 @@ class TourPackage
     {
         $this->pdo->prepare("DELETE FROM tour_highlights WHERE tour_package_id = ?")->execute([$id]);
         $this->pdo->prepare("DELETE FROM tour_inclusions WHERE tour_package_id = ?")->execute([$id]);
-        $this->experienceGallery->deleteByTourPackageId($id);
         $this->tourItinerary->deleteByTourPackageId($id);
+        $this->tourExperienceGallery->deleteByTourPackageId($id);
         $this->pdo->prepare("DELETE FROM tour_packages WHERE id = ?")->execute([$id]);
     }
 
@@ -216,20 +207,6 @@ class TourPackage
                 $item['title'],
                 $item['description'],
                 $item['sort_order']
-            ]);
-        }
-    }
-    
-    private function insertExperienceGallery($packageId, $galleryData) {
-        if (!is_array($galleryData)) return;
-
-        foreach ($galleryData as $item) {
-            $this->experienceGallery->create([
-                'tour_package_id' => $packageId,
-                'image_url' => $item['image_url'],
-                'alt_text' => $item['alt_text'],
-                'hint' => $item['hint'],
-                'sort_order' => $item['sort_order']
             ]);
         }
     }
