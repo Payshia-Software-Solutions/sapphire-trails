@@ -164,7 +164,7 @@ export default function AddContentPage() {
     galleryFormData.append('is_360', '0');
     galleryFormData.append('sort_order', String(index + 1));
 
-    const response = await fetch(`${API_BASE_URL}/gallery-images/`, {
+    const response = await fetch(`${API_BASE_URL}/location-gallery/`, {
         method: 'POST',
         body: galleryFormData,
     });
@@ -391,7 +391,10 @@ export default function AddContentPage() {
                 <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
                     {form.getValues('highlights').map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('highlights', form.getValues('highlights').filter((_, i) => i !== index))}>
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
                              <p className="font-medium">Highlight {index + 1}</p>
                             <FormField
                                 control={form.control}
@@ -429,7 +432,10 @@ export default function AddContentPage() {
                 <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
                     {form.getValues('visitorInfo').map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('visitorInfo', form.getValues('visitorInfo').filter((_, i) => i !== index))}>
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
                              <p className="font-medium">Info Item {index + 1}</p>
                             <FormField
                                 control={form.control}
@@ -471,7 +477,10 @@ export default function AddContentPage() {
                     <Separator/>
                     <p className="font-medium">Nearby Attractions</p>
                     {form.getValues('nearbyAttractions').map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('nearbyAttractions', form.getValues('nearbyAttractions').filter((_, i) => i !== index))}>
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
                             <div className="grid md:grid-cols-3 gap-4">
                                 <FormField
                                     control={form.control}

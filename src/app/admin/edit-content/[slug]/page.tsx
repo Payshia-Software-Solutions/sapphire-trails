@@ -34,7 +34,6 @@ const steps = [
   { id: 6, name: 'Map & Nearby', fields: ['mapEmbedUrl', 'nearbyAttractions'] as const },
 ];
 
-// Extend the GalleryImage type for the form to handle new file uploads
 interface FormGalleryImage extends GalleryImage {
   file?: File;
   isNew?: boolean;
@@ -188,22 +187,10 @@ export default function EditContentPage() {
         return;
     }
     
-    // Call server to delete the image if it exists on the backend
-    try {
-        const response = await fetch(`${API_BASE_URL}/gallery-images/${galleryItem.id}/`, {
-            method: 'DELETE',
-        });
-        if (!response.ok) {
-            throw new Error('Failed to delete image on server.');
-        }
-        removeGallery(index); // Remove from UI on successful deletion
-        toast({ title: 'Image Deleted', description: 'Gallery image has been removed.' });
-    } catch (error) {
-        console.error('Failed to delete gallery image:', error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not delete gallery image.' });
-    }
+    // For existing images, just remove from UI. Backend will handle re-sync on save.
+    removeGallery(index);
+    toast({ title: 'Image Marked for Deletion', description: 'The image will be removed when you save your changes.' });
   }
-
 
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
@@ -224,7 +211,7 @@ export default function EditContentPage() {
       setCurrentStep(prev => prev - 1);
     }
   };
-  
+
   async function uploadGalleryImage(file: File, locationSlug: string, meta: { alt: string, hint: string }, index: number) {
     const galleryFormData = new FormData();
     galleryFormData.append('location_slug', locationSlug);
@@ -234,7 +221,7 @@ export default function EditContentPage() {
     galleryFormData.append('is_360', '0');
     galleryFormData.append('sort_order', String(index + 1));
 
-    const response = await fetch(`${API_BASE_URL}/gallery-images/`, {
+    const response = await fetch(`${API_BASE_URL}/location-gallery/`, {
         method: 'POST',
         body: galleryFormData,
     });
@@ -243,6 +230,7 @@ export default function EditContentPage() {
         throw new Error(`Failed to upload gallery image ${index + 1}: ${errorData.error || 'Server error'}`);
     }
   }
+
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     setIsSubmitting(true);
@@ -267,6 +255,16 @@ export default function EditContentPage() {
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
     locationFormData.append('category', 'nature'); 
 
+    // With the new backend, we must send ALL gallery images, not just new ones
+    // Your backend will handle deleting old and inserting the new state
+    const galleryMeta = data.galleryImages.map((img: FormGalleryImage) => ({
+        // Important: if it's an old image (not a new file), send the original URL
+        image_url: img.isNew ? '' : img.src, 
+        alt_text: img.alt,
+        hint: img.hint
+    }));
+    locationFormData.append('gallery_images', JSON.stringify(galleryMeta));
+    
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
     locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
@@ -436,6 +434,9 @@ export default function EditContentPage() {
                 <CardContent className="space-y-4">
                     {form.getValues('highlights').map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('highlights', form.getValues('highlights').filter((_, i) => i !== index))}>
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
                              <p className="font-medium">Highlight {index + 1}</p>
                             <FormField
                                 control={form.control}
@@ -461,6 +462,9 @@ export default function EditContentPage() {
                              <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Highlight description" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('highlights', [...form.getValues('highlights'), { icon: 'Leaf', title: '', description: '' }])}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Highlight
+                    </Button>
                 </CardContent>
               </Card>
             </div>
@@ -470,7 +474,10 @@ export default function EditContentPage() {
                 <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
                     {form.getValues('visitorInfo').map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('visitorInfo', form.getValues('visitorInfo').filter((_, i) => i !== index))}>
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
                              <p className="font-medium">Info Item {index + 1}</p>
                             <FormField
                                 control={form.control}
@@ -497,6 +504,9 @@ export default function EditContentPage() {
                              <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel>Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('visitorInfo', [...form.getValues('visitorInfo'), { icon: 'Clock', title: '', line1: '', line2: '' }])}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Info Item
+                    </Button>
                 </CardContent>
               </Card>
             </div>
@@ -509,7 +519,10 @@ export default function EditContentPage() {
                     <Separator/>
                     <p className="font-medium">Nearby Attractions</p>
                     {form.getValues('nearbyAttractions').map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('nearbyAttractions', form.getValues('nearbyAttractions').filter((_, i) => i !== index))}>
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
                             <div className="grid md:grid-cols-3 gap-4">
                                 <FormField
                                     control={form.control}
@@ -536,6 +549,9 @@ export default function EditContentPage() {
                             </div>
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('nearbyAttractions', [...form.getValues('nearbyAttractions'), { icon: 'Gem', name: '', distance: '' }])}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Attraction
+                    </Button>
                 </CardContent>
               </Card>
             </div>
