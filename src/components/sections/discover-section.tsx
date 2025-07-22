@@ -7,8 +7,6 @@ import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import useEmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType } from 'embla-carousel-react';
 import { getFullImageUrl } from '@/lib/utils';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -38,8 +36,10 @@ export function DiscoverSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, []);
   
   useEffect(() => {
     try {
@@ -54,11 +54,6 @@ export function DiscoverSection() {
     } catch (error) {
       console.error("Failed to load discover section CMS data", error);
     }
-  }, []);
-
-  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
   }, []);
 
   useEffect(() => {
@@ -82,23 +77,19 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-16 w-full max-w-5xl relative"
+            className="mt-16 w-full max-w-5xl"
         >
             <div className="overflow-hidden" ref={emblaRef}>
                 <div className="flex -ml-4" style={{ backfaceVisibility: 'hidden' }}>
                     {content.images.map((image, index) => (
                         <div
-                            className="flex-[0_0_90%] sm:flex-[0_0_70%] md:flex-[0_0_60%] lg:flex-[0_0_50%] min-w-0 pl-4"
+                            className="flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0 pl-4"
                             key={index}
                         >
                             <div
                                 className={cn(
                                     "relative aspect-[4/3] w-full transition-transform duration-500 ease-out",
-                                    index === selectedIndex ? 'z-10' : 'z-0'
                                 )}
-                                style={{
-                                    transform: `scale(${index === selectedIndex ? 1 : 0.8})`,
-                                }}
                             >
                                 <Image
                                     src={getFullImageUrl(image.src)}
@@ -107,7 +98,7 @@ export function DiscoverSection() {
                                     fill
                                     className={cn(
                                         "rounded-2xl object-cover w-full h-full shadow-2xl transition-all duration-500 ease-out",
-                                        index !== selectedIndex && 'brightness-50'
+                                        index === selectedIndex ? "scale-100" : "scale-75"
                                     )}
                                 />
                             </div>
@@ -115,12 +106,6 @@ export function DiscoverSection() {
                     ))}
                 </div>
             </div>
-             <Button onClick={scrollPrev} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full h-10 w-10 p-0 z-20">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <Button onClick={scrollNext} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 rounded-full h-10 w-10 p-0 z-20">
-              <ArrowRight className="h-5 w-5" />
-            </Button>
         </ScrollAnimate>
 
       </div>
