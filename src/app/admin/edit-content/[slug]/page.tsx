@@ -223,42 +223,46 @@ export default function EditContentPage() {
     formData.append('intro_description', data.introDescription);
     formData.append('intro_image_hint', data.introImageHint);
     formData.append('map_embed_url', data.mapEmbedUrl);
-    formData.append('category', 'nature'); // Assuming static category for now
+    formData.append('category', 'nature'); 
 
     formData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     formData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
     formData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
     
-    const galleryMeta = data.galleryImages.map((img: FormGalleryImage, index) => {
-        if (img.file) { // This is a new file
-            // We will upload the file and server will generate the new URL.
-            // Sending meta is useful if the server handles it.
-            return {
-                alt_text: img.alt,
-                hint: img.hint,
-                sort_order: index + 1,
-                is_360: img.is360 ? 1: 0,
-            };
-        } else { // This is an existing image
-            return {
+    // Construct the gallery data based on what the server expects
+    const galleryItems: any[] = [];
+    const newGalleryFiles: { file: File; index: number }[] = [];
+
+    data.galleryImages.forEach((img: FormGalleryImage, index) => {
+        if (img.file) { // This is a new file to be uploaded
+            newGalleryFiles.push({ file: img.file, index: index });
+        } else { // This is an existing image, just send its data back
+            galleryItems.push({
                 image_url: img.src, // Send back the original URL
                 alt_text: img.alt,
                 hint: img.hint,
                 sort_order: index + 1,
-                is_360: img.is360 ? 1: 0,
-            };
+                is_360: img.is360 ? 1 : 0,
+            });
         }
     });
-
-    formData.append('gallery_images', JSON.stringify(galleryMeta));
     
-    // Append new gallery image files for upload
-    data.galleryImages.forEach((img: FormGalleryImage) => {
-        if (img.file) {
-            formData.append('gallery_files[]', img.file);
+    // Server expects a complete list of all gallery items (new and old metadata)
+    formData.append('gallery_images', JSON.stringify(data.galleryImages.map((img, index) => ({
+        image_url: img.src,
+        alt_text: img.alt,
+        hint: img.hint,
+        is_360: 0,
+        sort_order: index + 1,
+    }))));
+
+    // And it expects any new files to be appended for upload
+    data.galleryImages.forEach((img) => {
+        const formImg = img as FormGalleryImage;
+        if (formImg.file) {
+            formData.append('gallery_files[]', formImg.file);
         }
     });
-
 
     try {
         const response = await fetch(`${API_BASE_URL}/locations/${slug}`, {
@@ -541,5 +545,3 @@ export default function EditContentPage() {
     </div>
   );
 }
-
-    

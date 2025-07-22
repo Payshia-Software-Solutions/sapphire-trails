@@ -151,7 +151,7 @@ export default function AddContentPage() {
 
   const handlePrev = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
 
@@ -192,16 +192,16 @@ export default function AddContentPage() {
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
     locationFormData.append('category', 'nature');
 
+    // This is the correct way: Send the METADATA as a JSON string.
     const galleryMeta = data.galleryImages.map((img, index) => ({
         alt_text: img.alt,
         hint: img.hint,
         is_360: 0,
         sort_order: index + 1
     }));
-    
     locationFormData.append('gallery_images', JSON.stringify(galleryMeta));
     
-    // Append gallery image files to the main form data
+    // And send the FILES separately. The server will match them by order.
     galleryImageFiles.forEach((file) => {
       if (file) {
         locationFormData.append('gallery_files[]', file, file.name);
@@ -376,7 +376,7 @@ export default function AddContentPage() {
             <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
               <Card>
                 <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-6">
+                <CardContent className="space-y-4">
                     {form.getValues('highlights').map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md">
                              <p className="font-medium">Highlight {index + 1}</p>
@@ -404,6 +404,9 @@ export default function AddContentPage() {
                              <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Highlight description" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
+                     <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('highlights', [...form.getValues('highlights'), { icon: 'Leaf', title: '', description: '' }])}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Highlight
+                    </Button>
                 </CardContent>
               </Card>
             </div>
@@ -411,7 +414,7 @@ export default function AddContentPage() {
             <div className={cn(currentStep === 5 ? 'block' : 'hidden')}>
                <Card>
                 <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-6">
+                <CardContent className="space-y-4">
                     {form.getValues('visitorInfo').map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md">
                              <p className="font-medium">Info Item {index + 1}</p>
@@ -440,6 +443,9 @@ export default function AddContentPage() {
                              <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel>Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('visitorInfo', [...form.getValues('visitorInfo'), { icon: 'Clock', title: '', line1: '', line2: '' }])}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Info Item
+                    </Button>
                 </CardContent>
               </Card>
             </div>
@@ -479,6 +485,9 @@ export default function AddContentPage() {
                             </div>
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('nearbyAttractions', [...form.getValues('nearbyAttractions'), { icon: 'Gem', name: '', distance: '' }])}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Attraction
+                    </Button>
                 </CardContent>
               </Card>
             </div>
