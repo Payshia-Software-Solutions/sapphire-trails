@@ -141,6 +141,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
         name: data.name,
         email: data.email,
         phone: data.phone,
+        address: data.address,
         guests: Number(data.guests),
         tour_date: format(data.date, 'yyyy-MM-dd'),
         message: data.message,
@@ -340,21 +341,19 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
                             </FormItem>
                         )}
                         />
-                    <FormItem>
-                        <FormLabel>Country</FormLabel>
-                        <Select>
+                    <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Address</FormLabel>
                             <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select Country"/>
-                                </SelectTrigger>
+                                <Input placeholder="Your Address" {...field} />
                             </FormControl>
-                            <SelectContent>
-                                <SelectItem value="lk">Sri Lanka</SelectItem>
-                                <SelectItem value="us">United States</SelectItem>
-                                <SelectItem value="gb">United Kingdom</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </FormItem>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
                  </div>
                  <FormField
                     control={form.control}
@@ -378,3 +377,5 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     </form>
   )
 }
+
+    

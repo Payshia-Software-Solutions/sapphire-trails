@@ -17,6 +17,7 @@ export const bookingFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   phone: z.string().optional(),
+  address: z.string().min(5, { message: "Address must be at least 5 characters." }),
   tourType: z.coerce.number({
     required_error: "You need to select a tour type.",
   }),
@@ -179,3 +180,5 @@ export const cmsFormSchema = z.object({
     whatsappNumber: z.string().min(10, "Please enter a valid phone number with country code.").regex(/^\d+$/, "Phone number can only contain digits."),
   }),
 });
+
+    
