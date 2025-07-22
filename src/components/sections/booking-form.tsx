@@ -209,7 +209,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
                     render={({ field }) => (
                     <FormItem className="lg:col-span-3">
                         <FormLabel>Tour Package</FormLabel>
-                        <Select onValueChange={(val) => field.onChange(parseInt(val))} value={String(field.value)}>
+                        <Select onValueChange={(val) => field.onChange(parseInt(val))} value={String(field.value)} disabled={!!selectedTour}>
                         <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a tour package..." />
