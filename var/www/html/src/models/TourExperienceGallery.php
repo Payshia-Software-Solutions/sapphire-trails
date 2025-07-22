@@ -10,7 +10,7 @@ class TourExperienceGallery
 
     public function getByTourPackageId($tour_package_id)
     {
-        $stmt = $this->pdo->prepare("SELECT image_url, alt_text, hint FROM tour_experience_gallery WHERE tour_package_id = ? ORDER BY sort_order ASC");
+        $stmt = $this->pdo->prepare("SELECT id, image_url, alt_text, hint FROM tour_experience_gallery WHERE tour_package_id = ? ORDER BY sort_order ASC");
         $stmt->execute([$tour_package_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -35,6 +35,12 @@ class TourExperienceGallery
     {
         $stmt = $this->pdo->prepare("DELETE FROM tour_experience_gallery WHERE tour_package_id = ?");
         return $stmt->execute([$tour_package_id]);
+    }
+    
+    public function deleteById($id)
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM tour_experience_gallery WHERE id = ?");
+        return $stmt->execute([$id]);
     }
 }
 ?>
