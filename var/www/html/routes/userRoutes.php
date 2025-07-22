@@ -15,6 +15,12 @@ return function ($router) {
 
     // Route to create a new user
     $router->post('/', [$controller, 'create']);
+    
+    // Route for login
+    $router->post('/login', [$controller, 'login']);
+
+    // Route to update a user
+    $router->put('/{id}', [$controller, 'update']);
 
     // Route to delete a user
     $router->delete('/{id}', [$controller, 'delete']);

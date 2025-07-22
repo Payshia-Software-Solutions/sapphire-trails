@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { locationFormSchema } from '@/lib/schemas';
@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { ArrowLeft, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
@@ -51,12 +51,12 @@ export default function AddContentPage() {
   const [cardImageFile, setCardImageFile] = useState<File | null>(null);
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [introImageFile, setIntroImageFile] = useState<File | null>(null);
-  const [galleryImageFiles, setGalleryImageFiles] = useState<(File | null)[]>(Array(4).fill(null));
+  const [galleryImageFiles, setGalleryImageFiles] = useState<(File | null)[]>([]);
   
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
   const [introImagePreview, setIntroImagePreview] = useState<string | null>(null);
-  const [galleryImagePreviews, setGalleryImagePreviews] = useState<(string | null)[]>(Array(4).fill(null));
+  const [galleryImagePreviews, setGalleryImagePreviews] = useState<(string | null)[]>([]);
 
   useEffect(() => {
     setIsClient(true);
@@ -79,12 +79,17 @@ export default function AddContentPage() {
       introDescription: '',
       introImageUrl: '',
       introImageHint: '',
-      galleryImages: Array.from({ length: 4 }, () => ({ src: '', alt: '', hint: '' })),
+      galleryImages: [{ src: '', alt: '', hint: '' }],
       highlights: Array.from({ length: 4 }, () => ({ icon: 'Leaf' as const, title: '', description: '' })),
       visitorInfo: Array.from({ length: 4 }, () => ({ icon: 'Clock' as const, title: '', line1: '', line2: '' })),
       mapEmbedUrl: '',
       nearbyAttractions: Array.from({ length: 3 }, () => ({ icon: 'Gem' as const, name: '', distance: '' })),
     },
+  });
+
+  const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({
+    control: form.control,
+    name: "galleryImages",
   });
   
   const title = form.watch('title');
@@ -150,32 +155,25 @@ export default function AddContentPage() {
     }
   };
 
-  const uploadGalleryImage = async (file: File, slug: string, alt: string, hint: string, index: number) => {
+  async function uploadGalleryImage(file: File, locationSlug: string, meta: { alt: string, hint: string }, index: number) {
     const galleryFormData = new FormData();
+    galleryFormData.append('location_slug', locationSlug);
     galleryFormData.append('image', file);
-    galleryFormData.append('location_slug', slug);
-    galleryFormData.append('alt_text', alt);
-    galleryFormData.append('hint', hint);
+    galleryFormData.append('alt_text', meta.alt);
+    galleryFormData.append('hint', meta.hint);
     galleryFormData.append('is_360', '0');
     galleryFormData.append('sort_order', String(index + 1));
-    
-    try {
-        await fetch(`${API_BASE_URL}/location-gallery/`, {
-            method: 'POST',
-            body: galleryFormData,
-            mode: 'no-cors', // Important for handling cross-origin form data uploads that redirect
-        });
-        // With 'no-cors', we cannot inspect the response, so we optimistically assume success.
-        // The server handles the actual upload and any errors would be logged server-side.
-        return;
 
-    } catch (error) {
-        console.error(`Gallery upload failed for image ${index+1}:`, error);
-        // This error will likely be a generic network error due to 'no-cors' mode,
-        // but we throw it to be caught by the main handler.
-        throw new Error(`Failed to send upload request for gallery image ${index + 1}. Check server logs.`);
+    const response = await fetch(`${API_BASE_URL}/location-gallery/`, {
+        method: 'POST',
+        body: galleryFormData,
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Failed to upload gallery image ${index + 1}: ${errorData.error || 'Server error'}`);
     }
-  };
+  }
+
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     if (!data.slug || data.slug.trim().length < 3) {
@@ -188,15 +186,10 @@ export default function AddContentPage() {
         setCurrentStep(2);
         return;
     }
-    if (galleryImageFiles.some(file => file === null)) {
-      toast({ variant: "destructive", title: "Missing Gallery Images", description: "Please upload all four gallery images." });
-      setCurrentStep(3);
-      return;
-    }
 
     setIsSubmitting(true);
     
-    // Step 1: Create main location data
+    // Create the main location entry first
     const locationFormData = new FormData();
     locationFormData.append('card_image', cardImageFile);
     locationFormData.append('hero_image', heroImageFile);
@@ -218,8 +211,9 @@ export default function AddContentPage() {
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
     locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
-
+    
     try {
+      // Step 1: Create the main location entry
       const locationResponse = await fetch(`${API_BASE_URL}/locations/`, {
         method: 'POST',
         body: locationFormData,
@@ -230,29 +224,23 @@ export default function AddContentPage() {
         throw new Error(errorData?.message || 'Failed to create the location entry.');
       }
       
-      // Step 2: Upload gallery images individually
-      try {
-        const galleryUploadPromises = galleryImageFiles.map((file, index) => {
-          if (file) {
-            return uploadGalleryImage(file, data.slug, data.galleryImages[index].alt, data.galleryImages[index].hint, index);
-          }
-          return Promise.resolve();
-        });
+      // Step 2: Upload gallery images one by one
+      const galleryUploadPromises = galleryImageFiles
+        .map((file, index) => {
+            if (file) {
+                return uploadGalleryImage(file, data.slug, data.galleryImages[index], index);
+            }
+            return null;
+        })
+        .filter(promise => promise !== null);
+
+      if (galleryUploadPromises.length > 0) {
         await Promise.all(galleryUploadPromises);
-      } catch (galleryError) {
-        // Even if gallery fails, the main location was created.
-        // We'll show an error but still consider the main part a success.
-         toast({
-            variant: 'destructive',
-            title: 'Gallery Upload Issue',
-            description: galleryError instanceof Error ? galleryError.message : 'Gallery image upload requests were sent, but could not be verified.',
-        });
       }
-
-
+      
       toast({
         title: 'Location Added!',
-        description: `Location "${data.title}" has been created successfully.`,
+        description: `Location "${data.title}" and its gallery have been created successfully.`,
       });
       router.push('/admin/manage-content');
 
@@ -360,10 +348,13 @@ export default function AddContentPage() {
 
             <div className={cn(currentStep === 3 ? 'block' : 'hidden')}>
               <Card>
-                <CardHeader><CardTitle>Gallery Images (4)</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Gallery Images</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
-                    {[...Array(4)].map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                    {galleryFields.map((item, index) => (
+                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => removeGallery(index)} disabled={galleryFields.length <= 1}>
+                                <Trash2 className="h-4 w-4" />
+                             </Button>
                              <p className="font-medium">Image {index + 1}</p>
                              <FormField
                                 control={form.control}
@@ -390,16 +381,22 @@ export default function AddContentPage() {
                              </div>
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', hint: '' })}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Image
+                    </Button>
                 </CardContent>
               </Card>
             </div>
             
             <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
               <Card>
-                <CardHeader><CardTitle>Key Highlights (4)</CardTitle></CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-6">
-                    {[...Array(4)].map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    {form.getValues('highlights').map((_, index) => (
+                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('highlights', form.getValues('highlights').filter((_, i) => i !== index))}>
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
                              <p className="font-medium">Highlight {index + 1}</p>
                             <FormField
                                 control={form.control}
@@ -425,16 +422,22 @@ export default function AddContentPage() {
                              <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Highlight description" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
+                     <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('highlights', [...form.getValues('highlights'), { icon: 'Leaf', title: '', description: '' }])}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Highlight
+                    </Button>
                 </CardContent>
               </Card>
             </div>
 
             <div className={cn(currentStep === 5 ? 'block' : 'hidden')}>
                <Card>
-                <CardHeader><CardTitle>Visitor Information (4)</CardTitle></CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-6">
-                    {[...Array(4)].map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    {form.getValues('visitorInfo').map((_, index) => (
+                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('visitorInfo', form.getValues('visitorInfo').filter((_, i) => i !== index))}>
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
                              <p className="font-medium">Info Item {index + 1}</p>
                             <FormField
                                 control={form.control}
@@ -461,19 +464,25 @@ export default function AddContentPage() {
                              <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel>Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('visitorInfo', [...form.getValues('visitorInfo'), { icon: 'Clock', title: '', line1: '', line2: '' }])}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Info Item
+                    </Button>
                 </CardContent>
               </Card>
             </div>
             
             <div className={cn(currentStep === 6 ? 'block' : 'hidden')}>
               <Card>
-                <CardHeader><CardTitle>Map & Nearby (3)</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
                     <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator/>
                     <p className="font-medium">Nearby Attractions</p>
-                    {[...Array(3)].map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md">
+                    {form.getValues('nearbyAttractions').map((_, index) => (
+                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('nearbyAttractions', form.getValues('nearbyAttractions').filter((_, i) => i !== index))}>
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
                             <div className="grid md:grid-cols-3 gap-4">
                                 <FormField
                                     control={form.control}
@@ -500,6 +509,9 @@ export default function AddContentPage() {
                             </div>
                         </div>
                     ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('nearbyAttractions', [...form.getValues('nearbyAttractions'), { icon: 'Gem', name: '', distance: '' }])}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Attraction
+                    </Button>
                 </CardContent>
               </Card>
             </div>

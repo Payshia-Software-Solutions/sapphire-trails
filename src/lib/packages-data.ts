@@ -1,6 +1,13 @@
 
 import { type LucideIcon, MapPin, Gem, Landmark, Award, Utensils, Star, Package, Coffee, BedDouble, Users, Mountain } from 'lucide-react';
 
+export interface GalleryImage {
+  src: string;
+  alt: string;
+  hint: string;
+  is360?: boolean;
+}
+
 export interface TourFeature {
   icon: LucideIcon;
   text: string;
@@ -47,6 +54,7 @@ export interface TourPackage {
     tourHighlights: TourHighlight[];
     inclusions: TourInclusion[];
     itinerary: ItineraryItem[];
+    experienceGallery: GalleryImage[];
     
     bookingLink: string;
 }
@@ -82,6 +90,11 @@ export const mapServerPackageToClient = (pkg: any): TourPackage => ({
   tourHighlights: pkg.highlights || [],
   inclusions: pkg.inclusions || [],
   itinerary: pkg.itinerary || [],
+  experienceGallery: (pkg.experience_gallery || []).map((img: any) => ({
+      src: getFullImageUrl(img.image_url),
+      alt: img.alt_text || '',
+      hint: img.hint || ''
+  })),
   bookingLink: pkg.booking_link || '/booking',
 });
 

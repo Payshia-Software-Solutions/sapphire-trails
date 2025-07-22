@@ -8,12 +8,13 @@ interface TourDetailHeroProps {
   title: string;
   duration: string;
   price: string;
+  priceSuffix: string;
   imageUrl: string;
   imageHint: string;
   bookingLink: string;
 }
 
-export function TourDetailHero({ title, duration, price, imageUrl, imageHint, bookingLink }: TourDetailHeroProps) {
+export function TourDetailHero({ title, duration, price, priceSuffix, imageUrl, imageHint, bookingLink }: TourDetailHeroProps) {
   return (
     <section className="relative h-[65vh] w-full flex items-center justify-center bg-background text-white">
       <Image
@@ -34,8 +35,8 @@ export function TourDetailHero({ title, duration, price, imageUrl, imageHint, bo
                 <span>{duration}</span>
             </div>
              <div className="flex items-center gap-2 rounded-full bg-black/30 px-4 py-2 backdrop-blur-sm">
-                <DollarSign className="h-5 w-5 text-primary"/>
-                <span>{price}</span>
+                <span className="font-semibold">{price}</span>
+                <span className="text-sm opacity-80">{priceSuffix}</span>
             </div>
         </div>
         <Button asChild size="lg" className="mt-8">

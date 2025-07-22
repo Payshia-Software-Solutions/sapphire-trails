@@ -1,7 +1,10 @@
+
+"use client"
+
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface ImageInfo {
   src: string;
@@ -15,22 +18,14 @@ interface LocationGalleryProps {
 }
 
 const ImageWithOverlay = ({ image, className }: { image: ImageInfo; className?: string }) => (
-  <div className={cn("relative overflow-hidden rounded-lg", className)}>
+  <div className={`relative overflow-hidden rounded-lg group ${className}`}>
     <Image
       src={image.src}
       alt={image.alt}
       data-ai-hint={image.hint}
       fill
-      className="object-cover transition-transform duration-300 hover:scale-105"
+      className="object-cover transition-transform duration-300 group-hover:scale-105"
     />
-    {image.is360 && (
-      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-        <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/20 hover:text-white">
-          <Play className="h-5 w-5 mr-2 fill-white"/>
-          360° View
-        </Button>
-      </div>
-    )}
   </div>
 );
 
@@ -38,9 +33,10 @@ export function LocationGallery({ images }: LocationGalleryProps) {
   if (!images || images.length === 0) {
     return null;
   }
-  
+
   const mainImage = images[0];
-  const sideImages = images.slice(1, 5);
+  const thumbImages = images.slice(1, 5);
+  const remainingCount = images.length > 5 ? images.length - 5 : 0;
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
@@ -48,16 +44,59 @@ export function LocationGallery({ images }: LocationGalleryProps) {
         <h2 className="text-3xl font-headline font-bold text-center mb-12 text-primary sm:text-4xl">
           Experience the Wonder
         </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-          <ImageWithOverlay image={mainImage} className="aspect-[4/5]" />
-          
-          <div className="grid grid-cols-2 grid-rows-2 gap-4 md:gap-6">
-            {sideImages.map((image, index) => (
-              <ImageWithOverlay key={index} image={image} />
-            ))}
+        <Dialog>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            <DialogTrigger asChild>
+              <div className="cursor-pointer">
+                <ImageWithOverlay image={mainImage} className="aspect-[4/3] md:aspect-auto md:h-full" />
+              </div>
+            </DialogTrigger>
+            
+            <div className="grid grid-cols-2 grid-rows-2 gap-4 md:gap-6">
+              {thumbImages.map((image, index) => (
+                <DialogTrigger key={index} asChild>
+                  <div className="cursor-pointer">
+                    <ImageWithOverlay image={image} className="aspect-square" />
+                  </div>
+                </DialogTrigger>
+              ))}
+              {remainingCount > 0 && (
+                 <DialogTrigger asChild>
+                    <div className="relative overflow-hidden rounded-lg group aspect-square cursor-pointer">
+                        <Image
+                            src={images[4].src}
+                            alt={images[4].alt}
+                            fill
+                            className="object-cover transition-transform duration-300 group-hover:scale-105 filter brightness-50"
+                        />
+                         <div className="absolute inset-0 flex items-center justify-center text-white">
+                            <Plus className="h-10 w-10" />
+                            <span className="text-3xl font-bold">{remainingCount}</span>
+                        </div>
+                    </div>
+                 </DialogTrigger>
+              )}
+            </div>
           </div>
-        </div>
+          <DialogContent className="max-w-4xl p-0 border-0 bg-transparent">
+             <Carousel className="w-full">
+                <CarouselContent>
+                    {images.map((image, index) => (
+                        <CarouselItem key={index}>
+                            <div className="relative aspect-video">
+                                <Image src={image.src} alt={image.alt} fill className="object-contain" />
+                            </div>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-2 text-white" />
+                <CarouselNext className="right-2 text-white" />
+             </Carousel>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
 }
+
+    

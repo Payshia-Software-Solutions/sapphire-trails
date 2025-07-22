@@ -19,7 +19,7 @@ import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
-import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import { mapServerPackageToClient } from '@/lib/packages-data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const iconOptions = ['MapPin', 'Gem', 'Landmark', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble', 'Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Waves', 'Camera', 'Tent', 'Thermometer'];
@@ -29,7 +29,7 @@ const steps = [
   { id: 1, name: 'Homepage Card', fields: ['homepageTitle', 'homepageDescription', 'imageAlt', 'imageHint'] as const },
   { id: 2, name: 'Tour Page Details', fields: ['tourPageTitle', 'duration', 'price', 'priceSuffix', 'tourPageDescription', 'heroImageHint'] as const },
   { id: 3, name: 'Highlights & Inclusions', fields: ['tourHighlights', 'inclusions'] as const },
-  { id: 4, name: 'Itinerary & Booking Link', fields: ['itinerary', 'bookingLink'] as const },
+  { id: 4, name: 'Itinerary, Gallery & Booking', fields: ['itinerary', 'experienceGallery', 'bookingLink'] as const },
 ];
 
 
@@ -59,6 +59,13 @@ function LoadingFormSkeleton() {
     )
 }
 
+interface GalleryField {
+    id?: number;
+    src: string;
+    alt: string;
+    hint: string;
+    file?: File | null;
+}
 
 export default function EditPackagePage() {
   const { toast } = useToast();
@@ -94,6 +101,7 @@ export default function EditPackagePage() {
       tourHighlights: Array.from({ length: 3 }, () => ({ icon: 'Star' as const, title: '', description: '' })),
       inclusions: [{ text: '' }],
       itinerary: Array.from({ length: 5 }, () => ({ time: '', title: '', description: '' })),
+      experienceGallery: [],
       bookingLink: '/booking',
     },
   });
@@ -130,6 +138,7 @@ export default function EditPackagePage() {
                 tourHighlights: packageData.tourHighlights,
                 inclusions: packageData.inclusions.map(i => ({ text: i.title })),
                 itinerary: packageData.itinerary,
+                experienceGallery: packageData.experienceGallery.map(img => ({ ...img, file: null })),
                 bookingLink: packageData.bookingLink,
             });
 
@@ -161,6 +170,11 @@ export default function EditPackagePage() {
     control: form.control,
     name: "itinerary",
   });
+  
+   const { fields: galleryFields, append: appendGallery, remove: removeGallery, update: updateGallery } = useFieldArray({
+    control: form.control,
+    name: "experienceGallery",
+  });
 
   const handleCardImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -180,9 +194,43 @@ export default function EditPackagePage() {
     }
   };
 
+  const handleGalleryFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        const currentItem = form.getValues(`experienceGallery.${index}`);
+        updateGallery(index, {
+            ...currentItem,
+            src: URL.createObjectURL(file), // Show preview
+            file: file, // Store the file object
+        });
+    }
+  };
+
+  const handleGalleryDelete = async (index: number) => {
+    const itemToDelete = galleryFields[index] as GalleryField;
+    const imageId = itemToDelete.id;
+
+    if (imageId) { // This is an existing image from the server
+        try {
+            const response = await fetch(`${API_BASE_URL}/experience-gallery/${imageId}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Failed to delete image from server.');
+            toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.'});
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not delete image.'});
+            return; // Stop if the server-side delete fails
+        }
+    }
+    
+    // If we reach here, either the server delete was successful, or it was a new (unsaved) image.
+    // So, we can safely remove it from the frontend form state.
+    removeGallery(index);
+  };
+
+
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
-    const isValid = await form.trigger(fields, { shouldFocus: true });
+    const isValid = await form.trigger(fields as any, { shouldFocus: true });
     
     if (!isValid) {
         toast({ variant: "destructive", title: "Validation Error", description: "Please fill out all required fields before proceeding." });
@@ -205,18 +253,17 @@ export default function EditPackagePage() {
     setIsSubmitting(true);
 
     const formData = new FormData();
-    formData.append('_method', 'PUT'); // Simulate PUT for PHP
+    formData.append('_method', 'PUT');
 
-    // Append files only if they've changed
+    // Append main package files if they have been changed
     if (cardImageFile) formData.append('homepage_image', cardImageFile);
     if (heroImageFile) formData.append('hero_image', heroImageFile);
 
-    // Append all other string fields
+    // Append all other text/JSON data
     formData.append('homepage_title', data.homepageTitle);
     formData.append('homepage_description', data.homepageDescription);
     formData.append('homepage_image_alt', data.imageAlt);
     formData.append('homepage_image_hint', data.imageHint);
-    
     formData.append('tour_page_title', data.tourPageTitle);
     formData.append('duration', data.duration);
     formData.append('price', data.price);
@@ -224,15 +271,48 @@ export default function EditPackagePage() {
     formData.append('hero_image_hint', data.heroImageHint);
     formData.append('tour_page_description', data.tourPageDescription);
     formData.append('booking_link', data.bookingLink);
-
-    // Stringify and append array fields, adding sort_order
     formData.append('highlights', JSON.stringify(data.tourHighlights.map((h, i) => ({ ...h, sort_order: i + 1 }))));
     formData.append('inclusions', JSON.stringify(data.inclusions.map((inc, i) => ({ icon: 'Star', title: inc.text, description: '', sort_order: i + 1 }))));
     formData.append('itinerary', JSON.stringify(data.itinerary.map((item, i) => ({ ...item, sort_order: i + 1 }))));
+    
+    // Construct the final gallery metadata and handle new file uploads
+    const galleryItemsWithFiles = data.experienceGallery.map(item => item as GalleryField);
+    const newImageFiles: File[] = [];
+    const finalGalleryMeta: any[] = [];
+    const newGalleryMeta: any[] = [];
 
+    galleryItemsWithFiles.forEach((item, index) => {
+        if (item.file) { // This is a new file to be uploaded
+            newImageFiles.push(item.file);
+            newGalleryMeta.push({
+                alt_text: item.alt,
+                hint: item.hint,
+                sort_order: index + 1
+            });
+        } else { // This is an existing image, just send its metadata back
+            finalGalleryMeta.push({
+                image_url: item.src,
+                alt_text: item.alt,
+                hint: item.hint,
+                sort_order: index + 1
+            });
+        }
+    });
+
+    // Append new image files if any
+    newImageFiles.forEach((file) => {
+      formData.append(`experience_gallery_images[]`, file);
+    });
+    
+    // The server expects `experience_gallery_meta` only for NEW uploads
+    formData.append('experience_gallery_meta', JSON.stringify(newGalleryMeta));
+    
+    // The server expects `experience_gallery` with metadata for ALL images to keep
+    formData.append('experience_gallery', JSON.stringify(finalGalleryMeta));
+    
     try {
       const response = await fetch(`${API_BASE_URL}/tours/${id}`, {
-        method: 'POST', // Using POST to work with FormData and _method field
+        method: 'POST',
         body: formData,
       });
 
@@ -380,7 +460,7 @@ export default function EditPackagePage() {
                 </Card>
             </div>
 
-            {/* Step 4: Itinerary & Booking */}
+            {/* Step 4: Itinerary, Gallery & Booking */}
              <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
                 <Card>
                     <CardHeader>
@@ -405,6 +485,54 @@ export default function EditPackagePage() {
                         </Button>
                     </CardContent>
                 </Card>
+
+                <Card className="mt-8">
+                    <CardHeader>
+                        <CardTitle>Experience Gallery</CardTitle>
+                        <CardDescription>Manage images for the tour detail page gallery. Replace images by uploading new files.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {galleryFields.map((item, index) => (
+                           <div key={item.id} className="space-y-4 p-4 border rounded-md">
+                             <div className="flex justify-between items-center">
+                                <p className="font-medium">Image {index + 1}</p>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => handleGalleryDelete(index)}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                             </div>
+                             <div className="flex items-center gap-4">
+                                <div>
+                                    <FormLabel>Preview</FormLabel>
+                                    <Image src={item.src} alt={item.alt || `Gallery image ${index + 1}`} width={100} height={100} className="rounded-md object-cover mt-2 border" />
+                                </div>
+                                <div className="flex-1 space-y-4">
+                                     <FormField
+                                        control={form.control}
+                                        name={`experienceGallery.${index}.src`}
+                                        render={() => (
+                                            <FormItem>
+                                                <FormLabel>Replace Image</FormLabel>
+                                                <FormControl>
+                                                    <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                             </div>
+                             <div className="grid md:grid-cols-2 gap-4">
+                                <FormField control={form.control} name={`experienceGallery.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name={`experienceGallery.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             </div>
+                        </div>
+                        ))}
+                         <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: 'https://placehold.co/400x400.png', alt: '', hint: '', file: null })} disabled={galleryFields.length >= 8}>
+                            <Plus className="mr-2 h-4 w-4" /> Add Gallery Image
+                        </Button>
+                    </CardContent>
+                </Card>
+
                 <Card className="mt-8">
                     <CardHeader>
                         <CardTitle>Final Details</CardTitle>

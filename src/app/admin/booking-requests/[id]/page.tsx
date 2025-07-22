@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -57,7 +56,9 @@ export default function EditBookingPage() {
       name: '',
       email: '',
       phone: '',
-      guests: 1,
+      address: '',
+      adults: 1,
+      children: 0,
       message: '',
     },
   });
@@ -85,7 +86,10 @@ export default function EditBookingPage() {
           name: bookingData.name,
           email: bookingData.email,
           phone: bookingData.phone,
+          address: bookingData.address,
           tourType: Number(bookingData.tour_package_id),
+          adults: Number(bookingData.adults),
+          children: Number(bookingData.children),
           guests: Number(bookingData.guests),
           date: bookingData.tour_date,
           message: bookingData.message,
@@ -109,9 +113,11 @@ export default function EditBookingPage() {
       form.reset({
         ...booking,
         date: parseISO(booking.date),
-        guests: Number(booking.guests),
         tourType: Number(booking.tourType),
+        adults: Number(booking.adults),
+        children: Number(booking.children),
         phone: booking.phone || '',
+        address: booking.address || '',
         message: booking.message || '',
       });
     }
@@ -123,8 +129,11 @@ export default function EditBookingPage() {
             name: bookingToUpdate.name,
             email: bookingToUpdate.email,
             phone: bookingToUpdate.phone,
+            address: bookingToUpdate.address,
             tour_package_id: bookingToUpdate.tourType,
-            guests: Number(bookingToUpdate.guests),
+            adults: Number(bookingToUpdate.adults),
+            children: Number(bookingToUpdate.children),
+            guests: Number(bookingToUpdate.adults) + Number(bookingToUpdate.children),
             tour_date: bookingToUpdate.date, // Already in 'yyyy-MM-dd' format
             status: bookingToUpdate.status,
             message: bookingToUpdate.message,
@@ -156,7 +165,7 @@ export default function EditBookingPage() {
   const updateStatusOnServer = async (bookingId: number, status: 'accepted' | 'rejected') => {
     try {
       const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}/status/`, {
-        method: 'PUT', // Changed from PATCH to PUT
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -184,7 +193,9 @@ export default function EditBookingPage() {
       ...booking,
       ...data,
       date: format(data.date, 'yyyy-MM-dd'),
-      guests: Number(data.guests),
+      adults: Number(data.adults),
+      children: Number(data.children),
+      guests: Number(data.adults) + Number(data.children),
     };
     
     const success = await updateBookingOnServer(updatedBooking);
@@ -239,22 +250,26 @@ export default function EditBookingPage() {
                     <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={form.control} name="tourType" render={({ field }) => (
-                        <FormItem><FormLabel>Tour Package</FormLabel>
-                        <Select onValueChange={field.onChange} value={String(field.value)}>
-                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                            <SelectContent>
-                                {tourPackages.map(pkg => (
-                                    <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                        </FormItem>
-                    )} />
-                    <FormField control={form.control} name="guests" render={({ field }) => ( <FormItem><FormLabel>Number of Guests</FormLabel><FormControl><Input type="number" min="1" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="address" render={({ field }) => (<FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <FormField control={form.control} name="tourType" render={({ field }) => (
+                            <FormItem><FormLabel>Tour Package</FormLabel>
+                            <Select onValueChange={(val) => field.onChange(parseInt(val))} value={String(field.value)}>
+                                <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                                <SelectContent>
+                                    {tourPackages.map(pkg => (
+                                        <SelectItem key={pkg.id} value={String(pkg.id)}>{pkg.homepageTitle}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="adults" render={({ field }) => ( <FormItem><FormLabel>Adults</FormLabel><FormControl><Input type="number" min="1" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="children" render={({ field }) => ( <FormItem><FormLabel>Children</FormLabel><FormControl><Input type="number" min="0" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     </div>
+
                     <FormField control={form.control} name="date" render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>Preferred Tour Date</FormLabel>

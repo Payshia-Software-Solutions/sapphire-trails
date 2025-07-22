@@ -10,8 +10,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { TourDetailHero } from '@/components/sections/tour-detail-hero';
 import { TourDetailHighlights } from '@/components/sections/tour-detail-highlights';
 import { TourDetailInclusions } from '@/components/sections/tour-detail-inclusions';
-import { BookingSection } from '@/components/sections/booking-section';
 import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary';
+import { TourFloatingBar } from '@/components/sections/tour-floating-bar';
+import { TourExperienceGallery } from '@/components/sections/tour-experience-gallery';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -79,6 +80,7 @@ export default function TourDetailPage() {
             title={tourPackage.tourPageTitle}
             duration={tourPackage.duration}
             price={tourPackage.price}
+            priceSuffix={tourPackage.priceSuffix}
             imageUrl={tourPackage.heroImage}
             imageHint={tourPackage.heroImageHint}
             bookingLink={`${tourPackage.bookingLink}?tourType=${tourPackage.id}`}
@@ -91,7 +93,13 @@ export default function TourDetailPage() {
         <TourDetailInclusions
             inclusions={tourPackage.inclusions.map(i => i.title)}
         />
-        <BookingSection />
+        <TourExperienceGallery images={tourPackage.experienceGallery} />
+        <TourFloatingBar
+            price={tourPackage.price}
+            priceSuffix={tourPackage.priceSuffix}
+            duration={tourPackage.duration}
+            bookingLink={`${tourPackage.bookingLink}?tourType=${tourPackage.id}`}
+        />
       </main>
       <Footer />
     </div>

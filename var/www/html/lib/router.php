@@ -5,7 +5,12 @@ class Router
 
     private function addRoute($method, $uri, $handler)
     {
-        $this->routes[] = ['method' => $method, 'uri' => $uri, 'handler' => $handler];
+        // Normalize URI: remove trailing slash for consistency
+        $normalized_uri = rtrim($uri, '/');
+        if (empty($normalized_uri)) {
+            $normalized_uri = '/';
+        }
+        $this->routes[] = ['method' => $method, 'uri' => $normalized_uri, 'handler' => $handler];
     }
 
     public function get($uri, $handler)
@@ -47,25 +52,31 @@ class Router
         $method = $_SERVER['REQUEST_METHOD'];
 
         if ($method === 'OPTIONS') {
-            header("HTTP/1.1 204 No Content");
+            http_response_code(204);
             exit;
         }
         
-        header('Content-Type: application/json');
+        // Normalize the request URI by removing the trailing slash if it's not the root
+        $normalized_uri = rtrim($uri, '/');
+        if (empty($normalized_uri)) {
+            $normalized_uri = '/';
+        }
 
         foreach ($this->routes as $route) {
-            $pattern = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '([a-zA-Z0-9_\-]+)', $route['uri']);
+            // Replace placeholders like {id} with a named capture group
+            $pattern = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '(?<$1>[a-zA-Z0-9_\-]+)', $route['uri']);
             $pattern = '#^' . $pattern . '$#';
 
-            if ($route['method'] === $method && preg_match($pattern, $uri, $matches)) {
-                array_shift($matches);
-                call_user_func_array($route['handler'], $matches);
+            if ($route['method'] === $method && preg_match($pattern, $normalized_uri, $matches)) {
+                // Remove numeric keys, leaving only named captures for parameters
+                $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+                call_user_func_array($route['handler'], $params);
                 return;
             }
         }
 
         http_response_code(404);
-        echo json_encode(['error' => 'Not Found', 'requested_uri' => $uri, 'method' => $method]);
+        echo json_encode(['error' => 'Route not found', 'requested_uri' => $uri, 'method' => $method]);
     }
 }
 ?>

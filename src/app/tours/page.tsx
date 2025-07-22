@@ -29,7 +29,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
       <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
       <Button asChild className="w-fit bg-primary text-primary-foreground hover:bg-primary/90 mt-auto rounded-full px-6">
-        <Link href={`/tours/${tour.slug}`}>More Info</Link>
+        <Link href={`/booking?tourType=${tour.id}`}>Book Now</Link>
       </Button>
     </CardContent>
   </Card>

@@ -104,7 +104,7 @@ export default function ManageContentPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Content</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Locations</h1>
             <p className="text-muted-foreground">Add, edit, or delete custom locations for the &quot;Explore Ratnapura&quot; page.</p>
         </div>
         <Button asChild>

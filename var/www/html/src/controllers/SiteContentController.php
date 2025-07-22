@@ -126,15 +126,17 @@ class SiteContentController
         foreach ($files as $key => $file) {
             $newImageUrl = $this->handleImageUpload($file);
             if ($newImageUrl) {
+                // The key from the form-data should point to where the URL needs to be stored.
+                // e.g., key 'hero.imageUrl' would update $contentData['hero']['imageUrl']
                 $keys = explode('.', $key);
                 $temp = &$contentData;
                 foreach ($keys as $k) {
                     if (!isset($temp[$k])) {
-                        $temp[$k] = []; 
+                        $temp[$k] = []; // Create nested structure if it doesn't exist
                     }
                     $temp = &$temp[$k];
                 }
-                $temp = $newImageUrl;
+                $temp = $newImageUrl; // Assign the new URL
                 unset($temp);
             }
         }

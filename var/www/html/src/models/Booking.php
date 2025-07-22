@@ -58,9 +58,9 @@ class Booking
 
         $stmt = $this->pdo->prepare("
             INSERT INTO bookings (
-                user_id, tour_package_id, name, email, phone, guests,
+                user_id, tour_package_id, name, email, phone, address, adults, children, guests,
                 tour_date, status, message, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, NOW(), NOW())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, NOW(), NOW())
         ");
 
         $stmt->execute([
@@ -68,7 +68,10 @@ class Booking
             $data['tour_package_id'], 
             $data['name'],
             $data['email'], 
-            $data['phone'] ?? null, 
+            $data['phone'] ?? null,
+            $data['address'] ?? null,
+            $data['adults'] ?? 0,
+            $data['children'] ?? 0,
             $data['guests'],
             $data['tour_date'], 
             $data['message'] ?? null
@@ -86,7 +89,10 @@ class Booking
                 name = :name,
                 email = :email,
                 phone = :phone,
+                address = :address,
                 tour_package_id = :tour_package_id,
+                adults = :adults,
+                children = :children,
                 guests = :guests,
                 tour_date = :tour_date,
                 status = :status,
@@ -100,8 +106,11 @@ class Booking
             ':name' => $data['name'],
             ':email' => $data['email'],
             ':phone' => $data['phone'] ?? null,
+            ':address' => $data['address'] ?? null,
             ':tour_package_id' => $data['tour_package_id'],
-            ':guests' => $data['guests'],
+            ':adults' => $data['adults'] ?? 0,
+            ':children' => $data['children'] ?? 0,
+            ':guests' => ($data['adults'] ?? 0) + ($data['children'] ?? 0),
             ':tour_date' => $data['tour_date'],
             ':status' => $data['status'],
             ':message' => $data['message'] ?? null

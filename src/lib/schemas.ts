@@ -17,14 +17,19 @@ export const bookingFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   phone: z.string().optional(),
+  address: z.string().min(5, { message: "Address must be at least 5 characters." }),
   tourType: z.coerce.number({
     required_error: "You need to select a tour type.",
   }),
-  guests: z.coerce.number().int().min(1, { message: "Please enter at least 1 guest." }),
+  adults: z.coerce.number().int().min(1, { message: "At least one adult is required." }),
+  children: z.coerce.number().int().min(0, { message: "Children must be 0 or more."}),
   date: z.date({
     required_error: "A date for your tour is required.",
   }),
   message: z.string().optional(),
+}).refine(data => data.adults + data.children > 0, {
+  message: "There must be at least one participant.",
+  path: ["adults"],
 });
 
 
@@ -52,30 +57,30 @@ export const locationFormSchema = z.object({
   heroImage: z.string().min(1, "A hero image is required."),
   introImageUrl: z.string().min(1, "An intro image is required."),
 
-  // Gallery (4 images)
+  // Gallery (dynamic length)
   galleryImages: z.array(z.object({
+    id: z.number().optional(), // Include id for existing images
     src: z.string().min(1, "An image is required."),
     alt: z.string().min(3, "Alt text is required."),
     hint: z.string().min(2, "Hint is required."),
-    // Added optional fields from server response to avoid type errors on `reset`
-    image_url: z.string().optional(),
-    alt_text: z.string().optional(),
-  })).length(4, "Please provide exactly 4 gallery images."),
+    file: z.instanceof(File).optional(),
+    isNew: z.boolean().optional(),
+  })).min(1, "Please provide at least 1 gallery image."),
 
-  // Highlights (4 items)
+  // Highlights (dynamic length)
   highlights: z.array(z.object({
     icon: iconEnum,
     title: z.string().min(3, "Highlight title is required."),
     description: z.string().min(10, "Highlight description is required."),
-  })).length(4, "Please provide exactly 4 highlights."),
+  })).min(1, "Please provide at least 1 highlight."),
 
-  // Visitor Info (4 items)
+  // Visitor Info (dynamic length)
   visitorInfo: z.array(z.object({
     icon: iconEnum,
     title: z.string().min(3, "Visitor info title is required."),
     line1: z.string().min(3, "Line 1 is required."),
     line2: z.string().min(3, "Line 2 is required."),
-  })).length(4, "Please provide exactly 4 visitor info items."),
+  })).min(1, "Please provide at least 1 visitor info item."),
 
   // Map & Nearby
   mapEmbedUrl: z.string().url("Please enter a valid map embed URL."),
@@ -83,7 +88,7 @@ export const locationFormSchema = z.object({
       icon: iconEnum,
       name: z.string().min(3, "Attraction name is required."),
       distance: z.string().min(2, "Distance is required."),
-  })).length(3, "Please provide exactly 3 nearby attractions."),
+  })).min(1, "Please provide at least 1 nearby attraction."),
 });
 
 
@@ -126,6 +131,14 @@ export const itineraryItemSchema = z.object({
   description: z.string().min(10, "Description is required."),
 });
 
+export const galleryImageSchema = z.object({
+    id: z.number().optional(),
+    src: z.string().min(1, "An image is required."),
+    alt: z.string().min(3, "Alt text is required."),
+    hint: z.string().min(2, "Hint is required."),
+    file: z.instanceof(File).optional(),
+});
+
 export const packageFormSchema = z.object({
   // Homepage Card
   imageUrl: z.string().min(1, "An image is required for the homepage card."),
@@ -148,6 +161,8 @@ export const packageFormSchema = z.object({
   inclusions: z.array(z.object({ text: z.string().min(3, 'Inclusion text is required.') })).min(1, "At least one inclusion is required."),
 
   itinerary: z.array(itineraryItemSchema).min(1, "At least one itinerary item is required."),
+
+  experienceGallery: z.array(galleryImageSchema).min(1, "At least one gallery image is required.").max(8, "You can upload a maximum of 8 gallery images."),
   
   bookingLink: z.string().min(1, "Booking link is required.").startsWith("/", { message: "Booking link must be a relative path starting with '/'." }),
 });
