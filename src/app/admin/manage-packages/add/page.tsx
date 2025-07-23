@@ -216,20 +216,16 @@ export default function AddPackagePage() {
     });
 
     try {
+      // First, create the package without gallery images
       const response = await fetch(`${API_BASE_URL}/tours/`, {
         method: 'POST',
         body: formData,
       });
 
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.error || 'An unexpected server error occurred.';
-        toast({
-            variant: 'destructive',
-            title: 'Creation Failed',
-            description: errorMessage,
-        });
-        return;
+        throw new Error(responseData?.error || 'Failed to create tour package.');
       }
       
       toast({
