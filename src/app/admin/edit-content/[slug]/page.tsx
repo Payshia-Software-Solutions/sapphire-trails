@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, LoaderCircle, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, LoaderCircle, Plus, Trash2, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
@@ -84,6 +84,8 @@ export default function EditContentPage() {
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
   const [introImagePreview, setIntroImagePreview] = useState<string | null>(null);
+  
+  const [isSavingImage, setIsSavingImage] = useState<number | null>(null);
 
   const form = useForm<z.infer<typeof locationFormSchema>>({
     resolver: zodResolver(locationFormSchema),
@@ -110,51 +112,53 @@ export default function EditContentPage() {
     },
   });
 
-   const { fields: galleryFields, append: appendGallery, remove: removeGallery, update: updateGallery } = useFieldArray({
+   const { fields: galleryFields, append: appendGallery, remove: removeGallery, update: updateGallery, replace } = useFieldArray({
     control: form.control,
     name: "galleryImages",
   });
   
-  useEffect(() => {
+  const fetchLocationData = async () => {
     if (!slug) {
         setIsLoadingData(false);
         toast({ variant: 'destructive', title: 'Error', description: 'No location slug provided.'});
         router.push('/admin/manage-content');
         return;
     };
+    
+    setIsLoadingData(true);
+    try {
+        const response = await fetch(`${API_BASE_URL}/locations/${slug}/`);
+        if (!response.ok) throw new Error('Failed to fetch location data');
+        
+        const serverData = await response.json();
+        const locationData = mapServerLocationToClient(serverData);
+        
+        form.reset({
+            ...locationData,
+            introTitle: locationData.intro.title,
+            introDescription: locationData.intro.description,
+            introImageUrl: locationData.intro.imageUrl,
+            introImageHint: locationData.intro.imageHint,
+            mapEmbedUrl: locationData.map.embedUrl,
+            nearbyAttractions: locationData.map.nearbyAttractions,
+        });
 
-    async function fetchLocation() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/locations/${slug}/`);
-            if (!response.ok) throw new Error('Failed to fetch location data');
-            
-            const serverData = await response.json();
-            const locationData = mapServerLocationToClient(serverData);
-            
-            form.reset({
-                ...locationData,
-                introTitle: locationData.intro.title,
-                introDescription: locationData.intro.description,
-                introImageUrl: locationData.intro.imageUrl,
-                introImageHint: locationData.intro.imageHint,
-                mapEmbedUrl: locationData.map.embedUrl,
-                nearbyAttractions: locationData.map.nearbyAttractions,
-            });
+        setCardImagePreview(locationData.cardImage);
+        setHeroImagePreview(locationData.heroImage);
+        setIntroImagePreview(locationData.intro.imageUrl);
 
-            setCardImagePreview(locationData.cardImage);
-            setHeroImagePreview(locationData.heroImage);
-            setIntroImagePreview(locationData.intro.imageUrl);
-
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not load location data.' });
-            router.push('/admin/manage-content');
-        } finally {
-            setIsLoadingData(false);
-        }
+    } catch (error) {
+        console.error(error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not load location data.' });
+        router.push('/admin/manage-content');
+    } finally {
+        setIsLoadingData(false);
     }
-    fetchLocation();
-  }, [slug, form, router, toast]);
+  }
+
+  useEffect(() => {
+    fetchLocationData();
+  }, [slug]);
 
    const handleMainImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -174,30 +178,73 @@ export default function EditContentPage() {
       const currentItem = form.getValues(`galleryImages.${index}`);
       updateGallery(index, {
         ...currentItem,
-        src: URL.createObjectURL(file), // Show a preview of the new image
-        file: file, // Store the file object to be uploaded
-        isNew: true, // Mark it as a new image
+        src: URL.createObjectURL(file),
+        file: file,
       });
     }
   };
 
-  const handleGalleryDelete = async (index: number) => {
-    const galleryItem = galleryFields[index] as FormGalleryImage;
-    if (galleryItem.id && !galleryItem.isNew) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}`, {
-                method: 'DELETE',
+  const handleGallerySave = async (index: number) => {
+    setIsSavingImage(index);
+    const galleryItem = form.getValues(`galleryImages.${index}`) as FormGalleryImage;
+
+    const formData = new FormData();
+    formData.append('alt_text', galleryItem.alt);
+    formData.append('hint', galleryItem.hint);
+    formData.append('sort_order', String(index + 1));
+    
+    try {
+        if (galleryItem.isNew) { // This is a new image to create
+            if (!galleryItem.file) {
+                throw new Error("No image file selected for the new entry.");
+            }
+            formData.append('location_slug', slug);
+            formData.append('image', galleryItem.file);
+            formData.append('is_360', '0');
+
+            const response = await fetch(`${API_BASE_URL}/location-gallery/`, {
+                method: 'POST',
+                body: formData
             });
-            if (!response.ok) throw new Error('Failed to delete image from server.');
-            toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.' });
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not delete the image from the server.' });
-            return; // Stop if the server-side delete fails
+            if (!response.ok) throw new Error('Failed to create new image.');
+            
+            toast({ title: 'Image Added', description: 'New gallery image was saved successfully.'});
+            await fetchLocationData(); // Refetch all data to get the new ID and clean state
+
+        } else { // This is an existing image to update
+            formData.append('_method', 'PUT');
+            if (galleryItem.file) {
+                formData.append('image', galleryItem.file);
+            }
+            const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}`, {
+                method: 'POST',
+                body: formData,
+            });
+            if (!response.ok) throw new Error('Failed to update image.');
+             toast({ title: 'Image Updated', description: 'Gallery image was updated successfully.'});
         }
+    } catch (error) {
+        console.error(error);
+        toast({ variant: 'destructive', title: 'Error', description: error instanceof Error ? error.message : "Could not save image."});
+    } finally {
+        setIsSavingImage(null);
     }
-    removeGallery(index);
   };
+
+  const handleGalleryDelete = async (imageId: number) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/location-gallery/${imageId}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) throw new Error('Failed to delete image from server.');
+        toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.' });
+        removeGallery(galleryFields.findIndex(f => f.id === imageId));
+    } catch (error) {
+        console.error(error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not delete the image from the server.' });
+    }
+  };
+
 
   const handleNext = async () => {
      if (currentStep < steps.length) {
@@ -211,49 +258,10 @@ export default function EditContentPage() {
     }
   };
 
-  async function updateGalleryImage(galleryItem: FormGalleryImage) {
-      if (!galleryItem.id || !galleryItem.file) return; // Only update existing images with new files
-
-      const formData = new FormData();
-      formData.append('_method', 'PUT');
-      formData.append('image', galleryItem.file);
-      formData.append('alt_text', galleryItem.alt);
-      formData.append('hint', galleryItem.hint);
-      formData.append('sort_order', String(galleryFields.findIndex(f => f.id === galleryItem.id) + 1));
-      
-      const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}`, {
-          method: 'POST',
-          body: formData,
-      });
-
-      if (!response.ok) {
-          throw new Error(`Failed to update gallery image ${galleryItem.id}`);
-      }
-  }
-  
-  async function uploadGalleryImage(file: File, meta: { alt: string, hint: string }, index: number) {
-    const galleryFormData = new FormData();
-    galleryFormData.append('location_slug', slug);
-    galleryFormData.append('image', file);
-    galleryFormData.append('alt_text', meta.alt);
-    galleryFormData.append('hint', meta.hint);
-    galleryFormData.append('is_360', '0');
-    galleryFormData.append('sort_order', String(index + 1));
-
-    const response = await fetch(`${API_BASE_URL}/location-gallery/`, {
-        method: 'POST',
-        body: galleryFormData,
-    });
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Failed to upload gallery image ${index + 1}: ${errorData.error || 'Server error'}`);
-    }
-  }
 
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     setIsSubmitting(true);
     
-    // Step 1: Update the main location entry
     const locationFormData = new FormData();
     locationFormData.append('_method', 'PUT');
 
@@ -261,18 +269,17 @@ export default function EditContentPage() {
     if (heroImageFile) locationFormData.append('hero_image', heroImageFile);
     if (introImageFile) locationFormData.append('intro_image', introImageFile);
 
-    // Map form data to backend field names
     locationFormData.append('title', data.title);
     locationFormData.append('subtitle', data.subtitle);
     locationFormData.append('card_description', data.cardDescription);
-    locationFormData.append('card_image_hint', data.imageHint); // Correct mapping
+    locationFormData.append('card_image_hint', data.imageHint);
     locationFormData.append('distance', data.distance);
     locationFormData.append('hero_image_hint', data.heroImageHint);
     locationFormData.append('intro_title', data.introTitle);
     locationFormData.append('intro_description', data.introDescription);
     locationFormData.append('intro_image_hint', data.introImageHint);
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
-    locationFormData.append('category', 'nature'); // Assuming static category
+    locationFormData.append('category', 'nature');
     
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
@@ -288,21 +295,6 @@ export default function EditContentPage() {
             const errorData = await response.json().catch(() => null);
             throw new Error(errorData?.error || 'Failed to update location.');
         }
-
-        // Step 2: Handle gallery updates - upload new images & update existing ones if file changed
-        const galleryPromises = data.galleryImages.map((img, index) => {
-            const formImg = img as FormGalleryImage;
-            if (formImg.isNew && formImg.file) {
-                // This is a brand new image, upload it.
-                return uploadGalleryImage(formImg.file, { alt: formImg.alt, hint: formImg.hint }, index);
-            } else if (formImg.file) {
-                // This is an existing image with a new file to replace it.
-                return updateGalleryImage(formImg);
-            }
-            return Promise.resolve(); // No file change for this image.
-        });
-
-        await Promise.all(galleryPromises);
         
         toast({
             title: 'Success!',
@@ -406,20 +398,26 @@ export default function EditContentPage() {
               <Card>
                 <CardHeader>
                     <CardTitle>Gallery Images</CardTitle>
-                    <CardDescription>Add, remove, or replace gallery images.</CardDescription>
+                    <CardDescription>Manage gallery images. Changes here are saved individually.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {galleryFields.map((item, index) => (
-                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
-                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => handleGalleryDelete(index)}>
-                                <Trash2 className="h-4 w-4" />
-                             </Button>
-                             <p className="font-medium">Image {index + 1}</p>
+                    {galleryFields.map((item, index) => {
+                        const formItem = item as FormGalleryImage;
+                        return (
+                        <div key={item.id || `new-${index}`} className="space-y-4 p-4 border rounded-md relative">
+                             <div className="flex justify-between items-center">
+                                <p className="font-medium text-muted-foreground">Image {index + 1}</p>
+                                {!formItem.isNew && (
+                                     <Button type="button" variant="ghost" size="icon" onClick={() => handleGalleryDelete(formItem.id!)}>
+                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                     </Button>
+                                )}
+                             </div>
                              <div className="flex items-start gap-4">
-                               <Image src={item.src} alt="gallery preview" width={100} height={100} className="rounded-md border object-cover"/>
+                               <Image src={formItem.src} alt="gallery preview" width={100} height={100} className="rounded-md border object-cover"/>
                                <div className="flex-1 space-y-2">
                                   <FormItem>
-                                    <FormLabel>Replace Image</FormLabel>
+                                    <FormLabel>{formItem.isNew ? "Select Image" : "Replace Image"}</FormLabel>
                                     <FormControl>
                                       <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
                                     </FormControl>
@@ -430,9 +428,15 @@ export default function EditContentPage() {
                                 <FormField control={form.control} name={`galleryImages.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={form.control} name={`galleryImages.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />
                              </div>
+                             <div className="flex justify-end">
+                                <Button type="button" size="sm" onClick={() => handleGallerySave(index)} disabled={isSavingImage === index}>
+                                    {isSavingImage === index ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                    {formItem.isNew ? "Save New Image" : "Save Changes"}
+                                </Button>
+                             </div>
                         </div>
-                    ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: 'https://placehold.co/600x400.png', alt: '', hint: '', file: new File([], 'placeholder.png'), isNew: true })}>
+                    )})}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ id: undefined, src: 'https://placehold.co/600x400.png', alt: '', hint: '', file: undefined, isNew: true })}>
                         <Plus className="mr-2 h-4 w-4" /> Add Image
                     </Button>
                 </CardContent>
@@ -582,7 +586,7 @@ export default function EditContentPage() {
                 {currentStep === steps.length && (
                   <Button type="submit" size="lg" disabled={isSubmitting}>
                     {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                    {isSubmitting ? "Saving..." : "Save Changes"}
+                    {isSubmitting ? "Saving..." : "Save Main Content"}
                   </Button>
                 )}
               </div>
