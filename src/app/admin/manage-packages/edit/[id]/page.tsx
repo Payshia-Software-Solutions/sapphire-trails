@@ -222,12 +222,14 @@ export default function EditPackagePage() {
 
     try {
         if (galleryItem.isNew) { // CREATE new image
-            if (!galleryItem.file) throw new Error("No image file selected for new item.");
+             if (!galleryItem.file) throw new Error("No image file selected for new item.");
+            // For new images, we must use the main package controller to create and link them.
+            // This happens during the main form submission. So this button is only for updates.
+            // A better UX would be to handle this via a dedicated endpoint, but we follow current backend logic.
             formData.append('experience_gallery_images[]', galleryItem.file);
             const galleryMeta = [{ alt_text: galleryItem.alt, hint: galleryItem.hint, sort_order: index + 1 }];
             formData.append('experience_gallery_meta', JSON.stringify(galleryMeta));
 
-            // We need to use the main update endpoint to add a new image to a package
             const response = await fetch(`${API_BASE_URL}/tours/${id}`, {
                 method: 'POST',
                 body: formData,
@@ -235,7 +237,7 @@ export default function EditPackagePage() {
             if (!response.ok) throw new Error('Failed to create new gallery image.');
             
             toast({ title: 'Image Added', description: 'New gallery image was saved successfully.'});
-            await fetchPackageData(); // Refetch all data to get the new ID and clean state
+            await fetchPackageData();
 
         } else { // UPDATE existing image
             if (!galleryItem.id) throw new Error("Image ID is missing for update.");
@@ -244,10 +246,10 @@ export default function EditPackagePage() {
             formData.append('hint', galleryItem.hint);
             
             if (galleryItem.file) {
-                formData.append('experience_image', galleryItem.file);
+                formData.append('image', galleryItem.file);
             }
 
-            const response = await fetch(`${API_BASE_URL}/tours/experience-gallery/${galleryItem.id}`, {
+            const response = await fetch(`${API_BASE_URL}/experience-gallery/${galleryItem.id}/`, {
                 method: 'POST', // Using POST with _method override
                 body: formData,
             });
@@ -257,9 +259,7 @@ export default function EditPackagePage() {
                  throw new Error(errorData.error || 'Failed to update image.');
             }
              toast({ title: 'Image Updated', description: 'Gallery image was updated successfully.'});
-             // No need to refetch, changes are minor
-             const currentValues = form.getValues(`experienceGallery`);
-             if (galleryItem.file) { // If a new file was uploaded, the src is a blob url, so we refetch to get the permanent URL
+             if (galleryItem.file) {
                 await fetchPackageData();
              } else {
                 updateGallery(index, { ...galleryItem, file: null });
@@ -277,21 +277,19 @@ export default function EditPackagePage() {
     const itemToDelete = galleryFields[index] as GalleryField;
     const imageId = itemToDelete.id;
 
-    if (!imageId) { // It's a new, unsaved image. Just remove from UI.
+    if (!imageId) { 
         removeGallery(index);
         return;
     }
     
-    // Send immediate request to backend
     try {
-        const response = await fetch(`${API_BASE_URL}/experience-gallery/${imageId}`, {
+        const response = await fetch(`${API_BASE_URL}/experience-gallery/${imageId}/`, {
             method: 'DELETE',
         });
         if (!response.ok) {
             throw new Error('Server failed to delete the image.');
         }
         toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.' });
-        // UI update on success
         removeGallery(index);
     } catch(error) {
         console.error("Failed to delete image from server", error);
@@ -327,11 +325,9 @@ export default function EditPackagePage() {
     const formData = new FormData();
     formData.append('_method', 'PUT');
 
-    // Append main package files if they have been changed
     if (cardImageFile) formData.append('homepage_image', cardImageFile);
     if (heroImageFile) formData.append('hero_image', heroImageFile);
 
-    // Append all other text/JSON data
     formData.append('homepage_title', data.homepageTitle);
     formData.append('homepage_description', data.homepageDescription);
     formData.append('homepage_image_alt', data.imageAlt);
@@ -347,19 +343,15 @@ export default function EditPackagePage() {
     formData.append('inclusions', JSON.stringify(data.inclusions.map((inc, i) => ({ icon: 'Star', title: inc.text, description: '', sort_order: i + 1 }))));
     formData.append('itinerary', JSON.stringify(data.itinerary.map((item, i) => ({ ...item, sort_order: i + 1 }))));
     
-    formData.append('deleted_experience_gallery_ids', JSON.stringify(deletedGalleryIds));
-
-    // Handle updates for EXISTING gallery images (metadata only)
     const existingGalleryItems = data.experienceGallery.filter(item => !item.isNew && item.id);
-    formData.append('experience_gallery', JSON.stringify(existingGalleryItems.map((item: any, index) => ({
+    formData.append('experience_gallery', JSON.stringify(existingGalleryItems.map((item: any) => ({
         id: item.id,
-        image_url: item.src.startsWith('blob:') ? undefined : item.src, // Don't send back blob urls
+        image_url: item.src.startsWith('blob:') ? undefined : item.src, 
         alt_text: item.alt,
         hint: item.hint,
-        sort_order: index + 1
+        sort_order: item.sort_order
     }))));
 
-    // Handle NEW gallery image uploads
     const newImageFiles = data.experienceGallery.filter(item => item.isNew && item.file).map(item => item.file);
     const newGalleryMeta = data.experienceGallery.filter(item => item.isNew && item.file).map((item, index) => ({
         alt_text: item.alt,
@@ -371,6 +363,7 @@ export default function EditPackagePage() {
       if(file) formData.append(`experience_gallery_images[]`, file);
     });
     formData.append('experience_gallery_meta', JSON.stringify(newGalleryMeta));
+    formData.append('deleted_experience_gallery_ids', JSON.stringify(deletedGalleryIds));
     
     try {
       const response = await fetch(`${API_BASE_URL}/tours/${id}`, {
