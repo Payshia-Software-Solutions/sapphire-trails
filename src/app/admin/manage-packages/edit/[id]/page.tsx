@@ -219,52 +219,37 @@ export default function EditPackagePage() {
     setIsSavingImage(index);
     const galleryItem = form.getValues(`experienceGallery.${index}`) as GalleryField;
     const formData = new FormData();
+    const packageId = id; // The package ID from the URL params
 
     try {
-        if (galleryItem.isNew) { // CREATE new image
-             if (!galleryItem.file) throw new Error("No image file selected for new item.");
-            // For new images, we must use the main package controller to create and link them.
-            // This happens during the main form submission. So this button is only for updates.
-            // A better UX would be to handle this via a dedicated endpoint, but we follow current backend logic.
-            formData.append('experience_gallery_images[]', galleryItem.file);
-            const galleryMeta = [{ alt_text: galleryItem.alt, hint: galleryItem.hint, sort_order: index + 1 }];
-            formData.append('experience_gallery_meta', JSON.stringify(galleryMeta));
-
-            const response = await fetch(`${API_BASE_URL}/tours/${id}`, {
-                method: 'POST',
-                body: formData,
-            });
-            if (!response.ok) throw new Error('Failed to create new gallery image.');
-            
-            toast({ title: 'Image Added', description: 'New gallery image was saved successfully.'});
-            await fetchPackageData();
-
-        } else { // UPDATE existing image
-            if (!galleryItem.id) throw new Error("Image ID is missing for update.");
-            formData.append('_method', 'PUT');
-            formData.append('alt_text', galleryItem.alt);
-            formData.append('hint', galleryItem.hint);
-            
-            if (galleryItem.file) {
-                formData.append('image', galleryItem.file);
-            }
-
-            const response = await fetch(`${API_BASE_URL}/experience-gallery/${galleryItem.id}/`, {
-                method: 'POST', // Using POST with _method override
-                body: formData,
-            });
-
-            if (!response.ok) {
-                 const errorData = await response.json().catch(() => ({}));
-                 throw new Error(errorData.error || 'Failed to update image.');
-            }
-             toast({ title: 'Image Updated', description: 'Gallery image was updated successfully.'});
-             if (galleryItem.file) {
-                await fetchPackageData();
-             } else {
-                updateGallery(index, { ...galleryItem, file: null });
-             }
+        if (!galleryItem.id) {
+            throw new Error("Cannot save an image that doesn't have an ID yet. Please save the main package first.");
         }
+        
+        formData.append('_method', 'PUT');
+        formData.append('alt_text', galleryItem.alt);
+        formData.append('hint', galleryItem.hint);
+        
+        if (galleryItem.file) {
+            formData.append('image', galleryItem.file);
+        }
+
+        const response = await fetch(`${API_BASE_URL}/experience-gallery/tour/${packageId}/image/${galleryItem.id}/`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+             const errorData = await response.json().catch(() => ({}));
+             throw new Error(errorData.error || 'Failed to update image.');
+        }
+         toast({ title: 'Image Updated', description: 'Gallery image was updated successfully.'});
+         if (galleryItem.file) {
+            await fetchPackageData();
+         } else {
+            updateGallery(index, { ...galleryItem, file: null });
+         }
+        
     } catch (error) {
         console.error(error);
         toast({ variant: 'destructive', title: 'Error', description: error instanceof Error ? error.message : "Could not save image."});
@@ -276,6 +261,7 @@ export default function EditPackagePage() {
   const handleGalleryDelete = async (index: number) => {
     const itemToDelete = galleryFields[index] as GalleryField;
     const imageId = itemToDelete.id;
+    const packageId = id;
 
     if (!imageId) { 
         removeGallery(index);
@@ -283,7 +269,7 @@ export default function EditPackagePage() {
     }
     
     try {
-        const response = await fetch(`${API_BASE_URL}/experience-gallery/${imageId}/`, {
+        const response = await fetch(`${API_BASE_URL}/experience-gallery/tour/${packageId}/image/${imageId}/`, {
             method: 'DELETE',
         });
         if (!response.ok) {
