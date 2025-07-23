@@ -187,20 +187,18 @@ export default function EditContentPage() {
   const handleGallerySave = async (index: number) => {
     setIsSavingImage(index);
     const galleryItem = form.getValues(`galleryImages.${index}`) as FormGalleryImage;
-
     const formData = new FormData();
-    formData.append('alt_text', galleryItem.alt);
-    formData.append('hint', galleryItem.hint);
-    formData.append('sort_order', String(index + 1));
-    
+
     try {
         if (galleryItem.isNew) { // This is a new image to create
-            if (!galleryItem.file) {
-                throw new Error("No image file selected for the new entry.");
-            }
+            if (!galleryItem.file) throw new Error("No image file selected.");
+
             formData.append('location_slug', slug);
             formData.append('image', galleryItem.file);
+            formData.append('alt_text', galleryItem.alt);
+            formData.append('hint', galleryItem.hint);
             formData.append('is_360', '0');
+            formData.append('sort_order', String(index + 1));
 
             const response = await fetch(`${API_BASE_URL}/location-gallery/`, {
                 method: 'POST',
@@ -213,9 +211,12 @@ export default function EditContentPage() {
 
         } else { // This is an existing image to update
             formData.append('_method', 'PUT');
-            if (galleryItem.file) {
-                formData.append('image', galleryItem.file);
-            }
+            formData.append('alt_text', galleryItem.alt);
+            formData.append('hint', galleryItem.hint);
+            formData.append('sort_order', String(index + 1));
+            
+            if (galleryItem.file) formData.append('image', galleryItem.file);
+
             const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}`, {
                 method: 'POST',
                 body: formData,
@@ -231,14 +232,23 @@ export default function EditContentPage() {
     }
   };
 
-  const handleGalleryDelete = async (imageId: number) => {
+  const handleGalleryDelete = async (imageId: number, index: number) => {
+    if (!imageId) {
+        // This is a newly added item that hasn't been saved yet.
+        // Just remove it from the form state.
+        removeGallery(index);
+        return;
+    }
+    
     try {
         const response = await fetch(`${API_BASE_URL}/location-gallery/${imageId}`, {
             method: 'DELETE',
         });
         if (!response.ok) throw new Error('Failed to delete image from server.');
+        
         toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.' });
-        removeGallery(galleryFields.findIndex(f => f.id === imageId));
+        removeGallery(index);
+
     } catch (error) {
         console.error(error);
         toast({ variant: 'destructive', title: 'Error', description: 'Could not delete the image from the server.' });
@@ -272,7 +282,7 @@ export default function EditContentPage() {
     locationFormData.append('title', data.title);
     locationFormData.append('subtitle', data.subtitle);
     locationFormData.append('card_description', data.cardDescription);
-    locationFormData.append('card_image_hint', data.imageHint);
+    locationFormData.append('card_image_hint', data.imageHint); // Corrected key
     locationFormData.append('distance', data.distance);
     locationFormData.append('hero_image_hint', data.heroImageHint);
     locationFormData.append('intro_title', data.introTitle);
@@ -407,11 +417,9 @@ export default function EditContentPage() {
                         <div key={item.id || `new-${index}`} className="space-y-4 p-4 border rounded-md relative">
                              <div className="flex justify-between items-center">
                                 <p className="font-medium text-muted-foreground">Image {index + 1}</p>
-                                {!formItem.isNew && (
-                                     <Button type="button" variant="ghost" size="icon" onClick={() => handleGalleryDelete(formItem.id!)}>
-                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                     </Button>
-                                )}
+                                 <Button type="button" variant="ghost" size="icon" onClick={() => handleGalleryDelete(formItem.id!, index)}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                 </Button>
                              </div>
                              <div className="flex items-start gap-4">
                                <Image src={formItem.src} alt="gallery preview" width={100} height={100} className="rounded-md border object-cover"/>
