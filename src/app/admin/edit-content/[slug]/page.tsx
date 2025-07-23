@@ -185,7 +185,7 @@ export default function EditContentPage() {
     const galleryItem = galleryFields[index] as FormGalleryImage;
     if (galleryItem.id && !galleryItem.isNew) {
         try {
-            const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}/`, {
+            const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}`, {
                 method: 'DELETE',
             });
             if (!response.ok) throw new Error('Failed to delete image from server.');
@@ -261,17 +261,18 @@ export default function EditContentPage() {
     if (heroImageFile) locationFormData.append('hero_image', heroImageFile);
     if (introImageFile) locationFormData.append('intro_image', introImageFile);
 
+    // Map form data to backend field names
     locationFormData.append('title', data.title);
     locationFormData.append('subtitle', data.subtitle);
     locationFormData.append('card_description', data.cardDescription);
-    locationFormData.append('card_image_hint', data.imageHint);
+    locationFormData.append('card_image_hint', data.imageHint); // Correct mapping
     locationFormData.append('distance', data.distance);
     locationFormData.append('hero_image_hint', data.heroImageHint);
     locationFormData.append('intro_title', data.introTitle);
     locationFormData.append('intro_description', data.introDescription);
     locationFormData.append('intro_image_hint', data.introImageHint);
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
-    locationFormData.append('category', 'nature');
+    locationFormData.append('category', 'nature'); // Assuming static category
     
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
