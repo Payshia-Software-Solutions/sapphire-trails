@@ -234,8 +234,6 @@ export default function EditContentPage() {
 
   const handleGalleryDelete = async (imageId: number, index: number) => {
     if (!imageId) {
-        // This is a newly added item that hasn't been saved yet.
-        // Just remove it from the form state.
         removeGallery(index);
         return;
     }
@@ -244,7 +242,11 @@ export default function EditContentPage() {
         const response = await fetch(`${API_BASE_URL}/location-gallery/${imageId}`, {
             method: 'DELETE',
         });
-        if (!response.ok) throw new Error('Failed to delete image from server.');
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || 'Failed to delete image from server.');
+        }
         
         toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.' });
         removeGallery(index);
@@ -282,7 +284,7 @@ export default function EditContentPage() {
     locationFormData.append('title', data.title);
     locationFormData.append('subtitle', data.subtitle);
     locationFormData.append('card_description', data.cardDescription);
-    locationFormData.append('card_image_hint', data.imageHint); // Corrected key
+    locationFormData.append('card_image_hint', data.imageHint);
     locationFormData.append('distance', data.distance);
     locationFormData.append('hero_image_hint', data.heroImageHint);
     locationFormData.append('intro_title', data.introTitle);

@@ -85,7 +85,7 @@ export const mapServerLocationToClient = (loc: any): Location => ({
     imageHint: loc.intro_image_hint || '',
   },
   galleryImages: (loc.gallery_images || []).map((img: any) => ({
-      id: img.id, // Correctly map the ID field
+      id: img.id,
       src: getFullImageUrl(img.image_url), 
       alt: img.alt_text || '', 
       hint: img.hint || '' 
