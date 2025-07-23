@@ -125,7 +125,7 @@ export default function EditContentPage() {
 
     async function fetchLocation() {
         try {
-            const response = await fetch(`${API_BASE_URL}/locations/${slug}`);
+            const response = await fetch(`${API_BASE_URL}/locations/${slug}/`);
             if (!response.ok) throw new Error('Failed to fetch location data');
             
             const serverData = await response.json();
@@ -185,7 +185,7 @@ export default function EditContentPage() {
     const galleryItem = galleryFields[index] as FormGalleryImage;
     if (galleryItem.id && !galleryItem.isNew) {
         try {
-            const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}`, {
+            const response = await fetch(`${API_BASE_URL}/location-gallery/${galleryItem.id}/`, {
                 method: 'DELETE',
             });
             if (!response.ok) throw new Error('Failed to delete image from server.');
@@ -278,7 +278,7 @@ export default function EditContentPage() {
     locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
     
     try {
-        const response = await fetch(`${API_BASE_URL}/locations/${slug}`, {
+        const response = await fetch(`${API_BASE_URL}/locations/${slug}/`, {
             method: 'POST',
             body: locationFormData,
         });
