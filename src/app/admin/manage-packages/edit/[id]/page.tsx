@@ -277,13 +277,27 @@ export default function EditPackagePage() {
     const itemToDelete = galleryFields[index] as GalleryField;
     const imageId = itemToDelete.id;
 
-    if (imageId) {
-        // Add to a list to be deleted on final save, and remove from UI
-        setDeletedGalleryIds(prev => [...prev, imageId]);
+    if (!imageId) { // It's a new, unsaved image. Just remove from UI.
         removeGallery(index);
-    } else {
-        // It's a new, unsaved image. Just remove from UI.
-        removeGallery(index);
+        return;
+    }
+    
+    // Add to a list to be deleted on final save
+    setDeletedGalleryIds(prev => [...prev, imageId]);
+    removeGallery(index);
+    
+    // Send immediate request to backend
+    try {
+        const response = await fetch(`${API_BASE_URL}/tours/experience-gallery/${imageId}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error('Server failed to delete the image.');
+        }
+        toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.' });
+    } catch(error) {
+        console.error("Failed to delete image from server", error);
+        toast({ variant: 'destructive', title: 'Delete Failed', description: 'Could not delete the image from server. It will be removed on final save.' });
     }
   };
 
@@ -628,3 +642,4 @@ export default function EditPackagePage() {
     </div>
   );
 }
+
