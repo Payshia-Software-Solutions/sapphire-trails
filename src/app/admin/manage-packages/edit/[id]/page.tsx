@@ -282,22 +282,20 @@ export default function EditPackagePage() {
         return;
     }
     
-    // Add to a list to be deleted on final save
-    setDeletedGalleryIds(prev => [...prev, imageId]);
-    removeGallery(index);
-    
     // Send immediate request to backend
     try {
-        const response = await fetch(`${API_BASE_URL}/tours/experience-gallery/${imageId}`, {
+        const response = await fetch(`${API_BASE_URL}/experience-gallery/${imageId}`, {
             method: 'DELETE',
         });
         if (!response.ok) {
             throw new Error('Server failed to delete the image.');
         }
         toast({ title: 'Image Deleted', description: 'The gallery image was deleted successfully.' });
+        // UI update on success
+        removeGallery(index);
     } catch(error) {
         console.error("Failed to delete image from server", error);
-        toast({ variant: 'destructive', title: 'Delete Failed', description: 'Could not delete the image from server. It will be removed on final save.' });
+        toast({ variant: 'destructive', title: 'Delete Failed', description: 'Could not delete the image from server.' });
     }
   };
 
