@@ -57,19 +57,19 @@ export default function AdminLayout({
   }, [pathname]);
 
    useEffect(() => {
-    const userSessionRaw = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    const userSessionRaw = localStorage.getItem(ADMIN_SESSION_KEY);
     if (userSessionRaw) {
       try {
         const user: AuthUser = JSON.parse(userSessionRaw);
         if (user && user.type === 'admin') {
           setAdminUser(user);
         } else {
-          sessionStorage.removeItem(ADMIN_SESSION_KEY);
+          localStorage.removeItem(ADMIN_SESSION_KEY);
           router.push('/auth?redirect=/admin/dashboard');
         }
       } catch (e) {
         console.error("Failed to parse user session", e);
-        sessionStorage.removeItem(ADMIN_SESSION_KEY);
+        localStorage.removeItem(ADMIN_SESSION_KEY);
         router.push('/auth?redirect=/admin/dashboard');
       }
     } else {

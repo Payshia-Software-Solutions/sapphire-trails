@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -28,8 +29,8 @@ export function AdminSidebar() {
   const router = useRouter();
 
   const handleLogout = () => {
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    sessionStorage.removeItem('sapphire-user'); // Also remove main user key
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+    localStorage.removeItem('sapphire-user'); // Also remove main user key
     router.push('/auth');
   };
 

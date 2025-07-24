@@ -24,7 +24,7 @@ export default function AdminProfilePage() {
   const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    const userSessionRaw = sessionStorage.getItem(USER_SESSION_KEY);
+    const userSessionRaw = localStorage.getItem(USER_SESSION_KEY);
     if (userSessionRaw) {
       const user: AuthUser = JSON.parse(userSessionRaw);
       if (user && user.type === 'admin') {

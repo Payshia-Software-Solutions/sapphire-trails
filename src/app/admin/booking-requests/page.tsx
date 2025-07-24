@@ -81,7 +81,7 @@ export default function BookingRequestsPage() {
   }, []);
 
   useEffect(() => {
-    const adminUser = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    const adminUser = localStorage.getItem(ADMIN_SESSION_KEY);
     if (!adminUser) {
       router.push('/admin/login');
     } else {

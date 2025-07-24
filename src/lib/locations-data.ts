@@ -2,6 +2,7 @@
 import { Leaf, Mountain, Bird, Home, Clock, CalendarDays, Ticket, Users, AlertTriangle, Gem, Waves, Landmark, Camera, Tent, Thermometer } from 'lucide-react';
 
 export interface GalleryImage {
+  id?: number;
   src: string;
   alt: string;
   hint: string;
@@ -83,7 +84,8 @@ export const mapServerLocationToClient = (loc: any): Location => ({
     imageUrl: getFullImageUrl(loc.intro_image_url),
     imageHint: loc.intro_image_hint || '',
   },
-  galleryImages: (loc.gallery_images || []).map((img: any) => ({ 
+  galleryImages: (loc.gallery_images || []).map((img: any) => ({
+      id: img.id,
       src: getFullImageUrl(img.image_url), 
       alt: img.alt_text || '', 
       hint: img.hint || '' 

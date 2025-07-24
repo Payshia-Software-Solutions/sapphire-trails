@@ -38,7 +38,7 @@ export default function DashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const adminUser = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    const adminUser = localStorage.getItem(ADMIN_SESSION_KEY);
     if (!adminUser) {
       router.push('/auth');
     } else {
