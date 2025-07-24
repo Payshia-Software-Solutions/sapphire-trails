@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -117,7 +117,7 @@ export default function EditContentPage() {
     name: "galleryImages",
   });
   
-  const fetchLocationData = async () => {
+  const fetchLocationData = useCallback(async () => {
     if (!slug) {
         setIsLoadingData(false);
         toast({ variant: 'destructive', title: 'Error', description: 'No location slug provided.'});
@@ -154,11 +154,11 @@ export default function EditContentPage() {
     } finally {
         setIsLoadingData(false);
     }
-  }
+  }, [slug, toast, router, form]);
 
   useEffect(() => {
     fetchLocationData();
-  }, [slug]);
+  }, [fetchLocationData]);
 
    const handleMainImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -606,3 +606,5 @@ export default function EditContentPage() {
     </div>
   );
 }
+
+    

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -111,7 +111,7 @@ export default function EditPackagePage() {
     },
   });
   
-  const fetchPackageData = async () => {
+  const fetchPackageData = useCallback(async () => {
     if (!id) {
         setIsLoadingData(false);
         toast({ variant: 'destructive', title: 'Error', description: 'No package ID provided.'});
@@ -158,12 +158,12 @@ export default function EditPackagePage() {
     } finally {
         setIsLoadingData(false);
     }
-  }
+  }, [id, toast, router, form]);
 
 
   useEffect(() => {
     fetchPackageData();
-  }, [id]);
+  }, [fetchPackageData]);
 
   const { fields: highlightFields } = useFieldArray({
     control: form.control,
@@ -619,3 +619,5 @@ export default function EditPackagePage() {
     </div>
   );
 }
+
+    
