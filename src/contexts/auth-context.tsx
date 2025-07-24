@@ -18,12 +18,9 @@ export interface User {
 const USER_SESSION_KEY = 'sapphire-user';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-type ServerStatus = 'connecting' | 'connected' | 'error';
-
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  serverStatus: ServerStatus;
   login: (email: string, pass: string) => Promise<User | null>;
   signup: (name: string, email: string, phone: string | undefined, pass: string) => Promise<boolean>;
   logout: () => void;
@@ -34,35 +31,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [serverStatus, setServerStatus] = useState<ServerStatus>('connecting');
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
-
-  useEffect(() => {
-    // Check server health on initial load
-    const checkServerHealth = async () => {
-      if (!API_BASE_URL) {
-        console.error("API_BASE_URL is not defined. Please check your environment variables.");
-        setServerStatus('error');
-        return;
-      }
-      try {
-        // We assume the root of the API should return something, even an error, but not a network failure.
-        // A simple GET request to a known endpoint (like users) is a good test.
-        const response = await fetch(`${API_BASE_URL}/users`, { method: 'GET' });
-        if (response.ok || response.status < 500) { // If it's a client error (4xx) or success (2xx), server is up.
-          setServerStatus('connected');
-        } else {
-          throw new Error(`Server responded with status: ${response.status}`);
-        }
-      } catch (error) {
-        console.error('Server health check failed:', error);
-        setServerStatus('error');
-      }
-    };
-    checkServerHealth();
-  }, []);
 
   useEffect(() => {
     try {
@@ -172,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value = { user, isLoading, serverStatus, login, signup, logout };
+  const value = { user, isLoading, login, signup, logout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

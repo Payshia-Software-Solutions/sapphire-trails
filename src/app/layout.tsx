@@ -7,9 +7,8 @@ import './globals.css';
 import { PreloaderProvider } from '@/components/shared/preloader-provider';
 import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import { AuthProvider, useAuth } from '@/contexts/auth-context';
+import { AuthProvider } from '@/contexts/auth-context';
 import { WhatsAppButton } from '@/components/shared/whatsapp-button';
-import { LoaderCircle, WifiOff } from 'lucide-react';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -41,39 +40,6 @@ const cinzel = Cinzel({
 //   },
 // };
 
-function AppContent({ children }: { children: React.ReactNode }) {
-    const { serverStatus } = useAuth();
-
-    if (serverStatus === 'connecting') {
-        return (
-            <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-background text-foreground">
-                <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-                <p className="text-muted-foreground">Connecting to server...</p>
-            </div>
-        )
-    }
-
-    if (serverStatus === 'error') {
-         return (
-            <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-background text-foreground">
-                <WifiOff className="h-12 w-12 text-destructive" />
-                <h2 className="text-xl font-semibold">Connection Error</h2>
-                <p className="text-muted-foreground text-center max-w-sm">Could not connect to the backend server. Please check your connection or try again later.</p>
-            </div>
-        )
-    }
-    
-    return (
-      <>
-        <PreloaderProvider>
-          {children}
-        </PreloaderProvider>
-        <WhatsAppButton />
-        <Toaster />
-      </>
-    );
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -94,7 +60,11 @@ export default function RootLayout({
         cinzel.variable
         )}>
             <AuthProvider>
-                <AppContent>{children}</AppContent>
+                <PreloaderProvider>
+                    {children}
+                </PreloaderProvider>
+                <WhatsAppButton />
+                <Toaster />
             </AuthProvider>
       </body>
     </html>
