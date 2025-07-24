@@ -7,9 +7,8 @@ import { useState, useEffect, useRef } from 'react';
 import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LoaderCircle, WifiOff } from 'lucide-react';
+import { Menu, LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/contexts/auth-context';
 import type { User as AuthUser } from '@/contexts/auth-context';
 import {
   DropdownMenu,
@@ -36,7 +35,6 @@ export default function AdminLayout({
   const [adminUser, setAdminUser] = useState<AuthUser | null>(null);
   const isMounted = useRef(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const { serverStatus } = useAuth(); // Get server status from context
 
   useEffect(() => {
     // Force light theme on the admin panel
@@ -78,26 +76,6 @@ export default function AdminLayout({
         router.push('/auth?redirect=/admin/dashboard');
     }
   }, [pathname, router]);
-
-  // Handle server status
-  if (serverStatus === 'connecting') {
-    return (
-        <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-background text-foreground">
-            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground">Connecting to server...</p>
-        </div>
-    )
-  }
-  if (serverStatus === 'error') {
-      return (
-        <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-background text-foreground">
-            <WifiOff className="h-12 w-12 text-destructive" />
-            <h2 className="text-xl font-semibold">Connection Error</h2>
-            <p className="text-muted-foreground text-center max-w-sm">Could not connect to the backend server. Please check your connection or try again later.</p>
-        </div>
-    )
-  }
-
 
   const layout = (
       <div className="grid h-screen w-full overflow-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -181,7 +159,11 @@ export default function AdminLayout({
   return (
     <>
         {isLoading && <div className="fixed top-0 left-0 right-0 h-1 bg-primary z-[200] animate-top-loading" />}
-        {adminUser && layout}
+        {adminUser ? layout : (
+             <div className="flex h-screen items-center justify-center">
+                <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+             </div>
+        )}
     </>
   );
 }
