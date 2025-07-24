@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { locationsData as staticLocationsData, mapServerLocationToClient } from "@/lib/locations-data";
 import type { Location } from '@/lib/locations-data';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 const LocationCard = ({ location }: { location: Location }) => (
   <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">

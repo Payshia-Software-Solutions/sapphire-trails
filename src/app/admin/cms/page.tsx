@@ -23,7 +23,7 @@ import { LoaderCircle } from 'lucide-react';
 import { getFullImageUrl } from '@/lib/utils';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 const defaultValues = {
   hero: {

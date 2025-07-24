@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
 const iconOptions = ['MapPin', 'Gem', 'Landmark', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble', 'Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Waves', 'Camera', 'Tent', 'Thermometer'];
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 const steps = [
   { id: 1, name: 'Homepage Card', fields: ['homepageTitle', 'homepageDescription', 'imageUrl', 'imageAlt', 'imageHint'] as const },

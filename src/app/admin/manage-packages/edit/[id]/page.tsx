@@ -23,7 +23,7 @@ import { mapServerPackageToClient } from '@/lib/packages-data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const iconOptions = ['MapPin', 'Gem', 'Landmark', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble', 'Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Waves', 'Camera', 'Tent', 'Thermometer'];
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 const steps = [
   { id: 1, name: 'Homepage Card', fields: ['homepageTitle', 'homepageDescription', 'imageAlt', 'imageHint'] as const },
@@ -619,5 +619,3 @@ export default function EditPackagePage() {
     </div>
   );
 }
-
-    

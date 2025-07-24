@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 function LoadingSkeleton() {
     return (
@@ -64,32 +64,33 @@ export default function EditUserPage() {
         },
     });
 
-    useEffect(() => {
+    const fetchUser = useCallback(async () => {
         if (!id) return;
-        async function fetchUser() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/users/${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch user data');
-                }
-                const userData: AuthUser = await response.json();
-                form.reset({
-                    name: userData.name,
-                    email: userData.email,
-                    phone: userData.phone || '',
-                    type: userData.type,
-                    password: '' // Password should be empty by default for security
-                });
-            } catch (error) {
-                console.error(error);
-                toast({ variant: 'destructive', title: 'Error', description: 'Could not load user data.' });
-                router.push('/admin/user-management');
-            } finally {
-                setIsLoading(false);
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/${id}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch user data');
             }
+            const userData: AuthUser = await response.json();
+            form.reset({
+                name: userData.name,
+                email: userData.email,
+                phone: userData.phone || '',
+                type: userData.type,
+                password: '' // Password should be empty by default for security
+            });
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not load user data.' });
+            router.push('/admin/user-management');
+        } finally {
+            setIsLoading(false);
         }
-        fetchUser();
     }, [id, form, router, toast]);
+
+    useEffect(() => {
+        fetchUser();
+    }, [fetchUser]);
 
     const onSubmit = async (data: z.infer<typeof userEditSchema>) => {
         setIsSubmitting(true);

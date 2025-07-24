@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -14,7 +15,7 @@ import { LocationNearby } from '@/components/sections/location-nearby';
 import { LocationCta } from '@/components/sections/location-cta';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 function LoadingSkeleton() {
     return (

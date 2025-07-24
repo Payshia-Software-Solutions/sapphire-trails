@@ -34,6 +34,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'server-sapphiretrails.payshia.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

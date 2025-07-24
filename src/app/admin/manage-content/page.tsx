@@ -21,7 +21,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { mapServerLocationToClient } from '@/lib/locations-data';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 // Simplified type for this page's needs
 interface ManagedLocation {

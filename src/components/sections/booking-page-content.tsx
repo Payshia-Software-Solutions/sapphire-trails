@@ -17,7 +17,7 @@ import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data'
 import Image from 'next/image';
 import { BookingForm } from '@/components/sections/booking-form';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
     if (!selectedTour) return null;
