@@ -19,6 +19,24 @@ import type { z } from 'zod';
 import { format } from "date-fns"
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import Image from 'next/image';
+import type { Metadata } from 'next';
+
+// Although this page is client-side, we can export metadata for Next.js to use
+export const metadata: Metadata = {
+  title: 'Book Your Tour',
+  description: 'Select your tour package, date, and number of guests to reserve your spot on an unforgettable adventure with Sapphire Trails.',
+  openGraph: {
+    title: 'Book Your Sapphire Trails Adventure',
+    description: 'Complete your booking for a luxury gem tour in Sri Lanka.',
+    images: [{
+      url: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
+      width: 1200,
+      height: 630,
+      alt: 'An overhead view of someone sifting for gems.'
+    }],
+  }
+};
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 

@@ -1,7 +1,6 @@
 
 'use client';
 
-import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import { PreloaderProvider } from '@/components/shared/preloader-provider';
@@ -31,15 +30,6 @@ const cinzel = Cinzel({
   weight: ['400', '500', '600', '700', '800', '900'],
 });
 
-// export const metadata: Metadata = {
-//   title: 'Sapphire Trails',
-//   description: "Sri Lanka's Only Luxury Gem Experience",
-//   icons: {
-//     icon: '/favicon.ico',
-//     apple: '/apple-touch-icon.png',
-//   },
-// };
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -47,12 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-          <title>Sapphire Trails</title>
-          <meta name="description" content="Sri Lanka's Only Luxury Gem Experience" />
-          <link rel="icon" href="/favicon.ico" />
-          <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-      </head>
+      <head />
       <body className={cn(
         "font-body antialiased bg-background text-foreground",
         poppins.variable,
