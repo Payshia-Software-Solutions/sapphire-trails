@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,7 +16,7 @@ export function BookingRequests() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const authStatus = sessionStorage.getItem('isAdminAuthenticated');
+    const authStatus = localStorage.getItem('isAdminAuthenticated');
     if (authStatus !== 'true') {
       router.push('/admin/login');
     } else {
