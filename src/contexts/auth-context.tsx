@@ -18,9 +18,12 @@ export interface User {
 const USER_SESSION_KEY = 'sapphire-user';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+type ServerStatus = 'connecting' | 'connected' | 'error';
+
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
+  serverStatus: ServerStatus;
   login: (email: string, pass: string) => Promise<User | null>;
   signup: (name: string, email: string, phone: string | undefined, pass: string) => Promise<boolean>;
   logout: () => void;
@@ -31,13 +34,39 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [serverStatus, setServerStatus] = useState<ServerStatus>('connecting');
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check server health on initial load
+    const checkServerHealth = async () => {
+      if (!API_BASE_URL) {
+        console.error("API_BASE_URL is not defined. Please check your environment variables.");
+        setServerStatus('error');
+        return;
+      }
+      try {
+        // We assume the root of the API should return something, even an error, but not a network failure.
+        // A simple GET request to a known endpoint (like users) is a good test.
+        const response = await fetch(`${API_BASE_URL}/users`, { method: 'GET' });
+        if (response.ok || response.status < 500) { // If it's a client error (4xx) or success (2xx), server is up.
+          setServerStatus('connected');
+        } else {
+          throw new Error(`Server responded with status: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Server health check failed:', error);
+        setServerStatus('error');
+      }
+    };
+    checkServerHealth();
+  }, []);
+
+  useEffect(() => {
     try {
-      const storedUser = sessionStorage.getItem(USER_SESSION_KEY);
+      const storedUser = localStorage.getItem(USER_SESSION_KEY);
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
@@ -73,8 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       setUser(loggedInUser);
-      sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(loggedInUser));
-      sessionStorage.setItem('adminUser', JSON.stringify(loggedInUser)); // Also set admin key for admin panel access
+      localStorage.setItem(USER_SESSION_KEY, JSON.stringify(loggedInUser));
+      localStorage.setItem('adminUser', JSON.stringify(loggedInUser)); // Also set admin key for admin panel access
       toast({ title: 'Success!', description: 'You have logged in successfully.' });
       return loggedInUser;
 
@@ -119,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       setUser(newUser);
-      sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(newUser));
+      localStorage.setItem(USER_SESSION_KEY, JSON.stringify(newUser));
       toast({ title: 'Welcome!', description: 'Your account has been created successfully.' });
       return true;
 
@@ -135,15 +164,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    sessionStorage.removeItem(USER_SESSION_KEY);
-    sessionStorage.removeItem('adminUser');
+    localStorage.removeItem(USER_SESSION_KEY);
+    localStorage.removeItem('adminUser');
     toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
     if (pathname.startsWith('/profile') || pathname.startsWith('/booking') || pathname.startsWith('/admin')) {
          router.push('/');
     }
   };
 
-  const value = { user, isLoading, login, signup, logout };
+  const value = { user, isLoading, serverStatus, login, signup, logout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
