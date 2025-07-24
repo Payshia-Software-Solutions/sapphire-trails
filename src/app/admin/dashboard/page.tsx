@@ -16,7 +16,7 @@ import { TourPopularityChart } from '@/components/admin/charts/tour-popularity-c
 import { useToast } from '@/hooks/use-toast';
 
 const ADMIN_SESSION_KEY = 'adminUser';
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 const mapServerBookingToClient = (serverBooking: any): Booking => ({
   id: Number(serverBooking.id),

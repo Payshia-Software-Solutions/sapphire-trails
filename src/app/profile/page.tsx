@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { format, parseISO } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 export default function ProfilePage() {
   const { user, logout, isLoading } = useAuth();

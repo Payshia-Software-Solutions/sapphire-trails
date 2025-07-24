@@ -39,7 +39,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { type TourPackage } from "@/lib/packages-data"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 interface ConfirmationDetails {
     tourName: string;
@@ -402,5 +402,3 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     </form>
   )
 }
-
-    

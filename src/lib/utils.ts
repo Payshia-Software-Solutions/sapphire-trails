@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const IMAGE_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 // Helper to construct full URL from a relative path
 export const getFullImageUrl = (path: string | null | undefined) => {

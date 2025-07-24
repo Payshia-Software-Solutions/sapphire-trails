@@ -14,7 +14,7 @@ import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary
 import { TourFloatingBar } from '@/components/sections/tour-floating-bar';
 import { TourExperienceGallery } from '@/components/sections/tour-experience-gallery';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 function LoadingSkeleton() {
     return (
