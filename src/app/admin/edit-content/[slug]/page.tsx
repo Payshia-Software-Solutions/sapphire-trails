@@ -97,7 +97,7 @@ export default function EditContentPage() {
       category: 'nature',
       cardDescription: '',
       cardImage: '',
-      imageHint: '',
+      cardImageHint: '',
       distance: '',
       subtitle: '',
       heroImage: '',
@@ -286,7 +286,7 @@ export default function EditContentPage() {
     locationFormData.append('title', data.title);
     locationFormData.append('subtitle', data.subtitle);
     locationFormData.append('card_description', data.cardDescription);
-    locationFormData.append('card_image_hint', data.imageHint);
+    locationFormData.append('card_image_hint', data.cardImageHint);
     locationFormData.append('distance', data.distance);
     locationFormData.append('hero_image_hint', data.heroImageHint);
     locationFormData.append('intro_title', data.introTitle);
@@ -396,7 +396,7 @@ export default function EditContentPage() {
                     {cardImagePreview && <Image src={cardImagePreview} alt="Card preview" width={200} height={100} className="rounded-md object-cover border" />}
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="imageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="cardImageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                 </CardContent>
