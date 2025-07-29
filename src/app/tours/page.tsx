@@ -75,6 +75,10 @@ function AllToursGrid() {
 }
 
 export default function ToursPage() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
