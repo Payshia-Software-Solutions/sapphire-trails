@@ -29,11 +29,13 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <DiscoverSection />
-        <ToursSection />
-        <SubscriptionSection />
-        <ExploreRatnapuraSection />
-        <BookingSection />
+        <div className="content-wrapper">
+            <DiscoverSection />
+            <ToursSection />
+            <SubscriptionSection />
+            <ExploreRatnapuraSection />
+            <BookingSection />
+        </div>
       </main>
       <Footer />
     </div>

@@ -38,8 +38,8 @@ export function HeroSection() {
   const finalImageUrl = getFullImageUrl(content.imageUrl);
 
   return (
-    <section className="relative h-screen w-full flex items-center justify-center parallax-container">
-       <div className="parallax-background">
+    <section className="relative h-screen w-full flex items-center justify-center">
+       <div className="parallax-hero">
         <Image
             src={finalImageUrl}
             alt={content.imageAlt}
@@ -49,7 +49,8 @@ export function HeroSection() {
         />
         <div className="absolute inset-0 bg-black/50 z-10" />
       </div>
-      <div className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
+       <div className="h-screen" />
+      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
         
         <div className="flex flex-col items-center space-y-4">
           <Image
