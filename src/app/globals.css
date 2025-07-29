@@ -4,6 +4,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
 }
 
 @layer base {
@@ -46,5 +47,9 @@ html {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .scroll-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 }

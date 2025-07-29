@@ -38,7 +38,7 @@ export function HeroSection() {
   const finalImageUrl = getFullImageUrl(content.imageUrl);
 
   return (
-    <section className="relative h-screen w-full flex items-center justify-center">
+    <section className="relative h-screen w-full flex items-center justify-center scroll-section">
       <Image
         src={finalImageUrl}
         alt={content.imageAlt}
