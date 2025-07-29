@@ -8,6 +8,8 @@ import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { AuthProvider } from '@/contexts/auth-context';
 import { WhatsAppButton } from '@/components/shared/whatsapp-button';
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -35,6 +37,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
   return (
     <html lang="en">
       <head />

@@ -12,7 +12,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
-import { usePathname } from 'next/navigation';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -76,14 +75,6 @@ function AllToursGrid() {
 }
 
 export default function ToursPage() {
-  const pathname = usePathname();
-
-  useEffect(() => {
-    // This effect will run whenever the pathname changes, which happens on navigation.
-    // It forces the window to scroll to the top.
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
