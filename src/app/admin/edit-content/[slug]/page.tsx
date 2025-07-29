@@ -18,22 +18,12 @@ import { Separator } from '@/components/ui/separator';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, LoaderCircle, Plus, Trash2, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
 import { mapServerLocationToClient, type Location, type GalleryImage } from '@/lib/locations-data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { API_BASE_URL } from '@/lib/utils';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
-
-const steps = [
-  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'category', 'cardDescription', 'distance'] as const },
-  { id: 2, name: 'Hero & Intro', fields: ['subtitle', 'introTitle', 'introDescription'] as const },
-  { id: 3, name: 'Gallery Images', fields: ['galleryImages'] as const },
-  { id: 4, name: 'Key Highlights', fields: ['highlights'] as const },
-  { id: 5, 'name': 'Visitor Information', fields: ['visitorInfo'] as const },
-  { id: 6, name: 'Map & Nearby', fields: ['mapEmbedUrl', 'nearbyAttractions'] as const },
-];
 
 interface FormGalleryImage extends GalleryImage {
   id?: number;
@@ -51,7 +41,6 @@ function LoadingFormSkeleton() {
                     <Skeleton className="h-4 w-80" />
                 </div>
             </div>
-            <Skeleton className="h-2 w-full" />
             <Card>
                 <CardHeader>
                     <Skeleton className="h-6 w-48" />
@@ -73,7 +62,6 @@ export default function EditContentPage() {
   const params = useParams();
   const slug = params.slug as string;
 
-  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -259,20 +247,6 @@ export default function EditContentPage() {
     }
   };
 
-
-  const handleNext = async () => {
-     if (currentStep < steps.length) {
-      setCurrentStep(prev => prev + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-    }
-  };
-
-
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     setIsSubmitting(true);
     
@@ -328,9 +302,6 @@ export default function EditContentPage() {
     }
   }
 
-
-  const progressValue = (currentStep / steps.length) * 100;
-
   if (isLoadingData) {
     return <LoadingFormSkeleton />;
   }
@@ -347,15 +318,9 @@ export default function EditContentPage() {
         </div>
       </div>
       
-      <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep-1].name}</span></p>
-          <Progress value={progressValue} className="h-2" />
-      </div>
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className={cn(currentStep === 1 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader>
                   <CardTitle>Basic Information</CardTitle>
                   <CardDescription>This information appears on the location listing card.</CardDescription>
@@ -400,11 +365,9 @@ export default function EditContentPage() {
                     <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                 </CardContent>
-              </Card>
-            </div>
-            
-             <div className={cn(currentStep === 2 ? 'block' : 'hidden')}>
-              <Card>
+            </Card>
+
+            <Card>
                 <CardHeader>
                     <CardTitle>Hero & Intro Section</CardTitle>
                     <CardDescription>Content for the top of the location detail page.</CardDescription>
@@ -427,11 +390,9 @@ export default function EditContentPage() {
                     {introImagePreview && <Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover border" />}
                     <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
 
-            <div className={cn(currentStep === 3 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader>
                     <CardTitle>Gallery Images</CardTitle>
                     <CardDescription>Manage gallery images. Changes here are saved individually.</CardDescription>
@@ -474,11 +435,9 @@ export default function EditContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Image
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
             
-            <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
                     {form.getValues('highlights').map((_, index) => (
@@ -515,11 +474,9 @@ export default function EditContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Highlight
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
 
-            <div className={cn(currentStep === 5 ? 'block' : 'hidden')}>
-               <Card>
+            <Card>
                 <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
                     {form.getValues('visitorInfo').map((_, index) => (
@@ -557,11 +514,9 @@ export default function EditContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Info Item
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
             
-            <div className={cn(currentStep === 6 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
                     <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -602,33 +557,16 @@ export default function EditContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Attraction
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
           
-            <div className="mt-8 pt-5 flex justify-between">
-              <div>
-                <Button type="button" onClick={handlePrev} variant="outline" className={cn(currentStep === 1 && "hidden")} disabled={isSubmitting}>
-                  Go Back
-                </Button>
-              </div>
-              <div>
-                {currentStep < steps.length && (
-                  <Button type="button" onClick={handleNext} disabled={isSubmitting}>
-                    Next Step
-                  </Button>
-                )}
-                {currentStep === steps.length && (
-                  <Button type="submit" size="lg" disabled={isSubmitting}>
-                    {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                    {isSubmitting ? "Saving..." : "Save Main Content"}
-                  </Button>
-                )}
-              </div>
+            <div className="mt-8 pt-5 flex justify-end">
+              <Button type="submit" size="lg" disabled={isSubmitting}>
+                {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </Button>
             </div>
         </form>
       </Form>
     </div>
   );
 }
-
-    

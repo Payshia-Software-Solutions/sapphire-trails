@@ -18,20 +18,10 @@ import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
 import { API_BASE_URL } from '@/lib/utils';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
-
-const steps = [
-  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'category', 'cardDescription', 'cardImage', 'cardImageHint', 'distance'] as const },
-  { id: 2, name: 'Hero & Intro', fields: ['subtitle', 'heroImage', 'heroImageHint', 'introTitle', 'introDescription', 'introImageUrl', 'introImageHint'] as const },
-  { id: 3, name: 'Gallery Images', fields: ['galleryImages'] as const },
-  { id: 4, name: 'Key Highlights', fields: ['highlights'] as const },
-  { id: 5, name: 'Visitor Information', fields: ['visitorInfo'] as const },
-  { id: 6, name: 'Map & Nearby', fields: ['nearbyAttractions', 'mapEmbedUrl'] as const },
-];
 
 const toKebabCase = (str: string) =>
   str &&
@@ -43,7 +33,6 @@ const toKebabCase = (str: string) =>
 export default function AddContentPage() {
   const { toast } = useToast();
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
   const [isClient, setIsClient] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -132,29 +121,6 @@ export default function AddContentPage() {
     }
   };
 
-  const handleNext = async () => {
-    const fields = steps[currentStep - 1].fields;
-    const isValid = await form.trigger(fields as any, { shouldFocus: true });
-    
-    if (!isValid) {
-        toast({
-            variant: "destructive",
-            title: "Validation Error",
-            description: "Please fill out all required fields before proceeding.",
-        });
-        return;
-    }
-
-    if (currentStep < steps.length) {
-      setCurrentStep(prev => prev + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-    }
-  };
 
   async function uploadGalleryImage(file: File, locationSlug: string, meta: { alt: string, hint: string }, index: number) {
     const galleryFormData = new FormData();
@@ -179,12 +145,10 @@ export default function AddContentPage() {
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     if (!data.slug || data.slug.trim().length < 3) {
       toast({ variant: "destructive", title: "Missing Slug", description: "Please provide a unique slug on Step 1." });
-      setCurrentStep(1);
       return;
     }
      if (!cardImageFile || !heroImageFile || !introImageFile) {
         toast({ variant: "destructive", title: "Missing Images", description: "Please upload all three main images (Card, Hero, Intro)." });
-        setCurrentStep(2);
         return;
     }
 
@@ -256,8 +220,6 @@ export default function AddContentPage() {
         setIsSubmitting(false);
     }
   }
-
-  const progressValue = (currentStep / steps.length) * 100;
   
   if (!isClient) {
     return null;
@@ -271,19 +233,14 @@ export default function AddContentPage() {
         </Button>
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Add New Location</h1>
-            <p className="text-muted-foreground">Follow the steps to add a new location.</p>
+            <p className="text-muted-foreground">Fill in the details below to add a new location.</p>
         </div>
       </div>
       
-      <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep-1].name}</span></p>
-          <Progress value={progressValue} className="h-2" />
-      </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className={cn(currentStep === 1 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader>
                   <CardTitle>Basic Information</CardTitle>
                   <CardDescription>This information appears on the location listing card.</CardDescription>
@@ -341,11 +298,9 @@ export default function AddContentPage() {
                     <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input placeholder="e.g., 12 km away" {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                 </CardContent>
-              </Card>
-            </div>
-            
-            <div className={cn(currentStep === 2 ? 'block' : 'hidden')}>
-              <Card>
+            </Card>
+
+            <Card>
                 <CardHeader>
                     <CardTitle>Hero & Intro Section</CardTitle>
                     <CardDescription>Content for the top of the location detail page.</CardDescription>
@@ -366,11 +321,9 @@ export default function AddContentPage() {
                     </div>
                     <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input placeholder="e.g., jungle river rocks" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
 
-            <div className={cn(currentStep === 3 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader><CardTitle>Gallery Images</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
                     {galleryFields.map((item, index) => (
@@ -408,11 +361,9 @@ export default function AddContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Image
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
             
-            <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
                     {form.getValues('highlights').map((_, index) => (
@@ -449,11 +400,9 @@ export default function AddContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Highlight
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
 
-            <div className={cn(currentStep === 5 ? 'block' : 'hidden')}>
-               <Card>
+            <Card>
                 <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
                     {form.getValues('visitorInfo').map((_, index) => (
@@ -491,11 +440,9 @@ export default function AddContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Info Item
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
             
-            <div className={cn(currentStep === 6 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
                     <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -536,28 +483,13 @@ export default function AddContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Attraction
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
           
-            <div className="mt-8 pt-5 flex justify-between">
-              <div>
-                <Button type="button" onClick={handlePrev} variant="outline" className={cn(currentStep === 1 && "hidden")} disabled={isSubmitting}>
-                  Go Back
-                </Button>
-              </div>
-              <div>
-                {currentStep < steps.length && (
-                  <Button type="button" onClick={handleNext} disabled={isSubmitting}>
-                    Next Step
-                  </Button>
-                )}
-                {currentStep === steps.length && (
-                  <Button type="submit" size="lg" disabled={isSubmitting}>
-                    {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                    {isSubmitting ? "Saving..." : "Save New Location"}
-                  </Button>
-                )}
-              </div>
+            <div className="mt-8 pt-5 flex justify-end">
+              <Button type="submit" size="lg" disabled={isSubmitting}>
+                {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting ? "Saving..." : "Save New Location"}
+              </Button>
             </div>
         </form>
       </Form>
