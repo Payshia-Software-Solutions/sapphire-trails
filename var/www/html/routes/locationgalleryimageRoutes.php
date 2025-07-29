@@ -1,26 +1,14 @@
 <?php
 require_once './controllers/locationgalleryimageController.php';
 
-$pdo = $GLOBALS['pdo'];
-$galleryController = new LocationGalleryImageController($pdo);
+return function ($router) {
+    $controller = new LocationGalleryImageController($GLOBALS['pdo']);
 
-return [
-    'GET /location-gallery/' => function () use ($galleryController) {
-        $galleryController->getAll();
-    },
-    'GET /location-gallery/location/{slug}/' => function ($slug) use ($galleryController) {
-        $galleryController->getByLocationSlug($slug);
-    },
-    'POST /location-gallery/' => function () use ($galleryController) {
-        $galleryController->create();
-    },
-    'DELETE /location-gallery/{id}/' => function($id) use ($galleryController) {
-        $galleryController->deleteById($id);
-    },
-    'POST /location-gallery/{id}' => function($id) use ($galleryController) {
-        $galleryController->update($id);
-    },
-    'DELETE /location-gallery/location/{slug}/' => function ($slug) use ($galleryController) {
-        $galleryController->deleteByLocationSlug($slug);
-    }
-];
+    $router->post('/', [$controller, 'create']);
+    $router->post('/{id}', [$controller, 'update']);
+    $router->delete('/{id}', [$controller, 'deleteById']);
+    $router->delete('/location/{slug}', [$controller, 'deleteByLocationSlug']);
+    $router->get('/location/{slug}', [$controller, 'getByLocationSlug']);
+    $router->get('/', [$controller, 'getAll']);
+};
+?>
