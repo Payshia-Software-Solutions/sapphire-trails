@@ -70,7 +70,7 @@ export function ExploreRatnapuraContent() {
   const culturalLocations = allLocations.filter(loc => loc.category === 'cultural');
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
+    <section className="w-full h-screen flex items-center justify-center bg-background scroll-section">
       <div className="container mx-auto px-4 md:px-6">
         <Tabs defaultValue="nature" className="w-full">
           <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 bg-transparent p-0">
