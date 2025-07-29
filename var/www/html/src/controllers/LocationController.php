@@ -162,7 +162,6 @@ class LocationController
             $data['hero_image_hint'] = $_POST['hero_image_hint'] ?? '';
             $data['intro_image_hint'] = $_POST['intro_image_hint'] ?? '';
 
-
             try {
                 $this->model->create($data);
                 $newLocation = $this->model->getBySlug($slug);
