@@ -152,7 +152,7 @@ export default function AddContentPage() {
 
   const handlePrev = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
 
