@@ -159,6 +159,9 @@ class LocationController
             $data['visitor_info'] = json_decode($data['visitor_info'] ?? '[]', true);
             $data['nearby_attractions'] = json_decode($data['nearby_attractions'] ?? '[]', true);
             $data['card_image_hint'] = $_POST['card_image_hint'] ?? '';
+            $data['hero_image_hint'] = $_POST['hero_image_hint'] ?? '';
+            $data['intro_image_hint'] = $_POST['intro_image_hint'] ?? '';
+
 
             try {
                 $this->model->create($data);
@@ -253,6 +256,8 @@ class LocationController
         $data['visitor_info'] = json_decode($data['visitor_info'] ?? '[]', true);
         $data['nearby_attractions'] = json_decode($data['nearby_attractions'] ?? '[]', true);
         $data['card_image_hint'] = $_POST['card_image_hint'] ?? '';
+        $data['hero_image_hint'] = $_POST['hero_image_hint'] ?? '';
+        $data['intro_image_hint'] = $_POST['intro_image_hint'] ?? '';
 
         try {
             $this->model->update($slug, $data);
@@ -269,5 +274,3 @@ class LocationController
     }
 
 }
-
-    
