@@ -25,12 +25,12 @@ import { API_BASE_URL } from '@/lib/utils';
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
 
 const steps = [
-  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'category', 'cardDescription', 'cardImage', 'imageHint', 'distance'] as const },
+  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'category', 'cardDescription', 'cardImage', 'cardImageHint', 'distance'] as const },
   { id: 2, name: 'Hero & Intro', fields: ['subtitle', 'heroImage', 'heroImageHint', 'introTitle', 'introDescription', 'introImageUrl', 'introImageHint'] as const },
   { id: 3, name: 'Gallery Images', fields: ['galleryImages'] as const },
   { id: 4, name: 'Key Highlights', fields: ['highlights'] as const },
   { id: 5, name: 'Visitor Information', fields: ['visitorInfo'] as const },
-  { id: 6, name: 'Map & Nearby', fields: ['mapEmbedUrl', 'nearbyAttractions'] as const },
+  { id: 6, name: 'Map & Nearby', fields: ['nearbyAttractions', 'mapEmbedUrl'] as const },
 ];
 
 const toKebabCase = (str: string) =>
@@ -71,7 +71,7 @@ export default function AddContentPage() {
       category: 'nature',
       cardDescription: '',
       cardImage: '',
-      imageHint: '',
+      cardImageHint: '',
       distance: '',
       subtitle: '',
       heroImage: '',
@@ -134,7 +134,7 @@ export default function AddContentPage() {
 
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
-    const isValid = await form.trigger(fields, { shouldFocus: true });
+    const isValid = await form.trigger(fields as any, { shouldFocus: true });
     
     if (!isValid) {
         toast({
@@ -200,7 +200,7 @@ export default function AddContentPage() {
     locationFormData.append('title', data.title);
     locationFormData.append('subtitle', data.subtitle);
     locationFormData.append('card_description', data.cardDescription);
-    locationFormData.append('card_image_hint', data.imageHint);
+    locationFormData.append('card_image_hint', data.cardImageHint);
     locationFormData.append('distance', data.distance);
     locationFormData.append('hero_image_hint', data.heroImageHint);
     locationFormData.append('intro_title', data.introTitle);
@@ -337,7 +337,7 @@ export default function AddContentPage() {
                     )}
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="imageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input placeholder="e.g., rainforest canopy" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="cardImageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input placeholder="e.g., rainforest canopy" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input placeholder="e.g., 12 km away" {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                 </CardContent>
