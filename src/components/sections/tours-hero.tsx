@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export function ToursHero() {
   return (
-    <section className="relative h-[50vh] w-full flex items-center justify-center bg-background">
+    <section className="relative h-screen w-full flex items-center justify-center bg-background scroll-section">
       <Image
         src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
         alt="A dark and moody image of the inside of a gem mine, with rock walls and dim lighting."
