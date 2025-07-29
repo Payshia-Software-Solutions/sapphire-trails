@@ -3,6 +3,7 @@ import { Footer } from '@/components/layout/footer';
 import { ContactHero } from '@/components/sections/contact-hero';
 import { ContactSection } from '@/components/sections/contact-section';
 import type { Metadata } from 'next';
+import { ScrollAnimate } from '@/components/shared/scroll-animate';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
@@ -25,7 +26,9 @@ export default function ContactPage() {
       <Header />
       <main className="flex-1">
         <ContactHero />
-        <ContactSection />
+        <ScrollAnimate>
+          <ContactSection />
+        </ScrollAnimate>
       </main>
       <Footer />
     </div>

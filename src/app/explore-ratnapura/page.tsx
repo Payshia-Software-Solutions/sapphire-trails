@@ -4,6 +4,7 @@ import { ExploreRatnapuraHero } from '@/components/sections/explore-ratnapura-he
 import { ExploreRatnapuraContent } from '@/components/sections/explore-ratnapura-content';
 import { ExploreMap } from '@/components/sections/explore-map';
 import type { Metadata } from 'next';
+import { ScrollAnimate } from '@/components/shared/scroll-animate';
 
 export const metadata: Metadata = {
   title: 'Explore Ratnapura',
@@ -26,8 +27,12 @@ export default function ExploreRatnapuraPage() {
       <Header />
       <main className="flex-1 bg-background-alt">
         <ExploreRatnapuraHero />
-        <ExploreRatnapuraContent />
-        <ExploreMap />
+        <ScrollAnimate>
+          <ExploreRatnapuraContent />
+        </ScrollAnimate>
+        <ScrollAnimate>
+          <ExploreMap />
+        </ScrollAnimate>
       </main>
       <Footer />
     </div>

@@ -11,6 +11,7 @@ import { Faq } from '@/components/sections/faq';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import { ScrollAnimate } from '@/components/shared/scroll-animate';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -79,8 +80,12 @@ export default function ToursPage() {
       <Header />
       <main className="flex-1 bg-background-alt">
         <ToursHero />
-        <AllToursGrid />
-        <Faq />
+        <ScrollAnimate>
+          <AllToursGrid />
+        </ScrollAnimate>
+        <ScrollAnimate>
+          <Faq />
+        </ScrollAnimate>
       </main>
       <Footer />
     </div>
