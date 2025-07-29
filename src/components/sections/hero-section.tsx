@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { getFullImageUrl } from '@/lib/utils';
+import { ScrollAnimate } from '../shared/scroll-animate';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -47,7 +48,7 @@ export function HeroSection() {
         className="z-0 object-cover"
       />
       <div className="absolute inset-0 bg-black/50 z-10" />
-      <div className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
+      <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
         
         <div className="flex flex-col items-center space-y-4">
           <Image
@@ -68,7 +69,7 @@ export function HeroSection() {
         <Button asChild size="lg">
           <Link href="/booking">Book Now</Link>
         </Button>
-      </div>
+      </ScrollAnimate>
     </section>
   );
 }
