@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,11 +20,12 @@ import { ArrowLeft, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
+import { API_BASE_URL } from '@/lib/utils';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
 
 const steps = [
-  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'cardDescription', 'cardImage', 'imageHint', 'distance'] as const },
+  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'category', 'cardDescription', 'cardImage', 'imageHint', 'distance'] as const },
   { id: 2, name: 'Hero & Intro', fields: ['subtitle', 'heroImage', 'heroImageHint', 'introTitle', 'introDescription', 'introImageUrl', 'introImageHint'] as const },
   { id: 3, name: 'Gallery Images', fields: ['galleryImages'] as const },
   { id: 4, name: 'Key Highlights', fields: ['highlights'] as const },
@@ -37,8 +39,6 @@ const toKebabCase = (str: string) =>
     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
     ?.map(x => x.toLowerCase())
     .join('-') || '';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function AddContentPage() {
   const { toast } = useToast();
@@ -68,6 +68,7 @@ export default function AddContentPage() {
     defaultValues: {
       title: '',
       slug: '',
+      category: 'nature',
       cardDescription: '',
       cardImage: '',
       imageHint: '',
@@ -206,7 +207,7 @@ export default function AddContentPage() {
     locationFormData.append('intro_description', data.introDescription);
     locationFormData.append('intro_image_hint', data.introImageHint);
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
-    locationFormData.append('category', 'nature');
+    locationFormData.append('category', data.category);
 
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
@@ -292,6 +293,28 @@ export default function AddContentPage() {
                     <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="e.g., Sinharaja Rainforest" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug</FormLabel><FormControl><Input placeholder="e.g., sinharaja-rainforest" {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
+                   <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="nature">Nature & Wildlife</SelectItem>
+                              <SelectItem value="agriculture">Agricultural & Energy</SelectItem>
+                              <SelectItem value="cultural">Cultural & Religious</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea placeholder="A short description for the card..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                   <div className="space-y-4">
                     <FormField

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -21,12 +22,12 @@ import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
 import { mapServerLocationToClient, type Location, type GalleryImage } from '@/lib/locations-data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { API_BASE_URL } from '@/lib/utils';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const steps = [
-  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'cardDescription', 'distance'] as const },
+  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'category', 'cardDescription', 'distance'] as const },
   { id: 2, name: 'Hero & Intro', fields: ['subtitle', 'introTitle', 'introDescription'] as const },
   { id: 3, name: 'Gallery Images', fields: ['galleryImages'] as const },
   { id: 4, name: 'Key Highlights', fields: ['highlights'] as const },
@@ -93,6 +94,7 @@ export default function EditContentPage() {
     defaultValues: {
       title: '',
       slug: '',
+      category: 'nature',
       cardDescription: '',
       cardImage: '',
       imageHint: '',
@@ -291,7 +293,7 @@ export default function EditContentPage() {
     locationFormData.append('intro_description', data.introDescription);
     locationFormData.append('intro_image_hint', data.introImageHint);
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
-    locationFormData.append('category', 'nature');
+    locationFormData.append('category', data.category);
     
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
@@ -363,6 +365,28 @@ export default function EditContentPage() {
                     <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug (Cannot be changed)</FormLabel><FormControl><Input {...field} disabled /></FormControl><FormMessage /></FormItem>)} />
                   </div>
+                   <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                           <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="nature">Nature & Wildlife</SelectItem>
+                              <SelectItem value="agriculture">Agricultural & Energy</SelectItem>
+                              <SelectItem value="cultural">Cultural & Religious</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                   <div className="space-y-4">
                     <FormItem>

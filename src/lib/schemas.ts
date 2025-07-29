@@ -1,4 +1,5 @@
 
+
 import { z } from "zod";
 
 export const contactFormSchema = z.object({
@@ -40,6 +41,9 @@ export const locationFormSchema = z.object({
   // Basic info
   title: z.string().min(3, "Title must be at least 3 characters."),
   slug: z.string().min(3, "Slug is required and must be unique (e.g., location-name).").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens."),
+  category: z.enum(['nature', 'agriculture', 'cultural'], {
+    required_error: "You need to select a location category.",
+  }),
   cardDescription: z.string().min(10, "Card description must be at least 10 characters."),
   distance: z.string().min(2, "Distance is required."),
 
@@ -56,6 +60,7 @@ export const locationFormSchema = z.object({
   cardImage: z.string().min(1, "A card image is required."),
   heroImage: z.string().min(1, "A hero image is required."),
   introImageUrl: z.string().min(1, "An intro image is required."),
+  imageHint: z.string().optional(),
 
   // Gallery (dynamic length)
   galleryImages: z.array(z.object({
