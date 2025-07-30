@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -196,7 +197,7 @@ export default function AddContentPage() {
       locationFormData.append('hero_image', heroImageFile);
       locationFormData.append('intro_image', introImageFile);
       
-      // FIXED: Add text fields - Match the backend field names exactly
+      // Add text fields
       locationFormData.append('slug', data.slug);
       locationFormData.append('title', data.title);
       locationFormData.append('subtitle', data.subtitle);
@@ -210,34 +211,25 @@ export default function AddContentPage() {
       locationFormData.append('map_embed_url', data.mapEmbedUrl);
       locationFormData.append('category', data.category);
 
-      // Transform the data to match backend expectations
+      // Transform array data and add as JSON strings
       const transformedHighlights = data.highlights.map((h, index) => ({
           ...h,
           sort_order: index + 1
       }));
+      locationFormData.append('highlights', JSON.stringify(transformedHighlights));
 
       const transformedVisitorInfo = data.visitorInfo.map((vi, index) => ({
           ...vi,
           sort_order: index + 1
       }));
+      locationFormData.append('visitor_info', JSON.stringify(transformedVisitorInfo));
 
       const transformedNearbyAttractions = data.nearbyAttractions.map((na, index) => ({
           ...na,
           sort_order: index + 1
       }));
-
-      // Add as JSON strings
-      locationFormData.append('highlights', JSON.stringify(transformedHighlights));
-      locationFormData.append('visitor_info', JSON.stringify(transformedVisitorInfo));
       locationFormData.append('nearby_attractions', JSON.stringify(transformedNearbyAttractions));
       
-      console.log('Sending data to backend:');
-      console.log('- slug:', data.slug);
-      console.log('- title:', data.title);
-      console.log('- highlights:', JSON.stringify(transformedHighlights));
-      console.log('- visitor_info:', JSON.stringify(transformedVisitorInfo));
-      console.log('- nearby_attractions:', JSON.stringify(transformedNearbyAttractions));
-
       // Step 1: Create the main location entry
       const locationResponse = await fetch(`${API_BASE_URL}/locations/`, {
         method: 'POST',
@@ -593,3 +585,5 @@ export default function AddContentPage() {
     </div>
   );
 }
+
+    
