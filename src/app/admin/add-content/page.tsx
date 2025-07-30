@@ -182,7 +182,7 @@ export default function AddContentPage() {
     }
      if (!cardImageFile || !heroImageFile || !introImageFile) {
         toast({ variant: "destructive", title: "Missing Images", description: "Please upload all three main images (Card, Hero, Intro)." });
-        setCurrentStep(2);
+        setCurrentStep(1); // Go back to the first step where some of these are
         return;
     }
 
@@ -585,5 +585,3 @@ export default function AddContentPage() {
     </div>
   );
 }
-
-    
