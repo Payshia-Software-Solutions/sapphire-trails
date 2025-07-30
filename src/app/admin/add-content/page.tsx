@@ -20,7 +20,8 @@ import { ArrowLeft, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
-import { API_BASE_URL } from '@/lib/utils';
+
+const API_BASE_URL = 'http://localhost/sapphire_trails_server';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
 
@@ -182,56 +183,59 @@ export default function AddContentPage() {
     }
      if (!cardImageFile || !heroImageFile || !introImageFile) {
         toast({ variant: "destructive", title: "Missing Images", description: "Please upload all three main images (Card, Hero, Intro)." });
-        setCurrentStep(1); // Go back to the first step where some of these are
+        setCurrentStep(1);
         return;
     }
 
     setIsSubmitting(true);
     
+    const locationFormData = new FormData();
+    
+    // Add image files
+    locationFormData.append('card_image', cardImageFile);
+    locationFormData.append('hero_image', heroImageFile);
+    locationFormData.append('intro_image', introImageFile);
+    
+    // Add text fields
+    locationFormData.append('slug', data.slug);
+    locationFormData.append('title', data.title);
+    locationFormData.append('subtitle', data.subtitle);
+    locationFormData.append('card_description', data.cardDescription);
+    locationFormData.append('card_image_hint', data.cardImageHint || '');
+    locationFormData.append('distance', data.distance);
+    locationFormData.append('hero_image_hint', data.heroImageHint || '');
+    locationFormData.append('intro_title', data.introTitle);
+    locationFormData.append('intro_description', data.introDescription);
+    locationFormData.append('intro_image_hint', data.introImageHint || '');
+    locationFormData.append('map_embed_url', data.mapEmbedUrl);
+    locationFormData.append('category', data.category);
+
+    // Transform array data and add as JSON strings
+    const highlightsForApi = data.highlights.map(h => ({
+      icon: h.icon,
+      title: h.title,
+      description: h.description,
+    }));
+    locationFormData.append('highlights', JSON.stringify(highlightsForApi));
+
+    const visitorInfoForApi = data.visitorInfo.map(vi => ({
+        icon: vi.icon,
+        title: vi.title,
+        line1: vi.line1,
+        line2: vi.line2,
+    }));
+    locationFormData.append('visitor_info', JSON.stringify(visitorInfoForApi));
+
+    const nearbyAttractionsForApi = data.nearbyAttractions.map(na => ({
+        icon: na.icon,
+        name: na.name,
+        distance: na.distance,
+    }));
+    locationFormData.append('nearby_attractions', JSON.stringify(nearbyAttractionsForApi));
+      
     try {
-      // Create the main location entry first
-      const locationFormData = new FormData();
-      
-      // Add image files
-      locationFormData.append('card_image', cardImageFile);
-      locationFormData.append('hero_image', heroImageFile);
-      locationFormData.append('intro_image', introImageFile);
-      
-      // Add text fields
-      locationFormData.append('slug', data.slug);
-      locationFormData.append('title', data.title);
-      locationFormData.append('subtitle', data.subtitle);
-      locationFormData.append('card_description', data.cardDescription);
-      locationFormData.append('card_image_hint', data.cardImageHint || '');
-      locationFormData.append('distance', data.distance);
-      locationFormData.append('hero_image_hint', data.heroImageHint || '');
-      locationFormData.append('intro_title', data.introTitle);
-      locationFormData.append('intro_description', data.introDescription);
-      locationFormData.append('intro_image_hint', data.introImageHint || '');
-      locationFormData.append('map_embed_url', data.mapEmbedUrl);
-      locationFormData.append('category', data.category);
-
-      // Transform array data and add as JSON strings
-      const transformedHighlights = data.highlights.map((h, index) => ({
-          ...h,
-          sort_order: index + 1
-      }));
-      locationFormData.append('highlights', JSON.stringify(transformedHighlights));
-
-      const transformedVisitorInfo = data.visitorInfo.map((vi, index) => ({
-          ...vi,
-          sort_order: index + 1
-      }));
-      locationFormData.append('visitor_info', JSON.stringify(transformedVisitorInfo));
-
-      const transformedNearbyAttractions = data.nearbyAttractions.map((na, index) => ({
-          ...na,
-          sort_order: index + 1
-      }));
-      locationFormData.append('nearby_attractions', JSON.stringify(transformedNearbyAttractions));
-      
       // Step 1: Create the main location entry
-      const locationResponse = await fetch(`${API_BASE_URL}/locations/`, {
+      const locationResponse = await fetch(`${API_BASE_URL}/locations`, {
         method: 'POST',
         body: locationFormData,
       });
@@ -585,5 +589,3 @@ export default function AddContentPage() {
     </div>
   );
 }
-
-    
