@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -149,7 +150,7 @@ export default function AddContentPage() {
 
   const handlePrev = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
 
@@ -209,7 +210,7 @@ export default function AddContentPage() {
       locationFormData.append('map_embed_url', data.mapEmbedUrl);
       locationFormData.append('category', data.category);
 
-      // Transform the data to match backend expectations, but no longer filter empty items
+      // Transform the data to match backend expectations
       const transformedHighlights = data.highlights.map((h, index) => ({
           ...h,
           sort_order: index + 1
