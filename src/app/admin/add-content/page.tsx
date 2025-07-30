@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -210,7 +209,6 @@ export default function AddContentPage() {
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
     locationFormData.append('category', data.category);
 
-    // Transform array data and add as JSON strings
     const highlightsForApi = data.highlights.map(h => ({
       icon: h.icon,
       title: h.title,
@@ -301,7 +299,7 @@ export default function AddContentPage() {
       </div>
       
       <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep-1].name}</span></p>
+          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep-1]?.name}</span></p>
           <Progress value={progressValue} className="h-2" />
       </div>
 
@@ -589,3 +587,5 @@ export default function AddContentPage() {
     </div>
   );
 }
+
+    
