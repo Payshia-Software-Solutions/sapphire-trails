@@ -269,6 +269,7 @@ export default function EditContentPage() {
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
     locationFormData.append('category', data.category);
     
+    // No longer filtering empty items, just adding sort order
     locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
     locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
     locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));

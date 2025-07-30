@@ -149,7 +149,7 @@ export default function AddContentPage() {
 
   const handlePrev = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
 
@@ -209,34 +209,21 @@ export default function AddContentPage() {
       locationFormData.append('map_embed_url', data.mapEmbedUrl);
       locationFormData.append('category', data.category);
 
-      // FIXED: Transform the data to match backend expectations
-      const transformedHighlights = data.highlights
-        .filter(h => h.title.trim() !== '' || h.description.trim() !== '') // Only include non-empty highlights
-        .map((h, index) => ({
-          title: h.title,
-          description: h.description,
-          icon: h.icon,
+      // Transform the data to match backend expectations, but no longer filter empty items
+      const transformedHighlights = data.highlights.map((h, index) => ({
+          ...h,
           sort_order: index + 1
-        }));
+      }));
 
-      const transformedVisitorInfo = data.visitorInfo
-        .filter(vi => vi.title.trim() !== '' || vi.line1.trim() !== '' || vi.line2.trim() !== '') // Only include non-empty info
-        .map((vi, index) => ({
-          title: vi.title,
-          line1: vi.line1,
-          line2: vi.line2,
-          icon: vi.icon,
+      const transformedVisitorInfo = data.visitorInfo.map((vi, index) => ({
+          ...vi,
           sort_order: index + 1
-        }));
+      }));
 
-      const transformedNearbyAttractions = data.nearbyAttractions
-        .filter(na => na.name.trim() !== '' || na.distance.trim() !== '') // Only include non-empty attractions
-        .map((na, index) => ({
-          name: na.name,
-          distance: na.distance,
-          icon: na.icon,
+      const transformedNearbyAttractions = data.nearbyAttractions.map((na, index) => ({
+          ...na,
           sort_order: index + 1
-        }));
+      }));
 
       // Add as JSON strings
       locationFormData.append('highlights', JSON.stringify(transformedHighlights));
