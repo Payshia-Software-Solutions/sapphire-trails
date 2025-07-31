@@ -22,7 +22,7 @@ export function OurStory() {
             <div className="space-y-4">
               <h2 className="text-3xl font-headline font-bold text-primary">Our Story</h2>
               <p className="text-muted-foreground leading-relaxed">
-                With over 27 years, Grand Silver Ray has set the standard for luxury gem tourism in Sri Lanka. Rooted in Ratnapura, the heart of sapphire country, our resort blends timeless elegance with the vibrant spirit of discovery. What began as a boutique retreat is now renowned worldwide for experiential hospitality, cultural immersion, and responsible luxury.
+                With over 27 years experience in the hospitality industry, Grand Silver Ray has set the standard for luxury gem tourism in Sri Lanka. Rooted in Ratnapura, the heart of sapphire country, our resort blends timeless elegance with the vibrant spirit of discovery. What began as a boutique retreat is now renowned worldwide for experiential hospitality, cultural immersion, and responsible luxury.
               </p>
             </div>
             <div className="relative aspect-video rounded-lg overflow-hidden">

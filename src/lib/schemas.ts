@@ -1,4 +1,5 @@
 
+
 import { z } from "zod";
 
 export const contactFormSchema = z.object({
@@ -40,20 +41,24 @@ export const locationFormSchema = z.object({
   // Basic info
   title: z.string().min(3, "Title must be at least 3 characters."),
   slug: z.string().min(3, "Slug is required and must be unique (e.g., location-name).").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens."),
+  category: z.enum(['nature', 'agriculture', 'cultural'], {
+    required_error: "You need to select a location category.",
+  }),
   cardDescription: z.string().min(10, "Card description must be at least 10 characters."),
   distance: z.string().min(2, "Distance is required."),
 
   // Hero
   subtitle: z.string().min(3, "Subtitle is required."),
-  heroImageHint: z.string().min(2, "Hero image hint is required."),
+  heroImageHint: z.string().optional(),
 
   // Intro
   introTitle: z.string().min(3, "Intro title is required."),
   introDescription: z.string().min(10, "Intro description is required."),
-  introImageHint: z.string().min(2, "Intro image hint is required."),
+  introImageHint: z.string().optional(),
   
   // These image fields are handled separately for add/edit but need to be in the schema for type consistency
   cardImage: z.string().min(1, "A card image is required."),
+  cardImageHint: z.string().optional(),
   heroImage: z.string().min(1, "A hero image is required."),
   introImageUrl: z.string().min(1, "An intro image is required."),
 

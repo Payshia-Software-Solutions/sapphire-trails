@@ -60,9 +60,9 @@ class Location
 
         $stmt->execute([
             $data['slug'], $data['title'], $data['subtitle'], $data['card_description'],
-            $data['card_image_url'], $data['card_image_hint'], $data['distance'],
-            $data['hero_image_url'], $data['hero_image_hint'], $data['intro_title'],
-            $data['intro_description'], $data['intro_image_url'], $data['intro_image_hint'],
+            $data['card_image_url'], $data['card_image_hint'] ?? '', $data['distance'],
+            $data['hero_image_url'], $data['hero_image_hint'] ?? '', $data['intro_title'],
+            $data['intro_description'], $data['intro_image_url'], $data['intro_image_hint'] ?? '',
             $data['map_embed_url'], $data['category']
         ]);
 
@@ -130,12 +130,21 @@ class Location
         $stmt->bindParam(':title', $data['title']);
         $stmt->bindParam(':subtitle', $data['subtitle']);
         $stmt->bindParam(':card_description', $data['card_description']);
-        $stmt->bindParam(':card_image_hint', $data['card_image_hint']);
+        
+        $cardImageHint = $data['card_image_hint'] ?? '';
+        $stmt->bindParam(':card_image_hint', $cardImageHint);
+        
         $stmt->bindParam(':distance', $data['distance']);
-        $stmt->bindParam(':hero_image_hint', $data['hero_image_hint']);
+        
+        $heroImageHint = $data['hero_image_hint'] ?? '';
+        $stmt->bindParam(':hero_image_hint', $heroImageHint);
+        
         $stmt->bindParam(':intro_title', $data['intro_title']);
         $stmt->bindParam(':intro_description', $data['intro_description']);
-        $stmt->bindParam(':intro_image_hint', $data['intro_image_hint']);
+        
+        $introImageHint = $data['intro_image_hint'] ?? '';
+        $stmt->bindParam(':intro_image_hint', $introImageHint);
+
         $stmt->bindParam(':map_embed_url', $data['map_embed_url']);
         $stmt->bindParam(':category', $data['category']);
         $stmt->bindParam(':slug', $slug);
