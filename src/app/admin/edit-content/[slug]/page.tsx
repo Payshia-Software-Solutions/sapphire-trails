@@ -251,27 +251,49 @@ export default function EditContentPage() {
     setIsSubmitting(true);
     
     const locationFormData = new FormData();
+    // This is the key for making an update request
     locationFormData.append('_method', 'PUT');
 
+    // Append all the text-based fields
+    locationFormData.append('title', data.title);
+    locationFormData.append('subtitle', data.subtitle);
+    locationFormData.append('category', data.category);
+    locationFormData.append('card_description', data.cardDescription);
+    locationFormData.append('distance', data.distance);
+    locationFormData.append('intro_title', data.introTitle);
+    locationFormData.append('intro_description', data.introDescription);
+    locationFormData.append('map_embed_url', data.mapEmbedUrl);
+    locationFormData.append('card_image_hint', data.cardImageHint || '');
+    locationFormData.append('hero_image_hint', data.heroImageHint || '');
+    locationFormData.append('intro_image_hint', data.introImageHint || '');
+    
+    // Append any new images if they have been selected
     if (cardImageFile) locationFormData.append('card_image', cardImageFile);
     if (heroImageFile) locationFormData.append('hero_image', heroImageFile);
     if (introImageFile) locationFormData.append('intro_image', introImageFile);
-
-    locationFormData.append('title', data.title);
-    locationFormData.append('subtitle', data.subtitle);
-    locationFormData.append('card_description', data.cardDescription);
-    locationFormData.append('card_image_hint', data.cardImageHint);
-    locationFormData.append('distance', data.distance);
-    locationFormData.append('hero_image_hint', data.heroImageHint);
-    locationFormData.append('intro_title', data.introTitle);
-    locationFormData.append('intro_description', data.introDescription);
-    locationFormData.append('intro_image_hint', data.introImageHint);
-    locationFormData.append('map_embed_url', data.mapEmbedUrl);
-    locationFormData.append('category', data.category);
     
-    locationFormData.append('highlights', JSON.stringify(data.highlights));
-    locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo));
-    locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions));
+    // Stringify and append array data
+    locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({
+      icon: h.icon,
+      title: h.title,
+      description: h.description,
+      sort_order: index + 1
+    }))));
+
+    locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({
+      icon: vi.icon,
+      title: vi.title,
+      line1: vi.line1,
+      line2: vi.line2,
+      sort_order: index + 1
+    }))));
+
+    locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({
+      icon: na.icon,
+      name: na.name,
+      distance: na.distance,
+      sort_order: index + 1
+    }))));
     
     try {
         const response = await fetch(`${API_BASE_URL}/locations/${slug}/`, {
@@ -280,7 +302,8 @@ export default function EditContentPage() {
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Backend error response:', errorData);
             throw new Error(errorData?.error || 'Failed to update location.');
         }
         
@@ -569,4 +592,3 @@ export default function EditContentPage() {
     </div>
   );
 }
-
