@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
 
-const API_BASE_URL = 'http://localhost/sapphire_trails_server';
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
 
@@ -209,31 +209,38 @@ export default function AddContentPage() {
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
     locationFormData.append('category', data.category);
 
-    const highlightsForApi = data.highlights.map(h => ({
-      icon: h.icon,
-      title: h.title,
-      description: h.description,
-    }));
+    // Prepare and stringify array data exactly as Postman example
+    const highlightsForApi = data.highlights
+        .filter(h => h.title.trim() !== '')
+        .map(h => ({
+            icon: h.icon,
+            title: h.title,
+            description: h.description
+        }));
     locationFormData.append('highlights', JSON.stringify(highlightsForApi));
 
-    const visitorInfoForApi = data.visitorInfo.map(vi => ({
-        icon: vi.icon,
-        title: vi.title,
-        line1: vi.line1,
-        line2: vi.line2,
-    }));
+    const visitorInfoForApi = data.visitorInfo
+        .filter(vi => vi.title.trim() !== '')
+        .map(vi => ({
+            icon: vi.icon,
+            title: vi.title,
+            line1: vi.line1,
+            line2: vi.line2
+        }));
     locationFormData.append('visitor_info', JSON.stringify(visitorInfoForApi));
 
-    const nearbyAttractionsForApi = data.nearbyAttractions.map(na => ({
-        icon: na.icon,
-        name: na.name,
-        distance: na.distance,
-    }));
+    const nearbyAttractionsForApi = data.nearbyAttractions
+        .filter(na => na.name.trim() !== '')
+        .map(na => ({
+            icon: na.icon,
+            name: na.name,
+            distance: na.distance
+        }));
     locationFormData.append('nearby_attractions', JSON.stringify(nearbyAttractionsForApi));
       
     try {
       // Step 1: Create the main location entry
-      const locationResponse = await fetch(`${API_BASE_URL}/locations`, {
+      const locationResponse = await fetch(`${API_BASE_URL}/locations/`, {
         method: 'POST',
         body: locationFormData,
       });
@@ -299,7 +306,7 @@ export default function AddContentPage() {
       </div>
       
       <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep-1]?.name}</span></p>
+          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep - 1]?.name}</span></p>
           <Progress value={progressValue} className="h-2" />
       </div>
 
@@ -587,5 +594,3 @@ export default function AddContentPage() {
     </div>
   );
 }
-
-    
