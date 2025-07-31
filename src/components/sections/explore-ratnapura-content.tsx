@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -34,7 +35,7 @@ const LocationCard = ({ location }: { location: Location }) => (
 );
 
 export function ExploreRatnapuraContent() {
-  const [allLocations, setAllLocations] = useState<Location[]>(staticLocationsData);
+  const [allLocations, setAllLocations] = useState<Location[]>([]);
 
   useEffect(() => {
     async function fetchLocations() {
@@ -42,14 +43,15 @@ export function ExploreRatnapuraContent() {
         const response = await fetch(`${API_BASE_URL}/locations`);
         if (!response.ok) {
           console.error('Failed to fetch from server, using static data.');
+          setAllLocations(staticLocationsData); // Fallback to static if needed
           return;
         }
 
         const data = await response.json();
         if (Array.isArray(data)) {
           const serverLocations = data.map(mapServerLocationToClient);
+          // Combine server data with static data and remove duplicates
           const combined = [...staticLocationsData, ...serverLocations];
-          
           const uniqueLocations: { [key: string]: Location } = {};
           for (const loc of combined) {
             uniqueLocations[loc.slug] = loc;
@@ -57,9 +59,11 @@ export function ExploreRatnapuraContent() {
           setAllLocations(Object.values(uniqueLocations));
         } else {
           console.error('Server response was not an array, using static data.');
+          setAllLocations(staticLocationsData);
         }
       } catch (e) {
         console.error("Failed to fetch or parse locations, using static data as fallback.", e);
+        setAllLocations(staticLocationsData);
       }
     }
     fetchLocations();
