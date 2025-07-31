@@ -269,10 +269,9 @@ export default function EditContentPage() {
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
     locationFormData.append('category', data.category);
     
-    // No longer filtering empty items, just adding sort order
-    locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
-    locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
-    locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
+    locationFormData.append('highlights', JSON.stringify(data.highlights));
+    locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo));
+    locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions));
     
     try {
         const response = await fetch(`${API_BASE_URL}/locations/${slug}/`, {
@@ -563,7 +562,7 @@ export default function EditContentPage() {
             <div className="mt-8 pt-5 flex justify-end">
               <Button type="submit" size="lg" disabled={isSubmitting}>
                 {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                {isSubmitting ? "Saving..." : "Save Changes"}
+                Save Changes
               </Button>
             </div>
         </form>

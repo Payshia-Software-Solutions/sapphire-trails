@@ -274,26 +274,9 @@ class LocationController
         }
 
         // Handle JSON fields
-        if (isset($data['highlights']) && is_string($data['highlights'])) {
-            $decoded = json_decode($data['highlights'], true);
-            $data['highlights'] = $decoded !== null ? $decoded : [];
-        } else {
-            $data['highlights'] = [];
-        }
-        
-        if (isset($data['visitor_info']) && is_string($data['visitor_info'])) {
-            $decoded = json_decode($data['visitor_info'], true);
-            $data['visitor_info'] = $decoded !== null ? $decoded : [];
-        } else {
-            $data['visitor_info'] = [];
-        }
-        
-        if (isset($data['nearby_attractions']) && is_string($data['nearby_attractions'])) {
-            $decoded = json_decode($data['nearby_attractions'], true);
-            $data['nearby_attractions'] = $decoded !== null ? $decoded : [];
-        } else {
-            $data['nearby_attractions'] = [];
-        }
+        $data['highlights'] = isset($data['highlights']) && is_string($data['highlights']) ? json_decode($data['highlights'], true) : [];
+        $data['visitor_info'] = isset($data['visitor_info']) && is_string($data['visitor_info']) ? json_decode($data['visitor_info'], true) : [];
+        $data['nearby_attractions'] = isset($data['nearby_attractions']) && is_string($data['nearby_attractions']) ? json_decode($data['nearby_attractions'], true) : [];
 
         $data['card_image_hint'] = $data['card_image_hint'] ?? '';
         $data['hero_image_hint'] = $data['hero_image_hint'] ?? '';
