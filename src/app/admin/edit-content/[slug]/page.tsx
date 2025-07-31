@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useRouter, useParams } from 'next/navigation';
@@ -557,16 +557,16 @@ export default function EditContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Attraction
                     </Button>
                 </CardContent>
+                 <CardFooter className="justify-end">
+                    <Button type="submit" size="lg" disabled={isSubmitting}>
+                        {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                        Save Changes
+                    </Button>
+                </CardFooter>
             </Card>
-          
-            <div className="mt-8 pt-5 flex justify-end">
-              <Button type="submit" size="lg" disabled={isSubmitting}>
-                {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                Save Changes
-              </Button>
-            </div>
         </form>
       </Form>
     </div>
   );
 }
+
