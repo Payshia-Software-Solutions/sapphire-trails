@@ -36,7 +36,7 @@ export const bookingFormSchema = z.object({
 
 const iconEnum = z.enum(['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer', 'MapPin', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble']);
 
-// Schema for both Add and Edit
+// Schema for adding a new location
 export const locationFormSchema = z.object({
   // Basic info
   title: z.string().min(3, "Title must be at least 3 characters."),
@@ -56,11 +56,9 @@ export const locationFormSchema = z.object({
   introDescription: z.string().min(10, "Intro description is required."),
   introImageHint: z.string().optional(),
   
-  // These image fields are handled separately for add/edit but need to be in the schema for type consistency
-  cardImage: z.string().optional(),
-  cardImageHint: z.string().optional(),
-  heroImage: z.string().optional(),
-  introImageUrl: z.string().optional(),
+  cardImage: z.string().min(1, "Card Image is required for new locations."),
+  heroImage: z.string().min(1, "Hero Image is required for new locations."),
+  introImageUrl: z.string().min(1, "Intro Image is required for new locations."),
 
   // Gallery (dynamic length)
   galleryImages: z.array(z.object({
@@ -94,6 +92,38 @@ export const locationFormSchema = z.object({
       name: z.string().min(3, "Attraction name is required."),
       distance: z.string().min(2, "Distance is required."),
   })).min(1, "Please provide at least 1 nearby attraction."),
+});
+
+
+// A more relaxed schema for editing existing locations
+export const locationEditSchema = locationFormSchema.extend({
+  cardImage: z.string().optional(),
+  heroImage: z.string().optional(),
+  introImageUrl: z.string().optional(),
+  galleryImages: z.array(z.object({
+    id: z.number().optional(),
+    src: z.string(),
+    alt: z.string().min(3, "Alt text is required."),
+    hint: z.string().min(2, "Hint is required."),
+    file: z.instanceof(File).optional(),
+    isNew: z.boolean().optional(),
+  })).optional(),
+   highlights: z.array(z.object({
+    icon: iconEnum,
+    title: z.string().min(3, "Highlight title is required."),
+    description: z.string().min(10, "Highlight description is required."),
+  })).optional(),
+  visitorInfo: z.array(z.object({
+    icon: iconEnum,
+    title: z.string().min(3, "Visitor info title is required."),
+    line1: z.string().min(3, "Line 1 is required."),
+    line2: z.string().min(3, "Line 2 is required."),
+  })).optional(),
+  nearbyAttractions: z.array(z.object({
+      icon: iconEnum,
+      name: z.string().min(3, "Attraction name is required."),
+      distance: z.string().min(2, "Distance is required."),
+  })).optional(),
 });
 
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { locationFormSchema } from '@/lib/schemas';
+import { locationEditSchema } from '@/lib/schemas';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -74,8 +74,8 @@ export default function EditContentPage() {
   
   const [isSavingImage, setIsSavingImage] = useState<number | null>(null);
 
-  const form = useForm<z.infer<typeof locationFormSchema>>({
-    resolver: zodResolver(locationFormSchema),
+  const form = useForm<z.infer<typeof locationEditSchema>>({
+    resolver: zodResolver(locationEditSchema),
     mode: 'onBlur',
     defaultValues: {
       title: '',
@@ -104,11 +104,6 @@ export default function EditContentPage() {
     control: form.control,
     name: "galleryImages",
   });
-
-  // Add this to help with debugging
-  const watchedValues = form.watch();
-  console.log('Form values:', watchedValues);
-  console.log('Form errors:', form.formState.errors);
   
   const fetchLocationData = useCallback(async () => {
     if (!slug) {
@@ -250,104 +245,70 @@ export default function EditContentPage() {
     }
   };
 
-  async function onSubmit(data: z.infer<typeof locationFormSchema>) {
-    console.log('Form submission started with data:', data);
+  async function onSubmit(data: z.infer<typeof locationEditSchema>) {
     setIsSubmitting(true);
     
     try {
-        const locationFormData = new FormData();
-        
-        // This is the key for making an update request
-        locationFormData.append('_method', 'PUT');
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
 
-        // Append all the text-based fields
-        locationFormData.append('title', data.title);
-        locationFormData.append('subtitle', data.subtitle || '');
-        locationFormData.append('category', data.category);
-        locationFormData.append('card_description', data.cardDescription);
-        locationFormData.append('distance', data.distance || '');
-        locationFormData.append('intro_title', data.introTitle || '');
-        locationFormData.append('intro_description', data.introDescription || '');
-        locationFormData.append('map_embed_url', data.mapEmbedUrl || '');
-        locationFormData.append('card_image_hint', data.cardImageHint || '');
-        locationFormData.append('hero_image_hint', data.heroImageHint || '');
-        locationFormData.append('intro_image_hint', data.introImageHint || '');
-        
-        // Append any new images if they have been selected
-        if (cardImageFile) {
-            console.log('Adding card image file:', cardImageFile.name);
-            locationFormData.append('card_image', cardImageFile);
-        }
-        if (heroImageFile) {
-            console.log('Adding hero image file:', heroImageFile.name);
-            locationFormData.append('hero_image', heroImageFile);
-        }
-        if (introImageFile) {
-            console.log('Adding intro image file:', introImageFile.name);
-            locationFormData.append('intro_image', introImageFile);
-        }
-        
-        // Stringify and append array data
-        const highlightsData = data.highlights.map((h, index) => ({
+        formData.append('title', data.title);
+        formData.append('subtitle', data.subtitle || '');
+        formData.append('category', data.category);
+        formData.append('card_description', data.cardDescription);
+        formData.append('distance', data.distance || '');
+        formData.append('intro_title', data.introTitle || '');
+        formData.append('intro_description', data.introDescription || '');
+        formData.append('map_embed_url', data.mapEmbedUrl || '');
+        formData.append('card_image_hint', data.cardImageHint || '');
+        formData.append('hero_image_hint', data.heroImageHint || '');
+        formData.append('intro_image_hint', data.introImageHint || '');
+
+        if (cardImageFile) formData.append('card_image', cardImageFile);
+        if (heroImageFile) formData.append('hero_image', heroImageFile);
+        if (introImageFile) formData.append('intro_image', introImageFile);
+
+        const highlightsData = (data.highlights || []).map((h, index) => ({
             icon: h.icon,
             title: h.title,
             description: h.description,
             sort_order: index + 1
         }));
-        console.log('Highlights data:', highlightsData);
-        locationFormData.append('highlights', JSON.stringify(highlightsData));
+        formData.append('highlights', JSON.stringify(highlightsData));
 
-        const visitorInfoData = data.visitorInfo.map((vi, index) => ({
+        const visitorInfoData = (data.visitorInfo || []).map((vi, index) => ({
             icon: vi.icon,
             title: vi.title,
             line1: vi.line1,
             line2: vi.line2,
             sort_order: index + 1
         }));
-        console.log('Visitor info data:', visitorInfoData);
-        locationFormData.append('visitor_info', JSON.stringify(visitorInfoData));
+        formData.append('visitor_info', JSON.stringify(visitorInfoData));
 
-        const nearbyAttractionsData = data.nearbyAttractions.map((na, index) => ({
+        const nearbyAttractionsData = (data.nearbyAttractions || []).map((na, index) => ({
             icon: na.icon,
             name: na.name,
             distance: na.distance,
             sort_order: index + 1
         }));
-        console.log('Nearby attractions data:', nearbyAttractionsData);
-        locationFormData.append('nearby_attractions', JSON.stringify(nearbyAttractionsData));
+        formData.append('nearby_attractions', JSON.stringify(nearbyAttractionsData));
         
-        // Log all FormData entries for debugging
-        console.log('FormData contents:');
-        for (const [key, value] of locationFormData.entries()) {
-            console.log(`${key}:`, value);
-        }
-
-        const url = `${API_BASE_URL}/locations/${slug}/`;
-        console.log('Making request to:', url);
-
+        const url = `${API_BASE_URL}/locations/${slug}`;
         const response = await fetch(url, {
             method: 'POST',
-            body: locationFormData,
+            body: formData,
         });
-
-        console.log('Response status:', response.status);
-        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            console.error('Backend error response:', errorData);
             throw new Error(errorData?.error || errorData?.message || `HTTP ${response.status}: Failed to update location.`);
         }
-        
-        const responseData = await response.json().catch(() => ({}));
-        console.log('Success response:', responseData);
         
         toast({
             title: 'Success!',
             description: `Location "${data.title}" has been updated.`,
         });
         
-        // Optional: Redirect after a short delay to show the success message
         setTimeout(() => {
             router.push('/admin/manage-content');
         }, 1000);
@@ -364,7 +325,6 @@ export default function EditContentPage() {
     }
   }
 
-  // Add form validation debugging
   const handleFormError = (errors: any) => {
     console.log('Form validation errors:', errors);
     toast({
@@ -512,11 +472,11 @@ export default function EditContentPage() {
             <Card>
                 <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
-                    {form.getValues('highlights').map((_, index) => (
+                    {form.getValues('highlights')?.map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md relative">
                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
                                 const currentHighlights = form.getValues('highlights');
-                                const newHighlights = currentHighlights.filter((_, i) => i !== index);
+                                const newHighlights = currentHighlights?.filter((_, i) => i !== index);
                                 form.setValue('highlights', newHighlights);
                             }}>
                                 <Trash2 className="h-3 w-3" />
@@ -547,7 +507,7 @@ export default function EditContentPage() {
                         </div>
                     ))}
                     <Button type="button" variant="outline" size="sm" onClick={() => {
-                        const currentHighlights = form.getValues('highlights');
+                        const currentHighlights = form.getValues('highlights') || [];
                         form.setValue('highlights', [...currentHighlights, { icon: 'Leaf', title: '', description: '' }]);
                     }}>
                         <Plus className="mr-2 h-4 w-4" /> Add Highlight
@@ -558,11 +518,11 @@ export default function EditContentPage() {
             <Card>
                 <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
-                    {form.getValues('visitorInfo').map((_, index) => (
+                    {form.getValues('visitorInfo')?.map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md relative">
                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
                                 const currentVisitorInfo = form.getValues('visitorInfo');
-                                const newVisitorInfo = currentVisitorInfo.filter((_, i) => i !== index);
+                                const newVisitorInfo = currentVisitorInfo?.filter((_, i) => i !== index);
                                 form.setValue('visitorInfo', newVisitorInfo);
                             }}>
                                 <Trash2 className="h-3 w-3" />
@@ -594,7 +554,7 @@ export default function EditContentPage() {
                         </div>
                     ))}
                     <Button type="button" variant="outline" size="sm" onClick={() => {
-                        const currentVisitorInfo = form.getValues('visitorInfo');
+                        const currentVisitorInfo = form.getValues('visitorInfo') || [];
                         form.setValue('visitorInfo', [...currentVisitorInfo, { icon: 'Clock', title: '', line1: '', line2: '' }]);
                     }}>
                         <Plus className="mr-2 h-4 w-4" /> Add Info Item
@@ -608,11 +568,11 @@ export default function EditContentPage() {
                     <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator/>
                     <p className="font-medium">Nearby Attractions</p>
-                    {form.getValues('nearbyAttractions').map((_, index) => (
+                    {form.getValues('nearbyAttractions')?.map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md relative">
                              <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
                                 const currentNearbyAttractions = form.getValues('nearbyAttractions');
-                                const newNearbyAttractions = currentNearbyAttractions.filter((_, i) => i !== index);
+                                const newNearbyAttractions = currentNearbyAttractions?.filter((_, i) => i !== index);
                                 form.setValue('nearbyAttractions', newNearbyAttractions);
                             }}>
                                 <Trash2 className="h-3 w-3" />
@@ -644,7 +604,7 @@ export default function EditContentPage() {
                         </div>
                     ))}
                     <Button type="button" variant="outline" size="sm" onClick={() => {
-                        const currentNearbyAttractions = form.getValues('nearbyAttractions');
+                        const currentNearbyAttractions = form.getValues('nearbyAttractions') || [];
                         form.setValue('nearbyAttractions', [...currentNearbyAttractions, { icon: 'Gem', name: '', distance: '' }]);
                     }}>
                         <Plus className="mr-2 h-4 w-4" /> Add Attraction
