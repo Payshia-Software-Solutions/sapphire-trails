@@ -57,10 +57,10 @@ export const locationFormSchema = z.object({
   introImageHint: z.string().optional(),
   
   // These image fields are handled separately for add/edit but need to be in the schema for type consistency
-  cardImage: z.string().min(1, "A card image is required."),
+  cardImage: z.string().optional(),
   cardImageHint: z.string().optional(),
-  heroImage: z.string().min(1, "A hero image is required."),
-  introImageUrl: z.string().min(1, "An intro image is required."),
+  heroImage: z.string().optional(),
+  introImageUrl: z.string().optional(),
 
   // Gallery (dynamic length)
   galleryImages: z.array(z.object({
