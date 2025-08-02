@@ -7,6 +7,7 @@ import { ExploreRatnapuraSection } from '@/components/sections/explore-ratnapura
 import { BookingSection } from '@/components/sections/booking-section';
 import { SubscriptionSection } from '@/components/sections/subscription-section';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Sapphire Trails | Luxury Gem Tours in Sri Lanka',
@@ -36,6 +37,7 @@ export default function Home() {
         <BookingSection />
         <Footer />
       </main>
+
     </div>
   );
 }
