@@ -4,6 +4,7 @@ import { AboutHero } from '@/components/sections/about-hero';
 import { OurStory } from '@/components/sections/our-story';
 import { TeamSection } from '@/components/sections/team-section';
 import type { Metadata } from 'next';
+import { ScrollAnimate } from '@/components/shared/scroll-animate';
 
 export const metadata: Metadata = {
   title: 'About Us',
@@ -27,8 +28,12 @@ export default function AboutPage() {
       <Header />
       <main className="flex-1 bg-background-alt">
         <AboutHero />
-        <OurStory />
-        <TeamSection />
+        <ScrollAnimate>
+          <OurStory />
+        </ScrollAnimate>
+        <ScrollAnimate>
+          <TeamSection />
+        </ScrollAnimate>
       </main>
       <Footer />
     </div>

@@ -107,7 +107,7 @@ class LocationController
         if ($_SERVER['CONTENT_TYPE'] && strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false) {
             $data = $_POST;
             
-            $slug = trim($data['slug'] ?? '');
+            $slug = isset($data['slug']) ? trim($data['slug']) : null;
             if (empty($slug)) {
                 http_response_code(400);
                 echo json_encode(['error' => 'Missing required field: slug']);
@@ -115,12 +115,17 @@ class LocationController
             }
 
             $requiredFields = ['title', 'subtitle', 'category', 'card_description', 'distance', 'intro_title', 'intro_description', 'map_embed_url'];
+            $missingFields = [];
             foreach ($requiredFields as $field) {
                 if (empty($data[$field])) {
-                    http_response_code(400);
-                    echo json_encode(['error' => 'Missing required fields: ' . $field]);
-                    return;
+                    $missingFields[] = $field;
                 }
+            }
+
+            if (!empty($missingFields)) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Missing required fields: ' . implode(', ', $missingFields)]);
+                return;
             }
 
             $cardImage = $_FILES['card_image'] ?? null;
@@ -135,11 +140,9 @@ class LocationController
                 $filename = $this->generateUniqueFileName($cardImage['name']);
                 $local = './uploads/' . $filename;
                 $ftp = '/location-images/' . $slug . '/' . $filename;
-                if (move_uploaded_file($cardImage['tmp_name'], $local)) {
-                    if ($this->uploadToFTP($local, $ftp)) {
-                        $data['card_image_url'] = $ftp;
-                        unlink($local);
-                    }
+                if (move_uploaded_file($cardImage['tmp_name'], $local) && $this->uploadToFTP($local, $ftp)) {
+                    $data['card_image_url'] = $ftp;
+                    unlink($local);
                 }
             }
 
@@ -147,11 +150,9 @@ class LocationController
                 $filename = $this->generateUniqueFileName($heroImage['name']);
                 $local = './uploads/' . $filename;
                 $ftp = '/location-images/' . $slug . '/' . $filename;
-                if (move_uploaded_file($heroImage['tmp_name'], $local)) {
-                    if ($this->uploadToFTP($local, $ftp)) {
-                        $data['hero_image_url'] = $ftp;
-                        unlink($local);
-                    }
+                if (move_uploaded_file($heroImage['tmp_name'], $local) && $this->uploadToFTP($local, $ftp)) {
+                    $data['hero_image_url'] = $ftp;
+                    unlink($local);
                 }
             }
 
@@ -159,23 +160,24 @@ class LocationController
                 $filename = $this->generateUniqueFileName($introImage['name']);
                 $local = './uploads/' . $filename;
                 $ftp = '/location-images/' . $slug . '/' . $filename;
-                if (move_uploaded_file($introImage['tmp_name'], $local)) {
-                    if ($this->uploadToFTP($local, $ftp)) {
-                        $data['intro_image_url'] = $ftp;
-                        unlink($local);
-                    }
+                if (move_uploaded_file($introImage['tmp_name'], $local) && $this->uploadToFTP($local, $ftp)) {
+                    $data['intro_image_url'] = $ftp;
+                    unlink($local);
                 }
             }
 
-            $data['highlights'] = isset($data['highlights']) ? json_decode($data['highlights'], true) : [];
-            $data['visitor_info'] = isset($data['visitor_info']) ? json_decode($data['visitor_info'], true) : [];
-            $data['nearby_attractions'] = isset($data['nearby_attractions']) ? json_decode($data['nearby_attractions'], true) : [];
+            // Decode JSON fields and set to empty array if not present or invalid
+            $data['highlights'] = isset($data['highlights']) && is_string($data['highlights']) ? json_decode($data['highlights'], true) : [];
+            $data['visitor_info'] = isset($data['visitor_info']) && is_string($data['visitor_info']) ? json_decode($data['visitor_info'], true) : [];
+            $data['nearby_attractions'] = isset($data['nearby_attractions']) && is_string($data['nearby_attractions']) ? json_decode($data['nearby_attractions'], true) : [];
 
+            // Set default image hints if not provided
             $data['card_image_hint'] = $data['card_image_hint'] ?? '';
             $data['hero_image_hint'] = $data['hero_image_hint'] ?? '';
             $data['intro_image_hint'] = $data['intro_image_hint'] ?? '';
 
             try {
+                // Call the model's create method ONCE with the complete data package
                 $this->model->create($data);
                 $newLocation = $this->model->getBySlug($slug);
 
@@ -196,6 +198,7 @@ class LocationController
             echo json_encode(['error' => 'Only multipart/form-data is supported']);
         }
     }
+
 
     // DELETE /locations/{slug}
     public function delete($slug)
@@ -270,9 +273,10 @@ class LocationController
             }
         }
 
-        $data['highlights'] = isset($data['highlights']) ? json_decode($data['highlights'], true) : [];
-        $data['visitor_info'] = isset($data['visitor_info']) ? json_decode($data['visitor_info'], true) : [];
-        $data['nearby_attractions'] = isset($data['nearby_attractions']) ? json_decode($data['nearby_attractions'], true) : [];
+        // Handle JSON fields
+        $data['highlights'] = isset($data['highlights']) && is_string($data['highlights']) ? json_decode($data['highlights'], true) : [];
+        $data['visitor_info'] = isset($data['visitor_info']) && is_string($data['visitor_info']) ? json_decode($data['visitor_info'], true) : [];
+        $data['nearby_attractions'] = isset($data['nearby_attractions']) && is_string($data['nearby_attractions']) ? json_decode($data['nearby_attractions'], true) : [];
 
         $data['card_image_hint'] = $data['card_image_hint'] ?? '';
         $data['hero_image_hint'] = $data['hero_image_hint'] ?? '';

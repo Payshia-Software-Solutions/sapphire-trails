@@ -36,7 +36,7 @@ const teamMembers = [
 
 export function TeamSection() {
     return (
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
+        <section className="w-full h-screen flex items-center justify-center bg-background scroll-section">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="text-center max-w-3xl mx-auto mb-12">
                     <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">Our Team</h2>

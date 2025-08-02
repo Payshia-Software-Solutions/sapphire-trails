@@ -4,7 +4,7 @@ import { ScrollAnimate } from '@/components/shared/scroll-animate';
 
 export function SubscriptionSection() {
   return (
-    <section id="subscribe" className="w-full py-12 md:py-24 lg:py-32 bg-background">
+    <section id="subscribe" className="w-full h-screen flex items-center justify-center bg-background scroll-section">
       <div className="container px-4 md:px-6 mx-auto">
         <ScrollAnimate className="mx-auto flex flex-col items-center justify-center gap-6 text-center max-w-2xl">
           <div className="space-y-4">

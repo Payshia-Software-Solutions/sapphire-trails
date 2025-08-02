@@ -18,7 +18,7 @@ const faqData = [
 
 export function Faq() {
     return (
-        <section className="w-full pb-12 md:pb-24 lg:pb-32 bg-background-alt">
+        <section className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="max-w-3xl mx-auto">
                     <h2 className="text-3xl font-headline font-bold text-center mb-8 text-primary">Frequently Asked Question (FAQ)</h2>

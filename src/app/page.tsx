@@ -26,32 +26,18 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="parallax-bg">
-        <Image
-          src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
-          alt="A dark and moody image of the inside of a gem mine, with rock walls and dim lighting."
-          data-ai-hint="gem mine cave"
-          fill
-          className="object-cover opacity-30"
-        />
-        <div className="absolute inset-0 bg-black/50" />
-      </div>
-      
-      <div className="parallax-content">
-        <Header />
-        <main className="flex-1">
-          <HeroSection />
-          <div className="bg-background">
-              <DiscoverSection />
-              <ToursSection />
-              <SubscriptionSection />
-              <ExploreRatnapuraSection />
-              <BookingSection />
-          </div>
-        </main>
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <main>
+        <HeroSection />
+        <DiscoverSection />
+        <ToursSection />
+        <SubscriptionSection />
+        <ExploreRatnapuraSection />
+        <BookingSection />
         <Footer />
-      </div>
+      </main>
+
     </div>
   );
 }

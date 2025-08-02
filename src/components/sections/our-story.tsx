@@ -13,12 +13,9 @@ const experiencePoints = [
 
 export function OurStory() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
+    <section className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="space-y-20">
-
-          {/* Our Story */}
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="space-y-4">
               <h2 className="text-3xl font-headline font-bold text-primary">Our Story</h2>
               <p className="text-muted-foreground leading-relaxed">
@@ -34,57 +31,6 @@ export function OurStory() {
                     className="object-cover transition-transform duration-300 hover:scale-105"
                 />
             </div>
-          </div>
-
-          {/* The Experience */}
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
-            <div className="relative aspect-video rounded-lg overflow-hidden">
-                <Image
-                    src="https://content-provider.payshia.com/sapphire-trail/images/img30.webp"
-                    alt="A delicious looking gourmet meal"
-                    data-ai-hint="gourmet food"
-                    fill
-                    className="object-cover transition-transform duration-300 hover:scale-105"
-                />
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-3xl font-headline font-bold text-primary">The Experience</h2>
-              <ul className="space-y-3">
-                {experiencePoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
-                    <span className="text-muted-foreground">{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Who We Are */}
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
-            <div className="space-y-4">
-              <h2 className="text-3xl font-headline font-bold text-primary">Who We Are</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Sapphire Trail welcomes discerning travelers, luxury connoisseurs, and influencers seeking extraordinary stories. We are a sanctuary for those who appreciate rarity, authenticity, and the transformative power of nature&apos;s finest treasures.
-              </p>
-            </div>
-            <div className="relative aspect-video rounded-lg overflow-hidden">
-                 <Image
-                    src="https://content-provider.payshia.com/sapphire-trail/images/img5.webp"
-                    alt="Sapphire Trails Deluxe logo"
-                    data-ai-hint="luxury gem logo"
-                    fill
-                    className="object-cover transition-transform duration-300 hover:scale-105"
-                />
-            </div>
-          </div>
-
-          <div className="text-center pt-8">
-            <Button asChild size="lg" className="rounded-full px-10">
-                <Link href="/booking">Book Now</Link>
-            </Button>
-          </div>
-          
         </div>
       </div>
     </section>
