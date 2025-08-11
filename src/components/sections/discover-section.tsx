@@ -83,7 +83,10 @@ export function DiscoverSection() {
                 <div className="flex" style={{ backfaceVisibility: 'hidden' }}>
                     {content.images.map((image, index) => (
                         <div
-                            className="flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0"
+                            className={cn(
+                                "flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0 relative",
+                                 index === selectedIndex && "z-10"
+                            )}
                             key={index}
                         >
                             <div
