@@ -77,10 +77,10 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-16 w-full max-w-5xl"
+            className="mt-16 w-full max-w-6xl"
         >
             <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex" style={{ backfaceVisibility: 'hidden' }}>
+                <div className="flex py-16" style={{ backfaceVisibility: 'hidden' }}>
                     {content.images.map((image, index) => (
                         <div
                             className={cn(
@@ -101,7 +101,7 @@ export function DiscoverSection() {
                                     fill
                                     className={cn(
                                         "rounded-2xl object-cover w-full h-full shadow-2xl transition-all duration-500 ease-out",
-                                        index === selectedIndex ? "scale-150" : "scale-75"
+                                        index === selectedIndex ? "scale-125" : "scale-100"
                                     )}
                                 />
                             </div>
