@@ -4,7 +4,7 @@ import { ScrollAnimate } from '@/components/shared/scroll-animate';
 
 export function BookingSection() {
   return (
-    <section id="booking" className="w-full h-screen flex items-center justify-center bg-background scroll-section">
+    <section id="booking" className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
       <div className="container px-4 md:px-6 mx-auto">
         <ScrollAnimate className="mx-auto flex flex-col items-center justify-center gap-6 text-center">
           <div className="space-y-4">

@@ -62,7 +62,7 @@ function AllToursGrid() {
     }, []);
 
     return (
-        <section className="w-full py-12 md:py-24">
+        <section className="w-full py-12 md:py-24 bg-background-alt">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
                     {allTours.map((tour) => (
@@ -77,9 +77,9 @@ function AllToursGrid() {
 export default function ToursPage() {
   const breadcrumbs = [{ label: 'Tours', href: '/tours' }];
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 bg-background-alt">
+      <main className="flex-1">
         <PageHero title="Our Tours" breadcrumbs={breadcrumbs} />
         <ScrollAnimate>
           <AllToursGrid />

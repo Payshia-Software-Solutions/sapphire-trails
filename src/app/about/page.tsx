@@ -26,9 +26,9 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   const breadcrumbs = [{ label: 'About Us', href: '/about' }];
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 bg-background-alt">
+      <main className="flex-1">
         <PageHero title="About Us" breadcrumbs={breadcrumbs} />
         <ScrollAnimate>
           <OurStory />
