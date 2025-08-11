@@ -98,7 +98,7 @@ export function DiscoverSection() {
                                     fill
                                     className={cn(
                                         "rounded-2xl object-cover w-full h-full shadow-2xl transition-all duration-500 ease-out",
-                                        index === selectedIndex ? "scale-100" : "scale-75"
+                                        index === selectedIndex ? "scale-105" : "scale-75"
                                     )}
                                 />
                             </div>
