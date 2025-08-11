@@ -28,7 +28,7 @@ export default function ContactPage() {
       <Header />
       <main className="flex-1">
         <PageHero title="Contact Us" breadcrumbs={breadcrumbs} />
-        <div className="bg-background-alt py-12 md:py-24">
+        <div className="bg-background">
             <ScrollAnimate>
             <ContactSection />
             </ScrollAnimate>

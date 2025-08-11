@@ -27,7 +27,7 @@ export default function ExploreRatnapuraPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="flex-1 bg-background-alt">
+      <main className="flex-1">
         <PageHero title="Explore Ratnapura" breadcrumbs={breadcrumbs} />
         <ScrollAnimate>
           <ExploreRatnapuraContent />

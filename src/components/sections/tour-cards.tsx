@@ -58,7 +58,7 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
   const gridColsClass = toursToShow.length === 1 ? 'md:grid-cols-1 justify-center' : 'md:grid-cols-2';
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
       <div className="container mx-auto px-4 md:px-6">
         {toursToShow.length === 0 ? (
           <div className="text-center text-muted-foreground py-16">
