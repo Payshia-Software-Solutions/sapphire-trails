@@ -29,12 +29,16 @@ export default function ExploreRatnapuraPage() {
       <Header />
       <main className="flex-1">
         <PageHero title="Explore Ratnapura" breadcrumbs={breadcrumbs} />
-        <ScrollAnimate>
-          <ExploreRatnapuraContent />
-        </ScrollAnimate>
-        <ScrollAnimate>
-          <ExploreMap />
-        </ScrollAnimate>
+        <div className="bg-background-alt">
+          <ScrollAnimate>
+            <ExploreRatnapuraContent />
+          </ScrollAnimate>
+        </div>
+        <div className="bg-background">
+          <ScrollAnimate>
+            <ExploreMap />
+          </ScrollAnimate>
+        </div>
       </main>
       <Footer />
     </div>
