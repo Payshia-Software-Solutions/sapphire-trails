@@ -20,7 +20,7 @@ export function PageHero({ title, breadcrumbs }: PageHeroProps) {
   const pathname = usePathname();
 
   return (
-    <section className="relative bg-background-alt py-12 md:py-20 lg:py-24 overflow-hidden mb-12 md:mb-16">
+    <section className="relative bg-background-alt py-12 md:py-20 lg:py-24 overflow-hidden">
       <Image
         src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
         alt="Background image of a gem mine"

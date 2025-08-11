@@ -1,3 +1,4 @@
+
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { ContactSection } from '@/components/sections/contact-section';
@@ -27,7 +28,7 @@ export default function ContactPage() {
       <Header />
       <main className="flex-1">
         <PageHero title="Contact Us" breadcrumbs={breadcrumbs} />
-        <div className="py-12 md:py-24">
+        <div className="bg-background-alt py-12 md:py-24">
             <ScrollAnimate>
             <ContactSection />
             </ScrollAnimate>
