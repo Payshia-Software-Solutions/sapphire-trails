@@ -1,9 +1,9 @@
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { ContactHero } from '@/components/sections/contact-hero';
 import { ContactSection } from '@/components/sections/contact-section';
 import type { Metadata } from 'next';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
+import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
@@ -21,11 +21,12 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
+  const breadcrumbs = [{ label: 'Contact', href: '/contact' }];
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1">
-        <ContactHero />
+        <PageHero title="Contact Us" breadcrumbs={breadcrumbs} />
         <ScrollAnimate>
           <ContactSection />
         </ScrollAnimate>

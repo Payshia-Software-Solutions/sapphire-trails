@@ -6,12 +6,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { ToursHero } from '@/components/sections/tours-hero';
 import { Faq } from '@/components/sections/faq';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
+import { PageHero } from '@/components/shared/page-hero';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -62,7 +62,7 @@ function AllToursGrid() {
     }, []);
 
     return (
-        <section className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
+        <section className="w-full py-12 md:py-24">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
                     {allTours.map((tour) => (
@@ -75,11 +75,12 @@ function AllToursGrid() {
 }
 
 export default function ToursPage() {
+  const breadcrumbs = [{ label: 'Tours', href: '/tours' }];
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1 bg-background-alt">
-        <ToursHero />
+        <PageHero title="Our Tours" breadcrumbs={breadcrumbs} />
         <ScrollAnimate>
           <AllToursGrid />
         </ScrollAnimate>

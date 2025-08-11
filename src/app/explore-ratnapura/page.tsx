@@ -1,10 +1,10 @@
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { ExploreRatnapuraHero } from '@/components/sections/explore-ratnapura-hero';
 import { ExploreRatnapuraContent } from '@/components/sections/explore-ratnapura-content';
 import { ExploreMap } from '@/components/sections/explore-map';
 import type { Metadata } from 'next';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
+import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
   title: 'Explore Ratnapura',
@@ -22,11 +22,12 @@ export const metadata: Metadata = {
 };
 
 export default function ExploreRatnapuraPage() {
+  const breadcrumbs = [{ label: 'Explore Ratnapura', href: '/explore-ratnapura' }];
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1 bg-background-alt">
-        <ExploreRatnapuraHero />
+        <PageHero title="Explore Ratnapura" breadcrumbs={breadcrumbs} />
         <ScrollAnimate>
           <ExploreRatnapuraContent />
         </ScrollAnimate>

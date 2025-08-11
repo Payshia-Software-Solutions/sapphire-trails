@@ -1,10 +1,10 @@
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { AboutHero } from '@/components/sections/about-hero';
 import { OurStory } from '@/components/sections/our-story';
 import { TeamSection } from '@/components/sections/team-section';
 import type { Metadata } from 'next';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
+import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
   title: 'About Us',
@@ -23,11 +23,12 @@ export const metadata: Metadata = {
 
 
 export default function AboutPage() {
+  const breadcrumbs = [{ label: 'About Us', href: '/about' }];
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1 bg-background-alt">
-        <AboutHero />
+        <PageHero title="About Us" breadcrumbs={breadcrumbs} />
         <ScrollAnimate>
           <OurStory />
         </ScrollAnimate>
