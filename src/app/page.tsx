@@ -25,9 +25,9 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="bg-background">
+    <div className="bg-background flex flex-col h-screen">
       <Header />
-      <main className="h-screen overflow-y-scroll snap-y snap-mandatory">
+      <main className="flex-1 overflow-y-scroll snap-y snap-mandatory">
         <HeroSection />
         <DiscoverSection />
         <ToursSection />

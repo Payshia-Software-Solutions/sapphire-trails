@@ -37,6 +37,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
+
   return (
     <html lang="en">
       <head />
@@ -44,7 +47,8 @@ export default function RootLayout({
         "font-body antialiased bg-background text-foreground",
         poppins.variable,
         montserrat.variable,
-        cinzel.variable
+        cinzel.variable,
+        isHomePage && 'overflow-hidden'
         )}>
             <AuthProvider>
                 <PreloaderProvider>
