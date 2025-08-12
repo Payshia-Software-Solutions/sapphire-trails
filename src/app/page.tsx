@@ -1,3 +1,6 @@
+
+'use client';
+
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { HeroSection } from '@/components/sections/hero-section';
@@ -6,28 +9,23 @@ import { ToursSection } from '@/components/sections/tours-section';
 import { ExploreRatnapuraSection } from '@/components/sections/explore-ratnapura-section';
 import { BookingSection } from '@/components/sections/booking-section';
 import { SubscriptionSection } from '@/components/sections/subscription-section';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Sapphire Trails | Luxury Gem Tours in Sri Lanka',
-  description: "Experience Sri Lanka's only luxury gem tour. Discover the heart of Ratnapura's rich heritage with exclusive access to gem mines, lush tea estates, and vibrant local culture.",
-   openGraph: {
-    title: 'Sapphire Trails | Luxury Gem Tours in Sri Lanka',
-    description: "Sri Lanka's only luxury gem experience.",
-    images: [{
-      url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
-      width: 1200,
-      height: 630,
-      alt: 'A dark and moody image of the inside of a gem mine.'
-    }],
-  }
-};
+import { useScroll } from '@/contexts/scroll-context';
+import { useEffect, useRef } from 'react';
 
 export default function Home() {
+  const mainRef = useRef<HTMLElement>(null);
+  const { setScrollableElement } = useScroll();
+
+  useEffect(() => {
+    if (mainRef.current) {
+      setScrollableElement(mainRef.current);
+    }
+  }, [setScrollableElement]);
+
   return (
     <div className="bg-background flex flex-col h-screen">
       <Header />
-      <main className="flex-1 overflow-y-scroll snap-y snap-mandatory">
+      <main ref={mainRef} className="flex-1 overflow-y-scroll snap-y snap-mandatory">
         <HeroSection />
         <DiscoverSection />
         <ToursSection />
