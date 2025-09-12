@@ -206,13 +206,13 @@ export default function DashboardPage() {
             </Card>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2">
              <Card>
                 <CardHeader>
                     <CardTitle>Tour Popularity</CardTitle>
                     <CardDescription>All-time booking counts per tour package.</CardDescription>
                 </CardHeader>
-                <CardContent className="h-[250px]">
+                <CardContent className="h-[250px] pt-4">
                     <TourPopularityChart data={tourData} />
                 </CardContent>
             </Card>
