@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, User, LogOut, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -106,6 +106,9 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-full max-w-sm bg-background p-6 flex flex-col">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+              </SheetHeader>
               <div className="text-center mb-8">
                 <Link href="/" className="inline-block" onClick={() => setIsMenuOpen(false)}>
                    <Image 
