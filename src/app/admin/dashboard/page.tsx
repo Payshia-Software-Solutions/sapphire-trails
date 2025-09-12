@@ -195,7 +195,7 @@ export default function DashboardPage() {
                     <BookingVolumeChart data={volumeData} />
                 </CardContent>
             </Card>
-            <Card>
+            <Card className="lg:col-span-2">
                  <CardHeader>
                     <CardTitle>Booking Status Distribution</CardTitle>
                     <CardDescription>Current snapshot</CardDescription>
@@ -206,13 +206,13 @@ export default function DashboardPage() {
             </Card>
         </div>
         
-        <div className="grid gap-6 lg:grid-cols-2">
-             <Card>
+        <div className="grid gap-6 lg:grid-cols-3">
+             <Card className="lg:col-span-2">
                 <CardHeader>
                     <CardTitle>Tour Popularity</CardTitle>
                     <CardDescription>All-time booking counts per tour package.</CardDescription>
                 </CardHeader>
-                <CardContent className="h-[250px] pt-4">
+                <CardContent className="h-[230px] pt-4">
                     <TourPopularityChart data={tourData} />
                 </CardContent>
             </Card>

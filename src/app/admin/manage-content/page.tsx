@@ -131,7 +131,7 @@ export default function ManageContentPage() {
           ) : locations.length > 0 ? (
             <div className="grid gap-6">
               {locations.map((location) => (
-                <div key={location.slug} className="flex items-center gap-4 p-4 border rounded-lg">
+                <div key={location.slug} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border rounded-lg">
                   <Image
                     src={location.cardImage}
                     alt={location.title}
@@ -144,7 +144,7 @@ export default function ManageContentPage() {
                     <div className="text-muted-foreground break-all">Slug: {location.slug}</div>
                   </div>
                   
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                     <Button asChild variant="outline" size="icon">
                       <Link href={`/admin/edit-content/${location.slug}`}>
                         <Pencil className="h-4 w-4" />
