@@ -200,7 +200,7 @@ export default function DashboardPage() {
                     <CardTitle>Booking Status Distribution</CardTitle>
                     <CardDescription>Current snapshot</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="h-[300px]">
                     <BookingStatusChart data={statusData} />
                 </CardContent>
             </Card>
@@ -221,7 +221,7 @@ export default function DashboardPage() {
                     <CardTitle>Recent Bookings</CardTitle>
                     <CardDescription>The five most recent booking requests.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 overflow-y-auto">
                      {recentBookings.map((booking) => (
                         <div key={booking.id} className="flex items-center gap-4">
                             <Avatar className="h-9 w-9">
