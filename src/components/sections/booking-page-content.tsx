@@ -33,10 +33,10 @@ function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
                 data-ai-hint="tourists gems"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-            <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
+            <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-between text-white">
                 <div>
-                    <h2 className="text-3xl font-bold font-headline">{selectedTour.tourPageTitle}</h2>
-                    <div className="flex items-center gap-4 text-sm mt-2 opacity-90">
+                    <h2 className="text-2xl sm:text-3xl font-bold font-headline">{selectedTour.tourPageTitle}</h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm mt-2 opacity-90">
                         <div className="flex items-center gap-1.5"><Clock size={16} /> {selectedTour.duration}</div>
                         <div className="flex items-center gap-1.5"><DollarSign size={16} /> {selectedTour.price} {selectedTour.priceSuffix}</div>
                     </div>
