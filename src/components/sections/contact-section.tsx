@@ -18,9 +18,15 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { contactFormSchema } from "@/lib/schemas"
 import { Card, CardContent } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
+import { LoaderCircle } from "lucide-react"
+
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 export function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof contactFormSchema>>({
     resolver: zodResolver(contactFormSchema),
@@ -31,10 +37,35 @@ export function ContactSection() {
     },
   })
 
-  function onSubmit(data: z.infer<typeof contactFormSchema>) {
-    console.log(data);
-    setIsSubmitted(true);
-    form.reset();
+  async function onSubmit(data: z.infer<typeof contactFormSchema>) {
+    setIsLoading(true);
+    try {
+        const response = await fetch(`${API_BASE_URL}/contacts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send message. Please try again later.');
+        }
+
+        setIsSubmitted(true);
+        form.reset();
+        toast({
+            title: "Message Sent!",
+            description: "Thank you for contacting us. We'll get back to you shortly.",
+        });
+
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: error instanceof Error ? error.message : "An unknown error occurred.",
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (
@@ -100,7 +131,10 @@ export function ContactSection() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Send Message</Button>
+                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                        {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                        Send Message
+                    </Button>
                   </form>
                 </Form>
               </CardContent>

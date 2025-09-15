@@ -34,6 +34,7 @@ $routesConfig = [
     '/location-gallery' => './routes/locationgalleryimageRoutes.php',
     '/content' => './routes/sitecontentRoutes.php',
     '/experience-gallery' => './routes/tourexperiencegalleryRoutes.php',
+    '/contacts' => './routes/contactRoutes.php', // Add new contact route
 ];
 
 $router = new Router();

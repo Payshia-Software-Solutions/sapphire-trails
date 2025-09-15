@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LoaderCircle, Trash2, Eye } from 'lucide-react';
+import { LoaderCircle, Trash2, Eye, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -26,8 +26,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
-import { format, subDays } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 interface Submission {
     id: number;
@@ -37,35 +38,60 @@ interface Submission {
     created_at: string;
 }
 
-const mockSubmissions: Submission[] = [
-    { id: 1, name: 'John Doe', email: 'john.d@example.com', message: 'I have a question about the Deluxe tour package. Is it possible to customize the itinerary?', created_at: subDays(new Date(), 1).toISOString() },
-    { id: 2, name: 'Jane Smith', email: 'jane.s@example.com', message: 'I would like to inquire about group discounts for a party of 10 people.', created_at: subDays(new Date(), 2).toISOString() },
-    { id: 3, name: 'Sam Wilson', email: 'sam.w@example.com', message: 'What are the safety precautions taken during the gem mining activity? Thank you.', created_at: subDays(new Date(), 5).toISOString() },
-];
-
-
 export default function ContactSubmissionsPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // In a real app, you would fetch this data from an API
-    // For now, we'll use mock data with a delay
-    setTimeout(() => {
-        setSubmissions(mockSubmissions);
-        setIsLoading(false);
-    }, 1000);
-  }, []);
+    async function fetchSubmissions() {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/contacts`);
+            if (!response.ok) {
+                throw new Error("Could not fetch submissions from server.");
+            }
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                setSubmissions(data.sort((a,b) => parseISO(b.created_at).getTime() - parseISO(a.created_at).getTime()));
+            }
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: error instanceof Error ? error.message : "Failed to load data."
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    fetchSubmissions();
+  }, [toast]);
   
-  const handleDelete = (submissionId: number, submissionName: string) => {
-    // This is where you would call an API to delete the submission
-    // For now, we'll just remove it from the local state
-    setSubmissions(prev => prev.filter(sub => sub.id !== submissionId));
-    toast({
-        title: 'Submission Deleted',
-        description: `The message from "${submissionName}" has been deleted.`,
-    });
+  const handleDelete = async (submissionId: number, submissionName: string) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/contacts/${submissionId}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Failed to delete submission from server.');
+        }
+
+        setSubmissions(prev => prev.filter(sub => sub.id !== submissionId));
+        toast({
+            title: 'Submission Deleted',
+            description: `The message from "${submissionName}" has been deleted.`,
+        });
+    } catch (error) {
+         toast({
+            variant: 'destructive',
+            title: 'Delete Failed',
+            description: error instanceof Error ? error.message : "An unknown error occurred.",
+        });
+    }
   }
 
 
