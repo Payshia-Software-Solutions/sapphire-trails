@@ -8,11 +8,11 @@ import { LayoutProvider } from '@/components/layout-provider';
 export const metadata: Metadata = {
   title: {
     template: '%s | Sapphire Trails',
-    default: 'Sapphire Trails - Sri Lanka\'s Premier Luxury Gem Tour Experience',
+    default: 'Sapphire Trails - Sri Lanka\'s Premier Gem Tour Experience',
   },
-  description: 'Embark on an exclusive journey through Sri Lanka\'s gem country. Sapphire Trails offers an immersive experience into Ratnapura\'s rich heritage, from gem mines to luxury stays.',
+  description: 'Embark on an exclusive journey through Sri Lanka\'s gem country. Sapphire Trails offers an immersive experience into Ratnapura\'s rich heritage, from gem mines to exclusive stays.',
   openGraph: {
-    title: 'Sapphire Trails - Sri Lanka\'s Premier Luxury Gem Tour Experience',
+    title: 'Sapphire Trails - Sri Lanka\'s Premier Gem Tour Experience',
     description: 'Discover the heart of Sri Lanka\'s gem country with our exclusive tours.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',

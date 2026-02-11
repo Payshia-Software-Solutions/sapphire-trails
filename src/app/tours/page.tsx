@@ -9,9 +9,9 @@ import { AllToursGrid } from '@/components/sections/all-tours-grid';
 
 export const metadata: Metadata = {
   title: 'Our Tours',
-  description: 'Explore our exclusive luxury gem tour packages. From day trips to deluxe multi-day experiences, discover the heart of Sri Lanka\'s gem country with Sapphire Trails.',
+  description: 'Explore our exclusive gem tour packages. From day trips to deluxe multi-day experiences, discover the heart of Sri Lanka\'s gem country with Sapphire Trails.',
   openGraph: {
-    title: 'Our Luxury Gem Tours | Sapphire Trails',
+    title: 'Our Premier Gem Tours | Sapphire Trails',
     description: 'Choose your perfect Sri Lankan gem adventure.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',

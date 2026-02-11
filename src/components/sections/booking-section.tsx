@@ -21,7 +21,7 @@ export function BookingSection() {
               Reserve Your Adventure
             </h2>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed">
-              Book your spot for an unforgettable luxury tour experience. Contact us for custom itineraries, group rates, and exclusive offers.
+              Book your spot for an unforgettable premier tour experience. Contact us for custom itineraries, group rates, and exclusive offers.
             </p>
           </div>
           <Button asChild size="lg" className="rounded-full px-10 bg-primary hover:bg-primary/90 text-primary-foreground">

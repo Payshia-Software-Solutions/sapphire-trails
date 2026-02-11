@@ -25,7 +25,7 @@ export default function Home() {
   return (
     <div className="bg-background flex flex-col h-screen">
       <Header />
-      <main ref={mainRef} className="flex-1 overflow-y-scroll snap-y snap-mandatory">
+      <main ref={mainRef} className="flex-1 overflow-y-scroll snap-y snap-proximity">
         <HeroSection />
         <DiscoverSection />
         <ToursSection />

@@ -9,7 +9,7 @@ import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
   title: 'About Us',
-  description: 'Learn about the story, mission, and team behind Sapphire Trails, Sri Lanka\'s premier luxury gem and cultural experience.',
+  description: 'Learn about the story, mission, and team behind Sapphire Trails, Sri Lanka\'s premier gem and cultural experience.',
   openGraph: {
     title: 'About Sapphire Trails',
     description: 'Discover the heritage and passion behind Sri Lanka\'s most exclusive gem tour.',

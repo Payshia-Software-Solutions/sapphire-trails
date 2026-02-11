@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Select your tour package, date, and number of guests to reserve your spot on an unforgettable adventure with Sapphire Trails.',
   openGraph: {
     title: 'Book Your Sapphire Trails Adventure',
-    description: 'Complete your booking for a luxury gem tour in Sri Lanka.',
+    description: 'Complete your booking for a premier gem tour in Sri Lanka.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
       width: 1200,
