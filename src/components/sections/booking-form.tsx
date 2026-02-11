@@ -38,6 +38,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { type TourPackage } from "@/lib/packages-data"
+import Image from "next/image"
 
 interface ConfirmationDetails {
     tourName: string;
@@ -59,19 +60,31 @@ function BookingConfirmation({ details, onClose }: { details: ConfirmationDetail
     
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 animate-in fade-in-0">
-            <div className="relative w-full max-w-2xl bg-background rounded-2xl p-8 md:p-12 text-center text-white/90 shadow-2xl shadow-primary/20">
+            <div className="relative w-full max-w-lg bg-background-alt rounded-2xl p-8 md:p-12 text-center text-white/90 shadow-2xl shadow-primary/20 border border-border">
                 <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-muted-foreground hover:text-white" onClick={onClose}>
                     <X className="h-6 w-6" />
                 </Button>
                 
                 <div className="flex flex-col items-center">
-                    <div className="h-20 w-20 flex items-center justify-center rounded-full bg-primary mb-4">
-                        <Check className="h-12 w-12 text-primary-foreground" />
+                   <div style={{
+                      display: 'inline-block',
+                      backgroundColor: 'hsl(39, 58%, 74%)',
+                      height: '60px',
+                      width: '60px',
+                      borderRadius: '50%',
+                      marginBottom: '15px'
+                    }}>
+                        <Image 
+                            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMxYzFjMWUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSIyMCA2IDkgMTcgNCAxMiI+PC9wb2x5bGluZT48L3N2Zz4=" 
+                            alt="Checkmark" 
+                            width={36} height={36} 
+                            style={{ margin: '12px' }}
+                        />
                     </div>
-                    <div className="flex gap-2 text-primary mb-4">
-                        <Gem className="h-5 w-5 fill-primary" />
-                        <Gem className="h-5 w-5 fill-primary" />
-                        <Gem className="h-5 w-5 fill-primary" />
+                     <div style={{ marginBottom: '20px' }}>
+                        <Image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" width={16} height={16} style={{ display: 'inline-block', margin: '0 4px' }}/>
+                        <Image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" width={16} height={16} style={{ display: 'inline-block', margin: '0 4px' }}/>
+                        <Image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" width={16} height={16} style={{ display: 'inline-block', margin: '0 4px' }}/>
                     </div>
                     <h2 className="text-4xl font-headline font-bold text-white mb-2">Your Booking is Confirmed!</h2>
                     <p className="text-muted-foreground max-w-md">
@@ -91,11 +104,11 @@ function BookingConfirmation({ details, onClose }: { details: ConfirmationDetail
                      </div>
                       <div className="flex justify-between items-center text-sm border-b border-border pb-3">
                          <span className="text-muted-foreground">Guests</span>
-                         <span className="font-semibold text-white">{details.guests} Adults</span>
+                         <span className="font-semibold text-white">{details.guests} Person(s)</span>
                      </div>
                       <div className="flex justify-between items-center text-sm">
                          <span className="text-muted-foreground">Total Paid</span>
-                         <span className="font-semibold text-primary">${details.totalPrice.toFixed(2)}</span>
+                         <span className="font-semibold text-primary text-lg">${details.totalPrice.toFixed(2)}</span>
                      </div>
                 </div>
 

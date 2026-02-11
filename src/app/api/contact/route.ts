@@ -31,34 +31,62 @@ export async function POST(request: Request) {
       },
     });
 
+    const primaryColor = '#c79954';
+    const backgroundColor = '#0a0a0a';
+    const cardColor = '#1c1c1c';
+    const textColor = '#e2e8f0';
+    const mutedColor = '#a1a1aa';
+    const borderColor = '#3f3f46';
+
     // Email to Admin
+    const adminHtml = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: ${textColor}; background-color: ${backgroundColor}; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: ${cardColor}; padding: 30px; border-radius: 8px; border: 1px solid ${borderColor};">
+          <div style="text-align: center; border-bottom: 1px solid ${borderColor}; padding-bottom: 20px; margin-bottom: 20px;">
+            <h1 style="color: ${primaryColor}; font-size: 28px; margin:0;">New Contact Message</h1>
+          </div>
+          <p style="font-size: 16px;">You have received a new message from your website contact form.</p>
+          <div style="background-color: ${backgroundColor}; border-radius: 8px; padding: 20px; margin: 25px 0;">
+            <p style="font-size: 14px; margin: 0 0 15px 0;"><strong style="color: ${mutedColor};">From:</strong> ${name} &lt;${email}&gt;</p>
+            <p style="font-size: 16px; white-space: pre-wrap; margin: 0;">${message}</p>
+          </div>
+          <p style="text-align: center; font-size: 14px; color: ${mutedColor};">You can reply directly to this email to respond.</p>
+        </div>
+      </div>
+    `;
+
     await transporter.sendMail({
       from: `"${name}" <${process.env.MAIL_FROM}>`,
       to: process.env.ADMIN_EMAIL,
       replyTo: email,
       subject: `New Contact Message from ${name}`,
-      text: `You have received a new message from your website contact form.\n\nName: ${name}\nEmail: ${email}\nMessage:\n${message}`,
-      html: `<p>You have received a new message from your website contact form.</p>
-             <h3>Details:</h3>
-             <ul>
-               <li><strong>Name:</strong> ${name}</li>
-               <li><strong>Email:</strong> ${email}</li>
-             </ul>
-             <p><strong>Message:</strong></p>
-             <p>${message.replace(/\n/g, '<br>')}</p>`,
+      html: adminHtml,
     });
 
     // Confirmation Email to User
+    const userHtml = `
+       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: ${textColor}; background-color: ${backgroundColor}; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: ${cardColor}; padding: 30px; border-radius: 8px; border: 1px solid ${borderColor};">
+          <div style="text-align: center; margin-bottom: 20px;">
+             <img src="https://content-provider.payshia.com/sapphire-trail/images/logo4.png" alt="Sapphire Trails Logo" style="width: 120px; height: auto;">
+          </div>
+          <div style="text-align: center; border-bottom: 1px solid ${borderColor}; padding-bottom: 20px; margin-bottom: 20px;">
+            <h1 style="color: ${textColor}; font-size: 28px; margin:0;">Thank You, ${name}</h1>
+          </div>
+          <p style="font-size: 16px; color: ${mutedColor}; text-align: center;">We have received your message and will get back to you shortly. Here is a copy of your inquiry:</p>
+          <div style="background-color: ${backgroundColor}; border-radius: 8px; padding: 20px; margin: 25px 0; border: 1px solid ${borderColor};">
+            <p style="font-size: 14px; white-space: pre-wrap; margin: 0; font-style: italic;">"${message}"</p>
+          </div>
+          <p style="text-align: center; font-size: 14px; color: ${mutedColor};">Best regards,<br>The Sapphire Trails Team</p>
+        </div>
+      </div>
+    `;
+
     await transporter.sendMail({
       from: `Sapphire Trails <${process.env.MAIL_FROM}>`,
       to: email,
       subject: 'We have received your message',
-      text: `Hi ${name},\n\nThank you for contacting us. We have received your message and will get back to you shortly.\n\nYour message:\n${message}\n\nBest regards,\nThe Sapphire Trails Team`,
-      html: `<p>Hi ${name},</p>
-             <p>Thank you for contacting us. We have received your message and will get back to you shortly.</p>
-             <p><strong>Your message:</strong></p>
-             <p><em>${message.replace(/\n/g, '<br>')}</em></p>
-             <p>Best regards,<br>The Sapphire Trails Team</p>`,
+      html: userHtml,
     });
 
     return NextResponse.json({ message: 'Submission successful and emails sent.' });
