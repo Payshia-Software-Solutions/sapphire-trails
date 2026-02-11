@@ -111,13 +111,13 @@ export async function POST(request: Request) {
               <img src="https://content-provider.payshia.com/sapphire-trail/images/logo4.png" alt="Sapphire Trails Logo" style="width: 120px; height: auto;">
           </div>
           <div style="text-align: center;">
-            <div style="display: inline-block; background-color: ${primaryColor}; height: 60px; width: 60px; border-radius: 50%; margin-bottom: 15px;">
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMxYzFjMWUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSIyMCA2IDkgMTcgNCAxMiI+PC9wb2x5bGluZT48L3N2Zz4=" alt="Checkmark" style="width: 36px; height: 36px; margin-top: 12px;"/>
+            <div style="display: inline-block; background-color: ${primaryColor}; height: 60px; width: 60px; border-radius: 50%; margin-bottom: 15px; text-align: center; line-height: 60px;">
+              <span style="font-size: 36px; color: #0a0a0a;">&#10004;</span>
             </div>
-            <div style="margin-bottom: 20px;">
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" style="width: 16px; height: auto; margin: 0 4px;"/>
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" style="width: 16px; height: auto; margin: 0 4px;"/>
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" style="width: 16px; height: auto; margin: 0 4px;"/>
+            <div style="margin-bottom: 20px; font-size: 16px;">
+                <span style="margin: 0 2px;">&#128142;</span>
+                <span style="margin: 0 2px;">&#128142;</span>
+                <span style="margin: 0 2px;">&#128142;</span>
             </div>
             <h1 style="color: #ffffff; font-size: 32px; font-weight: bold; margin: 0 0 10px 0;">Your Booking is Confirmed!</h1>
             <p style="color: ${mutedColor}; font-size: 16px; max-width: 400px; margin: 0 auto 30px auto;">Hi ${name}, thank you for booking the ${tour_name}. We have received your request and will review it shortly.</p>
