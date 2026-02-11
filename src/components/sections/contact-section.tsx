@@ -21,8 +21,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { LoaderCircle } from "lucide-react"
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
-
 export function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +38,7 @@ export function ContactSection() {
   async function onSubmit(data: z.infer<typeof contactFormSchema>) {
     setIsLoading(true);
     try {
-        const response = await fetch(`${API_BASE_URL}/contacts`, {
+        const response = await fetch(`/api/contact`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
