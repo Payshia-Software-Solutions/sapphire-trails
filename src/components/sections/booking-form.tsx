@@ -2,12 +2,10 @@
 
 "use client"
 
-import { useState }from "react"
 import { useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Check, Gem, Mail, X } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { CalendarIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -35,181 +33,10 @@ import {
 } from "@/components/ui/popover"
 import { bookingFormSchema } from "@/lib/schemas"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { useAuth } from "@/contexts/auth-context"
-import { useToast } from "@/hooks/use-toast"
 import { type TourPackage } from "@/lib/packages-data"
-import Image from "next/image"
 
-interface ConfirmationDetails {
-    tourName: string;
-    date: Date;
-    guests: number;
-    totalPrice: number;
-}
-
-function BookingConfirmation({ details, onClose }: { details: ConfirmationDetails, onClose: () => void }) {
-    const router = useRouter();
-
-    const handleViewBooking = () => {
-        router.push('/profile');
-    };
-    
-    const handleExploreTours = () => {
-        router.push('/tours');
-    };
-    
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 animate-in fade-in-0">
-            <div className="relative w-full max-w-lg bg-background-alt rounded-2xl p-8 md:p-12 text-center text-white/90 shadow-2xl shadow-primary/20 border border-border">
-                <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-muted-foreground hover:text-white" onClick={onClose}>
-                    <X className="h-6 w-6" />
-                </Button>
-                
-                <div className="flex flex-col items-center">
-                   <div style={{
-                      display: 'inline-block',
-                      backgroundColor: 'hsl(39, 58%, 74%)',
-                      height: '60px',
-                      width: '60px',
-                      borderRadius: '50%',
-                      marginBottom: '15px'
-                    }}>
-                        <Image 
-                            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMxYzFjMWUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSIyMCA2IDkgMTcgNCAxMiI+PC9wb2x5bGluZT48L3N2Zz4=" 
-                            alt="Checkmark" 
-                            width={36} height={36} 
-                            style={{ margin: '12px' }}
-                        />
-                    </div>
-                     <div style={{ marginBottom: '20px' }}>
-                        <Image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" width={16} height={16} style={{ display: 'inline-block', margin: '0 4px' }}/>
-                        <Image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" width={16} height={16} style={{ display: 'inline-block', margin: '0 4px' }}/>
-                        <Image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" width={16} height={16} style={{ display: 'inline-block', margin: '0 4px' }}/>
-                    </div>
-                    <h2 className="text-4xl font-headline font-bold text-white mb-2">Your Booking is Confirmed!</h2>
-                    <p className="text-muted-foreground max-w-md">
-                        Thank you for booking the {details.tourName}. A confirmation email has been sent to you.
-                    </p>
-                </div>
-
-                <div className="my-8 text-left bg-card/50 border border-border rounded-lg p-6 space-y-4">
-                     <h3 className="text-xl font-headline font-semibold text-primary mb-4">Booking Summary</h3>
-                     <div className="flex justify-between items-center text-sm border-b border-border pb-3">
-                         <span className="text-muted-foreground">Tour Name</span>
-                         <span className="font-semibold text-white">{details.tourName}</span>
-                     </div>
-                     <div className="flex justify-between items-center text-sm border-b border-border pb-3">
-                         <span className="text-muted-foreground">Date & Time</span>
-                         <span className="font-semibold text-white">{format(details.date, "MMMM dd, yyyy")} • 9:00 AM</span>
-                     </div>
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-3">
-                         <span className="text-muted-foreground">Guests</span>
-                         <span className="font-semibold text-white">{details.guests} Person(s)</span>
-                     </div>
-                      <div className="flex justify-between items-center text-sm">
-                         <span className="text-muted-foreground">Total Paid</span>
-                         <span className="font-semibold text-primary text-lg">${details.totalPrice.toFixed(2)}</span>
-                     </div>
-                </div>
-
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-6">
-                    <Mail className="h-4 w-4 text-primary" />
-                    <span>Check your inbox for full details</span>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
-                    <Button size="lg" className="w-full" onClick={handleViewBooking}>View My Booking</Button>
-                    <Button size="lg" variant="outline" className="w-full" onClick={handleExploreTours}>Explore More Tours</Button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-export function BookingForm({ tourPackages, selectedTour }: { tourPackages: TourPackage[], selectedTour?: TourPackage }) {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [confirmationDetails, setConfirmationDetails] = useState<ConfirmationDetails | null>(null);
-  const { user } = useAuth();
-  const { toast } = useToast();
+export function BookingForm({ tourPackages, selectedTour, onSubmit }: { tourPackages: TourPackage[], selectedTour?: TourPackage, onSubmit: (data: any) => void }) {
   const form = useFormContext<z.infer<typeof bookingFormSchema>>();
-
-  async function onSubmit(data: z.infer<typeof bookingFormSchema>) {
-     if (!selectedTour) {
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "You must have a tour selected.",
-        });
-        return;
-    }
-    
-    const totalGuests = data.adults + data.children;
-    const pricePerPerson = parseFloat(selectedTour.price.replace(/[^0-9.-]+/g,""));
-    const totalPrice = !isNaN(pricePerPerson) ? pricePerPerson * totalGuests : 0;
-
-    const payload = {
-        user_id: user ? user.id : null,
-        tour_package_id: data.tourType,
-        tour_name: selectedTour.homepageTitle,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        address: data.address,
-        adults: data.adults,
-        children: data.children,
-        guests: totalGuests,
-        tour_date: format(data.date, 'yyyy-MM-dd'),
-        message: data.message,
-        type: user ? user.type : 'client',
-    };
-    
-    try {
-        const response = await fetch('/api/booking', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ message: "An unknown error occurred."}));
-            throw new Error(errorData.message || 'Failed to submit booking request.');
-        }
-        
-        setConfirmationDetails({
-            tourName: selectedTour.tourPageTitle,
-            date: data.date,
-            guests: totalGuests,
-            totalPrice: totalPrice,
-        });
-
-        setIsSubmitted(true);
-        form.reset();
-        toast({
-          title: "Request Sent!",
-          description: "Your booking request has been submitted successfully.",
-        });
-
-    } catch (error) {
-        console.error("Booking submission failed:", error);
-        toast({
-            variant: "destructive",
-            title: "Submission Failed",
-            description: error instanceof Error ? error.message : "Could not connect to the server.",
-        });
-    }
-  }
-
-  const handleCloseConfirmation = () => {
-    setIsSubmitted(false);
-    setConfirmationDetails(null);
-  };
-  
-  if (isSubmitted && confirmationDetails) {
-    return <BookingConfirmation details={confirmationDetails} onClose={handleCloseConfirmation} />
-  }
   
   return (
     <form id="booking-form-main" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -346,7 +173,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
                         <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                            <Input placeholder="Your Name" {...field} disabled={!!user} />
+                            <Input placeholder="Your Name" {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -359,7 +186,7 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
                         <FormItem>
                         <FormLabel>Email Address</FormLabel>
                         <FormControl>
-                            <Input placeholder="your.email@example.com" {...field} disabled={!!user} />
+                            <Input placeholder="your.email@example.com" {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
