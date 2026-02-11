@@ -25,13 +25,14 @@ interface ConfirmationDetails {
     date: Date;
     guests: number;
     totalPrice: number;
+    bookingId: number;
 }
 
 function BookingConfirmation({ details, onClose }: { details: ConfirmationDetails, onClose: () => void }) {
     const router = useRouter();
 
     const handleViewBooking = () => {
-        router.push('/profile');
+        router.push(`/booking/${details.bookingId}/view`);
     };
     
     const handleExploreTours = () => {
@@ -360,11 +361,14 @@ export function BookingPageContent() {
            throw new Error(errorData.message || 'Failed to submit booking request.');
        }
        
+       const savedBooking = await response.json();
+       
        setConfirmationDetails({
            tourName: selectedTour.tourPageTitle,
            date: data.date,
            guests: totalGuestsOnSubmit,
            totalPrice: totalPriceOnSubmit,
+           bookingId: savedBooking.id
        });
 
        setIsSubmitted(true);

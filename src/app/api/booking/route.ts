@@ -21,6 +21,7 @@ export async function POST(request: Request) {
     }
     
     const savedBooking = await phpResponse.json();
+    const bookingId = savedBooking.id;
 
     // Step 2: Fetch tour details to get price for email
     let totalPrice = 0;
@@ -134,7 +135,7 @@ export async function POST(request: Request) {
           </div>
           
           <div style="text-align: center;">
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL}/profile" target="_blank" style="background-color: ${primaryColor}; color: #000; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin: 5px; min-width: 150px;">View My Booking</a>
+            <a href="${process.env.NEXT_PUBLIC_BASE_URL}/booking/${bookingId}/view" target="_blank" style="background-color: ${primaryColor}; color: #000; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin: 5px; min-width: 150px;">View My Booking</a>
             <a href="${process.env.NEXT_PUBLIC_BASE_URL}/tours" target="_blank" style="background-color: transparent; border: 1px solid ${primaryColor}; color: ${primaryColor}; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin: 5px; min-width: 150px;">Explore More Tours</a>
           </div>
           <div style="text-align: center; padding-top: 30px; font-size: 12px; color: ${mutedColor};">
