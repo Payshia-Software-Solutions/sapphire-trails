@@ -137,10 +137,13 @@ export function BookingForm({ tourPackages, selectedTour }: { tourPackages: Tour
     const payload = {
         user_id: user ? user.id : null,
         tour_package_id: data.tourType,
+        tour_name: selectedTour.homepageTitle,
         name: data.name,
         email: data.email,
         phone: data.phone,
         address: data.address,
+        adults: data.adults,
+        children: data.children,
         guests: totalGuests,
         tour_date: format(data.date, 'yyyy-MM-dd'),
         message: data.message,

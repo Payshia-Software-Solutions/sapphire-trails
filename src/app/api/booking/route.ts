@@ -32,38 +32,74 @@ export async function POST(request: Request) {
       },
     });
 
-    const { name, email, tour_date, guests, tour_package_id } = body;
+    const { 
+      name, 
+      email, 
+      phone,
+      address,
+      tour_date, 
+      guests, 
+      adults,
+      children,
+      tour_name,
+      message,
+    } = body;
     
-    // In a real app, you would look up the tour name from the ID
-    const tourName = `Tour Package ID: ${tour_package_id}`;
 
     // Email to Admin
+    const adminHtml = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+          <div style="text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px;">
+            <h1 style="color: #395241; font-size: 24px;">New Booking Request</h1>
+          </div>
+          <p>A new booking request has been submitted. Please review the details below:</p>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+            <tr style="background-color: #f9f9f9;"><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Tour Package</td><td style="padding: 10px; border: 1px solid #ddd;">${tour_name}</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Name</td><td style="padding: 10px; border: 1px solid #ddd;">${name}</td></tr>
+            <tr style="background-color: #f9f9f9;"><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Email</td><td style="padding: 10px; border: 1px solid #ddd;">${email}</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Phone</td><td style="padding: 10px; border: 1px solid #ddd;">${phone || 'N/A'}</td></tr>
+            <tr style="background-color: #f9f9f9;"><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Address</td><td style="padding: 10px; border: 1px solid #ddd;">${address || 'N/A'}</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Tour Date</td><td style="padding: 10px; border: 1px solid #ddd;">${tour_date}</td></tr>
+            <tr style="background-color: #f9f9f9;"><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Guests</td><td style="padding: 10px; border: 1px solid #ddd;">${guests} (${adults} Adults, ${children} Children)</td></tr>
+            ${message ? `<tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; vertical-align: top;">Message</td><td style="padding: 10px; border: 1px solid #ddd;">${message}</td></tr>` : ''}
+          </table>
+          <p style="text-align: center;">Please log in to the admin panel to accept or reject this booking.</p>
+        </div>
+      </div>
+    `;
+
     await transporter.sendMail({
       from: `"Booking System" <${process.env.MAIL_FROM}>`,
       to: process.env.ADMIN_EMAIL,
-      subject: `New Booking Request from ${name}`,
-      text: `A new booking request has been submitted.\n\nName: ${name}\nEmail: ${email}\nTour: ${tourName}\nDate: ${tour_date}\nGuests: ${guests}`,
-      html: `<p>A new booking request has been submitted.</p>
-             <h3>Details:</h3>
-             <ul>
-               <li><strong>Name:</strong> ${name}</li>
-               <li><strong>Email:</strong> ${email}</li>
-               <li><strong>Tour:</strong> ${tourName}</li>
-               <li><strong>Date:</strong> ${tour_date}</li>
-               <li><strong>Guests:</strong> ${guests}</li>
-             </ul>
-             <p>Please log in to the admin panel to accept or reject this booking.</p>`,
+      subject: `New Booking Request from ${name} for ${tour_name}`,
+      html: adminHtml,
     });
 
     // Confirmation Email to User
+    const userHtml = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+          <div style="text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px;">
+            <h1 style="color: #395241; font-size: 24px;">Booking Request Received</h1>
+          </div>
+          <p>Hi ${name},</p>
+          <p>Thank you for your booking request. We have received it and will review it shortly. You will receive another email once your booking is confirmed. Here are the details of your request:</p>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+            <tr style="background-color: #f9f9f9;"><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Tour Package</td><td style="padding: 10px; border: 1px solid #ddd;">${tour_name}</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Tour Date</td><td style="padding: 10px; border: 1px solid #ddd;">${tour_date}</td></tr>
+            <tr style="background-color: #f9f9f9;"><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Guests</td><td style="padding: 10px; border: 1px solid #ddd;">${guests} (${adults} Adults, ${children} Children)</td></tr>
+          </table>
+          <p>Best regards,<br>The Sapphire Trails Team</p>
+        </div>
+      </div>
+    `;
+
     await transporter.sendMail({
       from: `Sapphire Trails <${process.env.MAIL_FROM}>`,
       to: email,
       subject: 'Your Booking Request has been Received',
-      text: `Hi ${name},\n\nThank you for your booking request for the ${tourName} on ${tour_date}. We have received it and will review it shortly. You will receive another email once your booking is confirmed.\n\nBest regards,\nThe Sapphire Trails Team`,
-      html: `<p>Hi ${name},</p>
-             <p>Thank you for your booking request for the <strong>${tourName}</strong> on <strong>${tour_date}</strong>. We have received it and will review it shortly. You will receive another email once your booking is confirmed.</p>
-             <p>Best regards,<br>The Sapphire Trails Team</p>`,
+      html: userHtml,
     });
 
     // Return the response from the PHP backend to the frontend
