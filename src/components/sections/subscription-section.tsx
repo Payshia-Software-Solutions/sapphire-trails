@@ -1,12 +1,21 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
+import Image from 'next/image';
 
 export function SubscriptionSection() {
   return (
-    <section id="subscribe" className="w-full h-screen flex items-center justify-center bg-background scroll-section">
-      <div className="container px-4 md:px-6 mx-auto">
-        <ScrollAnimate className="mx-auto flex flex-col items-center justify-center gap-6 text-center max-w-2xl">
+    <section id="subscribe" className="relative w-full h-screen flex items-center justify-center bg-background scroll-section">
+       <Image
+        src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
+        alt="A dark and moody image of the inside of a gem mine, with rock walls and dim lighting."
+        data-ai-hint="gem mine cave"
+        fill
+        className="z-0 object-cover opacity-30"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent z-10" />
+      <div className="container relative z-20 px-4 md:px-6 mx-auto">
+        <ScrollAnimate className="mx-auto flex flex-col items-center justify-center gap-6 text-center">
           <div className="space-y-4">
             <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
               Stay in the Loop
