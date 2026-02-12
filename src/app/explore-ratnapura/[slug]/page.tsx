@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -46,10 +47,10 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || []
 
   return {
-    title: location.title,
+    title: `${location.title} | Explore Ratnapura Gem Attractions`,
     description: location.cardDescription,
     openGraph: {
-      title: `${location.title} | Explore Ratnapura`,
+      title: `${location.title} | Attractions for Gem Tours in Sri Lanka`,
       description: location.cardDescription,
       images: [
         {

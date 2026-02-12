@@ -8,16 +8,16 @@ import { ExperienceSection } from '@/components/sections/experience-section';
 import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
-  title: 'About Us',
-  description: 'Learn about the story, mission, and team behind Sapphire Trails, Sri Lanka\'s premier gem and cultural experience.',
+  title: 'About Sapphire Trails | Premier Sri Lankan Gem Tours',
+  description: 'Learn about Sapphire Trails, your expert guide for premier gem tours in Ratnapura, Sri Lanka. Discover our story, mission, and the team behind your next gem tour adventure.',
   openGraph: {
-    title: 'About Sapphire Trails',
+    title: 'About Sapphire Trails | Premier Sri Lankan Gem Tours',
     description: 'Discover the heritage and passion behind Sri Lanka\'s most exclusive gem tour.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img31.webp',
       width: 1200,
       height: 630,
-      alt: 'The exterior of the Grand Silver Ray resort building.'
+      alt: 'Exterior of Grand Silver Ray resort, accommodation for our Sri Lanka gem tours.'
     }],
   }
 };
