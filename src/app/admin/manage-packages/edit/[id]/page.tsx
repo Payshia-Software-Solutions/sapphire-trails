@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { mapServerPackageToClient } from '@/lib/packages-data';
 import { Skeleton } from '@/components/ui/skeleton';
+import placeholderImages from '@/lib/placeholder-images.json';
 
 const iconOptions = ['MapPin', 'Gem', 'Landmark', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble', 'Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Waves', 'Camera', 'Tent', 'Thermometer'];
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
@@ -300,7 +301,7 @@ export default function EditPackagePage() {
 
   const handlePrev = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
 
@@ -578,7 +579,7 @@ export default function EditPackagePage() {
                              )}
                         </div>
                         )})}
-                         <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: 'https://placehold.co/400x400.png', alt: '', hint: '', file: null, isNew: true })} disabled={galleryFields.length >= 8}>
+                         <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: placeholderImages['gallery-400x400'].src, alt: '', hint: '', file: null, isNew: true })} disabled={galleryFields.length >= 8}>
                             <Plus className="mr-2 h-4 w-4" /> Add Gallery Image
                         </Button>
                     </CardContent>

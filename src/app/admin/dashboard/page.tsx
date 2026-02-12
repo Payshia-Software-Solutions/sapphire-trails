@@ -9,6 +9,7 @@ import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { subDays, format, parseISO } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
+import placeholderImages from '@/lib/placeholder-images.json';
 
 import { BookingVolumeChart } from '@/components/admin/charts/booking-volume-chart';
 import { BookingStatusChart } from '@/components/admin/charts/booking-status-chart';
@@ -225,7 +226,7 @@ export default function DashboardPage() {
                      {recentBookings.map((booking) => (
                         <div key={booking.id} className="flex items-center gap-4">
                             <Avatar className="h-9 w-9">
-                                <AvatarImage src={`https://placehold.co/100x100.png`} alt="Avatar" data-ai-hint="person portrait" />
+                                <AvatarImage src={placeholderImages['avatar-fallback'].src} alt={placeholderImages['avatar-fallback'].alt} data-ai-hint={placeholderImages['avatar-fallback'].hint} />
                                 <AvatarFallback>{booking.name.charAt(0).toUpperCase()}</AvatarFallback>
                             </Avatar>
                             <div className="grid gap-1">

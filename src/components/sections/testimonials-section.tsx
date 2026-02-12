@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -5,27 +6,28 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { TaglineGenerator } from '@/components/shared/tagline-generator';
 import { Quote } from 'lucide-react';
+import placeholderImages from '@/lib/placeholder-images.json';
 
 const testimonials = [
   {
     name: "Sarah L.",
     title: "Marketing Director",
-    image: "https://placehold.co/100x100.png",
-    imageHint: "woman portrait",
+    image: placeholderImages['testimonial-woman'].src,
+    imageHint: placeholderImages['testimonial-woman'].hint,
     quote: "Landing Spark transformed our campaign strategy. The ability to quickly generate and test landing pages is a game-changer. Our conversion rates have doubled!"
   },
   {
     name: "Mike T.",
     title: "Startup Founder",
-    image: "https://placehold.co/100x100.png",
-    imageHint: "man portrait",
+    image: placeholderImages['testimonial-man'].src,
+    imageHint: placeholderImages['testimonial-man'].hint,
     quote: "As a non-technical founder, I was struggling with website development. Landing Spark made it incredibly simple to create a professional-looking site in just an afternoon."
   },
   {
     name: "Jessica P.",
     title: "Freelance Designer",
-    image: "https://placehold.co/100x100.png",
-    imageHint: "person smiling",
+    image: placeholderImages['testimonial-person'].src,
+    imageHint: placeholderImages['testimonial-person'].hint,
     quote: "The AI suggestions are surprisingly creative and helpful. It's like having a brainstorming partner on demand. I'm building better pages for my clients, faster."
   },
 ];
