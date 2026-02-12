@@ -4,7 +4,6 @@ import { Footer } from '@/components/layout/footer';
 import { OurStory } from '@/components/sections/our-story';
 import { TeamSection } from '@/components/sections/team-section';
 import type { Metadata } from 'next';
-import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { PageHero } from '@/components/shared/page-hero';
 import { ExperienceSection } from '@/components/sections/experience-section';
 
@@ -31,20 +30,10 @@ export default function AboutPage() {
       <Header />
       <main className="flex-1">
         <PageHero title="About Us" breadcrumbs={breadcrumbs} />
+        <OurStory />
+        <ExperienceSection />
         <div className="bg-background-alt">
-          <ScrollAnimate>
-            <OurStory />
-          </ScrollAnimate>
-        </div>
-        <div className="bg-background">
-          <ScrollAnimate>
-            <ExperienceSection />
-          </ScrollAnimate>
-        </div>
-        <div className="bg-background-alt">
-          <ScrollAnimate>
-            <TeamSection />
-          </ScrollAnimate>
+          <TeamSection />
         </div>
       </main>
       <Footer />
