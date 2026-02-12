@@ -14,16 +14,7 @@ export function OurStory() {
                         With over 27 years experience in the hospitality industry, Grand Silver Ray has set the standard for premier gem tourism in Sri Lanka. Rooted in Ratnapura, the heart of sapphire country, our resort blends timeless elegance with the vibrant spirit of discovery. What began as a boutique retreat is now renowned worldwide for experiential hospitality, cultural immersion, and responsible tourism.
                     </p>
                 </div>
-                <div className="space-y-6">
-                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg shadow-lg">
-                        <Image
-                            src="https://picsum.photos/seed/palms/800/600"
-                            alt="Palm trees at the resort"
-                            data-ai-hint="palm trees resort"
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
+                <div>
                      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg shadow-lg">
                         <Image
                             src="https://content-provider.payshia.com/sapphire-trail/images/img31.webp"
