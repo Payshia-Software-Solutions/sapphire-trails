@@ -56,8 +56,10 @@ export async function POST(request: Request) {
     `;
 
     await transporter.sendMail({
-      from: `"${name}" <${process.env.MAIL_FROM}>`,
-      to: process.env.ADMIN_EMAIL,
+      from: `"Sapphire Trails Contact" <${process.env.MAIL_FROM}>`,
+      to: "reservation@silverray.lk, info@silverray.lk",
+      cc: "nupasena@kdugroup.com",
+      bcc: "thilinaruwan112@gmail.com",
       replyTo: email,
       subject: `New Contact Message from ${name}`,
       html: adminHtml,
