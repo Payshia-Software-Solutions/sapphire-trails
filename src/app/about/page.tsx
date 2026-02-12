@@ -31,15 +31,21 @@ export default function AboutPage() {
       <Header />
       <main className="flex-1">
         <PageHero title="About Us" breadcrumbs={breadcrumbs} />
-        <ScrollAnimate>
-          <OurStory />
-        </ScrollAnimate>
-        <ScrollAnimate>
-          <ExperienceSection />
-        </ScrollAnimate>
-        <ScrollAnimate>
-          <TeamSection />
-        </ScrollAnimate>
+        <div className="bg-background-alt">
+          <ScrollAnimate>
+            <OurStory />
+          </ScrollAnimate>
+        </div>
+        <div className="bg-background">
+          <ScrollAnimate>
+            <ExperienceSection />
+          </ScrollAnimate>
+        </div>
+        <div className="bg-background-alt">
+          <ScrollAnimate>
+            <TeamSection />
+          </ScrollAnimate>
+        </div>
       </main>
       <Footer />
     </div>
