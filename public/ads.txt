@@ -1,0 +1,7 @@
+# No authorized digital sellers for this domain yet.
+# To authorize an ad system to sell ad inventory on your site,
+# add a line with the following format:
+# <Field #1>, <Field #2>, <Field #3>, <Field #4>
+#
+# For example:
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
