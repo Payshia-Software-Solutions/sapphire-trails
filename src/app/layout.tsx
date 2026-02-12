@@ -51,6 +51,42 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Sapphire Trails",
+    "url": "https://www.sapphiretrails.com",
+    "logo": "https://www.sapphiretrails.com/img/logo4.png",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+94-71-235-7700",
+      "contactType": "Customer Service",
+      "areaServed": "LK",
+      "availableLanguage": ["en"]
+    },
+    "sameAs": [
+      "https://facebook.com",
+      "https://instagram.com",
+      "https://youtube.com"
+    ]
+  };
+
+  const websiteStructuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://www.sapphiretrails.com",
+      "name": "Sapphire Trails",
+      "description": "Discover the best gem tours in Ratnapura, Sri Lanka with Sapphire Trails. Experience authentic gem mining, explore cultural heritage, and enjoy luxury stays.",
+      "publisher": {
+          "@type": "Organization",
+          "name": "Sapphire Trails",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.sapphiretrails.com/img/logo4.png"
+          }
+      }
+  };
+
   return (
     <html lang="en">
       <body className={cn(
@@ -59,19 +95,34 @@ export default function RootLayout({
         montserrat.variable,
         cinzel.variable
       )}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData) }}
+        />
         <LayoutProvider>
             {children}
         </LayoutProvider>
-        <Script src="https://www.googletagmanager.com/gtag/js?id=G-TX702Y4CLS" />
-        <Script id="google-analytics">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
+        <Script 
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-TX702Y4CLS" 
+        />
+        <Script 
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
 
-            gtag('config', 'G-TX702Y4CLS');
-          `}
-        </Script>
+              gtag('config', 'G-TX702Y4CLS');
+            `
+          }}
+        />
       </body>
     </html>
   );
