@@ -8,11 +8,11 @@ import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
-  title: 'Explore Ratnapura | Attractions for your Gem Tour in Sri Lanka',
-  description: 'Explore the wonders of Ratnapura on your Sri Lankan gem tour. Discover attractions, waterfalls, temples, and gem mines. Plan your gem experience with Sapphire Trails.',
+  title: 'Explore Ratnapura Attractions on Your Gem Tour | Sapphire Trails',
+  description: 'Discover what to do in Ratnapura on your Sri Lanka gem tour. Explore attractions near the gem mines, from the famous gem market to ancient temples. Plan your visit with Sapphire Trails.',
   openGraph: {
-    title: 'Explore Ratnapura with Sapphire Trails Gem Tours',
-    description: 'Discover the rich culture and natural beauty of Sri Lanka\'s gem capital on your gem tour experience.',
+    title: 'Explore Ratnapura Attractions | Gem Tours Sri Lanka',
+    description: 'Discover the rich culture and natural beauty of Sri Lanka\'s gem capital, including the famous Ratnapura gem market.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img33.webp',
       width: 1200,

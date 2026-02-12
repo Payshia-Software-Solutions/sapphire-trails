@@ -7,14 +7,15 @@ import { LayoutProvider } from '@/components/layout-provider';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.sapphiretrails.com'),
   title: {
-    template: '%s | Sapphire Trails',
-    default: 'Gem Tours in Sri Lanka | Sapphire Trails | Ratnapura Gem Tour Experience',
+    template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
+    default: 'Ratnapura Gem Mine Tours | Sapphire Trails - Sri Lanka',
   },
-  description: 'Discover premier gem tours in Ratnapura, Sri Lanka with Sapphire Trails. Book an unforgettable gem tour experience, explore authentic gem mining, and find precious sapphires.',
+  description: 'Book the best Ratnapura gem mine tours. Experience private sapphire hunting and explore the heart of Sri Lanka\'s gem country with Sapphire Trails.',
   openGraph: {
-    title: 'Gem Tours in Sri Lanka | Sapphire Trails | Ratnapura Gem Tour Experience',
-    description: 'Discover the heart of Sri Lanka\'s gem country with our exclusive gem tours.',
+    title: 'Ratnapura Gem Mine Tours | Sapphire Trails - Sri Lanka',
+    description: 'Book the best Ratnapura gem mine tours and experience private sapphire hunting in Sri Lanka.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
       width: 1200,
@@ -57,6 +58,12 @@ export default function RootLayout({
     "name": "Sapphire Trails",
     "url": "https://www.sapphiretrails.com",
     "logo": "https://www.sapphiretrails.com/img/logo4.png",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Grand Silver Ray, Colombo - Batticaloa Hwy",
+      "addressLocality": "Ratnapura",
+      "addressCountry": "LK"
+    },
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+94-71-235-7700",

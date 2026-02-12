@@ -11,7 +11,7 @@ import { ScrollAnimate } from '../shared/scroll-animate';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultContent = {
-  headline: "Sri Lanka's Premier Gem Experience",
+  headline: "Exclusive Gem Mine Tours in Sri Lanka",
   subheadline: "Experience luxury, culture, and adventure",
   imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img35.webp",
   imageAlt: "A dark and moody image of the inside of a gem mine, with rock walls and dim lighting.",
@@ -46,6 +46,7 @@ export function HeroSection() {
         data-ai-hint={content.imageHint}
         fill
         className="z-0 object-cover"
+        priority
       />
       <div className="absolute inset-0 bg-black/50 z-10" />
       <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
