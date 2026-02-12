@@ -6,16 +6,16 @@ import type { Metadata } from 'next';
 import { BookingPageContent } from '@/components/sections/booking-page-content';
 
 export const metadata: Metadata = {
-  title: 'Book Your Tour',
-  description: 'Select your tour package, date, and number of guests to reserve your spot on an unforgettable adventure with Sapphire Trails.',
+  title: 'Book Your Gem Tour in Ratnapura, Sri Lanka',
+  description: 'Book your gem tour in Ratnapura, Sri Lanka. Select your gem tour package, date, and number of guests to reserve your unforgettable adventure with Sapphire Trails.',
   openGraph: {
-    title: 'Book Your Sapphire Trails Adventure',
-    description: 'Complete your booking for a premier gem tour in Sri Lanka.',
+    title: 'Book Your Sapphire Trails Gem Tour',
+    description: 'Complete your booking for a premier gem tour in Ratnapura, Sri Lanka.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
       width: 1200,
       height: 630,
-      alt: 'An overhead view of someone sifting for gems.'
+      alt: 'An overhead view of someone sifting for gems on a Sri Lankan gem tour.'
     }],
   }
 };

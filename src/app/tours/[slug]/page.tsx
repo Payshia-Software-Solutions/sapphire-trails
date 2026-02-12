@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -46,10 +47,10 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || []
 
   return {
-    title: tourPackage.tourPageTitle,
-    description: tourPackage.tourPageDescription,
+    title: `${tourPackage.tourPageTitle} - Sri Lankan Gem Tour`,
+    description: `Book the ${tourPackage.tourPageTitle}, a premier gem tour in Ratnapura, Sri Lanka. ${tourPackage.tourPageDescription}`,
     openGraph: {
-      title: `${tourPackage.tourPageTitle} | Sapphire Trails`,
+      title: `${tourPackage.tourPageTitle} | Gem Tours Sri Lanka`,
       description: tourPackage.tourPageDescription,
       images: [
         {
