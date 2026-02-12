@@ -8,11 +8,11 @@ import type { Metadata } from 'next';
 import { AllToursGrid } from '@/components/sections/all-tours-grid';
 
 export const metadata: Metadata = {
-  title: 'Gem Tour Packages in Ratnapura, Sri Lanka',
-  description: 'Explore exclusive gem tour packages in Ratnapura, Sri Lanka. From day trips to deluxe multi-day gem tours, discover the heart of Sri Lanka\'s gem country.',
+  title: 'Sri Lanka Gem Tour Packages | Explore Gem Tours in Ratnapura',
+  description: 'Explore exclusive gem tour packages in Ratnapura. From day trips to deluxe multi-day gem tours in Sri Lanka, discover the heart of gem country with our gem experiences.',
   openGraph: {
-    title: 'Our Premier Gem Tours | Sapphire Trails',
-    description: 'Choose your perfect Sri Lankan gem adventure.',
+    title: 'Our Premier Gem Tours | Explore Sri Lankan Gem Experiences',
+    description: 'Choose your perfect Sri Lankan gem adventure. We offer the best gem tour packages in Ratnapura.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
       width: 1200,

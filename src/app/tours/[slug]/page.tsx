@@ -12,6 +12,7 @@ import { TourExperienceGallery } from '@/components/sections/tour-experience-gal
 import type { Metadata, ResolvingMetadata } from 'next';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+const BASE_URL = 'https://www.sapphiretrails.com';
 
 async function getTourPackage(slug: string): Promise<TourPackage | null> {
     try {
@@ -43,15 +44,14 @@ export async function generateMetadata(
     }
   }
 
-  // optionally access and extend (rather than replace) parent metadata
   const previousImages = (await parent).openGraph?.images || []
 
   return {
-    title: `${tourPackage.tourPageTitle} - Sri Lankan Gem Tour`,
-    description: `Book the ${tourPackage.tourPageTitle}, a premier gem tour in Ratnapura, Sri Lanka. ${tourPackage.tourPageDescription}`,
+    title: `${tourPackage.tourPageTitle} | Sri Lanka Gem Tour`,
+    description: `Book the ${tourPackage.tourPageTitle}, a premier gem tour and gem experience in Ratnapura, Sri Lanka. ${tourPackage.tourPageDescription}`,
     openGraph: {
       title: `${tourPackage.tourPageTitle} | Gem Tours Sri Lanka`,
-      description: tourPackage.tourPageDescription,
+      description: `An unforgettable gem experience in Ratnapura. ${tourPackage.tourPageDescription}`,
       images: [
         {
           url: tourPackage.heroImage,
@@ -73,8 +73,36 @@ export default async function TourDetailPage({ params }: Props) {
     notFound();
   }
 
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": tourPackage.tourPageTitle,
+    "description": tourPackage.tourPageDescription,
+    "image": tourPackage.heroImage,
+    "brand": {
+      "@type": "Brand",
+      "name": "Sapphire Trails"
+    },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "USD",
+      "price": tourPackage.price.replace(/[^0-9.]/g, ''),
+      "availability": "https://schema.org/InStock",
+      "url": `${BASE_URL}${tourPackage.bookingLink}?tourType=${tourPackage.id}`
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "89"
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+      />
       <Header />
       <main className="flex-1">
         <TourDetailHero

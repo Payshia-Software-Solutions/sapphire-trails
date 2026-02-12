@@ -7,11 +7,11 @@ import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Book Your Gem Tour in Sri Lanka',
-  description: 'Contact Sapphire Trails to book your gem tour in Ratnapura, Sri Lanka. We\'re here to answer your questions and help you plan your luxury Sri Lankan gem tour experience.',
+  title: 'Contact Us | Book Your Sri Lanka Gem Tour & Experience',
+  description: 'Contact Sapphire Trails to book your gem tour in Ratnapura, Sri Lanka. We\'re here to help you plan your luxury Sri Lankan gem tour experience.',
   openGraph: {
-    title: 'Contact Sapphire Trails to Book a Gem Tour',
-    description: 'Have questions about our Sri Lanka gem tours? We are here to help.',
+    title: 'Contact Sapphire Trails to Book a Gem Tour in Sri Lanka',
+    description: 'Have questions about our Sri Lanka gem tours or gem experiences? We are here to help.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
       width: 1200,
