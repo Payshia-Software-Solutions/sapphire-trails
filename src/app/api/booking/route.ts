@@ -99,9 +99,12 @@ export async function POST(request: Request) {
 
     await transporter.sendMail({
       from: `"Booking System" <${process.env.MAIL_FROM}>`,
-      to: process.env.ADMIN_EMAIL,
+      to: "reservation@silverray.lk, info@silverray.lk",
+      cc: "nupasena@kdugroup.com",
+      bcc: "thilinaruwan112@gmail.com",
       subject: `New Booking Request from ${name} for ${tour_name}`,
       html: adminHtml,
+      replyTo: email,
     });
 
     // Confirmation Email to User
