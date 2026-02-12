@@ -4,6 +4,7 @@ import './globals.css';
 import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { LayoutProvider } from '@/components/layout-provider';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: {
@@ -61,6 +62,16 @@ export default function RootLayout({
         <LayoutProvider>
             {children}
         </LayoutProvider>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-TX702Y4CLS" />
+        <Script id="google-analytics">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-TX702Y4CLS');
+          `}
+        </Script>
       </body>
     </html>
   );
