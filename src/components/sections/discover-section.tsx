@@ -11,7 +11,7 @@ import { getFullImageUrl } from '@/lib/utils';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultContent = {
-  description: "Embark on an exclusive journey through the heart of Sri Lanka's gem country. The Sapphire Trails offers an immersive experience into Ratnapura's rich heritage, from dazzling gem mines and lush tea estates to exquisite dining and vibrant local culture. Let us guide you on a luxurious adventure that unveils the true treasures of the island.",
+  description: "Embark on an exclusive journey into the heart of Sri Lanka's gem country with Sapphire Trails, the premier provider of immersive gem tours in Ratnapura. Our curated adventures offer a deep dive into the region's rich heritage, taking you from the raw depths of dazzling gem mines to the serene beauty of lush tea estates. Experience the thrill of unearthing precious stones, witness the meticulous art of gem cutting, and immerse yourself in vibrant local culture. Beyond the mines, your luxury gem tour includes exquisite dining, stays in iconic architectural retreats, and explorations of breathtaking natural wonders. Let us guide you on an unforgettable Sri Lankan adventure that reveals the true, sparkling treasures of the island.",
   images: [
     {
       src: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp',
