@@ -27,6 +27,7 @@ export function PageHero({ title, breadcrumbs }: PageHeroProps) {
         data-ai-hint="gem mine"
         fill
         className="z-0 object-cover"
+        priority
       />
       <div className="absolute inset-0 bg-black/60 z-10" />
       <div className="container relative z-20 mx-auto px-4 md:px-6">

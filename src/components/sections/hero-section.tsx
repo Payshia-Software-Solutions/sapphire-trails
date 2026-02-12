@@ -46,6 +46,7 @@ export function HeroSection() {
         data-ai-hint={content.imageHint}
         fill
         className="z-0 object-cover"
+        priority
       />
       <div className="absolute inset-0 bg-black/50 z-10" />
       <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">

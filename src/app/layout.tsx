@@ -7,9 +7,10 @@ import { LayoutProvider } from '@/components/layout-provider';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.sapphiretrails.com'),
   title: {
-    template: '%s | Sapphire Trails',
-    default: 'Gem Tours in Sri Lanka | Sapphire Trails | Ratnapura Gem Tour Experience',
+    template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
+    default: 'Exclusive Gem Mining Tours & Sapphire Hunting | Sapphire Trails',
   },
   description: 'Discover premier gem tours in Ratnapura, Sri Lanka with Sapphire Trails. Book an unforgettable gem tour experience, explore authentic gem mining, and find precious sapphires.',
   openGraph: {
@@ -57,6 +58,12 @@ export default function RootLayout({
     "name": "Sapphire Trails",
     "url": "https://www.sapphiretrails.com",
     "logo": "https://www.sapphiretrails.com/img/logo4.png",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Grand Silver Ray, Colombo - Batticaloa Hwy",
+      "addressLocality": "Ratnapura",
+      "addressCountry": "LK"
+    },
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+94-71-235-7700",

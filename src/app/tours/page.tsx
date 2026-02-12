@@ -22,10 +22,37 @@ export const metadata: Metadata = {
   },
 };
 
+const faqStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What should I bring for the mine tour?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We recommend comfortable clothing, closed-toe shoes, sunscreen, a hat, and a reusable water bottle. Safety gear such as helmets will be provided. Don't forget your camera to capture the moments!"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the tour suitable for children?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, our tours are family-friendly. However, due to the nature of the gem mines, there may be some areas with restricted access for young children. Please contact us for specific details and to discuss arrangements for your family."
+      }
+    }
+  ]
+};
+
 export default function ToursPage() {
   const breadcrumbs = [{ label: 'Tours', href: '/tours' }];
   return (
     <div className="flex min-h-screen flex-col">
+       <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
       <Header />
       <main className="flex-1">
         <PageHero title="Our Tours" breadcrumbs={breadcrumbs} />
