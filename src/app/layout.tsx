@@ -7,7 +7,7 @@ import { LayoutProvider } from '@/components/layout-provider';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.sapphiretrails.com'),
+  metadataBase: new URL('https://sapphiretrails.lk'),
   title: {
     template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
     default: 'Ratnapura Gem Mine Tours | Sapphire Trails - Sri Lanka',
@@ -56,8 +56,8 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Sapphire Trails",
-    "url": "https://www.sapphiretrails.com",
-    "logo": "https://www.sapphiretrails.com/img/logo4.png",
+    "url": "https://sapphiretrails.lk",
+    "logo": "https://sapphiretrails.lk/img/logo4.png",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Grand Silver Ray, Colombo - Batticaloa Hwy",
@@ -81,7 +81,7 @@ export default function RootLayout({
   const websiteStructuredData = {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "url": "https://www.sapphiretrails.com",
+      "url": "https://sapphiretrails.lk",
       "name": "Sapphire Trails",
       "description": "Discover the best gem tours in Ratnapura, Sri Lanka with Sapphire Trails. Experience authentic gem mining, explore cultural heritage, and enjoy luxury stays.",
       "publisher": {
@@ -89,7 +89,7 @@ export default function RootLayout({
           "name": "Sapphire Trails",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://www.sapphiretrails.com/img/logo4.png"
+            "url": "https://sapphiretrails.lk/img/logo4.png"
           }
       }
   };
