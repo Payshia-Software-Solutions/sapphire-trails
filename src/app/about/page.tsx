@@ -6,6 +6,7 @@ import { TeamSection } from '@/components/sections/team-section';
 import type { Metadata } from 'next';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { PageHero } from '@/components/shared/page-hero';
+import { ExperienceSection } from '@/components/sections/experience-section';
 
 export const metadata: Metadata = {
   title: 'About Us',
@@ -32,6 +33,9 @@ export default function AboutPage() {
         <PageHero title="About Us" breadcrumbs={breadcrumbs} />
         <ScrollAnimate>
           <OurStory />
+        </ScrollAnimate>
+        <ScrollAnimate>
+          <ExperienceSection />
         </ScrollAnimate>
         <ScrollAnimate>
           <TeamSection />
