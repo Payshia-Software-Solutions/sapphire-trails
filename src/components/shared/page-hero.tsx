@@ -26,9 +26,9 @@ export function PageHero({ title, breadcrumbs }: PageHeroProps) {
         alt="Background image of a gem mine"
         data-ai-hint="gem mine"
         fill
-        className="z-0 object-cover opacity-20"
+        className="z-0 object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/50 z-10" />
+      <div className="absolute inset-0 bg-black/60 z-10" />
       <div className="container relative z-20 mx-auto px-4 md:px-6">
         <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-4">
           <Link href="/" className="hover:text-primary">Home</Link>

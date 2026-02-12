@@ -5,7 +5,7 @@ import { OurStory } from '@/components/sections/our-story';
 import { TeamSection } from '@/components/sections/team-section';
 import type { Metadata } from 'next';
 import { ExperienceSection } from '@/components/sections/experience-section';
-import { AboutHero } from '@/components/sections/about-hero';
+import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
   title: 'About Us',
@@ -24,14 +24,21 @@ export const metadata: Metadata = {
 
 
 export default function AboutPage() {
+  const breadcrumbs = [{ label: 'About Us', href: '/about' }];
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 bg-background">
-        <AboutHero />
-        <OurStory />
-        <ExperienceSection />
-        <TeamSection />
+      <main className="flex-1">
+        <PageHero title="About Us" breadcrumbs={breadcrumbs} />
+        <div className="bg-background">
+            <OurStory />
+        </div>
+        <div className="bg-background-alt">
+            <ExperienceSection />
+        </div>
+        <div className="bg-background">
+            <TeamSection />
+        </div>
       </main>
       <Footer />
     </div>
