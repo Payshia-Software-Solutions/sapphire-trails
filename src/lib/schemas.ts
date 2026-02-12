@@ -1,4 +1,5 @@
 
+
 import { z } from "zod";
 
 export const contactFormSchema = z.object({
@@ -35,27 +36,29 @@ export const bookingFormSchema = z.object({
 
 const iconEnum = z.enum(['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer', 'MapPin', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble']);
 
-// Schema for both Add and Edit
+// Schema for adding a new location
 export const locationFormSchema = z.object({
   // Basic info
   title: z.string().min(3, "Title must be at least 3 characters."),
   slug: z.string().min(3, "Slug is required and must be unique (e.g., location-name).").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens."),
+  category: z.enum(['nature', 'agriculture', 'cultural'], {
+    required_error: "You need to select a location category.",
+  }),
   cardDescription: z.string().min(10, "Card description must be at least 10 characters."),
   distance: z.string().min(2, "Distance is required."),
 
   // Hero
   subtitle: z.string().min(3, "Subtitle is required."),
-  heroImageHint: z.string().min(2, "Hero image hint is required."),
+  heroImageHint: z.string().optional(),
 
   // Intro
   introTitle: z.string().min(3, "Intro title is required."),
   introDescription: z.string().min(10, "Intro description is required."),
-  introImageHint: z.string().min(2, "Intro image hint is required."),
+  introImageHint: z.string().optional(),
   
-  // These image fields are handled separately for add/edit but need to be in the schema for type consistency
-  cardImage: z.string().min(1, "A card image is required."),
-  heroImage: z.string().min(1, "A hero image is required."),
-  introImageUrl: z.string().min(1, "An intro image is required."),
+  cardImage: z.string().min(1, "Card Image is required for new locations."),
+  heroImage: z.string().min(1, "Hero Image is required for new locations."),
+  introImageUrl: z.string().min(1, "Intro Image is required for new locations."),
 
   // Gallery (dynamic length)
   galleryImages: z.array(z.object({
@@ -63,16 +66,16 @@ export const locationFormSchema = z.object({
     src: z.string().min(1, "An image is required."),
     alt: z.string().min(3, "Alt text is required."),
     hint: z.string().min(2, "Hint is required."),
-    file: z.instanceof(File).optional(),
+    file: z.any().optional(),
     isNew: z.boolean().optional(),
-  })).min(1, "Please provide at least 1 gallery image."),
+  })),
 
   // Highlights (dynamic length)
   highlights: z.array(z.object({
     icon: iconEnum,
     title: z.string().min(3, "Highlight title is required."),
     description: z.string().min(10, "Highlight description is required."),
-  })).min(1, "Please provide at least 1 highlight."),
+  })),
 
   // Visitor Info (dynamic length)
   visitorInfo: z.array(z.object({
@@ -80,7 +83,7 @@ export const locationFormSchema = z.object({
     title: z.string().min(3, "Visitor info title is required."),
     line1: z.string().min(3, "Line 1 is required."),
     line2: z.string().min(3, "Line 2 is required."),
-  })).min(1, "Please provide at least 1 visitor info item."),
+  })),
 
   // Map & Nearby
   mapEmbedUrl: z.string().url("Please enter a valid map embed URL."),
@@ -88,7 +91,35 @@ export const locationFormSchema = z.object({
       icon: iconEnum,
       name: z.string().min(3, "Attraction name is required."),
       distance: z.string().min(2, "Distance is required."),
-  })).min(1, "Please provide at least 1 nearby attraction."),
+  })),
+});
+
+
+// A more relaxed schema for editing existing locations. This will not block submission.
+export const locationEditSchema = z.object({
+  title: z.string().optional(),
+  slug: z.string().optional(),
+  category: z.string().optional(),
+  cardDescription: z.string().optional(),
+  distance: z.string().optional(),
+  subtitle: z.string().optional(),
+  introTitle: z.string().optional(),
+  introDescription: z.string().optional(),
+  mapEmbedUrl: z.string().optional(),
+  
+  // Image related text fields
+  cardImage: z.string().optional(),
+  cardImageHint: z.string().optional(),
+  heroImage: z.string().optional(),
+  heroImageHint: z.string().optional(),
+  introImageUrl: z.string().optional(),
+  introImageHint: z.string().optional(),
+
+  // Complex array fields are marked as .any() to prevent deep validation on edit.
+  galleryImages: z.any().optional(),
+  highlights: z.any().optional(),
+  visitorInfo: z.any().optional(),
+  nearbyAttractions: z.any().optional(),
 });
 
 
@@ -136,7 +167,7 @@ export const galleryImageSchema = z.object({
     src: z.string().min(1, "An image is required."),
     alt: z.string().min(3, "Alt text is required."),
     hint: z.string().min(2, "Hint is required."),
-    file: z.instanceof(File).optional(),
+    file: z.any().optional(),
 });
 
 export const packageFormSchema = z.object({

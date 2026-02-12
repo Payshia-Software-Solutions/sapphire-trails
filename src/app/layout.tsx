@@ -1,13 +1,29 @@
 
-'use client';
-
-import { Toaster } from "@/components/ui/toaster"
+import type { Metadata } from 'next';
 import './globals.css';
-import { PreloaderProvider } from '@/components/shared/preloader-provider';
 import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import { AuthProvider } from '@/contexts/auth-context';
-import { WhatsAppButton } from '@/components/shared/whatsapp-button';
+import { LayoutProvider } from '@/components/layout-provider';
+import Script from 'next/script';
+
+export const metadata: Metadata = {
+  title: {
+    template: '%s | Sapphire Trails',
+    default: 'Sapphire Trails - Sri Lanka\'s Premier Gem Tour Experience',
+  },
+  description: 'Embark on an exclusive journey through Sri Lanka\'s gem country. Sapphire Trails offers an immersive experience into Ratnapura\'s rich heritage, from gem mines to exclusive stays.',
+  openGraph: {
+    title: 'Sapphire Trails - Sri Lanka\'s Premier Gem Tour Experience',
+    description: 'Discover the heart of Sri Lanka\'s gem country with our exclusive tours.',
+    images: [{
+      url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
+      width: 1200,
+      height: 630,
+      alt: 'A dark and moody image of the inside of a gem mine.'
+    }],
+  }
+};
+
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -37,20 +53,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head />
       <body className={cn(
         "font-body antialiased bg-background text-foreground",
         poppins.variable,
         montserrat.variable,
         cinzel.variable
-        )}>
-            <AuthProvider>
-                <PreloaderProvider>
-                    {children}
-                </PreloaderProvider>
-                <WhatsAppButton />
-                <Toaster />
-            </AuthProvider>
+      )}>
+        <LayoutProvider>
+            {children}
+        </LayoutProvider>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-TX702Y4CLS" />
+        <Script id="google-analytics">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-TX702Y4CLS');
+          `}
+        </Script>
       </body>
     </html>
   );

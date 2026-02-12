@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -34,7 +35,7 @@ const LocationCard = ({ location }: { location: Location }) => (
 );
 
 export function ExploreRatnapuraContent() {
-  const [allLocations, setAllLocations] = useState<Location[]>(staticLocationsData);
+  const [allLocations, setAllLocations] = useState<Location[]>([]);
 
   useEffect(() => {
     async function fetchLocations() {
@@ -42,14 +43,15 @@ export function ExploreRatnapuraContent() {
         const response = await fetch(`${API_BASE_URL}/locations`);
         if (!response.ok) {
           console.error('Failed to fetch from server, using static data.');
+          setAllLocations(staticLocationsData); // Fallback to static if needed
           return;
         }
 
         const data = await response.json();
         if (Array.isArray(data)) {
           const serverLocations = data.map(mapServerLocationToClient);
+          // Combine server data with static data and remove duplicates
           const combined = [...staticLocationsData, ...serverLocations];
-          
           const uniqueLocations: { [key: string]: Location } = {};
           for (const loc of combined) {
             uniqueLocations[loc.slug] = loc;
@@ -57,9 +59,11 @@ export function ExploreRatnapuraContent() {
           setAllLocations(Object.values(uniqueLocations));
         } else {
           console.error('Server response was not an array, using static data.');
+          setAllLocations(staticLocationsData);
         }
       } catch (e) {
         console.error("Failed to fetch or parse locations, using static data as fallback.", e);
+        setAllLocations(staticLocationsData);
       }
     }
     fetchLocations();
@@ -70,7 +74,7 @@ export function ExploreRatnapuraContent() {
   const culturalLocations = allLocations.filter(loc => loc.category === 'cultural');
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
+    <section className="w-full h-screen flex items-center justify-center bg-background scroll-section">
       <div className="container mx-auto px-4 md:px-6">
         <Tabs defaultValue="nature" className="w-full">
           <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 bg-transparent p-0">

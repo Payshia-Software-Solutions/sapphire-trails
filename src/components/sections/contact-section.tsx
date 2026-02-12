@@ -18,9 +18,13 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { contactFormSchema } from "@/lib/schemas"
 import { Card, CardContent } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
+import { LoaderCircle } from "lucide-react"
 
 export function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof contactFormSchema>>({
     resolver: zodResolver(contactFormSchema),
@@ -31,14 +35,39 @@ export function ContactSection() {
     },
   })
 
-  function onSubmit(data: z.infer<typeof contactFormSchema>) {
-    console.log(data);
-    setIsSubmitted(true);
-    form.reset();
+  async function onSubmit(data: z.infer<typeof contactFormSchema>) {
+    setIsLoading(true);
+    try {
+        const response = await fetch(`/api/contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send message. Please try again later.');
+        }
+
+        setIsSubmitted(true);
+        form.reset();
+        toast({
+            title: "Message Sent!",
+            description: "Thank you for contacting us. We'll get back to you shortly.",
+        });
+
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: error instanceof Error ? error.message : "An unknown error occurred.",
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (
-    <section id="contact" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
+    <section id="contact" className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
       <div className="container mx-auto px-4 md:px-6">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-headline font-bold tracking-tighter sm:text-5xl">Get in Touch</h2>
@@ -100,7 +129,10 @@ export function ContactSection() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Send Message</Button>
+                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                        {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                        Send Message
+                    </Button>
                   </form>
                 </Form>
               </CardContent>

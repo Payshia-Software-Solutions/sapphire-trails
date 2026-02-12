@@ -20,15 +20,17 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
 
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
 
 const steps = [
-  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'cardDescription', 'cardImage', 'imageHint', 'distance'] as const },
+  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'category', 'cardDescription', 'cardImage', 'cardImageHint', 'distance'] as const },
   { id: 2, name: 'Hero & Intro', fields: ['subtitle', 'heroImage', 'heroImageHint', 'introTitle', 'introDescription', 'introImageUrl', 'introImageHint'] as const },
   { id: 3, name: 'Gallery Images', fields: ['galleryImages'] as const },
   { id: 4, name: 'Key Highlights', fields: ['highlights'] as const },
   { id: 5, name: 'Visitor Information', fields: ['visitorInfo'] as const },
-  { id: 6, name: 'Map & Nearby', fields: ['mapEmbedUrl', 'nearbyAttractions'] as const },
+  { id: 6, name: 'Map & Nearby', fields: ['nearbyAttractions', 'mapEmbedUrl'] as const },
 ];
 
 const toKebabCase = (str: string) =>
@@ -37,8 +39,6 @@ const toKebabCase = (str: string) =>
     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
     ?.map(x => x.toLowerCase())
     .join('-') || '';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function AddContentPage() {
   const { toast } = useToast();
@@ -68,9 +68,10 @@ export default function AddContentPage() {
     defaultValues: {
       title: '',
       slug: '',
+      category: 'nature',
       cardDescription: '',
       cardImage: '',
-      imageHint: '',
+      cardImageHint: '',
       distance: '',
       subtitle: '',
       heroImage: '',
@@ -100,7 +101,6 @@ export default function AddContentPage() {
       form.setValue('slug', toKebabCase(title), { shouldValidate: true });
     }
   }, [title, form, isSlugManuallyEdited]);
-
 
   const handleMainImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -133,7 +133,7 @@ export default function AddContentPage() {
 
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
-    const isValid = await form.trigger(fields, { shouldFocus: true });
+    const isValid = await form.trigger(fields as any, { shouldFocus: true });
     
     if (!isValid) {
         toast({
@@ -151,7 +151,7 @@ export default function AddContentPage() {
 
   const handlePrev = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
 
@@ -174,7 +174,6 @@ export default function AddContentPage() {
     }
   }
 
-
   async function onSubmit(data: z.infer<typeof locationFormSchema>) {
     if (!data.slug || data.slug.trim().length < 3) {
       toast({ variant: "destructive", title: "Missing Slug", description: "Please provide a unique slug on Step 1." });
@@ -183,35 +182,62 @@ export default function AddContentPage() {
     }
      if (!cardImageFile || !heroImageFile || !introImageFile) {
         toast({ variant: "destructive", title: "Missing Images", description: "Please upload all three main images (Card, Hero, Intro)." });
-        setCurrentStep(2);
+        setCurrentStep(1);
         return;
     }
 
     setIsSubmitting(true);
     
-    // Create the main location entry first
     const locationFormData = new FormData();
+    
+    // Add image files
     locationFormData.append('card_image', cardImageFile);
     locationFormData.append('hero_image', heroImageFile);
     locationFormData.append('intro_image', introImageFile);
     
+    // Add text fields
     locationFormData.append('slug', data.slug);
     locationFormData.append('title', data.title);
     locationFormData.append('subtitle', data.subtitle);
     locationFormData.append('card_description', data.cardDescription);
-    locationFormData.append('card_image_hint', data.imageHint);
+    locationFormData.append('card_image_hint', data.cardImageHint || '');
     locationFormData.append('distance', data.distance);
-    locationFormData.append('hero_image_hint', data.heroImageHint);
+    locationFormData.append('hero_image_hint', data.heroImageHint || '');
     locationFormData.append('intro_title', data.introTitle);
     locationFormData.append('intro_description', data.introDescription);
-    locationFormData.append('intro_image_hint', data.introImageHint);
+    locationFormData.append('intro_image_hint', data.introImageHint || '');
     locationFormData.append('map_embed_url', data.mapEmbedUrl);
-    locationFormData.append('category', 'nature');
+    locationFormData.append('category', data.category);
 
-    locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
-    locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
-    locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
-    
+    // Prepare and stringify array data exactly as Postman example
+    const highlightsForApi = data.highlights
+        .filter(h => h.title.trim() !== '')
+        .map(h => ({
+            icon: h.icon,
+            title: h.title,
+            description: h.description
+        }));
+    locationFormData.append('highlights', JSON.stringify(highlightsForApi));
+
+    const visitorInfoForApi = data.visitorInfo
+        .filter(vi => vi.title.trim() !== '')
+        .map(vi => ({
+            icon: vi.icon,
+            title: vi.title,
+            line1: vi.line1,
+            line2: vi.line2
+        }));
+    locationFormData.append('visitor_info', JSON.stringify(visitorInfoForApi));
+
+    const nearbyAttractionsForApi = data.nearbyAttractions
+        .filter(na => na.name.trim() !== '')
+        .map(na => ({
+            icon: na.icon,
+            name: na.name,
+            distance: na.distance
+        }));
+    locationFormData.append('nearby_attractions', JSON.stringify(nearbyAttractionsForApi));
+      
     try {
       // Step 1: Create the main location entry
       const locationResponse = await fetch(`${API_BASE_URL}/locations/`, {
@@ -221,13 +247,17 @@ export default function AddContentPage() {
 
       if (!locationResponse.ok) {
         const errorData = await locationResponse.json().catch(() => null);
-        throw new Error(errorData?.message || 'Failed to create the location entry.');
+        console.error('Backend error response:', errorData);
+        throw new Error(errorData?.error || errorData?.message || 'Failed to create the location entry.');
       }
+
+      const locationResult = await locationResponse.json();
+      console.log('Location created successfully:', locationResult);
       
       // Step 2: Upload gallery images one by one
       const galleryUploadPromises = galleryImageFiles
         .map((file, index) => {
-            if (file) {
+            if (file && data.galleryImages[index]?.alt) {
                 return uploadGalleryImage(file, data.slug, data.galleryImages[index], index);
             }
             return null;
@@ -236,6 +266,7 @@ export default function AddContentPage() {
 
       if (galleryUploadPromises.length > 0) {
         await Promise.all(galleryUploadPromises);
+        console.log('Gallery images uploaded successfully');
       }
       
       toast({
@@ -275,7 +306,7 @@ export default function AddContentPage() {
       </div>
       
       <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep-1].name}</span></p>
+          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep - 1]?.name}</span></p>
           <Progress value={progressValue} className="h-2" />
       </div>
 
@@ -292,6 +323,28 @@ export default function AddContentPage() {
                     <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="e.g., Sinharaja Rainforest" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug</FormLabel><FormControl><Input placeholder="e.g., sinharaja-rainforest" {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
+                   <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="nature">Nature & Wildlife</SelectItem>
+                              <SelectItem value="agriculture">Agricultural & Energy</SelectItem>
+                              <SelectItem value="cultural">Cultural & Religious</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea placeholder="A short description for the card..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                   <div className="space-y-4">
                     <FormField
@@ -314,7 +367,7 @@ export default function AddContentPage() {
                     )}
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="imageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input placeholder="e.g., rainforest canopy" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="cardImageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input placeholder="e.g., rainforest canopy" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input placeholder="e.g., 12 km away" {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                 </CardContent>

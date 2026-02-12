@@ -47,7 +47,7 @@ const defaultValues = {
     youtubeUrl: 'https://youtube.com',
   },
   general: {
-    whatsappNumber: '',
+    whatsappNumber: '94712357700',
   }
 };
 
@@ -299,7 +299,7 @@ export default function CmsPage() {
                 </AccordionTrigger>
                 <AccordionContent className="p-6 pt-0">
                   <div className="space-y-4 border-t pt-6">
-                    <FormField control={form.control} name="general.whatsappNumber" render={({ field }) => (<FormItem><FormLabel>WhatsApp Number</FormLabel><FormControl><Input placeholder="e.g., 94771234567 (include country code)" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="general.whatsappNumber" render={({ field }) => (<FormItem><FormLabel>WhatsApp Number</FormLabel><FormControl><Input placeholder="e.g., 94712357700 (include country code)" {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                 </AccordionContent>
               </div>
@@ -335,3 +335,5 @@ export default function CmsPage() {
     </div>
   );
 }
+
+    

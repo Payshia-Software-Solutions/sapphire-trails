@@ -56,7 +56,7 @@ export function ExploreRatnapuraSection() {
   }, [emblaApi]);
 
   return (
-    <section id="ratnapura" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
+    <section id="ratnapura" className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
       <div className="container mx-auto px-4 md:px-6">
         <ScrollAnimate className="flex flex-col items-center text-center space-y-8">
           <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">

@@ -55,7 +55,7 @@ export function Footer() {
     }, []);
 
   return (
-    <footer className="w-full bg-background border-t border-white/10">
+    <footer className="w-full bg-background border-t border-white/10 scroll-section">
       <div className="container mx-auto px-4 md:px-6 pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-center md:text-left">
           
@@ -78,7 +78,8 @@ export function Footer() {
             <h3 className="font-headline text-lg tracking-widest text-primary mb-4">CONTACT US</h3>
             <div className="space-y-1 text-sm text-muted-foreground font-body">
                 <p>Email: info@sapphiretrails.com</p>
-                <p>Phone: +94 77 123 4567</p>
+                <p>Primary: 071 235 7700</p>
+                <p>Secondary: 071 638 1000</p>
                 <p>Website: www.sapphiretrails.com</p>
             </div>
           </div>
@@ -113,3 +114,5 @@ export function Footer() {
     </footer>
   );
 }
+
+    

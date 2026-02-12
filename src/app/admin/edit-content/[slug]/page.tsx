@@ -1,38 +1,27 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { locationFormSchema } from '@/lib/schemas';
+import { locationEditSchema } from '@/lib/schemas';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, LoaderCircle, Plus, Trash2, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
 import { mapServerLocationToClient, type Location, type GalleryImage } from '@/lib/locations-data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { API_BASE_URL } from '@/lib/utils';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-const steps = [
-  { id: 1, name: 'Basic Information', fields: ['title', 'slug', 'cardDescription', 'distance'] as const },
-  { id: 2, name: 'Hero & Intro', fields: ['subtitle', 'introTitle', 'introDescription'] as const },
-  { id: 3, name: 'Gallery Images', fields: ['galleryImages'] as const },
-  { id: 4, name: 'Key Highlights', fields: ['highlights'] as const },
-  { id: 5, 'name': 'Visitor Information', fields: ['visitorInfo'] as const },
-  { id: 6, name: 'Map & Nearby', fields: ['mapEmbedUrl', 'nearbyAttractions'] as const },
-];
 
 interface FormGalleryImage extends GalleryImage {
   id?: number;
@@ -50,7 +39,6 @@ function LoadingFormSkeleton() {
                     <Skeleton className="h-4 w-80" />
                 </div>
             </div>
-            <Skeleton className="h-2 w-full" />
             <Card>
                 <CardHeader>
                     <Skeleton className="h-6 w-48" />
@@ -72,7 +60,6 @@ export default function EditContentPage() {
   const params = useParams();
   const slug = params.slug as string;
 
-  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -87,15 +74,16 @@ export default function EditContentPage() {
   
   const [isSavingImage, setIsSavingImage] = useState<number | null>(null);
 
-  const form = useForm<z.infer<typeof locationFormSchema>>({
-    resolver: zodResolver(locationFormSchema),
+  const form = useForm<z.infer<typeof locationEditSchema>>({
+    resolver: zodResolver(locationEditSchema),
     mode: 'onBlur',
     defaultValues: {
       title: '',
       slug: '',
+      category: 'nature',
       cardDescription: '',
       cardImage: '',
-      imageHint: '',
+      cardImageHint: '',
       distance: '',
       subtitle: '',
       heroImage: '',
@@ -257,77 +245,94 @@ export default function EditContentPage() {
     }
   };
 
-
-  const handleNext = async () => {
-     if (currentStep < steps.length) {
-      setCurrentStep(prev => prev + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-    }
-  };
-
-
-  async function onSubmit(data: z.infer<typeof locationFormSchema>) {
+  async function onSubmit(data: z.infer<typeof locationEditSchema>) {
     setIsSubmitting(true);
     
-    const locationFormData = new FormData();
-    locationFormData.append('_method', 'PUT');
-
-    if (cardImageFile) locationFormData.append('card_image', cardImageFile);
-    if (heroImageFile) locationFormData.append('hero_image', heroImageFile);
-    if (introImageFile) locationFormData.append('intro_image', introImageFile);
-
-    locationFormData.append('title', data.title);
-    locationFormData.append('subtitle', data.subtitle);
-    locationFormData.append('card_description', data.cardDescription);
-    locationFormData.append('card_image_hint', data.imageHint);
-    locationFormData.append('distance', data.distance);
-    locationFormData.append('hero_image_hint', data.heroImageHint);
-    locationFormData.append('intro_title', data.introTitle);
-    locationFormData.append('intro_description', data.introDescription);
-    locationFormData.append('intro_image_hint', data.introImageHint);
-    locationFormData.append('map_embed_url', data.mapEmbedUrl);
-    locationFormData.append('category', 'nature');
-    
-    locationFormData.append('highlights', JSON.stringify(data.highlights.map((h, index) => ({ ...h, sort_order: index + 1 }))));
-    locationFormData.append('visitor_info', JSON.stringify(data.visitorInfo.map((vi, index) => ({ ...vi, sort_order: index + 1 }))));
-    locationFormData.append('nearby_attractions', JSON.stringify(data.nearbyAttractions.map((na, index) => ({ ...na, sort_order: index + 1 }))));
-    
     try {
-        const response = await fetch(`${API_BASE_URL}/locations/${slug}/`, {
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+
+        formData.append('title', data.title);
+        formData.append('subtitle', data.subtitle || '');
+        formData.append('category', data.category);
+        formData.append('card_description', data.cardDescription);
+        formData.append('distance', data.distance || '');
+        formData.append('intro_title', data.introTitle || '');
+        formData.append('intro_description', data.introDescription || '');
+        formData.append('map_embed_url', data.mapEmbedUrl || '');
+        formData.append('card_image_hint', data.cardImageHint || '');
+        formData.append('hero_image_hint', data.heroImageHint || '');
+        formData.append('intro_image_hint', data.introImageHint || '');
+
+        if (cardImageFile) formData.append('card_image', cardImageFile);
+        if (heroImageFile) formData.append('hero_image', heroImageFile);
+        if (introImageFile) formData.append('intro_image', introImageFile);
+
+        const highlightsData = (data.highlights || []).map((h, index) => ({
+            icon: h.icon,
+            title: h.title,
+            description: h.description,
+            sort_order: index + 1
+        }));
+        formData.append('highlights', JSON.stringify(highlightsData));
+
+        const visitorInfoData = (data.visitorInfo || []).map((vi, index) => ({
+            icon: vi.icon,
+            title: vi.title,
+            line1: vi.line1,
+            line2: vi.line2,
+            sort_order: index + 1
+        }));
+        formData.append('visitor_info', JSON.stringify(visitorInfoData));
+
+        const nearbyAttractionsData = (data.nearbyAttractions || []).map((na, index) => ({
+            icon: na.icon,
+            name: na.name,
+            distance: na.distance,
+            sort_order: index + 1
+        }));
+        formData.append('nearby_attractions', JSON.stringify(nearbyAttractionsData));
+        
+        const url = `${API_BASE_URL}/locations/${slug}`;
+        const response = await fetch(url, {
             method: 'POST',
-            body: locationFormData,
+            body: formData,
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            throw new Error(errorData?.error || 'Failed to update location.');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData?.error || errorData?.message || `HTTP ${response.status}: Failed to update location.`);
         }
         
         toast({
             title: 'Success!',
             description: `Location "${data.title}" has been updated.`,
         });
-        router.push('/admin/manage-content');
+        
+        setTimeout(() => {
+            router.push('/admin/manage-content');
+        }, 1000);
 
     } catch (error) {
-      console.error('Update failed:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'An unknown error occurred.',
-      });
+        console.error('Update failed:', error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: error instanceof Error ? error.message : 'An unknown error occurred.',
+        });
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
   }
 
-
-  const progressValue = (currentStep / steps.length) * 100;
+  const handleFormError = (errors: any) => {
+    console.log('Form validation errors:', errors);
+    toast({
+        variant: 'destructive',
+        title: 'Validation Error',
+        description: 'Please check the form for errors and try again.',
+    });
+  };
 
   if (isLoadingData) {
     return <LoadingFormSkeleton />;
@@ -345,15 +350,9 @@ export default function EditContentPage() {
         </div>
       </div>
       
-      <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep-1].name}</span></p>
-          <Progress value={progressValue} className="h-2" />
-      </div>
-
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className={cn(currentStep === 1 ? 'block' : 'hidden')}>
-              <Card>
+        <form onSubmit={form.handleSubmit(onSubmit, handleFormError)} className="space-y-8">
+            <Card>
                 <CardHeader>
                   <CardTitle>Basic Information</CardTitle>
                   <CardDescription>This information appears on the location listing card.</CardDescription>
@@ -363,6 +362,28 @@ export default function EditContentPage() {
                     <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug (Cannot be changed)</FormLabel><FormControl><Input {...field} disabled /></FormControl><FormMessage /></FormItem>)} />
                   </div>
+                   <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                           <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="nature">Nature & Wildlife</SelectItem>
+                              <SelectItem value="agriculture">Agricultural & Energy</SelectItem>
+                              <SelectItem value="cultural">Cultural & Religious</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                   <div className="space-y-4">
                     <FormItem>
@@ -372,15 +393,13 @@ export default function EditContentPage() {
                     {cardImagePreview && <Image src={cardImagePreview} alt="Card preview" width={200} height={100} className="rounded-md object-cover border" />}
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="imageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="cardImageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </div>
                 </CardContent>
-              </Card>
-            </div>
-            
-             <div className={cn(currentStep === 2 ? 'block' : 'hidden')}>
-              <Card>
+            </Card>
+
+            <Card>
                 <CardHeader>
                     <CardTitle>Hero & Intro Section</CardTitle>
                     <CardDescription>Content for the top of the location detail page.</CardDescription>
@@ -403,11 +422,9 @@ export default function EditContentPage() {
                     {introImagePreview && <Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover border" />}
                     <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
 
-            <div className={cn(currentStep === 3 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader>
                     <CardTitle>Gallery Images</CardTitle>
                     <CardDescription>Manage gallery images. Changes here are saved individually.</CardDescription>
@@ -450,16 +467,18 @@ export default function EditContentPage() {
                         <Plus className="mr-2 h-4 w-4" /> Add Image
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
             
-            <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
-                    {form.getValues('highlights').map((_, index) => (
+                    {form.getValues('highlights')?.map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md relative">
-                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('highlights', form.getValues('highlights').filter((_, i) => i !== index))}>
+                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
+                                const currentHighlights = form.getValues('highlights');
+                                const newHighlights = currentHighlights?.filter((_, i) => i !== index);
+                                form.setValue('highlights', newHighlights);
+                            }}>
                                 <Trash2 className="h-3 w-3" />
                             </Button>
                              <p className="font-medium">Highlight {index + 1}</p>
@@ -469,7 +488,7 @@ export default function EditContentPage() {
                                 render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Icon</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select an icon" />
@@ -487,20 +506,25 @@ export default function EditContentPage() {
                              <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Highlight description" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('highlights', [...form.getValues('highlights'), { icon: 'Leaf', title: '', description: '' }])}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => {
+                        const currentHighlights = form.getValues('highlights') || [];
+                        form.setValue('highlights', [...currentHighlights, { icon: 'Leaf', title: '', description: '' }]);
+                    }}>
                         <Plus className="mr-2 h-4 w-4" /> Add Highlight
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
 
-            <div className={cn(currentStep === 5 ? 'block' : 'hidden')}>
-               <Card>
+            <Card>
                 <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
-                    {form.getValues('visitorInfo').map((_, index) => (
+                    {form.getValues('visitorInfo')?.map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md relative">
-                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('visitorInfo', form.getValues('visitorInfo').filter((_, i) => i !== index))}>
+                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
+                                const currentVisitorInfo = form.getValues('visitorInfo');
+                                const newVisitorInfo = currentVisitorInfo?.filter((_, i) => i !== index);
+                                form.setValue('visitorInfo', newVisitorInfo);
+                            }}>
                                 <Trash2 className="h-3 w-3" />
                             </Button>
                              <p className="font-medium">Info Item {index + 1}</p>
@@ -510,7 +534,7 @@ export default function EditContentPage() {
                                 render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Icon</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select an icon" />
@@ -529,23 +553,28 @@ export default function EditContentPage() {
                              <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel>Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('visitorInfo', [...form.getValues('visitorInfo'), { icon: 'Clock', title: '', line1: '', line2: '' }])}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => {
+                        const currentVisitorInfo = form.getValues('visitorInfo') || [];
+                        form.setValue('visitorInfo', [...currentVisitorInfo, { icon: 'Clock', title: '', line1: '', line2: '' }]);
+                    }}>
                         <Plus className="mr-2 h-4 w-4" /> Add Info Item
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
             
-            <div className={cn(currentStep === 6 ? 'block' : 'hidden')}>
-              <Card>
+            <Card>
                 <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
                     <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator/>
                     <p className="font-medium">Nearby Attractions</p>
-                    {form.getValues('nearbyAttractions').map((_, index) => (
+                    {form.getValues('nearbyAttractions')?.map((_, index) => (
                         <div key={index} className="space-y-4 p-4 border rounded-md relative">
-                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => form.setValue('nearbyAttractions', form.getValues('nearbyAttractions').filter((_, i) => i !== index))}>
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
+                                const currentNearbyAttractions = form.getValues('nearbyAttractions');
+                                const newNearbyAttractions = currentNearbyAttractions?.filter((_, i) => i !== index);
+                                form.setValue('nearbyAttractions', newNearbyAttractions);
+                            }}>
                                 <Trash2 className="h-3 w-3" />
                             </Button>
                             <div className="grid md:grid-cols-3 gap-4">
@@ -555,7 +584,7 @@ export default function EditContentPage() {
                                     render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Icon</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select an icon" />
@@ -574,37 +603,22 @@ export default function EditContentPage() {
                             </div>
                         </div>
                     ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('nearbyAttractions', [...form.getValues('nearbyAttractions'), { icon: 'Gem', name: '', distance: '' }])}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => {
+                        const currentNearbyAttractions = form.getValues('nearbyAttractions') || [];
+                        form.setValue('nearbyAttractions', [...currentNearbyAttractions, { icon: 'Gem', name: '', distance: '' }]);
+                    }}>
                         <Plus className="mr-2 h-4 w-4" /> Add Attraction
                     </Button>
                 </CardContent>
-              </Card>
-            </div>
-          
-            <div className="mt-8 pt-5 flex justify-between">
-              <div>
-                <Button type="button" onClick={handlePrev} variant="outline" className={cn(currentStep === 1 && "hidden")} disabled={isSubmitting}>
-                  Go Back
-                </Button>
-              </div>
-              <div>
-                {currentStep < steps.length && (
-                  <Button type="button" onClick={handleNext} disabled={isSubmitting}>
-                    Next Step
-                  </Button>
-                )}
-                {currentStep === steps.length && (
-                  <Button type="submit" size="lg" disabled={isSubmitting}>
-                    {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                    {isSubmitting ? "Saving..." : "Save Main Content"}
-                  </Button>
-                )}
-              </div>
-            </div>
+                 <CardFooter className="justify-end">
+                    <Button type="submit" size="lg" disabled={isSubmitting}>
+                        {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                        Save Changes
+                    </Button>
+                </CardFooter>
+            </Card>
         </form>
       </Form>
     </div>
   );
 }
-
-    

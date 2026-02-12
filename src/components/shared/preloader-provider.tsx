@@ -1,39 +1,48 @@
+
 'use client';
 
 import { usePathname } from 'next/navigation';
 import { PreLoader } from './pre-loader';
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { useScroll } from '@/contexts/scroll-context';
 
 export function PreloaderProvider({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const [isLoading, setIsLoading] = useState(true);
     const [isFadingOut, setIsFadingOut] = useState(false);
     const isInitialLoad = useRef(true);
+    const { scrollableElement } = useScroll();
 
-    // This effect is responsible for HIDING the preloader.
-    // It is triggered whenever the page's path changes.
+    // This effect handles the visibility of the preloader.
     useEffect(() => {
-        // For the very first page load, we want a minimum display time for a good first impression.
-        // For subsequent page loads, we hide it much faster.
+        // On initial load, always show preloader.
+        // On subsequent navigations, the click handler below will set isLoading.
+        if (isInitialLoad.current) {
+            setIsLoading(true);
+        }
+        
         const delay = isInitialLoad.current ? 1000 : 200;
         
         const timer = setTimeout(() => {
-            setIsFadingOut(true); // Start the fade-out animation
+            setIsFadingOut(true);
             setTimeout(() => {
-                setIsLoading(false); // Remove the preloader from the DOM
+                setIsLoading(false);
                 setIsFadingOut(false);
                 if (isInitialLoad.current) {
-                    isInitialLoad.current = false; // After the first load, subsequent loads are faster.
+                    isInitialLoad.current = false;
+                }
+                // Scroll to top after animation is fully complete
+                if (scrollableElement) {
+                    scrollableElement.scrollTo({ top: 0, behavior: 'instant' });
                 }
             }, 500); // This duration must match the CSS transition time
         }, delay);
         
         return () => clearTimeout(timer);
-    }, [pathname]);
+    }, [pathname, scrollableElement]);
 
-    // This effect is responsible for SHOWING the preloader.
-    // It adds a click listener to the whole document.
+    // This effect adds a click listener to show the preloader on navigation.
     useEffect(() => {
         const handleAnchorClick = (event: MouseEvent) => {
             const target = event.target as HTMLElement;
@@ -45,7 +54,6 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
                 const isSamePageNav = targetUrl.pathname === pathname && targetUrl.search === window.location.search;
                 const opensInNewTab = anchor.target === '_blank';
 
-                // If it's an internal link for navigation, show the preloader.
                 if (!isExternal && !isSamePageNav && !opensInNewTab) {
                     setIsLoading(true);
                 }
@@ -54,7 +62,7 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
 
         document.addEventListener('click', handleAnchorClick);
         return () => document.removeEventListener('click', handleAnchorClick);
-    }, [pathname]); // Re-add the listener if the path changes to get the correct current 'pathname'.
+    }, [pathname]);
 
     const isAdminPage = pathname.startsWith('/admin');
 

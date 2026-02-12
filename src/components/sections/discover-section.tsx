@@ -65,7 +65,7 @@ export function DiscoverSection() {
 
 
   return (
-    <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
+    <section id="about" className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
       <div className="container mx-auto px-4 md:px-6 flex flex-col items-center">
         <ScrollAnimate className="max-w-3xl text-center">
           <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
@@ -77,13 +77,16 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-16 w-full max-w-5xl"
+            className="mt-16 w-full max-w-6xl"
         >
             <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex" style={{ backfaceVisibility: 'hidden' }}>
+                <div className="flex py-16" style={{ backfaceVisibility: 'hidden' }}>
                     {content.images.map((image, index) => (
                         <div
-                            className="flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0"
+                            className={cn(
+                                "flex-[0_0_80%] sm:flex-[0_0_60%] md:flex-[0_0_50%] min-w-0 relative",
+                                 index === selectedIndex && "z-10"
+                            )}
                             key={index}
                         >
                             <div
@@ -98,7 +101,7 @@ export function DiscoverSection() {
                                     fill
                                     className={cn(
                                         "rounded-2xl object-cover w-full h-full shadow-2xl transition-all duration-500 ease-out",
-                                        index === selectedIndex ? "scale-100" : "scale-75"
+                                        index === selectedIndex ? "scale-125" : "scale-100"
                                     )}
                                 />
                             </div>

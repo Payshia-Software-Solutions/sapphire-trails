@@ -146,7 +146,7 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight text-primary">Dashboard</h1>
       
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
@@ -185,7 +185,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+       <div className="grid gap-6 lg:grid-cols-3">
             <Card className="lg:col-span-2">
                 <CardHeader>
                     <CardTitle>Booking Volume</CardTitle>
@@ -195,24 +195,24 @@ export default function DashboardPage() {
                     <BookingVolumeChart data={volumeData} />
                 </CardContent>
             </Card>
-            <Card>
+            <Card className="lg:col-span-2">
                  <CardHeader>
                     <CardTitle>Booking Status Distribution</CardTitle>
                     <CardDescription>Current snapshot</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="h-[300px]">
                     <BookingStatusChart data={statusData} />
                 </CardContent>
             </Card>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-2">
-             <Card>
+        <div className="grid gap-6 lg:grid-cols-3">
+             <Card className="lg:col-span-2">
                 <CardHeader>
                     <CardTitle>Tour Popularity</CardTitle>
                     <CardDescription>All-time booking counts per tour package.</CardDescription>
                 </CardHeader>
-                <CardContent className="h-[250px]">
+                <CardContent className="h-[230px] pt-4">
                     <TourPopularityChart data={tourData} />
                 </CardContent>
             </Card>
@@ -221,7 +221,7 @@ export default function DashboardPage() {
                     <CardTitle>Recent Bookings</CardTitle>
                     <CardDescription>The five most recent booking requests.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 overflow-y-auto">
                      {recentBookings.map((booking) => (
                         <div key={booking.id} className="flex items-center gap-4">
                             <Avatar className="h-9 w-9">

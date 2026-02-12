@@ -287,7 +287,7 @@ export default function BookingRequestsPage() {
                                     <span className="font-bold">{format(parseISO(booking.date), 'MMM dd, yyyy')}</span>
                                 </div>
                                 <Button className="w-full mt-4" asChild>
-                                  <Link href={`/admin/booking-requests/${booking.id}`}>Manage</Link>
+                                  <Link href={`/admin/booking-requests/${booking.id}/view`}>Manage</Link>
                                 </Button>
                             </CardContent>
                         </Card>
@@ -327,7 +327,7 @@ export default function BookingRequestsPage() {
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button variant="outline" size="sm" asChild>
-                                      <Link href={`/admin/booking-requests/${booking.id}`}>View/Manage</Link>
+                                      <Link href={`/admin/booking-requests/${booking.id}/view`}>View/Manage</Link>
                                     </Button>
                                 </TableCell>
                             </TableRow>

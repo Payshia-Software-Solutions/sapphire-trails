@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, ArrowLeft } from 'lucide-react';
+import { CalendarIcon, ArrowLeft, LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
@@ -31,9 +30,22 @@ export default function EditBookingPage() {
   const { toast } = useToast();
   const id = params.id as string;
 
-  const [booking, setBooking] = useState<Booking | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
+
+  const form = useForm<z.infer<typeof bookingFormSchema>>({
+    resolver: zodResolver(bookingFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+      adults: 1,
+      children: 0,
+      message: '',
+    },
+  });
 
   useEffect(() => {
     async function fetchTourPackages() {
@@ -49,19 +61,6 @@ export default function EditBookingPage() {
     }
     fetchTourPackages();
   }, []);
-
-  const form = useForm<z.infer<typeof bookingFormSchema>>({
-    resolver: zodResolver(bookingFormSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      adults: 1,
-      children: 0,
-      message: '',
-    },
-  });
 
   // Effect to fetch data from the server
   useEffect(() => {
@@ -95,140 +94,72 @@ export default function EditBookingPage() {
           message: bookingData.message,
           status: bookingData.status,
         };
-        setBooking(clientBooking);
+        
+        form.reset({
+            ...clientBooking,
+            date: parseISO(clientBooking.date),
+            tourType: Number(clientBooking.tourType),
+            adults: Number(clientBooking.adults),
+            children: Number(clientBooking.children),
+            phone: clientBooking.phone || '',
+            address: clientBooking.address || '',
+            message: clientBooking.message || '',
+        });
+
       } catch (error) {
         console.error("Failed to load booking data:", error);
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to load booking data.' });
-        setBooking(null);
       } finally {
         setIsLoading(false);
       }
     }
     fetchBooking();
-  }, [id, toast]);
+  }, [id, toast, form]);
 
-  // Effect to populate the form once booking data is available
-  useEffect(() => {
-    if (booking) {
-      form.reset({
-        ...booking,
-        date: parseISO(booking.date),
-        tourType: Number(booking.tourType),
-        adults: Number(booking.adults),
-        children: Number(booking.children),
-        phone: booking.phone || '',
-        address: booking.address || '',
-        message: booking.message || '',
-      });
-    }
-  }, [booking, form]);
 
-  const updateBookingOnServer = async (bookingToUpdate: Booking) => {
+  const handleUpdate = async (data: z.infer<typeof bookingFormSchema>) => {
+    setIsSubmitting(true);
+
+    const payload = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        tour_package_id: data.tourType,
+        adults: Number(data.adults),
+        children: Number(data.children),
+        guests: Number(data.adults) + Number(data.children),
+        tour_date: format(data.date, 'yyyy-MM-dd'),
+        status: form.getValues('status') as any,
+        message: data.message,
+        user_id: form.getValues('user_id'),
+    };
+    
     try {
-        const payload = {
-            name: bookingToUpdate.name,
-            email: bookingToUpdate.email,
-            phone: bookingToUpdate.phone,
-            address: bookingToUpdate.address,
-            tour_package_id: bookingToUpdate.tourType,
-            adults: Number(bookingToUpdate.adults),
-            children: Number(bookingToUpdate.children),
-            guests: Number(bookingToUpdate.adults) + Number(bookingToUpdate.children),
-            tour_date: bookingToUpdate.date, // Already in 'yyyy-MM-dd' format
-            status: bookingToUpdate.status,
-            message: bookingToUpdate.message,
-            user_id: bookingToUpdate.user_id,
-        };
-        
-        const response = await fetch(`${API_BASE_URL}/bookings/${bookingToUpdate.id}/`, {
+        const response = await fetch(`${API_BASE_URL}/bookings/${id}/`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => null);
-            throw new Error(errorData?.message || 'Failed to update booking. Ensure the backend update method is implemented.');
+            throw new Error(errorData?.message || 'Failed to update booking.');
         }
-        return true;
+        toast({ title: 'Success!', description: 'Booking details have been updated.' });
+        router.push(`/admin/booking-requests/${id}/view`);
     } catch (error) {
         console.error("Failed to save booking:", error);
         const errorMessage = error instanceof Error ? error.message : "Could not save booking changes.";
         toast({ variant: 'destructive', title: 'Error', description: errorMessage });
-        return false;
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
-  const updateStatusOnServer = async (bookingId: number, status: 'accepted' | 'rejected') => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}/status/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || 'Failed to update booking status.');
-      }
-      return true;
-    } catch (error) {
-      console.error("Failed to update status:", error);
-      const errorMessage = error instanceof Error ? error.message : "Could not update booking status.";
-      toast({ variant: 'destructive', title: 'Error', description: errorMessage });
-      return false;
-    }
-  };
-
-  const handleUpdate = async (data: z.infer<typeof bookingFormSchema>) => {
-    if (!booking) return;
-
-    const updatedBooking: Booking = {
-      ...booking,
-      ...data,
-      date: format(data.date, 'yyyy-MM-dd'),
-      adults: Number(data.adults),
-      children: Number(data.children),
-      guests: Number(data.adults) + Number(data.children),
-    };
-    
-    const success = await updateBookingOnServer(updatedBooking);
-    if (success) {
-      toast({ title: 'Success!', description: 'Booking details have been updated.' });
-      router.push('/admin/booking-requests');
-    }
-  };
-
-  const handleStatusChange = async (status: 'accepted' | 'rejected') => {
-    if (!booking) return;
-    
-    const success = await updateStatusOnServer(booking.id, status);
-    if (success) {
-      toast({ title: `Booking ${status}`, description: `The booking has been marked as ${status}.` });
-      router.push('/admin/booking-requests');
-    }
-  };
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-full"><p>Loading booking details...</p></div>;
-  }
-
-  if (!booking) {
-    return (
-        <div className="flex flex-col items-center justify-center h-full gap-4">
-            <p className="text-xl">Booking not found.</p>
-            <Button onClick={() => router.push('/admin/booking-requests')}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Requests
-            </Button>
-        </div>
-    );
   }
 
   return (
@@ -239,7 +170,7 @@ export default function EditBookingPage() {
         </Button>
         <div>
             <h1 className="text-3xl font-bold tracking-tight text-primary">Edit Booking</h1>
-            <p className="text-muted-foreground">Modify details for the request from {booking.name}.</p>
+            <p className="text-muted-foreground">Modify details for the request from {form.getValues('name')}.</p>
         </div>
       </div>
       
@@ -266,8 +197,8 @@ export default function EditBookingPage() {
                             <FormMessage />
                             </FormItem>
                         )} />
-                        <FormField control={form.control} name="adults" render={({ field }) => ( <FormItem><FormLabel>Adults</FormLabel><FormControl><Input type="number" min="1" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="children" render={({ field }) => ( <FormItem><FormLabel>Children</FormLabel><FormControl><Input type="number" min="0" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="adults" render={({ field }) => ( <FormItem><FormLabel>Adults</FormLabel><FormControl><Input type="number" min="1" {...field} onChange={e => field.onChange(parseInt(e.target.value))} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="children" render={({ field }) => ( <FormItem><FormLabel>Children</FormLabel><FormControl><Input type="number" min="0" {...field} onChange={e => field.onChange(parseInt(e.target.value))} /></FormControl><FormMessage /></FormItem>)} />
                     </div>
 
                     <FormField control={form.control} name="date" render={({ field }) => (
@@ -291,14 +222,9 @@ export default function EditBookingPage() {
                     )} />
                     <FormField control={form.control} name="message" render={({ field }) => ( <FormItem><FormLabel>Additional Message (Optional)</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     
-                    <div className="grid grid-cols-2 gap-2 pt-4 mt-4 border-t border-border sm:flex sm:justify-end">
-                        <Button type="button" onClick={() => handleStatusChange('accepted')}>
-                            Accept Booking
-                        </Button>
-                        <Button type="button" variant="destructive" onClick={() => handleStatusChange('rejected')}>
-                            Reject Booking
-                        </Button>
-                        <Button type="submit" className="col-span-2">
+                    <div className="flex justify-end pt-4 mt-4 border-t border-border">
+                        <Button type="submit" size="lg" disabled={isSubmitting}>
+                            {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                             Save Changes
                         </Button>
                     </div>

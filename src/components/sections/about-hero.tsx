@@ -1,18 +1,19 @@
+
 import Image from 'next/image';
 
 export function AboutHero() {
   return (
-    <section className="relative h-[50vh] w-full flex items-center justify-center bg-background">
+    <section className="relative bg-background py-20 md:py-32 lg:py-40 overflow-hidden">
       <Image
         src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
-        alt="A dark and moody image of the inside of a gem mine, with rock walls and dim lighting."
-        data-ai-hint="gem mine cave"
+        alt="Background image of a gem mine"
+        data-ai-hint="gem mine"
         fill
-        className="z-0 opacity-40 object-cover"
+        className="z-0 object-cover opacity-30"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10" />
-      <div className="relative z-20 flex flex-col items-center justify-center text-center text-foreground p-4">
-        <h1 className="text-5xl font-headline font-bold tracking-tight text-primary sm:text-6xl">
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent z-10" />
+      <div className="container relative z-20 mx-auto px-4 md:px-6 text-center">
+        <h1 className="text-4xl font-headline font-bold text-white md:text-6xl">
           About Sapphire Trails
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">

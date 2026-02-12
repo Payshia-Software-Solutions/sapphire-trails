@@ -1,72 +1,72 @@
-
-'use client';
-
-import { useEffect, useState } from 'react';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
-import { Skeleton } from '@/components/ui/skeleton';
 import { TourDetailHero } from '@/components/sections/tour-detail-hero';
 import { TourDetailHighlights } from '@/components/sections/tour-detail-highlights';
 import { TourDetailInclusions } from '@/components/sections/tour-detail-inclusions';
 import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary';
 import { TourFloatingBar } from '@/components/sections/tour-floating-bar';
 import { TourExperienceGallery } from '@/components/sections/tour-experience-gallery';
+import type { Metadata, ResolvingMetadata } from 'next';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
-function LoadingSkeleton() {
-    return (
-        <div className="flex min-h-screen flex-col bg-background">
-            <Header />
-            <main className="flex-1">
-                <div className="flex flex-col gap-8">
-                    <Skeleton className="h-[60vh] w-full" />
-                    <div className="container mx-auto px-4 md:px-6 space-y-8 py-12">
-                        <Skeleton className="h-48 w-full" />
-                        <Skeleton className="h-64 w-full" />
-                    </div>
-                </div>
-            </main>
-            <Footer />
-        </div>
-    )
+async function getTourPackage(slug: string): Promise<TourPackage | null> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/tours/slug/${slug}/`);
+        if (!response.ok) {
+            return null;
+        }
+        const data = await response.json();
+        return mapServerPackageToClient(data);
+    } catch (error) {
+        console.error("Failed to fetch tour package by slug", error);
+        return null;
+    }
 }
 
-export default function TourDetailPage() {
-  const params = useParams<{ slug: string }>();
-  const [tourPackage, setTourPackage] = useState<TourPackage | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
+type Props = {
+  params: { slug: string }
+}
 
-  useEffect(() => {
-    if (!params.slug) return;
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const tourPackage = await getTourPackage(params.slug);
 
-    async function fetchTourPackage() {
-        setIsLoading(true);
-        try {
-            const response = await fetch(`${API_BASE_URL}/tours/slug/${params.slug}/`);
-            if (!response.ok) {
-                setTourPackage(undefined);
-            } else {
-                const data = await response.json();
-                const mappedPackage = mapServerPackageToClient(data);
-                setTourPackage(mappedPackage);
-            }
-        } catch (error) {
-            console.error("Failed to fetch tour package by slug", error);
-            setTourPackage(undefined);
-        } finally {
-            setIsLoading(false);
-        }
+  if (!tourPackage) {
+    return {
+      title: 'Tour Not Found',
     }
-
-    fetchTourPackage();
-  }, [params.slug]);
-
-  if (isLoading) {
-    return <LoadingSkeleton />;
   }
+
+  // optionally access and extend (rather than replace) parent metadata
+  const previousImages = (await parent).openGraph?.images || []
+
+  return {
+    title: tourPackage.tourPageTitle,
+    description: tourPackage.tourPageDescription,
+    openGraph: {
+      title: `${tourPackage.tourPageTitle} | Sapphire Trails`,
+      description: tourPackage.tourPageDescription,
+      images: [
+        {
+          url: tourPackage.heroImage,
+          width: 1200,
+          height: 630,
+          alt: tourPackage.tourPageTitle,
+        },
+        ...previousImages,
+      ],
+    },
+  }
+}
+
+
+export default async function TourDetailPage({ params }: Props) {
+  const tourPackage = await getTourPackage(params.slug);
 
   if (!tourPackage) {
     notFound();
