@@ -47,11 +47,11 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || []
 
   return {
-    title: `${tourPackage.tourPageTitle} - Sri Lankan Gem Tour`,
-    description: `Book the ${tourPackage.tourPageTitle}, a premier gem tour in Ratnapura, Sri Lanka. ${tourPackage.tourPageDescription}`,
+    title: `${tourPackage.tourPageTitle} | Sri Lanka Gem Tour`,
+    description: `Book the ${tourPackage.tourPageTitle}, a premier gem tour and gem experience in Ratnapura, Sri Lanka. ${tourPackage.tourPageDescription}`,
     openGraph: {
       title: `${tourPackage.tourPageTitle} | Gem Tours Sri Lanka`,
-      description: tourPackage.tourPageDescription,
+      description: `An unforgettable gem experience in Ratnapura. ${tourPackage.tourPageDescription}`,
       images: [
         {
           url: tourPackage.heroImage,

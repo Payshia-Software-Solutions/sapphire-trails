@@ -6,11 +6,11 @@ import type { Metadata } from 'next';
 import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
-  title: 'Virtual Tour',
-  description: 'Experience the thrill of a gem mine from anywhere in the world. Our immersive virtual tour is coming soon.',
+  title: 'Virtual Gem Tour of a Ratnapura Mine | Sri Lanka',
+  description: 'Experience the thrill of a Sri Lankan gem mine from anywhere with our Ratnapura virtual gem tour. Coming soon from Sapphire Trails.',
   openGraph: {
-    title: 'Virtual Tour of a Sri Lankan Gem Mine',
-    description: 'Coming soon: an immersive 360-degree experience from Sapphire Trails.',
+    title: 'Virtual Gem Tour of a Sri Lankan Gem Mine in Ratnapura',
+    description: 'Coming soon: an immersive 360-degree virtual tour experience from Sapphire Trails.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
       width: 1200,

@@ -9,11 +9,11 @@ import Script from 'next/script';
 export const metadata: Metadata = {
   title: {
     template: '%s | Sapphire Trails',
-    default: 'Sapphire Trails - Premier Gem Tours in Ratnapura, Sri Lanka',
+    default: 'Gem Tours in Sri Lanka | Sapphire Trails | Ratnapura Gem Tour Experience',
   },
-  description: 'Discover the best gem tours in Ratnapura, Sri Lanka with Sapphire Trails. Experience authentic gem mining, explore cultural heritage, and enjoy luxury stays. Book your Sri Lankan gem tour today.',
+  description: 'Discover premier gem tours in Ratnapura, Sri Lanka with Sapphire Trails. Book an unforgettable gem tour experience, explore authentic gem mining, and find precious sapphires.',
   openGraph: {
-    title: 'Sapphire Trails - Premier Gem Tours in Ratnapura, Sri Lanka',
+    title: 'Gem Tours in Sri Lanka | Sapphire Trails | Ratnapura Gem Tour Experience',
     description: 'Discover the heart of Sri Lanka\'s gem country with our exclusive gem tours.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',

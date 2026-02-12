@@ -8,11 +8,11 @@ import { ExperienceSection } from '@/components/sections/experience-section';
 import { PageHero } from '@/components/shared/page-hero';
 
 export const metadata: Metadata = {
-  title: 'About Sapphire Trails | Premier Sri Lankan Gem Tours',
-  description: 'Learn about Sapphire Trails, your expert guide for premier gem tours in Ratnapura, Sri Lanka. Discover our story, mission, and the team behind your next gem tour adventure.',
+  title: 'About Sapphire Trails | Your Sri Lanka Gem Tour Experts',
+  description: 'Learn about Sapphire Trails, your expert guide for premier gem tours in Ratnapura, Sri Lanka. Discover our story and the team behind your next Sri Lankan gem tour adventure and gem experience.',
   openGraph: {
-    title: 'About Sapphire Trails | Premier Sri Lankan Gem Tours',
-    description: 'Discover the heritage and passion behind Sri Lanka\'s most exclusive gem tour.',
+    title: 'About Sapphire Trails | Your Sri Lanka Gem Tour Experts',
+    description: 'Discover the heritage and passion behind Sri Lanka\'s most exclusive gem tour and gem experience.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img31.webp',
       width: 1200,
