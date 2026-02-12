@@ -1,15 +1,4 @@
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
-import Link from 'next/link';
-
-const experiencePoints = [
-    "Hands on gem mining adventures with local experts",
-    "Curated tea estate tours and tastings",
-    "Luxury stays in serene, architecturally iconic suites",
-    "Private sapphire selection & jewelry workshops",
-    "Cultural excursions and curated dining",
-];
 
 export function OurStory() {
   return (
