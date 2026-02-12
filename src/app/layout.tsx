@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.sapphiretrails.com'),
   title: {
     template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
-    default: 'Gem Tours Sri Lanka | Exclusive Mine Tours in Ratnapura',
+    default: 'Ratnapura Gem Mine Tours | Sapphire Trails - Sri Lanka',
   },
-  description: 'Discover the best gem tours in Sri Lanka with Sapphire Trails. We offer exclusive gem mine tours in Ratnapura, private sapphire hunting, and custom tour packages.',
+  description: 'Book the best Ratnapura gem mine tours. Experience private sapphire hunting and explore the heart of Sri Lanka\'s gem country with Sapphire Trails.',
   openGraph: {
-    title: 'Gem Tours Sri Lanka | Exclusive Mine Tours in Ratnapura',
-    description: 'Discover the heart of Sri Lanka\'s gem country with our exclusive gem tours.',
+    title: 'Ratnapura Gem Mine Tours | Sapphire Trails - Sri Lanka',
+    description: 'Book the best Ratnapura gem mine tours and experience private sapphire hunting in Sri Lanka.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
       width: 1200,
