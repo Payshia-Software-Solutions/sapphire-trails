@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from 'next/image';
@@ -11,7 +10,7 @@ import { getFullImageUrl } from '@/lib/utils';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultContent = {
-  description: "Embark on an exclusive journey into the heart of Sri Lanka's gem country with Sapphire Trails, the premier provider of immersive gem tours in Ratnapura. Our curated adventures offer a deep dive into the region's rich heritage, taking you from the raw depths of dazzling gem mines to the serene beauty of lush tea estates. Experience the thrill of unearthing precious stones, witness the meticulous art of gem cutting, and immerse yourself in vibrant local culture. Beyond the mines, your luxury gem tour includes exquisite dining, stays in iconic architectural retreats, and explorations of breathtaking natural wonders. Let us guide you on an unforgettable Sri Lankan adventure that reveals the true, sparkling treasures of the island.",
+  description: "Embark on an exclusive journey into the heart of Sri Lanka's gem country with Sapphire Trails, the premier provider of immersive gem tours in Ratnapura. Our curated adventures offer a deep dive into the region's rich heritage, taking you from the raw depths of dazzling gem mines to the serene beauty of lush tea estates. Beyond the mines, your luxury gem tour includes exquisite dining, stays in iconic architectural retreats, and explorations of breathtaking natural wonders. Let us guide you on an unforgettable Sri Lankan adventure that reveals the true, sparkling treasures of the island.",
   images: [
     {
       src: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp',
@@ -65,9 +64,9 @@ export function DiscoverSection() {
 
 
   return (
-    <section id="about" className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
-      <div className="container mx-auto px-4 md:px-6 flex flex-col items-center">
-        <ScrollAnimate className="max-w-3xl text-center">
+    <section id="about" className="w-full h-screen flex flex-col items-center justify-center bg-background-alt scroll-section">
+      <div className="container mx-auto px-4 md:px-6">
+        <ScrollAnimate className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
             Discover the Sapphire Trails
           </h2>
@@ -77,7 +76,7 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-16 w-full max-w-6xl"
+            className="mt-16 w-full max-w-6xl mx-auto"
         >
             <div className="overflow-hidden" ref={emblaRef}>
                 <div className="flex py-16" style={{ backfaceVisibility: 'hidden' }}>
@@ -110,7 +109,6 @@ export function DiscoverSection() {
                 </div>
             </div>
         </ScrollAnimate>
-
       </div>
     </section>
   );
