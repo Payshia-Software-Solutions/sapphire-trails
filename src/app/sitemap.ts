@@ -10,6 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/about',
         '/tours',
         '/explore-ratnapura',
+        '/articles',
         '/virtual-tour',
         '/contact',
         '/booking',
