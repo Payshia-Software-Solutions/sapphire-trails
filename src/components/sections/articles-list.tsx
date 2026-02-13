@@ -8,6 +8,14 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
 const mockArticles = [
+    {
+    slug: 'complete-guide-to-gem-tour-experience',
+    title: 'The Complete Guide to Your Next Gem Tour Experience',
+    description: 'Discover the magic of the Gem City with Sapphire Trails. Our exclusive gem tour packages offer insight into the world of mining. Book your gemstone tour today!',
+    imageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp',
+    imageHint: 'gem mining',
+    category: 'Guides'
+  },
   {
     slug: 'guide-to-ratnapura-gems',
     title: 'The Complete Guide to Ratnapura Gems',
