@@ -1,7 +1,7 @@
 
 import { MetadataRoute } from 'next';
 
-const BASE_URL = 'https://www.sapphiretrails.com';
+const BASE_URL = 'https://sapphiretrails.lk';
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -10,6 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/about',
         '/tours',
         '/explore-ratnapura',
+        '/articles',
         '/virtual-tour',
         '/contact',
         '/booking',

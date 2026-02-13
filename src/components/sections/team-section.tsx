@@ -16,9 +16,9 @@ const teamMembers = [
         bio: "A certified gemologist, Manuranga's expertise guides our guests through the fascinating world of precious stones, from mine to market."
     },
     {
-        name: "Mr Anurudda Gamage",
+        name: "Mr Anuradha Gamage",
         role: "General Manager",
-        bio: "Anurudda ensures every aspect of your journey is seamless, overseeing all operations with meticulous attention to detail."
+        bio: "Anuradha ensures every aspect of your journey is seamless, overseeing all operations with meticulous attention to detail."
     },
     {
         name: "Mr. Indika Senevirathna",

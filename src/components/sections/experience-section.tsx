@@ -26,6 +26,7 @@ export function ExperienceSection() {
                 </div>
                 <div className="space-y-6">
                     <h2 className="text-3xl font-headline font-bold text-primary">The Experience</h2>
+                    <p className="text-muted-foreground leading-relaxed">At Sapphire Trails, we believe a true luxury gem tour is a multi-faceted experience. It’s about the thrill of the hunt, the connection to culture, and the comfort of world-class hospitality. We have meticulously crafted every detail of our gem tours to ensure an adventure that is as enriching as it is exhilarating. Our all-inclusive packages are designed to immerse you fully in the world of Sri Lankan gems, from the moment you arrive.</p>
                     <ul className="space-y-4">
                         {experiencePoints.map((point, index) => (
                         <li key={index} className="flex items-start">
