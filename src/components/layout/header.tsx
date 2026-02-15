@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -25,7 +24,6 @@ const navLinks = [
   { href: '/tours', label: 'Tours' },
   { href: '/explore-ratnapura', label: 'Explore Ratnapura' },
   { href: '/articles', label: 'Articles' },
-  { href: '/virtual-tour', label: 'Virtual Tour' },
   { href: '/contact', label: 'Contact' },
 ];
 

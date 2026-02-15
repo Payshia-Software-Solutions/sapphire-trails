@@ -5,6 +5,14 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { PageHero } from '@/components/shared/page-hero';
 import type { Metadata, ResolvingMetadata } from 'next';
+import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import Link from 'next/link';
+import { CalendarCheck, ArrowRight } from 'lucide-react';
+import { TrustSection } from '@/components/sections/TrustSection';
+
+const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 const newArticleContent = `
 <p>Welcome to Sapphire Trails, the home of the authentic gem tour. When you book a gem tour with us, you aren't just taking a trip; you are stepping into history. A gem tour is the best way to understand the value of precious stones. Many travelers ask, "What makes a gem tour special?" The answer lies in the unique access a gem tour provides.</p>
@@ -95,6 +103,25 @@ function getArticle(slug: string) {
     return mockArticles.find(article => article.slug === slug);
 }
 
+async function getTours(): Promise<TourPackage[]> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/tours`);
+        if (!response.ok) {
+            console.error('Failed to fetch tours from server.');
+            return [];
+        }
+
+        const data = await response.json();
+        if (Array.isArray(data)) {
+            return data.map(mapServerPackageToClient);
+        }
+        return [];
+    } catch (e) {
+        console.error("Failed to fetch or parse packages.", e);
+        return [];
+    }
+}
+
 
 type Props = {
   params: { slug: string }
@@ -141,8 +168,92 @@ export async function generateMetadata(
   return metadata;
 }
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
+const TourCard = ({ tour }: { tour: TourPackage }) => (
+    <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10 rounded-xl overflow-hidden">
+      <Link href={`/tours/${tour.slug}`} className="block group">
+          <div className="relative h-40 w-full">
+          <Image
+              src={tour.imageUrl}
+              alt={tour.imageAlt}
+              data-ai-hint={tour.imageHint}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          </div>
+      </Link>
+      <CardContent className="p-4 flex flex-col flex-grow">
+        <h3 className="text-lg font-headline font-bold text-primary mb-2 flex-grow">
+          <Link href={`/tours/${tour.slug}`}>{tour.homepageTitle}</Link>
+        </h3>
+        <div className="flex items-center justify-between gap-4 mt-auto">
+          <p className="text-lg font-bold text-primary">{tour.price}</p>
+          <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4">
+            <Link href={`/booking?tourType=${tour.id}`}>
+              <CalendarCheck className="mr-2 h-4 w-4" />
+              Book
+            </Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+function ToursSidebar({ tours }: { tours: TourPackage[] }) {
+    if (!tours || tours.length === 0) return null;
+    return (
+        <div>
+            <div className="text-left">
+                <h2 className="text-2xl font-headline font-bold tracking-tight text-primary">
+                    Ready for an Adventure?
+                </h2>
+                <p className="mt-2 text-muted-foreground">
+                    Choose your perfect gem tour experience and book now.
+                </p>
+            </div>
+            <div className="space-y-6 mt-6">
+                {tours.map((tour) => (
+                    <TourCard key={tour.id} tour={tour} />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+function MoreArticles({ currentArticleSlug }: { currentArticleSlug: string }) {
+    const otherArticles = mockArticles.filter(article => article.slug !== currentArticleSlug).slice(0, 3);
+
+    if (otherArticles.length === 0) return null;
+
+    return (
+        <div>
+            <h2 className="text-2xl font-headline font-bold tracking-tight text-primary mb-6">
+                More Articles
+            </h2>
+            <div className="space-y-6">
+                {otherArticles.map(article => (
+                    <Link key={article.slug} href={`/articles/${article.slug}`} className="group flex items-center gap-4">
+                        <div className="relative w-24 h-24 rounded-lg overflow-hidden shrink-0">
+                            <Image
+                                src={article.imageUrl}
+                                alt={article.title}
+                                fill
+                                className="object-cover transition-transform duration-300 group-hover:scale-110"
+                            />
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{article.title}</p>
+                            <p className="text-xs text-muted-foreground mt-1">{article.category}</p>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
     const article = getArticle(params.slug);
+    const tours = await getTours();
 
     if (!article) {
         notFound();
@@ -162,36 +273,47 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
             <Header />
             <main className="flex-1">
                 <PageHero title={pageTitle} breadcrumbs={breadcrumbs} />
-                <article className="py-12 md:py-24 bg-background-alt">
+                <div className="py-12 md:py-24 bg-background-alt">
                     <div className="container mx-auto px-4 md:px-6">
-                        <div className="max-w-3xl mx-auto">
-                            <div className="relative aspect-video mb-12 rounded-lg overflow-hidden shadow-lg">
-                                <Image
-                                    src={article.imageUrl}
-                                    alt={article.title}
-                                    data-ai-hint={article.imageHint}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            {article.content ? (
-                                <div
-                                  className="space-y-6 text-lg text-muted-foreground leading-relaxed [&_h2]:text-2xl [&_h2]:font-headline [&_h2]:text-primary [&_h2]:pt-4 [&_h4]:font-semibold [&_h4]:text-foreground [&_ul]:list-disc [&_ul]:list-inside [&_ul]:space-y-2"
-                                  dangerouslySetInnerHTML={{ __html: article.content }}
-                                />
-                            ) : (
-                                <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
-                                    <p className="text-xl text-foreground font-semibold">{article.description}</p>
-                                    <p>This is placeholder content for the article titled &quot;{article.title}&quot;. In a real application, this would be replaced with the full article body, likely fetched from a CMS. For now, we can imagine a detailed exploration of the topic, filled with useful information for anyone interested in a gem tour.</p>
-                                    <h2 className="text-2xl font-headline text-primary pt-4">Diving Deeper</h2>
-                                    <p>The content would elaborate on the key points mentioned in the description, providing valuable insights and practical tips. It would be structured with clear headings, engaging paragraphs, and perhaps even lists or blockquotes to enhance readability.</p>
-                                    <p>By providing in-depth content like this, Sapphire Trails can establish itself as an authority on gem tours in the Gem City of Ratnapura, attracting potential customers who are in the research phase of their travel planning. This is a key part of a successful content marketing strategy for any gemstone tour or gem mining tour operator.</p>
+                        <div className="grid lg:grid-cols-3 xl:grid-cols-4 gap-12 lg:gap-16">
+                            <article className="lg:col-span-2 xl:col-span-3 space-y-12">
+                                <div className="max-w-4xl">
+                                    <div className="relative aspect-video mb-12 rounded-lg overflow-hidden shadow-lg">
+                                        <Image
+                                            src={article.imageUrl}
+                                            alt={article.title}
+                                            data-ai-hint={article.imageHint}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                    {article.content ? (
+                                        <div
+                                          className="prose prose-invert prose-lg max-w-none [&_h2]:text-2xl [&_h2]:font-headline [&_h2]:text-primary [&_h2]:pt-4 [&_h4]:font-semibold [&_h4]:text-foreground [&_ul]:list-disc [&_ul]:list-inside [&_ul]:space-y-2"
+                                          dangerouslySetInnerHTML={{ __html: article.content }}
+                                        />
+                                    ) : (
+                                        <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+                                            <p className="text-xl text-foreground font-semibold">{article.description}</p>
+                                            <p>This is placeholder content for the article titled &quot;{article.title}&quot;. In a real application, this would be replaced with the full article body, likely fetched from a CMS. For now, we can imagine a detailed exploration of the topic, filled with useful information for anyone interested in a gem tour.</p>
+                                            <h2 className="text-2xl font-headline text-primary pt-4">Diving Deeper</h2>
+                                            <p>The content would elaborate on the key points mentioned in the description, providing valuable insights and practical tips. It would be structured with clear headings, engaging paragraphs, and perhaps even lists or blockquotes to enhance readability.</p>
+                                            <p>By providing in-depth content like this, Sapphire Trails can establish itself as an authority on gem tours in the Gem City of Ratnapura, attracting potential customers who are in the research phase of their travel planning. This is a key part of a successful content marketing strategy for any gemstone tour or gem mining tour operator.</p>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            </article>
+                            <div className="lg:col-span-1 xl:col-span-1">
+                                <div className="sticky top-24 space-y-12">
+                                    <ToursSidebar tours={tours} />
+                                    <MoreArticles currentArticleSlug={params.slug} />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </article>
+                </div>
             </main>
+            <TrustSection />
             <Footer />
         </div>
     );

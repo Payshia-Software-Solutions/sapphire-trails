@@ -6,6 +6,7 @@ import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { PageHero } from '@/components/shared/page-hero';
 import type { Metadata } from 'next';
 import { AllToursGrid } from '@/components/sections/all-tours-grid';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export const metadata: Metadata = {
   title: 'Ratnapura Gem Mine Tour Packages | Sapphire Trails',
@@ -63,6 +64,7 @@ export default function ToursPage() {
           <Faq />
         </ScrollAnimate>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

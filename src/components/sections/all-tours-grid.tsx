@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import { CalendarCheck, ArrowRight, LoaderCircle, PackageSearch } from 'lucide-react';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -22,24 +23,38 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       />
     </div>
     <CardContent className="p-8 flex flex-col flex-grow">
-      <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
+      <h3 className="text-xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
       <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
-      <Button asChild className="w-fit bg-primary text-primary-foreground hover:bg-primary/90 mt-auto rounded-full px-6">
-        <Link href={`/booking?tourType=${tour.id}`}>Book Now</Link>
-      </Button>
+      <div className="flex items-center gap-4 mt-auto">
+        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
+          <Link href={`/booking?tourType=${tour.id}`}>
+            <CalendarCheck className="mr-2 h-4 w-4" />
+            Book Now
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="text-primary border-primary hover:bg-primary/10 hover:text-primary rounded-full px-6">
+            <Link href={`/tours/${tour.slug}`}>
+                <ArrowRight className="mr-2 h-4 w-4" />
+                More Info
+            </Link>
+        </Button>
+      </div>
     </CardContent>
   </Card>
 );
 
 export function AllToursGrid() {
     const [allTours, setAllTours] = useState<TourPackage[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function fetchTours() {
+            setIsLoading(true);
             try {
                 const response = await fetch(`${API_BASE_URL}/tours`);
                  if (!response.ok) {
                     console.error('Failed to fetch from server.');
+                    setAllTours([]);
                     return;
                 }
 
@@ -48,9 +63,13 @@ export function AllToursGrid() {
                     setAllTours(data.map(mapServerPackageToClient));
                 } else {
                     console.error('Server response was not an array.');
+                    setAllTours([]);
                 }
             } catch (e) {
                 console.error("Failed to fetch or parse packages.", e);
+                setAllTours([]);
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchTours();
@@ -59,11 +78,24 @@ export function AllToursGrid() {
     return (
         <section className="w-full py-12 md:py-24 bg-background-alt">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
-                    {allTours.map((tour) => (
-                        <TourCard key={tour.id} tour={tour} />
-                    ))}
-                </div>
+                {isLoading ? (
+                    <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+                        <LoaderCircle className="h-12 w-12 text-muted-foreground/50 animate-spin" />
+                        <p>Fetching tour packages...</p>
+                    </div>
+                ) : allTours.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
+                        {allTours.map((tour) => (
+                            <TourCard key={tour.id} tour={tour} />
+                        ))}
+                    </div>
+                ) : (
+                     <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+                        <PackageSearch className="h-12 w-12 text-muted-foreground/50" />
+                        <p>Could not load tour packages at the moment.</p>
+                        <p className="text-sm">Please try again later.</p>
+                    </div>
+                )}
             </div>
         </section>
     )

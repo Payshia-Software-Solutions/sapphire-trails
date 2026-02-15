@@ -15,6 +15,7 @@ import { type Booking } from '@/lib/bookings-data';
 import { Badge } from '@/components/ui/badge';
 import { format, parseISO } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -168,6 +169,7 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

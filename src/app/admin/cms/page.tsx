@@ -25,24 +25,68 @@ import { getFullImageUrl } from '@/lib/utils';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
+const defaultContent = {
+  description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka—the legendary 'City of Gems'—this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.",
+  images: [
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', 
+      alt: 'A tourist gets fitted with a safety harness before a gem tour.', 
+      hint: 'gem tour safety',
+      hoverDescription: "Prepare for an authentic Gem Mine Tour. Safety and adventure go hand-in-hand as you get ready to descend into a real mine."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', 
+      alt: 'A happy tourist smiles while holding his helmet straps during a gem mine tour.', 
+      hint: 'happy tourist gem tour',
+      hoverDescription: "The thrill of discovery on our Gem Tour. This hands-on experience is what makes our gem tours unforgettable."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', 
+      alt: 'A miner works inside a dimly lit, traditional gem mine.', 
+      hint: 'traditional gem mine',
+      hoverDescription: "Deep inside a traditional mine. This is the heart of our Gem Mine Tour, showcasing the authentic mining process."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', 
+      alt: 'A couple examines a glowing gemstone with a light tool.', 
+      hint: 'examining gemstone',
+      hoverDescription: "Inspecting a freshly found sapphire. Every Gem Tour concludes with a close-up look at these precious stones."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', 
+      alt: 'A person holds a piece of paper with several rough gemstones on it.', 
+      hint: 'rough gemstones hand',
+      hoverDescription: "The rewards of a successful Gem Mine Tour. Hold raw, uncut sapphires straight from the earth."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', 
+      alt: 'A tourist gives a thumbs-up while wearing a hard hat.', 
+      hint: 'tourist thumbs up',
+      hoverDescription: "An unforgettable adventure. Our guests love the unique access provided by our expert-led Gem Tour."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', 
+      alt: 'A person sharpens a tool on a traditional gem cutting wheel.', 
+      hint: 'gem cutting wheel',
+      hoverDescription: "The art of transformation. Witness traditional gem cutting, a key part of the complete Gem Mine Tour experience."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', 
+      alt: 'A gemologist sorts and grades small gemstones at a well-lit desk.', 
+      hint: 'gemologist sorting gems',
+      hoverDescription: "From rough stone to finished jewel. Our gemologists explain the sorting process, an essential part of every Gem Tour."
+    },
+  ]
+};
+
 const defaultValues = {
   hero: {
-    headline: "Sri Lanka's Only Luxury Gem Experience",
-    subheadline: "Experience luxury, culture, and adventure",
-    imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img35.webp",
-    imageAlt: "A dark and moody image of the inside of a gem mine, with rock walls and dim lighting.",
-    imageHint: "gem mine cave",
+    headline: "Sri Lanka Gem Mine Tour - An Exclusive Luxury Experience",
+    subheadline: "Discover the world's finest sapphires with a professional gem mine tour.",
   },
-  discover: {
-    description: "Embark on an exclusive journey through the heart of Sri Lanka's gem country. The Sapphire Trails offers an immersive experience into Ratnapura's rich heritage, from dazzling gem mines and lush tea estates to exquisite dining and vibrant local culture. Let us guide you on a luxurious adventure that unveils the true treasures of the island.",
-    images: [
-      { src: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp', alt: 'A person sifting through gravel and dirt in a woven basket, searching for gems.', hint: 'gem mining' },
-      { src: 'https://content-provider.payshia.com/sapphire-trail/images/img36.webp', alt: 'People swimming and enjoying the cool water at the base of a waterfall.', hint: 'waterfall swimming' },
-      { src: 'https://content-provider.payshia.com/sapphire-trail/images/img37.webp', alt: 'A vibrant collection of polished gemstones displayed in black trays.', hint: 'gemstones collection' },
-    ],
-  },
+  discover: defaultContent,
   footer: {
-    facebookUrl: 'https://facebook.com',
+    facebookUrl: 'https://www.facebook.com/p/Sapphire-Trails-61573050367074/',
     instagramUrl: 'https://instagram.com',
     youtubeUrl: 'https://youtube.com',
   },
@@ -58,11 +102,8 @@ export default function CmsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
-  const [discoverImageFiles, setDiscoverImageFiles] = useState<(File | null)[]>([null, null, null]);
-  
-  const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
-  const [discoverImagePreviews, setDiscoverImagePreviews] = useState<(string | null)[]>([null, null, null]);
+  const [discoverImageFiles, setDiscoverImageFiles] = useState<(File | null)[]>(Array(8).fill(null));
+  const [discoverImagePreviews, setDiscoverImagePreviews] = useState<(string | null)[]>(Array(8).fill(null));
 
   const form = useForm<CmsFormValues>({
     resolver: zodResolver(cmsFormSchema),
@@ -76,32 +117,27 @@ export default function CmsPage() {
             const response = await fetch(`${API_BASE_URL}/content/homepage`);
             if (response.ok) {
                 const data = await response.json();
-                // Merge fetched data with defaults to ensure all fields are present
                 const fullData = {
                   hero: { ...defaultValues.hero, ...data.hero },
-                  discover: { ...defaultValues.discover, ...data.discover },
+                  discover: { ...defaultContent, ...data.discover, images: data.discover.images?.length === 8 ? data.discover.images : defaultContent.images },
                   footer: { ...defaultValues.footer, ...data.footer },
                   general: { ...defaultValues.general, ...data.general },
                 };
 
                 const processedData = {
                     ...fullData,
-                    hero: { ...fullData.hero, imageUrl: getFullImageUrl(fullData.hero.imageUrl) },
                     discover: { ...fullData.discover, images: fullData.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
                 }
                 form.reset(processedData);
-                setHeroImagePreview(processedData.hero.imageUrl);
                 setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
             } else {
-                 form.reset(defaultValues); // Reset with full defaults
-                 setHeroImagePreview(defaultValues.hero.imageUrl);
+                 form.reset(defaultValues);
                  setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
                  toast({ variant: 'destructive', title: 'Could not load data', description: 'Using default content. Please save to create the record.'});
             }
         } catch (error) {
             console.error("Failed to fetch CMS data", error);
-            form.reset(defaultValues); // Reset with full defaults on error
-            setHeroImagePreview(defaultValues.hero.imageUrl);
+            form.reset(defaultValues);
             setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
             toast({ variant: 'destructive', title: 'Error', description: 'Could not connect to server.' });
         } finally {
@@ -110,19 +146,6 @@ export default function CmsPage() {
     }
     fetchCmsData();
   }, [form, toast]);
-
-
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setFile: (file: File | null) => void,
-    setPreview: (value: string | null) => void,
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFile(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
   
   const handleDiscoverFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
@@ -142,13 +165,8 @@ export default function CmsPage() {
     setIsSubmitting(true);
     const formData = new FormData();
 
-    // Append JSON data first
     formData.append('content', JSON.stringify(data));
 
-    // Append files with structured keys
-    if (heroImageFile) {
-      formData.append('hero.imageUrl', heroImageFile);
-    }
     discoverImageFiles.forEach((file, index) => {
       if (file) {
         formData.append(`discover.images.${index}.src`, file);
@@ -176,14 +194,12 @@ export default function CmsPage() {
              const serverData = serverResponse.data;
              const processedData = {
                 ...serverData,
-                hero: { ...serverData.hero, imageUrl: getFullImageUrl(serverData.hero.imageUrl) },
                 discover: { ...serverData.discover, images: serverData.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
             }
             form.reset(processedData);
-            setHeroImagePreview(processedData.hero.imageUrl);
             setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
+            setDiscoverImageFiles(Array(8).fill(null));
             
-            // Save the updated data with full URLs to localStorage so the homepage updates
             localStorage.setItem(CMS_DATA_KEY, JSON.stringify(processedData));
         }
 
@@ -232,21 +248,6 @@ export default function CmsPage() {
                    <div className="space-y-4 border-t pt-6">
                       <FormField control={form.control} name="hero.headline" render={({ field }) => (<FormItem><FormLabel>Headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                       <FormField control={form.control} name="hero.subheadline" render={({ field }) => (<FormItem><FormLabel>Sub-headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormItem>
-                        <FormLabel>Background Image</FormLabel>
-                        <FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setHeroImageFile, setHeroImagePreview)} className="text-sm" /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                      {heroImagePreview && (
-                        <div className="mt-2">
-                          <FormLabel>Preview</FormLabel>
-                          <Image src={heroImagePreview} alt="Hero image preview" width={200} height={100} className="rounded-md object-cover mt-2 border" />
-                        </div>
-                      )}
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="hero.imageAlt" render={({ field }) => (<FormItem><FormLabel>Image Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="hero.imageHint" render={({ field }) => (<FormItem><FormLabel>Image AI Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      </div>
                    </div>
                 </AccordionContent>
               </div>
@@ -257,19 +258,19 @@ export default function CmsPage() {
                 <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">
                   <div className="flex-1 text-left">
                     <h3 className="text-xl font-semibold leading-none tracking-tight">Discover Section</h3>
-                    <p className="text-sm text-muted-foreground mt-1.5">Content for the &quot;Discover the Sapphire Trails&quot; section.</p>
+                    <p className="text-sm text-muted-foreground mt-1.5">Content for the "Discover Our Gem Mine Tours" section.</p>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="p-6 pt-0">
                   <div className="space-y-6 border-t pt-6">
                     <FormField control={form.control} name="discover.description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator />
-                    <p className="font-medium">Section Images (3)</p>
+                    <p className="font-medium">Section Images (8)</p>
                     {form.getValues('discover.images').map((_, index) => (
                       <div key={index} className="space-y-4 p-4 border rounded-md">
                         <p className="font-medium text-sm text-muted-foreground">Image {index + 1}</p>
                         <FormItem>
-                          <FormLabel>Upload Image</FormLabel>
+                          <FormLabel>Upload New Image (Optional)</FormLabel>
                           <FormControl><Input type="file" accept="image/*" onChange={(e) => handleDiscoverFileChange(e, index)} className="text-sm" /></FormControl>
                         </FormItem>
                         {discoverImagePreviews[index] && (
@@ -278,10 +279,9 @@ export default function CmsPage() {
                               <Image src={discoverImagePreviews[index]!} alt={`Discover image ${index + 1} preview`} width={200} height={100} className="rounded-md object-cover mt-2 border" />
                           </div>
                         )}
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <FormField control={form.control} name={`discover.images.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                          <FormField control={form.control} name={`discover.images.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        </div>
+                        <FormField control={form.control} name={`discover.images.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name={`discover.images.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name={`discover.images.${index}.hoverDescription`} render={({ field }) => (<FormItem><FormLabel>Hover Description (SEO)</FormLabel><FormControl><Textarea {...field} placeholder="Descriptive text for SEO that appears on hover." /></FormControl><FormMessage /></FormItem>)} />
                       </div>
                     ))}
                   </div>
@@ -335,5 +335,3 @@ export default function CmsPage() {
     </div>
   );
 }
-
-    

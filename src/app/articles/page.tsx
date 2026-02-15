@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/footer';
 import { PageHero } from '@/components/shared/page-hero';
 import type { Metadata } from 'next';
 import { ArticlesList } from '@/components/sections/articles-list';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export const metadata: Metadata = {
   title: 'Gem Tour Articles | Sapphire Trails',
@@ -29,6 +30,7 @@ export default function ArticlesPage() {
         <PageHero title="Articles & Insights" breadcrumbs={breadcrumbs} />
         <ArticlesList />
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

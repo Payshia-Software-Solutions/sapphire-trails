@@ -5,14 +5,14 @@ const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { name, email, message } = body;
+  const { name, email, phone, message, tourInterest } = body;
 
   try {
     // Step 1: Forward the data to the PHP backend to save it
     const phpResponse = await fetch(`${API_BASE_URL}/contacts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, message }),
+      body: JSON.stringify({ name, email, phone, message, tour_interest: tourInterest }),
     });
 
     if (!phpResponse.ok) {
@@ -47,7 +47,9 @@ export async function POST(request: Request) {
           </div>
           <p style="font-size: 16px;">You have received a new message from your website contact form.</p>
           <div style="background-color: ${backgroundColor}; border-radius: 8px; padding: 20px; margin: 25px 0;">
-            <p style="font-size: 14px; margin: 0 0 15px 0;"><strong style="color: ${mutedColor};">From:</strong> ${name} &lt;${email}&gt;</p>
+            <p style="font-size: 14px; margin: 0 0 10px 0;"><strong style="color: ${mutedColor};">From:</strong> ${name} &lt;${email}&gt;</p>
+            ${phone ? `<p style="font-size: 14px; margin: 0 0 10px 0;"><strong style="color: ${mutedColor};">Phone:</strong> ${phone}</p>` : ''}
+            ${tourInterest ? `<p style="font-size: 14px; margin: 0 0 15px 0;"><strong style="color: ${mutedColor};">Tour Interest:</strong> ${tourInterest}</p>` : ''}
             <p style="font-size: 16px; white-space: pre-wrap; margin: 0;">${message}</p>
           </div>
           <p style="text-align: center; font-size: 14px; color: ${mutedColor};">You can reply directly to this email to respond.</p>
@@ -77,6 +79,7 @@ export async function POST(request: Request) {
           </div>
           <p style="font-size: 16px; color: ${mutedColor}; text-align: center;">We have received your message and will get back to you shortly. Here is a copy of your inquiry:</p>
           <div style="background-color: ${backgroundColor}; border-radius: 8px; padding: 20px; margin: 25px 0; border: 1px solid ${borderColor};">
+            ${tourInterest ? `<p style="font-size: 14px; margin: 0 0 15px 0;"><strong style="color: ${mutedColor};">Tour Interest:</strong> ${tourInterest}</p>` : ''}
             <p style="font-size: 14px; white-space: pre-wrap; margin: 0; font-style: italic;">"${message}"</p>
           </div>
           <p style="text-align: center; font-size: 14px; color: ${mutedColor};">Best regards,<br>The Sapphire Trails Team</p>

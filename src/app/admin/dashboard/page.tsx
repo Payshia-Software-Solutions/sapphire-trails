@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Booking } from '@/lib/bookings-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Users, Clock, CheckCircle, XCircle, LoaderCircle } from 'lucide-react';
 import { subDays, format, parseISO } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
@@ -37,6 +36,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const adminUser = localStorage.getItem(ADMIN_SESSION_KEY);
@@ -48,41 +48,42 @@ export default function DashboardPage() {
   }, [router]);
   
   useEffect(() => {
-    async function fetchBookings() {
+    async function fetchData() {
+      setIsLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/bookings`);
-        if (!response.ok) {
+        const [bookingsRes, packagesRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/bookings`),
+          fetch(`${API_BASE_URL}/tours`)
+        ]);
+
+        if (!bookingsRes.ok) {
           throw new Error('Failed to fetch bookings.');
         }
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setBookings(data.map(mapServerBookingToClient));
+        const bookingsData = await bookingsRes.json();
+        if (Array.isArray(bookingsData)) {
+          setBookings(bookingsData.map(mapServerBookingToClient));
+        }
+
+        if (packagesRes.ok) {
+            const serverData = await packagesRes.json();
+            if(Array.isArray(serverData)) {
+                setTourPackages(serverData.map(mapServerPackage));
+            }
         }
       } catch (error) {
-        console.error("Failed to fetch bookings:", error);
+        console.error("Failed to fetch dashboard data:", error);
         toast({
           variant: 'destructive',
           title: 'Error',
           description: 'Could not load dashboard data from the server.'
         });
+      } finally {
+        setIsLoading(false);
       }
-    }
-    
-    async function fetchTourPackages() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/tours`);
-            if (response.ok) {
-                const serverData = await response.json();
-                if(Array.isArray(serverData)) {
-                    setTourPackages(serverData.map(mapServerPackage));
-                }
-            }
-        } catch(e) { console.error("Could not fetch tour packages", e); }
     }
 
     if (isAuthenticated) {
-      fetchBookings();
-      fetchTourPackages();
+      fetchData();
     }
   }, [isAuthenticated, toast]);
 
@@ -141,6 +142,17 @@ export default function DashboardPage() {
 
   if (!isAuthenticated) {
     return null;
+  }
+  
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-muted-foreground">
+          <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+          <p>Loading Dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -11,7 +11,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/tours',
         '/explore-ratnapura',
         '/articles',
-        '/virtual-tour',
         '/contact',
         '/booking',
     ].map((route) => ({

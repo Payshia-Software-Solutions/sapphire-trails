@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://sapphiretrails.lk'),
   title: {
     template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
-    default: 'Ratnapura Gem Mine Tours | Sapphire Trails - Sri Lanka',
+    default: 'Gem Mine Tours Sri Lanka | Sapphire Trails - Luxury Ratnapura Mining Trips',
   },
-  description: 'Book the best Ratnapura gem mine tours. Experience private sapphire hunting and explore the heart of Sri Lanka\'s gem country with Sapphire Trails.',
+  description: 'Book the ultimate Gem Mine Tour in Ratnapura, Sri Lanka. Experience active mining pits, traditional gem washing, and luxury service with Sapphire Trails.',
   openGraph: {
-    title: 'Ratnapura Gem Mine Tours | Sapphire Trails - Sri Lanka',
-    description: 'Book the best Ratnapura gem mine tours and experience private sapphire hunting in Sri Lanka.',
+    title: 'Gem Mine Tours Sri Lanka | Sapphire Trails - Luxury Ratnapura Mining Trips',
+    description: 'Book the ultimate Gem Mine Tour in Ratnapura, Sri Lanka. Experience active mining pits, traditional gem washing, and luxury service with Sapphire Trails.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
       width: 1200,
@@ -72,7 +72,7 @@ export default function RootLayout({
       "availableLanguage": ["en"]
     },
     "sameAs": [
-      "https://facebook.com",
+      "https://www.facebook.com/p/Sapphire-Trails-61573050367074/",
       "https://instagram.com",
       "https://youtube.com"
     ]
@@ -94,8 +94,27 @@ export default function RootLayout({
       }
   };
 
+  const touristAttractionSchema = {
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    "name": "Sapphire Trails Gem Mine Tours",
+    "description": "Professional gem mine tours in Sri Lanka.",
+    "location": {
+      "@type": "Place",
+      "name": "Sri Lanka"
+    }
+  };
+
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preload"
+          href="https://content-provider.payshia.com/sapphire-trail/hero/sapphire-trails-her-video.webm"
+          as="video"
+          type="video/webm"
+        />
+      </head>
       <body className={cn(
         "font-body antialiased bg-background text-foreground",
         poppins.variable,
@@ -109,6 +128,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(touristAttractionSchema) }}
         />
         <LayoutProvider>
             {children}

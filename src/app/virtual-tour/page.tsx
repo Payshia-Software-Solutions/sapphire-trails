@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/footer';
 import { VirtualTourContent } from '@/components/sections/virtual-tour-content';
 import type { Metadata } from 'next';
 import { PageHero } from '@/components/shared/page-hero';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export const metadata: Metadata = {
   title: 'Virtual Gem Tour of a Ratnapura Mine | Sri Lanka',
@@ -30,6 +31,7 @@ export default function VirtualTourPage() {
         <PageHero title="Virtual Tour" breadcrumbs={breadcrumbs} />
         <VirtualTourContent />
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );
