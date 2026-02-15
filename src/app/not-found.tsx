@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Gem } from 'lucide-react';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export default function NotFound() {
   return (
@@ -22,6 +23,7 @@ export default function NotFound() {
             </Button>
         </div>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   )

@@ -12,6 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { TrustSection } from '@/components/sections/TrustSection';
 
 
 export const metadata: Metadata = {
@@ -118,6 +119,7 @@ export default function ContactPage() {
             <ContactTours />
         </ScrollAnimate>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

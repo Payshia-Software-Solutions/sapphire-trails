@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { AuthForm } from '@/components/auth/auth-form';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export default function AuthPage() {
   return (
@@ -16,6 +17,7 @@ export default function AuthPage() {
           <AuthForm />
         </Suspense>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

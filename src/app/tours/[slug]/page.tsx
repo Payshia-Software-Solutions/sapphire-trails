@@ -10,6 +10,7 @@ import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary
 import { TourFloatingBar } from '@/components/sections/tour-floating-bar';
 import { TourExperienceGallery } from '@/components/sections/tour-experience-gallery';
 import type { Metadata, ResolvingMetadata } from 'next';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 const BASE_URL = 'https://sapphiretrails.lk';
@@ -130,6 +131,7 @@ export default async function TourDetailPage({ params }: Props) {
             bookingLink={`${tourPackage.bookingLink}?tourType=${tourPackage.id}`}
         />
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

@@ -10,6 +10,7 @@ import { EthicalMiningSection } from '@/components/sections/EthicalMiningSection
 import { SafetyStandardsSection } from '@/components/sections/SafetyStandardsSection';
 import { WhyRatnapuraSection } from '@/components/sections/WhyRatnapuraSection';
 import { AboutCtaSection } from '@/components/sections/AboutCtaSection';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export const metadata: Metadata = {
   title: 'About Sapphire Trails | Ethical & Safe Sri Lanka Gem Tours',
@@ -42,6 +43,7 @@ export default function AboutPage() {
         <WhyRatnapuraSection />
         <AboutCtaSection />
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

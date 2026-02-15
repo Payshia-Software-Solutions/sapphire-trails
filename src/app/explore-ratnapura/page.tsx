@@ -6,6 +6,7 @@ import { ExploreMap } from '@/components/sections/explore-map';
 import type { Metadata } from 'next';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { PageHero } from '@/components/shared/page-hero';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export const metadata: Metadata = {
   title: 'Explore Ratnapura Attractions on Your Gem Tour | Sapphire Trails',
@@ -40,6 +41,7 @@ export default function ExploreRatnapuraPage() {
           </ScrollAnimate>
         </div>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

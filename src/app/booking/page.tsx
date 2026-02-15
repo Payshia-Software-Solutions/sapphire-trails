@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/footer';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { BookingPageContent } from '@/components/sections/booking-page-content';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export const metadata: Metadata = {
   title: 'Book Your Gem Tour Adventure in Sri Lanka | Sapphire Trails',
@@ -33,6 +34,7 @@ export default function BookingPage() {
           <BookingPageContent />
         </Suspense>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

@@ -11,6 +11,7 @@ import { LocationVisitorInfo } from '@/components/sections/location-visitor-info
 import { LocationNearby } from '@/components/sections/location-nearby';
 import { LocationCta } from '@/components/sections/location-cta';
 import type { Metadata, ResolvingMetadata } from 'next';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -98,6 +99,7 @@ export default async function LocationPage({ params }: Props) {
         />
         <LocationCta />
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

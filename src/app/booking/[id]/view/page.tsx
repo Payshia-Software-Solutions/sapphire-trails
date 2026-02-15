@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, LoaderCircle, User, Mail, Phone, Home, Ticket, Calendar, Users as GuestsIcon } from 'lucide-react';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -137,6 +138,7 @@ export default function PublicBookingViewPage() {
           )}
         </div>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

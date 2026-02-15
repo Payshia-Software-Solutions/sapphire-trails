@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { CalendarCheck, ArrowRight } from 'lucide-react';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -312,6 +313,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                     </div>
                 </div>
             </main>
+            <TrustSection />
             <Footer />
         </div>
     );

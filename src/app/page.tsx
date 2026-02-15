@@ -16,14 +16,14 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <TrustSection />
         <DiscoverSection />
         <ToursSection />
         <ExploreRatnapuraSection />
         <ArticlesSection />
         <SubscriptionSection />
-        <Footer />
       </main>
+      <TrustSection />
+      <Footer />
     </div>
   );
 }
