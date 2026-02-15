@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { getFullImageUrl } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -106,44 +105,40 @@ export function DiscoverSection() {
         <ScrollAnimate 
             className="mt-6 w-full mx-auto flex-grow min-h-0"
         >
-            <Dialog>
-              <div className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-4 h-full">
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-4 h-full">
                 {content.images.map((image, index) => (
-                  <DialogTrigger asChild key={index}>
-                    <div className={cn("relative w-full h-full overflow-hidden rounded-lg group cursor-pointer", image.className)}>
-                        <Image
-                            src={getFullImageUrl(image.src)}
-                            alt={image.alt}
-                            data-ai-hint={image.hint}
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-black/70 flex items-center justify-center p-4 text-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p className="text-sm">{image.hoverDescription}</p>
+                  <Dialog key={index}>
+                    <DialogTrigger asChild>
+                      <div className={cn("relative w-full h-full overflow-hidden rounded-lg group cursor-pointer", image.className)}>
+                          <Image
+                              src={getFullImageUrl(image.src)}
+                              alt={image.alt}
+                              data-ai-hint={image.hint}
+                              fill
+                              className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-black/70 flex items-center justify-center p-4 text-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <p className="text-sm">{image.hoverDescription}</p>
+                          </div>
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="w-auto max-w-[90vw] p-2 bg-transparent border-0 shadow-none">
+                        <div className="relative">
+                            <Image
+                                src={getFullImageUrl(image.src)}
+                                alt={image.alt}
+                                width={1600}
+                                height={900}
+                                className="object-contain max-h-[80vh] rounded-lg"
+                            />
+                             {image.hoverDescription && (
+                                <p className="mt-2 text-center text-white text-sm bg-black/50 rounded-b-lg p-3">{image.hoverDescription}</p>
+                            )}
                         </div>
-                    </div>
-                  </DialogTrigger>
+                    </DialogContent>
+                  </Dialog>
                 ))}
-              </div>
-              <DialogContent className="max-w-4xl p-0 border-0 bg-transparent">
-                 <Carousel className="w-full">
-                    <CarouselContent>
-                        {content.images.map((image, index) => (
-                            <CarouselItem key={index}>
-                                <div className="relative aspect-video">
-                                    <Image src={getFullImageUrl(image.src)} alt={image.alt} fill className="object-contain" />
-                                </div>
-                                <div className="text-center text-white p-4 bg-black/50">
-                                  <p>{image.hoverDescription}</p>
-                                </div>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="left-2 text-white" />
-                    <CarouselNext className="right-2 text-white" />
-                 </Carousel>
-              </DialogContent>
-            </Dialog>
+            </div>
         </ScrollAnimate>
       </div>
     </section>
