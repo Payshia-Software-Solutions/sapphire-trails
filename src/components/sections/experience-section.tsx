@@ -9,9 +9,9 @@ const experienceItems = [
         description: "Experience the thrill of the hunt with hands-on gem mining adventures led by local experts in the heart of Ratnapura.",
         icon: Gem,
         image: {
-            src: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp',
-            alt: 'A person sifting for gems in a woven basket during a gem tour',
-            hint: 'gem mining sifting'
+            src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp',
+            alt: 'A tourist gets fitted with a safety harness before a gem tour',
+            hint: 'gem tour safety'
         }
     },
     {
