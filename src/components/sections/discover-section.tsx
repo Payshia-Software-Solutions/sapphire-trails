@@ -16,56 +16,56 @@ const defaultContent = {
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', 
       alt: 'A tourist gets fitted with a safety harness before a gem tour.', 
       hint: 'gem tour safety', 
-      className: 'col-span-2 row-span-2',
+      className: 'md:col-span-2 md:row-span-2',
       hoverDescription: "Prepare for an authentic Gem Mine Tour. Safety and adventure go hand-in-hand as you get ready to descend into a real mine."
     },
     { 
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', 
       alt: 'A happy tourist smiles while holding his helmet straps during a gem mine tour.', 
       hint: 'happy tourist gem tour', 
-      className: '',
+      className: 'md:col-span-1 md:row-span-1',
       hoverDescription: "The thrill of discovery on our Gem Tour. This hands-on experience is what makes our gem tours unforgettable."
     },
     { 
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', 
       alt: 'A miner works inside a dimly lit, traditional gem mine.', 
       hint: 'traditional gem mine', 
-      className: '',
+      className: 'md:col-span-1 md:row-span-1',
       hoverDescription: "Deep inside a traditional mine. This is the heart of our Gem Mine Tour, showcasing the authentic mining process."
     },
     { 
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', 
       alt: 'A couple examines a glowing gemstone with a light tool.', 
       hint: 'examining gemstone', 
-      className: '',
+      className: 'md:col-span-1 md:row-span-1',
       hoverDescription: "Inspecting a freshly found sapphire. Every Gem Tour concludes with a close-up look at these precious stones."
     },
     { 
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', 
       alt: 'A person holds a piece of paper with several rough gemstones on it.', 
       hint: 'rough gemstones hand', 
-      className: '',
+      className: 'md:col-span-1 md:row-span-1',
       hoverDescription: "The rewards of a successful Gem Mine Tour. Hold raw, uncut sapphires straight from the earth."
     },
     { 
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', 
       alt: 'A tourist gives a thumbs-up while wearing a hard hat.', 
       hint: 'tourist thumbs up', 
-      className: 'col-span-2 row-span-2',
+      className: 'md:col-span-1 md:row-span-1',
       hoverDescription: "An unforgettable adventure. Our guests love the unique access provided by our expert-led Gem Tour."
     },
     { 
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', 
       alt: 'A person sharpens a tool on a traditional gem cutting wheel.', 
       hint: 'gem cutting wheel', 
-      className: '',
+      className: 'md:col-span-2 md:row-span-1',
       hoverDescription: "The art of transformation. Witness traditional gem cutting, a key part of the complete Gem Mine Tour experience."
     },
     { 
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', 
       alt: 'A gemologist sorts and grades small gemstones at a well-lit desk.', 
       hint: 'gemologist sorting gems', 
-      className: '',
+      className: 'md:col-span-1 md:row-span-1',
       hoverDescription: "From rough stone to finished jewel. Our gemologists explain the sorting process, an essential part of every Gem Tour."
     },
   ]
@@ -104,7 +104,7 @@ export function DiscoverSection() {
         <ScrollAnimate 
             className="mt-6 w-full max-w-6xl mx-auto flex-grow min-h-0"
         >
-            <div className="grid grid-cols-2 md:grid-cols-4 grid-rows-4 md:grid-rows-2 gap-2 md:gap-4 h-full">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 h-full">
               {content.images.map((image, index) => (
                 <div key={index} className={cn("relative w-full h-full overflow-hidden rounded-lg group", image.className)}>
                     <Image
