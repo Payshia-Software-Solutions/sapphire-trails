@@ -25,25 +25,27 @@ import { getFullImageUrl } from '@/lib/utils';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
+const defaultContent = {
+  description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka—the legendary 'City of Gems'—this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.",
+  images: [
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', alt: 'Close-up of a vibrant blue sapphire from a gem tour held between tweezers.', hint: 'blue sapphire gem tour' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', alt: 'Miners working inside a traditional gem mine on a Sapphire Trails tour.', hint: 'gem mine tour' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', alt: 'A hand holding a variety of rough, uncut gemstones found during a gem mining tour.', hint: 'rough gemstones mining' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', alt: 'Exquisite sapphire and diamond jewelry, a result of a successful gem tour.', hint: 'sapphire jewelry' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', alt: 'A scenic panoramic view of the lush Ratnapura landscape, the setting for our gem tours.', hint: 'ratnapura landscape' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', alt: 'A tourist examining a gemstone closely with a loupe on a gem mining tour.', hint: 'gem examination tour' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', alt: 'The interior of a gem cutting and polishing workshop, part of the gemstone tour experience.', hint: 'gem cutting workshop' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', alt: 'The bustling and vibrant atmosphere of the Ratnapura gem market.', hint: 'gem market' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-9-optimized.webp', alt: 'A colorful collection of various polished gemstones on a display tray, sourced from local mines.', hint: 'gemstone collection' },
+  ]
+};
+
 const defaultValues = {
   hero: {
     headline: "Sri Lanka Gem Mine Tour - An Exclusive Luxury Experience",
     subheadline: "Discover the world's finest sapphires in Ratnapura with a professional gem mine tour.",
   },
-  discover: {
-    description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours in the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems.' This authentic experience takes you through the depths of actual mining pits to discover the ancient tradition behind the mining of world-famous Ceylon Sapphires. Under the guidance of experts in the trade, you'll have access to the entire process of gem mining, including the washing of gravel in traditional wicker baskets to the final sorting of the precious stones. It's a rich experience that offers much more than just the usual tourist experience.",
-    images: [
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', alt: 'Close-up of a vibrant blue sapphire held between tweezers.', hint: 'blue sapphire' },
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', alt: 'Gem miners working inside a traditional gem mine in Sri Lanka.', hint: 'gem mining' },
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', alt: 'A hand holding a variety of rough, uncut gemstones of different colors.', hint: 'rough gemstones' },
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', alt: 'Exquisite sapphire and diamond jewelry on display.', hint: 'sapphire jewelry' },
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', alt: 'A scenic panoramic view of the lush Ratnapura landscape.', hint: 'ratnapura landscape' },
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', alt: 'A tourist examining a gemstone closely with a jeweler\'s loupe.', hint: 'gem examination' },
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', alt: 'The interior of a gem cutting and polishing workshop in action.', hint: 'gem cutting' },
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', alt: 'The bustling and vibrant atmosphere of the Ratnapura gem market.', hint: 'gem market' },
-        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-9-optimized.webp', alt: 'A colorful collection of various polished gemstones on a display tray.', hint: 'gemstone collection' },
-    ],
-  },
+  discover: defaultContent,
   footer: {
     facebookUrl: 'https://facebook.com',
     instagramUrl: 'https://instagram.com',
@@ -76,10 +78,9 @@ export default function CmsPage() {
             const response = await fetch(`${API_BASE_URL}/content/homepage`);
             if (response.ok) {
                 const data = await response.json();
-                // Merge fetched data with defaults to ensure all fields are present
                 const fullData = {
                   hero: { ...defaultValues.hero, ...data.hero },
-                  discover: { ...defaultValues.discover, ...data.discover },
+                  discover: { ...defaultContent, ...data.discover, images: data.discover.images?.length === 9 ? data.discover.images : defaultContent.images },
                   footer: { ...defaultValues.footer, ...data.footer },
                   general: { ...defaultValues.general, ...data.general },
                 };
@@ -91,13 +92,13 @@ export default function CmsPage() {
                 form.reset(processedData);
                 setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
             } else {
-                 form.reset(defaultValues); // Reset with full defaults
+                 form.reset(defaultValues);
                  setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
                  toast({ variant: 'destructive', title: 'Could not load data', description: 'Using default content. Please save to create the record.'});
             }
         } catch (error) {
             console.error("Failed to fetch CMS data", error);
-            form.reset(defaultValues); // Reset with full defaults on error
+            form.reset(defaultValues);
             setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
             toast({ variant: 'destructive', title: 'Error', description: 'Could not connect to server.' });
         } finally {
@@ -125,10 +126,8 @@ export default function CmsPage() {
     setIsSubmitting(true);
     const formData = new FormData();
 
-    // Append JSON data first
     formData.append('content', JSON.stringify(data));
 
-    // Append files with structured keys
     discoverImageFiles.forEach((file, index) => {
       if (file) {
         formData.append(`discover.images.${index}.src`, file);
@@ -160,8 +159,8 @@ export default function CmsPage() {
             }
             form.reset(processedData);
             setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
+            setDiscoverImageFiles(Array(9).fill(null));
             
-            // Save the updated data with full URLs to localStorage so the homepage updates
             localStorage.setItem(CMS_DATA_KEY, JSON.stringify(processedData));
         }
 
@@ -220,7 +219,7 @@ export default function CmsPage() {
                 <AccordionTrigger className="p-6 hover:no-underline rounded-lg data-[state=open]:rounded-b-none">
                   <div className="flex-1 text-left">
                     <h3 className="text-xl font-semibold leading-none tracking-tight">Discover Section</h3>
-                    <p className="text-sm text-muted-foreground mt-1.5">Content for the &quot;Discover the Sapphire Trails&quot; section.</p>
+                    <p className="text-sm text-muted-foreground mt-1.5">Content for the "Discover Our Gem Mine Tours" section.</p>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="p-6 pt-0">
@@ -232,7 +231,7 @@ export default function CmsPage() {
                       <div key={index} className="space-y-4 p-4 border rounded-md">
                         <p className="font-medium text-sm text-muted-foreground">Image {index + 1}</p>
                         <FormItem>
-                          <FormLabel>Upload Image</FormLabel>
+                          <FormLabel>Upload New Image (Optional)</FormLabel>
                           <FormControl><Input type="file" accept="image/*" onChange={(e) => handleDiscoverFileChange(e, index)} className="text-sm" /></FormControl>
                         </FormItem>
                         {discoverImagePreviews[index] && (

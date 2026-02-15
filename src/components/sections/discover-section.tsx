@@ -10,17 +10,17 @@ import { getFullImageUrl } from '@/lib/utils';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultContent = {
-  description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours in the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems.' This authentic experience takes you through the depths of actual mining pits to discover the ancient tradition behind the mining of world-famous Ceylon Sapphires. Under the guidance of experts in the trade, you'll have access to the entire process of gem mining, including the washing of gravel in traditional wicker baskets to the final sorting of the precious stones. It's a rich experience that offers much more than just the usual tourist experience.",
+  description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka—the legendary 'City of Gems'—this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.",
   images: [
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', alt: 'Close-up of a vibrant blue sapphire held between tweezers.', hint: 'blue sapphire' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', alt: 'Gem miners working inside a traditional gem mine in Sri Lanka.', hint: 'gem mining' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', alt: 'A hand holding a variety of rough, uncut gemstones of different colors.', hint: 'rough gemstones' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', alt: 'Exquisite sapphire and diamond jewelry on display.', hint: 'sapphire jewelry' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', alt: 'A scenic panoramic view of the lush Ratnapura landscape.', hint: 'ratnapura landscape' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', alt: 'A tourist examining a gemstone closely with a jeweler\'s loupe.', hint: 'gem examination' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', alt: 'The interior of a gem cutting and polishing workshop in action.', hint: 'gem cutting' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', alt: 'Close-up of a vibrant blue sapphire from a gem tour held between tweezers.', hint: 'blue sapphire gem tour' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', alt: 'Miners working inside a traditional gem mine on a Sapphire Trails tour.', hint: 'gem mine tour' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', alt: 'A hand holding a variety of rough, uncut gemstones found during a gem mining tour.', hint: 'rough gemstones mining' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', alt: 'Exquisite sapphire and diamond jewelry, a result of a successful gem tour.', hint: 'sapphire jewelry' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', alt: 'A scenic panoramic view of the lush Ratnapura landscape, the setting for our gem tours.', hint: 'ratnapura landscape' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', alt: 'A tourist examining a gemstone closely with a loupe on a gem mining tour.', hint: 'gem examination tour' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', alt: 'The interior of a gem cutting and polishing workshop, part of the gemstone tour experience.', hint: 'gem cutting workshop' },
     { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', alt: 'The bustling and vibrant atmosphere of the Ratnapura gem market.', hint: 'gem market' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-9-optimized.webp', alt: 'A colorful collection of various polished gemstones on a display tray.', hint: 'gemstone collection' },
+    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-9-optimized.webp', alt: 'A colorful collection of various polished gemstones on a display tray, sourced from local mines.', hint: 'gemstone collection' },
   ]
 };
 
@@ -47,7 +47,7 @@ export function DiscoverSection() {
       <div className="container mx-auto px-4 md:px-6">
         <ScrollAnimate className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
-            Discover the Sapphire Trails
+            Discover Our Gem Mine Tours
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
             {content.description}
