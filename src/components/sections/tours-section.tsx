@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from 'next/image';
@@ -41,7 +40,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
 );
 
 export function ToursSection() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
   const [tours, setTours] = useState<TourPackage[]>([]);
 
   useEffect(() => {
@@ -94,9 +93,9 @@ export function ToursSection() {
           {/* Mobile view swiper */}
           <div className="md:hidden relative">
              <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex">
+              <div className="flex -ml-4">
                 {tours.map((tour, index) => (
-                  <div className="relative flex-[0_0_100%] min-w-0 p-2" key={index}>
+                  <div className="relative flex-[0_0_80%] min-w-0 pl-4" key={index}>
                     <TourCard tour={tour} />
                   </div>
                 ))}
