@@ -9,7 +9,7 @@ import { ScrollAnimate } from '../shared/scroll-animate';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultContent = {
-  headline: "Sri Lanka Gem Mine Tour: An Exclusive Luxury Experience",
+  headline: "Sri Lanka Gem Mine Tour - An Exclusive Luxury Experience",
   subheadline: "Discover the world's finest sapphires in Ratnapura with a professional gem mine tour.",
 };
 
