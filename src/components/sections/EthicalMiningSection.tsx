@@ -16,9 +16,9 @@ export function EthicalMiningSection() {
           <div>
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg shadow-lg">
               <Image
-                src="https://picsum.photos/seed/ethical-mining/600/450"
-                alt="Artisan miners working in a lush, green environment, signifying ethical practices."
-                data-ai-hint="miners hands"
+                src="https://content-provider.payshia.com/sapphire-trail/images/tour-11-optimized.webp"
+                alt="A representation of the high standards and quality upheld by Sapphire Trails."
+                data-ai-hint="quality standards"
                 fill
                 className="object-cover"
               />
