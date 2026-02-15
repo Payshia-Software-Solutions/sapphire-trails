@@ -10,9 +10,9 @@ export function SafetyStandardsSection() {
            <div className="order-last md:order-first">
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg shadow-lg">
               <Image
-                src="https://picsum.photos/seed/safety-gear/600/450"
-                alt="Safety gear including helmets and boots laid out for a tour."
-                data-ai-hint="safety helmet"
+                src="https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp"
+                alt="A happy tourist gives a thumbs-up while wearing safety gear on a gem tour."
+                data-ai-hint="tourist safety"
                 fill
                 className="object-cover"
               />
