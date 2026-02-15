@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/footer';
 import { HeroSection } from '@/components/sections/hero-section';
 import { TrustSection } from '@/components/sections/TrustSection';
 import { DiscoverSection } from '@/components/sections/discover-section';
+import { StatsSection } from '@/components/sections/stats-section';
 import { ToursSection } from '@/components/sections/tours-section';
 import { ExploreRatnapuraSection } from '@/components/sections/explore-ratnapura-section';
 import { ArticlesSection } from '@/components/sections/articles-section';
@@ -17,6 +18,7 @@ export default function Home() {
       <main className="flex-1">
         <HeroSection />
         <DiscoverSection />
+        <StatsSection />
         <ToursSection />
         <ExploreRatnapuraSection />
         <ArticlesSection />
