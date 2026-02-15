@@ -29,8 +29,8 @@ export default function Home() {
         <HeroSection />
         <DiscoverSection />
         <ToursSection />
-        <SubscriptionSection />
         <ExploreRatnapuraSection />
+        <SubscriptionSection />
         <BookingSection />
         <Footer />
       </main>
