@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -8,7 +9,7 @@ import { useState, useEffect } from 'react';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultSocials = {
-    facebookUrl: 'https://facebook.com',
+    facebookUrl: 'https://www.facebook.com/p/Sapphire-Trails-61573050367074/',
     instagramUrl: 'https://instagram.com',
     youtubeUrl: 'https://youtube.com',
 };

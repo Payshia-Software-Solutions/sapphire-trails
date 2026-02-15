@@ -86,7 +86,7 @@ const defaultValues = {
   },
   discover: defaultContent,
   footer: {
-    facebookUrl: 'https://facebook.com',
+    facebookUrl: 'https://www.facebook.com/p/Sapphire-Trails-61573050367074/',
     instagramUrl: 'https://instagram.com',
     youtubeUrl: 'https://youtube.com',
   },

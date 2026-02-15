@@ -72,7 +72,7 @@ export default function RootLayout({
       "availableLanguage": ["en"]
     },
     "sameAs": [
-      "https://facebook.com",
+      "https://www.facebook.com/p/Sapphire-Trails-61573050367074/",
       "https://instagram.com",
       "https://youtube.com"
     ]
