@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -7,6 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
+import useEmblaCarousel from 'embla-carousel-react';
+import React from 'react';
 
 const mockArticles = [
     {
@@ -42,7 +43,7 @@ const ArticleCard = ({ article }: { article: typeof mockArticles[0] }) => (
             <Image
             src={article.imageUrl}
             alt={article.title}
-            data-ai-hint={article.imageHint}
+            data-ai-hint={article.hint}
             fill
             className="object-cover"
             />
@@ -63,6 +64,8 @@ const ArticleCard = ({ article }: { article: typeof mockArticles[0] }) => (
 );
 
 export function ArticlesSection() {
+  const [emblaRef] = useEmblaCarousel({ loop: true, align: 'start' });
+
   return (
     <section id="articles" className="w-full bg-background py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6">
@@ -75,11 +78,27 @@ export function ArticlesSection() {
               Dive deeper into the world of gemology and travel with our latest articles.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          {/* Desktop view */}
+          <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-8">
             {mockArticles.slice(0, 3).map((article) => (
               <ArticleCard key={article.slug} article={article} />
             ))}
           </div>
+
+          {/* Mobile view swiper */}
+          <div className="md:hidden relative">
+             <div className="overflow-hidden -ml-4" ref={emblaRef}>
+              <div className="flex">
+                {mockArticles.slice(0, 3).map((article) => (
+                  <div className="relative flex-[0_0_85%] min-w-0 pl-4" key={article.slug}>
+                    <ArticleCard article={article} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
            <div className="text-center mt-12">
             <Button asChild size="lg" variant="outline">
                 <Link href="/articles">View All Articles</Link>
