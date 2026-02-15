@@ -7,6 +7,7 @@ import { HeroSection } from '@/components/sections/hero-section';
 import { DiscoverSection } from '@/components/sections/discover-section';
 import { ToursSection } from '@/components/sections/tours-section';
 import { ExploreRatnapuraSection } from '@/components/sections/explore-ratnapura-section';
+import { ArticlesSection } from '@/components/sections/articles-section';
 import { BookingSection } from '@/components/sections/booking-section';
 import { SubscriptionSection } from '@/components/sections/subscription-section';
 import { useScroll } from '@/contexts/scroll-context';
@@ -30,6 +31,7 @@ export default function Home() {
         <DiscoverSection />
         <ToursSection />
         <ExploreRatnapuraSection />
+        <ArticlesSection />
         <SubscriptionSection />
         <BookingSection />
         <Footer />
