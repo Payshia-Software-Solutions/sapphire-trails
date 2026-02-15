@@ -28,7 +28,10 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       <h3 className="text-xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
       <p className="text-muted-foreground mb-6 flex-grow line-clamp-2">{tour.homepageDescription}</p>
       <div className="flex justify-between items-center mt-auto pt-4 border-t border-border">
-          <p className="text-2xl font-bold text-primary">{tour.price} <span className="text-sm font-normal text-muted-foreground">{tour.priceSuffix}</span></p>
+          <div className="flex flex-col items-start">
+            <span className="text-2xl font-bold text-primary">{tour.price}</span>
+            <span className="text-sm font-normal text-muted-foreground -mt-1">{tour.priceSuffix}</span>
+          </div>
           <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
             <Link href={`/tours/${tour.slug}`}>
               <ArrowRight className="mr-2 h-4 w-4" />
