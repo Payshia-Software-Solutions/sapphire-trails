@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
-import { CalendarCheck, ArrowRight } from 'lucide-react';
+import { CalendarCheck, ArrowRight, LoaderCircle, PackageSearch } from 'lucide-react';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -45,13 +45,16 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
 
 export function AllToursGrid() {
     const [allTours, setAllTours] = useState<TourPackage[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function fetchTours() {
+            setIsLoading(true);
             try {
                 const response = await fetch(`${API_BASE_URL}/tours`);
                  if (!response.ok) {
                     console.error('Failed to fetch from server.');
+                    setAllTours([]);
                     return;
                 }
 
@@ -60,9 +63,13 @@ export function AllToursGrid() {
                     setAllTours(data.map(mapServerPackageToClient));
                 } else {
                     console.error('Server response was not an array.');
+                    setAllTours([]);
                 }
             } catch (e) {
                 console.error("Failed to fetch or parse packages.", e);
+                setAllTours([]);
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchTours();
@@ -71,11 +78,24 @@ export function AllToursGrid() {
     return (
         <section className="w-full py-12 md:py-24 bg-background-alt">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
-                    {allTours.map((tour) => (
-                        <TourCard key={tour.id} tour={tour} />
-                    ))}
-                </div>
+                {isLoading ? (
+                    <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+                        <LoaderCircle className="h-12 w-12 text-muted-foreground/50 animate-spin" />
+                        <p>Fetching tour packages...</p>
+                    </div>
+                ) : allTours.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
+                        {allTours.map((tour) => (
+                            <TourCard key={tour.id} tour={tour} />
+                        ))}
+                    </div>
+                ) : (
+                     <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+                        <PackageSearch className="h-12 w-12 text-muted-foreground/50" />
+                        <p>Could not load tour packages at the moment.</p>
+                        <p className="text-sm">Please try again later.</p>
+                    </div>
+                )}
             </div>
         </section>
     )
