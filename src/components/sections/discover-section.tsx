@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from 'next/image';
@@ -12,7 +11,7 @@ import { CheckCircle } from 'lucide-react';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultContent = {
-  description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka—the legendary 'City of Gems'—this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.",
+  description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems', this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.",
   images: [
     { 
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', 
@@ -119,7 +118,7 @@ export function DiscoverSection() {
             Discover Our Gem Mine Tours
           </h2>
           <p className="mt-4 text-muted-foreground text-base">
-           Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka—the legendary 'City of Gems'—this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.
+           Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems', this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.
           </p>
         </ScrollAnimate>
 
