@@ -62,7 +62,7 @@ export function DiscoverSection() {
                 let itemClass = 'aspect-square';
                 if (index === 0) itemClass = 'md:col-span-2 md:row-span-2 aspect-square';
                 else if (index === 5) itemClass = 'md:col-span-2 aspect-[16/9]';
-                else if (index === 8) itemClass = 'md:col-span-2 aspect-[16/9]';
+                else if (index === 8) itemClass = 'col-span-2 md:col-span-4 aspect-[16/9]';
 
                 return (
                   <div key={index} className={cn("relative w-full overflow-hidden rounded-lg group", itemClass)}>
