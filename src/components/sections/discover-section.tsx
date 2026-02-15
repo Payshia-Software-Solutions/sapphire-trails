@@ -43,29 +43,29 @@ export function DiscoverSection() {
   }, []);
 
   return (
-    <section id="about" className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
-      <div className="container mx-auto px-4 md:px-6">
-        <ScrollAnimate className="max-w-3xl mx-auto text-center">
+    <section id="about" className="w-full h-screen flex flex-col justify-center bg-background-alt scroll-section py-8 md:py-12">
+      <div className="container mx-auto px-4 md:px-6 flex flex-col h-full">
+        <ScrollAnimate className="max-w-3xl mx-auto text-center flex-shrink-0">
           <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
             Discover Our Gem Mine Tours
           </h2>
-          <p className="mt-4 text-muted-foreground text-base md:text-lg">
-            {content.description}
+          <p className="mt-4 text-muted-foreground text-base">
+            Get more than just a glimpse of this captivating world with our unique Gem Mine Tours in the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems.' This authentic experience takes you through the depths of actual mining pits to discover the ancient tradition behind the mining of world-famous Ceylon Sapphires. Under the guidance of experts in the trade, you'll have access to the entire process of gem mining, including the washing of gravel in traditional wicker baskets to the final sorting of the precious stones. It's a rich experience that offers much more than just the usual tourist experience.
           </p>
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-8 w-full max-w-6xl mx-auto"
+            className="mt-6 w-full max-w-6xl mx-auto flex-grow min-h-0"
         >
-            <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-auto gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-fr gap-2 md:gap-4 h-full">
               {content.images.map((image, index) => {
-                let itemClass = 'aspect-square';
-                if (index === 0) itemClass = 'md:col-span-2 md:row-span-2 aspect-square';
-                else if (index === 5) itemClass = 'md:col-span-2 aspect-[16/9]';
-                else if (index === 8) itemClass = 'col-span-2 md:col-span-4 aspect-[16/9]';
+                let itemClass = '';
+                if (index === 0) itemClass = 'md:col-span-2 md:row-span-2';
+                else if (index === 5) itemClass = 'md:col-span-2';
+                else if (index === 8) itemClass = 'col-span-2 md:col-span-4';
 
                 return (
-                  <div key={index} className={cn("relative w-full overflow-hidden rounded-lg group", itemClass)}>
+                  <div key={index} className={cn("relative w-full h-full overflow-hidden rounded-lg group", itemClass)}>
                       <Image
                           src={getFullImageUrl(image.src)}
                           alt={image.alt}
