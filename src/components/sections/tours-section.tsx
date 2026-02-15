@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import useEmblaCarousel from 'embla-carousel-react';
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
@@ -40,7 +40,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
 );
 
 export function ToursSection() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
+  const [emblaRef] = useEmblaCarousel({ loop: true, align: 'start' });
   const [tours, setTours] = useState<TourPackage[]>([]);
 
   useEffect(() => {
@@ -65,14 +65,6 @@ export function ToursSection() {
     }
     fetchTours();
   }, []);
-  
-  const scrollPrev = React.useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev()
-  }, [emblaApi]);
-
-  const scrollNext = React.useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext()
-  }, [emblaApi]);
 
   return (
     <section id="tours" className="w-full bg-background py-12 md:py-24 lg:py-32">
@@ -101,12 +93,6 @@ export function ToursSection() {
                 ))}
               </div>
             </div>
-            <Button onClick={scrollPrev} className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 z-10 bg-background/50 hover:bg-background/80 border-0 text-foreground">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <Button onClick={scrollNext} className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 z-10 bg-background/50 hover:bg-background/80 border-0 text-foreground">
-              <ArrowRight className="h-4 w-4" />
-            </Button>
           </div>
         </ScrollAnimate>
       </div>
