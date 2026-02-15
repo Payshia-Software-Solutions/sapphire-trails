@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { getFullImageUrl } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { CheckCircle } from 'lucide-react';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -73,26 +72,6 @@ const defaultContent = {
   ]
 };
 
-const trustPoints = [
-    { text: 'Government Licensed Mines' },
-    { text: 'Certified Gemologists' },
-    { text: 'Safety Equipment Provided' },
-];
-
-const TrustBar = () => (
-    <div className="my-6">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-8 text-center">
-            {trustPoints.map((point, index) => (
-                <div key={index} className="flex items-center justify-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                    <span className="text-sm font-medium text-muted-foreground">{point.text}</span>
-                </div>
-            ))}
-        </div>
-    </div>
-);
-
-
 export function DiscoverSection() {
   const [content, setContent] = useState(defaultContent);
 
@@ -114,17 +93,13 @@ export function DiscoverSection() {
   return (
     <section id="about" className="w-full bg-background-alt py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6">
-        <ScrollAnimate className="max-w-3xl mx-auto text-center">
+        <ScrollAnimate className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
             Discover Our Gem Mine Tours
           </h2>
           <p className="mt-4 text-muted-foreground text-base">
            Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems', this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.
           </p>
-        </ScrollAnimate>
-
-        <ScrollAnimate>
-            <TrustBar />
         </ScrollAnimate>
 
         <ScrollAnimate 
