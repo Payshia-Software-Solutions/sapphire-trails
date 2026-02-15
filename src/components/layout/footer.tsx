@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -84,7 +83,7 @@ export function Footer() {
                 <p>Email: info@sapphiretrails.com</p>
                 <p>Primary: 071 235 7700</p>
                 <p>Secondary: 071 638 1000</p>
-                <a href="https://www.google.com/maps/search/?api=1&query=Grand+Silver+Ray+Ratnapura" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                <a href="https://maps.app.goo.gl/h562367TWEDda77J8" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-primary transition-colors">
                     <MapPin className="h-4 w-4" />
                     Find us on Google Maps
                 </a>
