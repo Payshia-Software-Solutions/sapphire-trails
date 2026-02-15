@@ -105,7 +105,7 @@ export function DiscoverSection() {
         <ScrollAnimate 
             className="w-full"
         >
-            <div className="grid grid-cols-2 md:grid-cols-6 md:auto-rows-[150px] gap-2 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-6 md:auto-rows-[200px] gap-2 md:gap-4">
                 {content.images.map((image, index) => (
                   <Dialog key={index}>
                     <DialogTrigger asChild>
