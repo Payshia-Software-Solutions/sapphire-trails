@@ -168,57 +168,53 @@ export async function generateMetadata(
 }
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
-  <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
-    <div className="relative h-64 w-full">
-      <Image
-        src={tour.imageUrl}
-        alt={tour.imageAlt}
-        data-ai-hint={tour.imageHint}
-        fill
-        className="object-cover"
-      />
-    </div>
-    <CardContent className="p-8 flex flex-col flex-grow">
-      <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
-      <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
-      <div className="flex items-center gap-4 mt-auto">
-        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
-          <Link href={`/booking?tourType=${tour.id}`}>
-            <CalendarCheck className="mr-2 h-4 w-4" />
-            Book Now
-          </Link>
-        </Button>
-        <Button asChild variant="outline" className="text-primary border-primary hover:bg-primary/10 hover:text-primary rounded-full px-6">
-            <Link href={`/tours/${tour.slug}`}>
-                <ArrowRight className="mr-2 h-4 w-4" />
-                More Info
+    <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10 rounded-xl overflow-hidden">
+      <Link href={`/tours/${tour.slug}`} className="block group">
+          <div className="relative h-40 w-full">
+          <Image
+              src={tour.imageUrl}
+              alt={tour.imageAlt}
+              data-ai-hint={tour.imageHint}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          </div>
+      </Link>
+      <CardContent className="p-4 flex flex-col flex-grow">
+        <h3 className="text-lg font-headline font-bold text-primary mb-2 flex-grow">
+          <Link href={`/tours/${tour.slug}`}>{tour.homepageTitle}</Link>
+        </h3>
+        <div className="flex items-center justify-between gap-4 mt-auto">
+          <p className="text-lg font-bold text-primary">{tour.price}</p>
+          <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4">
+            <Link href={`/booking?tourType=${tour.id}`}>
+              <CalendarCheck className="mr-2 h-4 w-4" />
+              Book
             </Link>
-        </Button>
-      </div>
-    </CardContent>
-  </Card>
-);
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
-function BookableTours({ tours }: { tours: TourPackage[] }) {
+function ToursSidebar({ tours }: { tours: TourPackage[] }) {
     if (!tours || tours.length === 0) return null;
     return (
-        <section className="w-full py-12 md:py-24 bg-background">
-            <div className="container mx-auto px-4 md:px-6">
-                 <div className="text-center max-w-3xl mx-auto mb-12">
-                    <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
-                        Ready for an Adventure?
-                    </h2>
-                    <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
-                        Choose your perfect gem tour experience and book your spot today.
-                    </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
-                    {tours.map((tour) => (
-                        <TourCard key={tour.id} tour={tour} />
-                    ))}
-                </div>
+        <aside className="sticky top-24 space-y-8">
+            <div className="text-left">
+                <h2 className="text-2xl font-headline font-bold tracking-tight text-primary">
+                    Ready for an Adventure?
+                </h2>
+                <p className="mt-2 text-muted-foreground">
+                    Choose your perfect gem tour experience and book now.
+                </p>
             </div>
-        </section>
+            <div className="space-y-6">
+                {tours.map((tour) => (
+                    <TourCard key={tour.id} tour={tour} />
+                ))}
+            </div>
+        </aside>
     )
 }
 
@@ -244,38 +240,43 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             <Header />
             <main className="flex-1">
                 <PageHero title={pageTitle} breadcrumbs={breadcrumbs} />
-                <article className="py-12 md:py-24 bg-background-alt">
+                <div className="py-12 md:py-24 bg-background-alt">
                     <div className="container mx-auto px-4 md:px-6">
-                        <div className="max-w-3xl mx-auto">
-                            <div className="relative aspect-video mb-12 rounded-lg overflow-hidden shadow-lg">
-                                <Image
-                                    src={article.imageUrl}
-                                    alt={article.title}
-                                    data-ai-hint={article.imageHint}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            {article.content ? (
-                                <div
-                                  className="space-y-6 text-lg text-muted-foreground leading-relaxed [&_h2]:text-2xl [&_h2]:font-headline [&_h2]:text-primary [&_h2]:pt-4 [&_h4]:font-semibold [&_h4]:text-foreground [&_ul]:list-disc [&_ul]:list-inside [&_ul]:space-y-2"
-                                  dangerouslySetInnerHTML={{ __html: article.content }}
-                                />
-                            ) : (
-                                <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
-                                    <p className="text-xl text-foreground font-semibold">{article.description}</p>
-                                    <p>This is placeholder content for the article titled &quot;{article.title}&quot;. In a real application, this would be replaced with the full article body, likely fetched from a CMS. For now, we can imagine a detailed exploration of the topic, filled with useful information for anyone interested in a gem tour.</p>
-                                    <h2 className="text-2xl font-headline text-primary pt-4">Diving Deeper</h2>
-                                    <p>The content would elaborate on the key points mentioned in the description, providing valuable insights and practical tips. It would be structured with clear headings, engaging paragraphs, and perhaps even lists or blockquotes to enhance readability.</p>
-                                    <p>By providing in-depth content like this, Sapphire Trails can establish itself as an authority on gem tours in the Gem City of Ratnapura, attracting potential customers who are in the research phase of their travel planning. This is a key part of a successful content marketing strategy for any gemstone tour or gem mining tour operator.</p>
+                        <div className="grid lg:grid-cols-3 xl:grid-cols-4 gap-12 lg:gap-16">
+                            <article className="lg:col-span-2 xl:col-span-3 space-y-12">
+                                <div className="max-w-4xl">
+                                    <div className="relative aspect-video mb-12 rounded-lg overflow-hidden shadow-lg">
+                                        <Image
+                                            src={article.imageUrl}
+                                            alt={article.title}
+                                            data-ai-hint={article.imageHint}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                    {article.content ? (
+                                        <div
+                                          className="prose prose-invert prose-lg max-w-none [&_h2]:text-2xl [&_h2]:font-headline [&_h2]:text-primary [&_h2]:pt-4 [&_h4]:font-semibold [&_h4]:text-foreground [&_ul]:list-disc [&_ul]:list-inside [&_ul]:space-y-2"
+                                          dangerouslySetInnerHTML={{ __html: article.content }}
+                                        />
+                                    ) : (
+                                        <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+                                            <p className="text-xl text-foreground font-semibold">{article.description}</p>
+                                            <p>This is placeholder content for the article titled &quot;{article.title}&quot;. In a real application, this would be replaced with the full article body, likely fetched from a CMS. For now, we can imagine a detailed exploration of the topic, filled with useful information for anyone interested in a gem tour.</p>
+                                            <h2 className="text-2xl font-headline text-primary pt-4">Diving Deeper</h2>
+                                            <p>The content would elaborate on the key points mentioned in the description, providing valuable insights and practical tips. It would be structured with clear headings, engaging paragraphs, and perhaps even lists or blockquotes to enhance readability.</p>
+                                            <p>By providing in-depth content like this, Sapphire Trails can establish itself as an authority on gem tours in the Gem City of Ratnapura, attracting potential customers who are in the research phase of their travel planning. This is a key part of a successful content marketing strategy for any gemstone tour or gem mining tour operator.</p>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            </article>
+                            <ToursSidebar tours={tours} />
                         </div>
                     </div>
-                </article>
-                <BookableTours tours={tours} />
+                </div>
             </main>
             <Footer />
         </div>
     );
 }
+
