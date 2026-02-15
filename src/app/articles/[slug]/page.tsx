@@ -200,7 +200,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
 function ToursSidebar({ tours }: { tours: TourPackage[] }) {
     if (!tours || tours.length === 0) return null;
     return (
-        <aside className="sticky top-24 space-y-8">
+        <div>
             <div className="text-left">
                 <h2 className="text-2xl font-headline font-bold tracking-tight text-primary">
                     Ready for an Adventure?
@@ -209,12 +209,44 @@ function ToursSidebar({ tours }: { tours: TourPackage[] }) {
                     Choose your perfect gem tour experience and book now.
                 </p>
             </div>
-            <div className="space-y-6">
+            <div className="space-y-6 mt-6">
                 {tours.map((tour) => (
                     <TourCard key={tour.id} tour={tour} />
                 ))}
             </div>
-        </aside>
+        </div>
+    )
+}
+
+function MoreArticles({ currentArticleSlug }: { currentArticleSlug: string }) {
+    const otherArticles = mockArticles.filter(article => article.slug !== currentArticleSlug).slice(0, 3);
+
+    if (otherArticles.length === 0) return null;
+
+    return (
+        <div>
+            <h2 className="text-2xl font-headline font-bold tracking-tight text-primary mb-6">
+                More Articles
+            </h2>
+            <div className="space-y-6">
+                {otherArticles.map(article => (
+                    <Link key={article.slug} href={`/articles/${article.slug}`} className="group flex items-center gap-4">
+                        <div className="relative w-24 h-24 rounded-lg overflow-hidden shrink-0">
+                            <Image
+                                src={article.imageUrl}
+                                alt={article.title}
+                                fill
+                                className="object-cover transition-transform duration-300 group-hover:scale-110"
+                            />
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{article.title}</p>
+                            <p className="text-xs text-muted-foreground mt-1">{article.category}</p>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </div>
     )
 }
 
@@ -270,7 +302,12 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                                     )}
                                 </div>
                             </article>
-                            <ToursSidebar tours={tours} />
+                            <div className="lg:col-span-1 xl:col-span-1">
+                                <div className="sticky top-24 space-y-12">
+                                    <ToursSidebar tours={tours} />
+                                    <MoreArticles currentArticleSlug={params.slug} />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -279,4 +316,3 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         </div>
     );
 }
-
