@@ -16,9 +16,9 @@ export function WhyRatnapuraSection() {
            <div>
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg shadow-lg">
               <Image
-                src="https://picsum.photos/seed/ratnapura-gems/600/450"
-                alt="A collection of rough, uncut sapphires from the Ratnapura region."
-                data-ai-hint="rough sapphires"
+                src="https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp"
+                alt="A gemologist sorts and grades small gemstones at a well-lit desk."
+                data-ai-hint="gemologist sorting gems"
                 fill
                 className="object-cover"
               />
