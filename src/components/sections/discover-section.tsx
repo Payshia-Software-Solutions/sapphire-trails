@@ -128,7 +128,7 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="w-full max-w-5xl mx-auto"
+            className="w-full"
         >
             <div className="grid grid-cols-2 md:grid-cols-6 md:auto-rows-[150px] gap-2 md:gap-4">
                 {content.images.map((image, index) => (
