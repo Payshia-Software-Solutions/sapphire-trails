@@ -24,9 +24,14 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
     <CardContent className="p-8 flex flex-col flex-grow">
       <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
       <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
-      <Button asChild className="w-fit bg-primary text-primary-foreground hover:bg-primary/90 mt-auto rounded-full px-6">
-        <Link href={`/booking?tourType=${tour.id}`}>Book Now</Link>
-      </Button>
+      <div className="flex items-center gap-4 mt-auto">
+        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
+          <Link href={`/booking?tourType=${tour.id}`}>Book Now</Link>
+        </Button>
+        <Button asChild variant="outline" className="text-primary border-primary hover:bg-primary/10 hover:text-primary rounded-full px-6">
+            <Link href={`/tours/${tour.slug}`}>More Info</Link>
+        </Button>
+      </div>
     </CardContent>
   </Card>
 );
