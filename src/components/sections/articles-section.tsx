@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -67,7 +68,7 @@ export function ArticlesSection() {
   const [emblaRef] = useEmblaCarousel({ loop: true, align: 'start' });
 
   return (
-    <section id="articles" className="w-full bg-background py-12 md:py-24 lg:py-32">
+    <section id="articles" className="w-full bg-background-alt py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6">
         <ScrollAnimate>
           <div className="text-center mb-12">

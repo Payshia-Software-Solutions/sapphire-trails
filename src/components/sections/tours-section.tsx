@@ -71,7 +71,7 @@ export function ToursSection() {
   }, []);
 
   return (
-    <section id="tours" className="w-full bg-background py-12 md:py-24 lg:py-32">
+    <section id="tours" className="w-full bg-background-alt py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6">
         <ScrollAnimate className="text-center mb-12">
             <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
