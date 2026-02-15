@@ -28,11 +28,7 @@ export default function ContactPage() {
       <Header />
       <main className="flex-1">
         <PageHero title="Contact Us" breadcrumbs={breadcrumbs} />
-        <div className="bg-background">
-            <ScrollAnimate>
-            <ContactSection />
-            </ScrollAnimate>
-        </div>
+        <ContactSection />
       </main>
       <Footer />
     </div>
