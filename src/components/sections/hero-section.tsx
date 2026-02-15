@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { ScrollAnimate } from '../shared/scroll-animate';
 import { cn } from '@/lib/utils';
+import { CalendarCheck } from 'lucide-react';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -79,7 +80,10 @@ export function HeroSection() {
         </div>
 
         <Button asChild size="lg">
-          <Link href="/booking">Book Now</Link>
+          <Link href="/booking">
+            <CalendarCheck className="mr-2 h-5 w-5" />
+            Book Now
+          </Link>
         </Button>
       </ScrollAnimate>
     </section>
