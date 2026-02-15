@@ -19,9 +19,9 @@ const experienceItems = [
         description: "Unwind in serene, architecturally iconic suites at the Grand Silver Ray, our exclusive hospitality partner.",
         icon: BedDouble,
         image: {
-            src: 'https://content-provider.payshia.com/sapphire-trail/images/img31.webp',
-            alt: 'Exterior of the Grand Silver Ray resort, providing luxury accommodation for gem tours',
-            hint: 'luxury suite'
+            src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-11-optimized.webp',
+            alt: 'A luxurious and modern hotel room interior at Grand Silver Ray, our hospitality partner.',
+            hint: 'luxury hotel room'
         }
     },
     {
@@ -58,7 +58,7 @@ export function ExperienceSection() {
                 {experienceItems.map((item, index) => {
                     const Icon = item.icon;
                     return (
-                        <Card key={index} className="bg-card border-stone-800/50 flex flex-col w-full rounded-xl shadow-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-primary/20">
+                        <Card key={index} className="bg-card border-stone-800/50 flex flex-col w-full rounded-xl shadow-lg text-center">
                            {item.image && (
                                 <div className="relative h-48 w-full rounded-t-xl overflow-hidden">
                                     <Image
