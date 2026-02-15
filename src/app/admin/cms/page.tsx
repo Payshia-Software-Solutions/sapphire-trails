@@ -36,7 +36,6 @@ const defaultContent = {
     { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', alt: 'A tourist examining a gemstone closely with a loupe on a gem mining tour.', hint: 'gem examination tour' },
     { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', alt: 'The interior of a gem cutting and polishing workshop, part of the gemstone tour experience.', hint: 'gem cutting workshop' },
     { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', alt: 'The bustling and vibrant atmosphere of the Ratnapura gem market.', hint: 'gem market' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-9-optimized.webp', alt: 'A colorful collection of various polished gemstones on a display tray, sourced from local mines.', hint: 'gemstone collection' },
   ]
 };
 
@@ -63,8 +62,8 @@ export default function CmsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const [discoverImageFiles, setDiscoverImageFiles] = useState<(File | null)[]>(Array(9).fill(null));
-  const [discoverImagePreviews, setDiscoverImagePreviews] = useState<(string | null)[]>(Array(9).fill(null));
+  const [discoverImageFiles, setDiscoverImageFiles] = useState<(File | null)[]>(Array(8).fill(null));
+  const [discoverImagePreviews, setDiscoverImagePreviews] = useState<(string | null)[]>(Array(8).fill(null));
 
   const form = useForm<CmsFormValues>({
     resolver: zodResolver(cmsFormSchema),
@@ -80,7 +79,7 @@ export default function CmsPage() {
                 const data = await response.json();
                 const fullData = {
                   hero: { ...defaultValues.hero, ...data.hero },
-                  discover: { ...defaultContent, ...data.discover, images: data.discover.images?.length === 9 ? data.discover.images : defaultContent.images },
+                  discover: { ...defaultContent, ...data.discover, images: data.discover.images?.length === 8 ? data.discover.images : defaultContent.images },
                   footer: { ...defaultValues.footer, ...data.footer },
                   general: { ...defaultValues.general, ...data.general },
                 };
@@ -159,7 +158,7 @@ export default function CmsPage() {
             }
             form.reset(processedData);
             setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
-            setDiscoverImageFiles(Array(9).fill(null));
+            setDiscoverImageFiles(Array(8).fill(null));
             
             localStorage.setItem(CMS_DATA_KEY, JSON.stringify(processedData));
         }
@@ -226,7 +225,7 @@ export default function CmsPage() {
                   <div className="space-y-6 border-t pt-6">
                     <FormField control={form.control} name="discover.description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator />
-                    <p className="font-medium">Section Images (9)</p>
+                    <p className="font-medium">Section Images (8)</p>
                     {form.getValues('discover.images').map((_, index) => (
                       <div key={index} className="space-y-4 p-4 border rounded-md">
                         <p className="font-medium text-sm text-muted-foreground">Image {index + 1}</p>

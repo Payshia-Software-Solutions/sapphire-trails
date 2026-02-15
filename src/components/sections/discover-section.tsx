@@ -20,7 +20,6 @@ const defaultContent = {
     { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', alt: 'A tourist examining a gemstone closely with a loupe on a gem mining tour.', hint: 'gem examination tour' },
     { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', alt: 'The interior of a gem cutting and polishing workshop, part of the gemstone tour experience.', hint: 'gem cutting workshop' },
     { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', alt: 'The bustling and vibrant atmosphere of the Ratnapura gem market.', hint: 'gem market' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-9-optimized.webp', alt: 'A colorful collection of various polished gemstones on a display tray, sourced from local mines.', hint: 'gemstone collection' },
   ]
 };
 
@@ -33,7 +32,7 @@ export function DiscoverSection() {
       if (storedDataRaw) {
         const storedData = JSON.parse(storedDataRaw);
         if (storedData.discover) {
-           const images = storedData.discover.images?.length === 9 ? storedData.discover.images : defaultContent.images;
+           const images = storedData.discover.images?.length === 8 ? storedData.discover.images : defaultContent.images;
            setContent({ ...defaultContent, ...storedData.discover, images });
         }
       }
@@ -50,22 +49,16 @@ export function DiscoverSection() {
             Discover Our Gem Mine Tours
           </h2>
           <p className="mt-4 text-muted-foreground text-base">
-            Get more than just a glimpse of this captivating world with our unique Gem Mine Tours in the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems.' This authentic experience takes you through the depths of actual mining pits to discover the ancient tradition behind the mining of world-famous Ceylon Sapphires. Under the guidance of experts in the trade, you'll have access to the entire process of gem mining, including the washing of gravel in traditional wicker baskets to the final sorting of the precious stones. It's a rich experience that offers much more than just the usual tourist experience.
+            Get more than just a glimpse of this captivating world with our unique Gem Mine Tours in the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems.' This authentic gemstone tour takes you into actual mining pits to discover the ancient tradition behind world-famous Ceylon Sapphires.
           </p>
         </ScrollAnimate>
 
         <ScrollAnimate 
             className="mt-6 w-full max-w-6xl mx-auto flex-grow min-h-0"
         >
-            <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-fr gap-2 md:gap-4 h-full">
-              {content.images.map((image, index) => {
-                let itemClass = '';
-                if (index === 0) itemClass = 'md:col-span-2 md:row-span-2';
-                else if (index === 5) itemClass = 'md:col-span-2';
-                else if (index === 8) itemClass = 'col-span-2 md:col-span-4';
-
-                return (
-                  <div key={index} className={cn("relative w-full h-full overflow-hidden rounded-lg group", itemClass)}>
+            <div className="grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-2 md:gap-4 h-full">
+              {content.images.map((image, index) => (
+                  <div key={index} className="relative w-full h-full overflow-hidden rounded-lg group">
                       <Image
                           src={getFullImageUrl(image.src)}
                           alt={image.alt}
@@ -74,8 +67,7 @@ export function DiscoverSection() {
                           className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                   </div>
-                )
-              })}
+              ))}
             </div>
         </ScrollAnimate>
       </div>
