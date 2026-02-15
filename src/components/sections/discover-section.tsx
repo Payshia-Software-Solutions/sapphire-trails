@@ -57,18 +57,25 @@ export function DiscoverSection() {
         <ScrollAnimate 
             className="mt-12 w-full max-w-6xl mx-auto"
         >
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {content.images.map((image, index) => (
-                    <div key={index} className="relative aspect-square overflow-hidden rounded-lg group">
-                        <Image
-                            src={getFullImageUrl(image.src)}
-                            alt={image.alt}
-                            data-ai-hint={image.hint}
-                            fill
-                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                    </div>
-                ))}
+            <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-auto gap-4">
+              {content.images.map((image, index) => {
+                let itemClass = 'aspect-square';
+                if (index === 0) itemClass = 'md:col-span-2 md:row-span-2 aspect-square';
+                else if (index === 5) itemClass = 'md:col-span-2 aspect-[16/9]';
+                else if (index === 8) itemClass = 'md:col-span-2 aspect-[16/9]';
+
+                return (
+                  <div key={index} className={cn("relative w-full overflow-hidden rounded-lg group", itemClass)}>
+                      <Image
+                          src={getFullImageUrl(image.src)}
+                          alt={image.alt}
+                          data-ai-hint={image.hint}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                  </div>
+                )
+              })}
             </div>
         </ScrollAnimate>
       </div>
