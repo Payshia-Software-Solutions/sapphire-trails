@@ -9,8 +9,8 @@ import { ScrollAnimate } from '../shared/scroll-animate';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultContent = {
-  headline: "Exclusive Gem Mine Tours in Sri Lanka",
-  subheadline: "Experience luxury, culture, and adventure",
+  headline: "Sri Lanka Gem Mine Tour: An Exclusive Luxury Experience",
+  subheadline: "Discover the world's finest sapphires in Ratnapura with a professional gem mine tour.",
 };
 
 
@@ -57,9 +57,9 @@ export function HeroSection() {
           <h1 className="text-4xl md:text-5xl font-headline font-bold tracking-tight text-white max-w-3xl">
             {content.headline}
           </h1>
-          <p className="text-lg text-white/90">
+          <h2 className="text-lg text-white/90 max-w-2xl">
             {content.subheadline}
-          </p>
+          </h2>
         </div>
 
         <Button asChild size="lg">

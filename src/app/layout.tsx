@@ -94,6 +94,17 @@ export default function RootLayout({
       }
   };
 
+  const touristAttractionSchema = {
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    "name": "Sapphire Trails Gem Mine Tours",
+    "description": "Professional gem mine tours in Sri Lanka.",
+    "location": {
+      "@type": "Place",
+      "name": "Sri Lanka"
+    }
+  };
+
   return (
     <html lang="en">
       <body className={cn(
@@ -109,6 +120,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(touristAttractionSchema) }}
         />
         <LayoutProvider>
             {children}

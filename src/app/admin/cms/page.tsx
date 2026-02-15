@@ -27,8 +27,8 @@ const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 const defaultValues = {
   hero: {
-    headline: "Sri Lanka's Only Luxury Gem Experience",
-    subheadline: "Experience luxury, culture, and adventure",
+    headline: "Sri Lanka Gem Mine Tour: An Exclusive Luxury Experience",
+    subheadline: "Discover the world's finest sapphires in Ratnapura with a professional gem mine tour.",
     imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img35.webp",
     imageAlt: "A dark and moody image of the inside of a gem mine, with rock walls and dim lighting.",
     imageHint: "gem mine cave",
@@ -335,5 +335,3 @@ export default function CmsPage() {
     </div>
   );
 }
-
-    
