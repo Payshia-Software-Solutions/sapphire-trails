@@ -29,9 +29,6 @@ const defaultValues = {
   hero: {
     headline: "Sri Lanka Gem Mine Tour - An Exclusive Luxury Experience",
     subheadline: "Discover the world's finest sapphires in Ratnapura with a professional gem mine tour.",
-    imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img35.webp",
-    imageAlt: "A dark and moody image of the inside of a gem mine, with rock walls and dim lighting.",
-    imageHint: "gem mine cave",
   },
   discover: {
     description: "Embark on an exclusive journey through the heart of Sri Lanka's gem country. The Sapphire Trails offers an immersive experience into Ratnapura's rich heritage, from dazzling gem mines and lush tea estates to exquisite dining and vibrant local culture. Let us guide you on a luxurious adventure that unveils the true treasures of the island.",
@@ -58,10 +55,7 @@ export default function CmsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [discoverImageFiles, setDiscoverImageFiles] = useState<(File | null)[]>([null, null, null]);
-  
-  const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
   const [discoverImagePreviews, setDiscoverImagePreviews] = useState<(string | null)[]>([null, null, null]);
 
   const form = useForm<CmsFormValues>({
@@ -86,22 +80,18 @@ export default function CmsPage() {
 
                 const processedData = {
                     ...fullData,
-                    hero: { ...fullData.hero, imageUrl: getFullImageUrl(fullData.hero.imageUrl) },
                     discover: { ...fullData.discover, images: fullData.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
                 }
                 form.reset(processedData);
-                setHeroImagePreview(processedData.hero.imageUrl);
                 setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
             } else {
                  form.reset(defaultValues); // Reset with full defaults
-                 setHeroImagePreview(defaultValues.hero.imageUrl);
                  setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
                  toast({ variant: 'destructive', title: 'Could not load data', description: 'Using default content. Please save to create the record.'});
             }
         } catch (error) {
             console.error("Failed to fetch CMS data", error);
             form.reset(defaultValues); // Reset with full defaults on error
-            setHeroImagePreview(defaultValues.hero.imageUrl);
             setDiscoverImagePreviews(defaultValues.discover.images.map(img => img.src));
             toast({ variant: 'destructive', title: 'Error', description: 'Could not connect to server.' });
         } finally {
@@ -110,19 +100,6 @@ export default function CmsPage() {
     }
     fetchCmsData();
   }, [form, toast]);
-
-
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setFile: (file: File | null) => void,
-    setPreview: (value: string | null) => void,
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFile(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
   
   const handleDiscoverFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
@@ -146,9 +123,6 @@ export default function CmsPage() {
     formData.append('content', JSON.stringify(data));
 
     // Append files with structured keys
-    if (heroImageFile) {
-      formData.append('hero.imageUrl', heroImageFile);
-    }
     discoverImageFiles.forEach((file, index) => {
       if (file) {
         formData.append(`discover.images.${index}.src`, file);
@@ -176,11 +150,9 @@ export default function CmsPage() {
              const serverData = serverResponse.data;
              const processedData = {
                 ...serverData,
-                hero: { ...serverData.hero, imageUrl: getFullImageUrl(serverData.hero.imageUrl) },
                 discover: { ...serverData.discover, images: serverData.discover.images.map((img: any) => ({ ...img, src: getFullImageUrl(img.src) })) },
             }
             form.reset(processedData);
-            setHeroImagePreview(processedData.hero.imageUrl);
             setDiscoverImagePreviews(processedData.discover.images.map((img: { src: string }) => img.src));
             
             // Save the updated data with full URLs to localStorage so the homepage updates
@@ -232,21 +204,6 @@ export default function CmsPage() {
                    <div className="space-y-4 border-t pt-6">
                       <FormField control={form.control} name="hero.headline" render={({ field }) => (<FormItem><FormLabel>Headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                       <FormField control={form.control} name="hero.subheadline" render={({ field }) => (<FormItem><FormLabel>Sub-headline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormItem>
-                        <FormLabel>Background Image</FormLabel>
-                        <FormControl><Input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setHeroImageFile, setHeroImagePreview)} className="text-sm" /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                      {heroImagePreview && (
-                        <div className="mt-2">
-                          <FormLabel>Preview</FormLabel>
-                          <Image src={heroImagePreview} alt="Hero image preview" width={200} height={100} className="rounded-md object-cover mt-2 border" />
-                        </div>
-                      )}
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="hero.imageAlt" render={({ field }) => (<FormItem><FormLabel>Image Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="hero.imageHint" render={({ field }) => (<FormItem><FormLabel>Image AI Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      </div>
                    </div>
                 </AccordionContent>
               </div>

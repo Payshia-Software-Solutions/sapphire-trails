@@ -204,9 +204,6 @@ export const cmsFormSchema = z.object({
   hero: z.object({
     headline: z.string().min(1, "Headline is required."),
     subheadline: z.string().min(1, "Sub-headline is required."),
-    imageUrl: z.string().min(1, "An image is required."),
-    imageAlt: z.string().min(1, "Image alt text is required."),
-    imageHint: z.string().min(1, "Image hint is required."),
   }),
   discover: z.object({
     description: z.string().min(1, "Description is required."),
