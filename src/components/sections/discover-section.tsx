@@ -43,19 +43,19 @@ export function DiscoverSection() {
   }, []);
 
   return (
-    <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-background-alt scroll-section">
+    <section id="about" className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
       <div className="container mx-auto px-4 md:px-6">
         <ScrollAnimate className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
             Discover Our Gem Mine Tours
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-4 text-muted-foreground text-base md:text-lg">
             {content.description}
           </p>
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-12 w-full max-w-6xl mx-auto"
+            className="mt-8 w-full max-w-6xl mx-auto"
         >
             <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-auto gap-4">
               {content.images.map((image, index) => {
