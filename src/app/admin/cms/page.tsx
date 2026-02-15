@@ -33,9 +33,15 @@ const defaultValues = {
   discover: {
     description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours in the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems.' This authentic experience takes you through the depths of actual mining pits to discover the ancient tradition behind the mining of world-famous Ceylon Sapphires. Under the guidance of experts in the trade, you'll have access to the entire process of gem mining, including the washing of gravel in traditional wicker baskets to the final sorting of the precious stones. It's a rich experience that offers much more than just the usual tourist experience.",
     images: [
-      { src: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp', alt: 'A person sifting through gravel and dirt in a woven basket, searching for gems.', hint: 'gem mining' },
-      { src: 'https://content-provider.payshia.com/sapphire-trail/images/img36.webp', alt: 'People swimming and enjoying the cool water at the base of a waterfall.', hint: 'waterfall swimming' },
-      { src: 'https://content-provider.payshia.com/sapphire-trail/images/img37.webp', alt: 'A vibrant collection of polished gemstones displayed in black trays.', hint: 'gemstones collection' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', alt: 'Close-up of a vibrant blue sapphire held between tweezers.', hint: 'blue sapphire' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', alt: 'Gem miners working inside a traditional gem mine in Sri Lanka.', hint: 'gem mining' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', alt: 'A hand holding a variety of rough, uncut gemstones of different colors.', hint: 'rough gemstones' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', alt: 'Exquisite sapphire and diamond jewelry on display.', hint: 'sapphire jewelry' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', alt: 'A scenic panoramic view of the lush Ratnapura landscape.', hint: 'ratnapura landscape' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', alt: 'A tourist examining a gemstone closely with a jeweler\'s loupe.', hint: 'gem examination' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', alt: 'The interior of a gem cutting and polishing workshop in action.', hint: 'gem cutting' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', alt: 'The bustling and vibrant atmosphere of the Ratnapura gem market.', hint: 'gem market' },
+        { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-9-optimized.webp', alt: 'A colorful collection of various polished gemstones on a display tray.', hint: 'gemstone collection' },
     ],
   },
   footer: {
@@ -55,8 +61,8 @@ export default function CmsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const [discoverImageFiles, setDiscoverImageFiles] = useState<(File | null)[]>([null, null, null]);
-  const [discoverImagePreviews, setDiscoverImagePreviews] = useState<(string | null)[]>([null, null, null]);
+  const [discoverImageFiles, setDiscoverImageFiles] = useState<(File | null)[]>(Array(9).fill(null));
+  const [discoverImagePreviews, setDiscoverImagePreviews] = useState<(string | null)[]>(Array(9).fill(null));
 
   const form = useForm<CmsFormValues>({
     resolver: zodResolver(cmsFormSchema),
@@ -221,7 +227,7 @@ export default function CmsPage() {
                   <div className="space-y-6 border-t pt-6">
                     <FormField control={form.control} name="discover.description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator />
-                    <p className="font-medium">Section Images (3)</p>
+                    <p className="font-medium">Section Images (9)</p>
                     {form.getValues('discover.images').map((_, index) => (
                       <div key={index} className="space-y-4 p-4 border rounded-md">
                         <p className="font-medium text-sm text-muted-foreground">Image {index + 1}</p>

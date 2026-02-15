@@ -211,7 +211,7 @@ export const cmsFormSchema = z.object({
       src: z.string().min(1, "An image is required."),
       alt: z.string().min(1, "Alt text is required."),
       hint: z.string().min(1, "Image hint is required."),
-    })).length(3, "You must provide exactly 3 images."),
+    })).length(9, "You must provide exactly 9 images."),
   }),
   footer: z.object({
     facebookUrl: z.string().url("Please enter a valid URL for Facebook."),
