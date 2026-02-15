@@ -11,7 +11,7 @@ import { getFullImageUrl } from '@/lib/utils';
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultContent = {
-  description: "Embark on an exclusive journey into the heart of Sri Lanka's gem country with Sapphire Trails, the premier provider of immersive gem tours in Ratnapura. Our curated adventures offer a deep dive into the region's rich heritage, taking you from the raw depths of dazzling gem mines to the serene beauty of lush tea estates. Beyond the mines, your luxury gem tour includes exquisite dining, stays in iconic architectural retreats, and explorations of breathtaking natural wonders. Let us guide you on an unforgettable Sri Lankan adventure that reveals the true, sparkling treasures of the island.",
+  description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours in the heart of Ratnapura, Sri Lanka, the legendary 'City of Gems.' This authentic experience takes you through the depths of actual mining pits to discover the ancient tradition behind the mining of world-famous Ceylon Sapphires. Under the guidance of experts in the trade, you'll have access to the entire process of gem mining, including the washing of gravel in traditional wicker baskets to the final sorting of the precious stones. It's a rich experience that offers much more than just the usual tourist experience.",
   images: [
     {
       src: 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp',
@@ -77,10 +77,10 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="mt-8 w-full max-w-6xl mx-auto"
+            className="mt-6 w-full max-w-6xl mx-auto"
         >
             <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex py-8" style={{ backfaceVisibility: 'hidden' }}>
+                <div className="flex py-6" style={{ backfaceVisibility: 'hidden' }}>
                     {content.images.map((image, index) => (
                         <div
                             className={cn(
@@ -101,7 +101,7 @@ export function DiscoverSection() {
                                     fill
                                     className={cn(
                                         "rounded-2xl object-cover w-full h-full shadow-2xl transition-all duration-500 ease-out",
-                                        index === selectedIndex ? "scale-110" : "scale-100"
+                                        index === selectedIndex ? "scale-105" : "scale-100"
                                     )}
                                 />
                             </div>
