@@ -1,11 +1,9 @@
-
 "use client";
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { getFullImageUrl } from '@/lib/utils';
 import { ScrollAnimate } from '../shared/scroll-animate';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
@@ -13,9 +11,6 @@ const CMS_DATA_KEY = 'sapphire-cms-data';
 const defaultContent = {
   headline: "Exclusive Gem Mine Tours in Sri Lanka",
   subheadline: "Experience luxury, culture, and adventure",
-  imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img35.webp",
-  imageAlt: "A dark and moody image of the inside of a gem mine, with rock walls and dim lighting.",
-  imageHint: "gem mine cave",
 };
 
 
@@ -36,18 +31,18 @@ export function HeroSection() {
     }
   }, []);
 
-  const finalImageUrl = getFullImageUrl(content.imageUrl);
-
   return (
-    <section className="relative h-screen w-full flex items-center justify-center scroll-section">
-      <Image
-        src={finalImageUrl}
-        alt={content.imageAlt}
-        data-ai-hint={content.imageHint}
-        fill
-        className="z-0 object-cover"
-        priority
-      />
+    <section className="relative h-screen w-full flex items-center justify-center scroll-section overflow-hidden">
+        <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover"
+            poster="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
+        >
+            <source src="https://content-provider.payshia.com/sapphire-trail/hero/sapphire-trails-her-video.webm" type="video/webm" />
+        </video>
       <div className="absolute inset-0 bg-black/50 z-10" />
       <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
         
