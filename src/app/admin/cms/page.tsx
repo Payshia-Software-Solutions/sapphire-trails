@@ -28,21 +28,61 @@ const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 const defaultContent = {
   description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka—the legendary 'City of Gems'—this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.",
   images: [
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', alt: 'Close-up of a vibrant blue sapphire from a gem tour held between tweezers.', hint: 'blue sapphire gem tour' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', alt: 'Miners working inside a traditional gem mine on a Sapphire Trails tour.', hint: 'gem mine tour' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', alt: 'A hand holding a variety of rough, uncut gemstones found during a gem mining tour.', hint: 'rough gemstones mining' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', alt: 'Exquisite sapphire and diamond jewelry, a result of a successful gem tour.', hint: 'sapphire jewelry' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', alt: 'A scenic panoramic view of the lush Ratnapura landscape, the setting for our gem tours.', hint: 'ratnapura landscape' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', alt: 'A tourist examining a gemstone closely with a loupe on a gem mining tour.', hint: 'gem examination tour' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', alt: 'The interior of a gem cutting and polishing workshop, part of the gemstone tour experience.', hint: 'gem cutting workshop' },
-    { src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', alt: 'The bustling and vibrant atmosphere of the Ratnapura gem market.', hint: 'gem market' },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', 
+      alt: 'A tourist gets fitted with a safety harness before a gem tour.', 
+      hint: 'gem tour safety',
+      hoverDescription: "Prepare for an authentic Gem Mine Tour. Safety and adventure go hand-in-hand as you get ready to descend into a real mine."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', 
+      alt: 'A happy tourist smiles while holding his helmet straps during a gem mine tour.', 
+      hint: 'happy tourist gem tour',
+      hoverDescription: "The thrill of discovery on our Gem Tour. This hands-on experience is what makes our gem tours unforgettable."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', 
+      alt: 'A miner works inside a dimly lit, traditional gem mine.', 
+      hint: 'traditional gem mine',
+      hoverDescription: "Deep inside a traditional mine. This is the heart of our Gem Mine Tour, showcasing the authentic mining process."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', 
+      alt: 'A couple examines a glowing gemstone with a light tool.', 
+      hint: 'examining gemstone',
+      hoverDescription: "Inspecting a freshly found sapphire. Every Gem Tour concludes with a close-up look at these precious stones."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', 
+      alt: 'A person holds a piece of paper with several rough gemstones on it.', 
+      hint: 'rough gemstones hand',
+      hoverDescription: "The rewards of a successful Gem Mine Tour. Hold raw, uncut sapphires straight from the earth."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', 
+      alt: 'A tourist gives a thumbs-up while wearing a hard hat.', 
+      hint: 'tourist thumbs up',
+      hoverDescription: "An unforgettable adventure. Our guests love the unique access provided by our expert-led Gem Tour."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', 
+      alt: 'A person sharpens a tool on a traditional gem cutting wheel.', 
+      hint: 'gem cutting wheel',
+      hoverDescription: "The art of transformation. Witness traditional gem cutting, a key part of the complete Gem Mine Tour experience."
+    },
+    { 
+      src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', 
+      alt: 'A gemologist sorts and grades small gemstones at a well-lit desk.', 
+      hint: 'gemologist sorting gems',
+      hoverDescription: "From rough stone to finished jewel. Our gemologists explain the sorting process, an essential part of every Gem Tour."
+    },
   ]
 };
 
 const defaultValues = {
   hero: {
     headline: "Sri Lanka Gem Mine Tour - An Exclusive Luxury Experience",
-    subheadline: "Discover the world's finest sapphires in Ratnapura with a professional gem mine tour.",
+    subheadline: "Discover the world's finest sapphires with a professional gem mine tour.",
   },
   discover: defaultContent,
   footer: {
@@ -239,10 +279,9 @@ export default function CmsPage() {
                               <Image src={discoverImagePreviews[index]!} alt={`Discover image ${index + 1} preview`} width={200} height={100} className="rounded-md object-cover mt-2 border" />
                           </div>
                         )}
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <FormField control={form.control} name={`discover.images.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                          <FormField control={form.control} name={`discover.images.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        </div>
+                        <FormField control={form.control} name={`discover.images.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name={`discover.images.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name={`discover.images.${index}.hoverDescription`} render={({ field }) => (<FormItem><FormLabel>Hover Description (SEO)</FormLabel><FormControl><Textarea {...field} placeholder="Descriptive text for SEO that appears on hover." /></FormControl><FormMessage /></FormItem>)} />
                       </div>
                     ))}
                   </div>

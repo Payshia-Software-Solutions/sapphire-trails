@@ -211,6 +211,7 @@ export const cmsFormSchema = z.object({
       src: z.string().min(1, "An image is required."),
       alt: z.string().min(1, "Alt text is required."),
       hint: z.string().min(1, "Image hint is required."),
+      hoverDescription: z.string().optional(),
     })).length(8, "You must provide exactly 8 images."),
   }),
   footer: z.object({
