@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -129,11 +130,11 @@ export function DiscoverSection() {
         <ScrollAnimate 
             className="w-full mx-auto flex-grow min-h-0"
         >
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-4 h-full">
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-4 md:h-full">
                 {content.images.map((image, index) => (
                   <Dialog key={index}>
                     <DialogTrigger asChild>
-                      <div className={cn("relative w-full h-full overflow-hidden rounded-lg group cursor-pointer", image.className)}>
+                      <div className={cn("relative w-full aspect-[4/3] md:h-full md:aspect-auto overflow-hidden rounded-lg group cursor-pointer", image.className)}>
                           <Image
                               src={getFullImageUrl(image.src)}
                               alt={image.alt}
