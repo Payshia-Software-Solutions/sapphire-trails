@@ -5,6 +5,7 @@ import { ContactSection } from '@/components/sections/contact-section';
 import type { Metadata } from 'next';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { PageHero } from '@/components/shared/page-hero';
+import { ContactTours } from '@/components/sections/contact-tours';
 
 export const metadata: Metadata = {
   title: 'Contact Us | Book Your Sri Lanka Gem Tour & Experience',
@@ -29,6 +30,9 @@ export default function ContactPage() {
       <main className="flex-1">
         <PageHero title="Contact Us" breadcrumbs={breadcrumbs} />
         <ContactSection />
+        <ScrollAnimate>
+            <ContactTours />
+        </ScrollAnimate>
       </main>
       <Footer />
     </div>
