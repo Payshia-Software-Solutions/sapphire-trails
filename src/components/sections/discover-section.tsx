@@ -36,7 +36,7 @@ const defaultContent = {
     },
     { 
       src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', 
-      alt: 'A couple examines a glowing gemstone with a light tool.', 
+      alt: 'Tourist washing gem gravel in a traditional basket during a Ratnapura gem mine tour', 
       hint: 'examining gemstone', 
       className: 'md:col-span-1 md:row-span-1',
       hoverDescription: "Inspecting a freshly found sapphire. Every Gem Tour concludes with a close-up look at these precious stones."
@@ -105,7 +105,7 @@ export function DiscoverSection() {
         <ScrollAnimate 
             className="w-full"
         >
-            <div className="grid grid-cols-2 md:grid-cols-6 md:auto-rows-[200px] gap-2 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 md:auto-rows-[200px] gap-2 md:gap-4">
                 {content.images.map((image, index) => (
                   <Dialog key={index}>
                     <DialogTrigger asChild>
