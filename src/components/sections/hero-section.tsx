@@ -43,7 +43,7 @@ export function HeroSection() {
         >
             <source src="https://content-provider.payshia.com/sapphire-trail/hero/sapphire-trails-her-video.webm" type="video/webm" />
         </video>
-      <div className="absolute inset-0 bg-black/50 z-10" />
+      
       <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
         
         <div className="flex flex-col items-center space-y-4">
