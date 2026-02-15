@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { ScrollAnimate } from '../shared/scroll-animate';
+import { cn } from '@/lib/utils';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -16,6 +18,7 @@ const defaultContent = {
 
 export function HeroSection() {
   const [content, setContent] = useState(defaultContent);
+  const [isVideoVisible, setIsVideoVisible] = useState(false);
 
   useEffect(() => {
     try {
@@ -32,17 +35,30 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative h-screen w-full flex items-center justify-center scroll-section overflow-hidden">
-        <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover"
-            poster="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
-        >
-            <source src="https://content-provider.payshia.com/sapphire-trail/hero/sapphire-trails-her-video.webm" type="video/webm" />
-        </video>
+    <section className="relative h-screen w-full flex items-center justify-center scroll-section overflow-hidden bg-black">
+      {/* Static poster image */}
+      <Image
+        src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
+        alt="A dark, moody gem mine interior which serves as a background poster."
+        fill
+        className="absolute z-0 object-cover"
+        priority
+      />
+
+      {/* Video fades in on top */}
+      <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          onCanPlay={() => setIsVideoVisible(true)}
+          className={cn(
+              "absolute z-10 w-auto min-w-full min-h-full max-w-none object-cover transition-opacity duration-1000",
+              isVideoVisible ? "opacity-100" : "opacity-0"
+          )}
+      >
+          <source src="https://content-provider.payshia.com/sapphire-trail/hero/sapphire-trails-her-video.webm" type="video/webm" />
+      </video>
       
       <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
         
