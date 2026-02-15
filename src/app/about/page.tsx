@@ -6,13 +6,17 @@ import { TeamSection } from '@/components/sections/team-section';
 import type { Metadata } from 'next';
 import { ExperienceSection } from '@/components/sections/experience-section';
 import { PageHero } from '@/components/shared/page-hero';
+import { EthicalMiningSection } from '@/components/sections/EthicalMiningSection';
+import { SafetyStandardsSection } from '@/components/sections/SafetyStandardsSection';
+import { WhyRatnapuraSection } from '@/components/sections/WhyRatnapuraSection';
+import { AboutCtaSection } from '@/components/sections/AboutCtaSection';
 
 export const metadata: Metadata = {
-  title: 'About Sapphire Trails | Sri Lanka Gem Tour Specialists',
-  description: 'Learn about the experts behind Sri Lanka\'s premier gem tours. Discover our story and the team dedicated to creating your unforgettable Ratnapura gem tour experience.',
+  title: 'About Sapphire Trails | Ethical & Safe Sri Lanka Gem Tours',
+  description: 'Learn about our commitment to ethical gem mining, our safety standards, and why Ratnapura is the heart of the gem world. Discover the experts behind Sri Lanka\'s premier gem tours.',
   openGraph: {
-    title: 'About Sapphire Trails | Sri Lanka Gem Tour Specialists',
-    description: 'Learn about the experts behind Sri Lanka\'s premier gem tours.',
+    title: 'About Sapphire Trails | Ethical & Safe Gem Tours in Sri Lanka',
+    description: 'Learn about the experts behind Sri Lanka\'s premier gem tours, our commitment to ethical mining, and our high safety standards.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img31.webp',
       width: 1200,
@@ -30,15 +34,13 @@ export default function AboutPage() {
       <Header />
       <main className="flex-1">
         <PageHero title="About Us" breadcrumbs={breadcrumbs} />
-        <div className="bg-background">
-            <OurStory />
-        </div>
-        <div className="bg-background-alt">
-            <ExperienceSection />
-        </div>
-        <div className="bg-background">
-            <TeamSection />
-        </div>
+        <OurStory />
+        <ExperienceSection />
+        <TeamSection />
+        <EthicalMiningSection />
+        <SafetyStandardsSection />
+        <WhyRatnapuraSection />
+        <AboutCtaSection />
       </main>
       <Footer />
     </div>
