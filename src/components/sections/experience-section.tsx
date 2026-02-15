@@ -71,7 +71,7 @@ export function ExperienceSection() {
                                 </div>
                            )}
                            <CardContent className="p-6 flex flex-col flex-grow items-center">
-                                <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-4 -mt-14 border-4 border-background-alt bg-background">
+                                <div className="relative z-10 flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-4 -mt-14 border-4 border-background-alt bg-background">
                                     <Icon className="h-8 w-8 text-primary" />
                                 </div>
                                 <h3 className="text-xl font-bold font-headline text-foreground">{item.title}</h3>
