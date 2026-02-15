@@ -80,7 +80,7 @@ export function ToursSection() {
       <div className="container mx-auto px-4 md:px-6">
         <ScrollAnimate className="text-center mb-12">
             <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
-                Choose Your Adventure
+                Our Exclusive Gem Mining Tour Packages
             </h2>
         </ScrollAnimate>
         <ScrollAnimate>
