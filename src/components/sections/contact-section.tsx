@@ -21,6 +21,7 @@ import { contactFormSchema } from "@/lib/schemas"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { LoaderCircle, MapPin, Mail, Phone } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 export function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -33,6 +34,7 @@ export function ContactSection() {
     defaultValues: {
       name: "",
       email: "",
+      tourInterest: "Day Tour",
       message: "",
     },
   })
@@ -74,8 +76,8 @@ export function ContactSection() {
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
             <div className="space-y-8">
                 <div>
-                    <h2 className="text-3xl font-headline font-bold text-primary">Contact Details</h2>
-                    <p className="mt-2 text-muted-foreground">Find us, call us, or send us an email. We're here to help.</p>
+                    <h2 className="text-3xl font-headline font-bold text-primary">Contact Sapphire Trails – Book Your Gem Mine Tour</h2>
+                    <p className="mt-2 text-muted-foreground">Ready to explore the City of Gems? Contact our team in Ratnapura to plan your exclusive gem mine tour or inquire about our luxury tour packages. We are located at the Grand Silver Ray, conveniently accessible from the Colombo-Batticaloa Highway.</p>
                 </div>
                 <div className="space-y-4 text-muted-foreground">
                     <div className="flex items-start gap-4">
@@ -89,15 +91,16 @@ export function ContactSection() {
                         <Mail className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-foreground">Email</p>
-                            <p>info@sapphiretrails.com</p>
+                            <a href="mailto:info@sapphiretrails.com" className="hover:text-primary transition-colors">info@sapphiretrails.com</a>
                         </div>
                     </div>
                     <div className="flex items-start gap-4">
                         <Phone className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-foreground">Phone</p>
-                            <p>Primary: 071 235 7700</p>
-                            <p>Secondary: 071 638 1000</p>
+                            <a href="tel:+94712357700" className="hover:text-primary transition-colors">Primary: 071 235 7700</a>
+                            <br/>
+                            <a href="tel:+94716381000" className="hover:text-primary transition-colors">Secondary: 071 638 1000</a>
                         </div>
                     </div>
                 </div>
@@ -160,6 +163,29 @@ export function ContactSection() {
                                     <FormMessage />
                                     </FormItem>
                                 )}
+                                />
+                                 <FormField
+                                  control={form.control}
+                                  name="tourInterest"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Tour Interest</FormLabel>
+                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                          <SelectTrigger>
+                                            <SelectValue placeholder="Select a tour or topic" />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                          <SelectItem value="Day Tour">Day Tour</SelectItem>
+                                          <SelectItem value="Luxury Package">Luxury Package</SelectItem>
+                                          <SelectItem value="Gem Buying Advice">Gem Buying Advice</SelectItem>
+                                          <SelectItem value="Other">Other</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
                                 />
                                 <FormField
                                 control={form.control}

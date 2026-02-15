@@ -46,6 +46,7 @@ class ContactController
         $name    = trim($data['name']   ?? '');
         $email   = trim($data['email']  ?? '');
         $message = trim($data['message'] ?? '');
+        $tour_interest = trim($data['tour_interest'] ?? '');
 
         if ($name === '' || $email === '' || $message === '') {
             http_response_code(422);
@@ -62,7 +63,8 @@ class ContactController
             $newId = $this->model->create([
                 'name' => $name,
                 'email' => $email,
-                'message' => $message
+                'message' => $message,
+                'tour_interest' => $tour_interest
             ]);
 
             $created = $this->model->getById($newId);

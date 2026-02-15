@@ -12,7 +12,7 @@ class Contact
     public function getAll()
     {
         $stmt = $this->pdo->query("
-            SELECT id, name, email, message, created_at
+            SELECT id, name, email, message, tour_interest, created_at
             FROM contact
             ORDER BY created_at DESC
         ");
@@ -23,7 +23,7 @@ class Contact
     public function getById($id)
     {
         $stmt = $this->pdo->prepare("
-            SELECT id, name, email, message, created_at
+            SELECT id, name, email, message, tour_interest, created_at
             FROM contact
             WHERE id = ?
         ");
@@ -35,7 +35,7 @@ class Contact
     public function getByEmail($email)
     {
         $stmt = $this->pdo->prepare("
-            SELECT id, name, email, message, created_at
+            SELECT id, name, email, message, tour_interest, created_at
             FROM contact
             WHERE email = ?
             ORDER BY created_at DESC
@@ -48,13 +48,14 @@ class Contact
     public function create($data)
     {
         $stmt = $this->pdo->prepare("
-            INSERT INTO contact (name, email, message)
-            VALUES (?, ?, ?)
+            INSERT INTO contact (name, email, message, tour_interest)
+            VALUES (?, ?, ?, ?)
         ");
         $stmt->execute([
             $data['name'],
             $data['email'],
-            $data['message']
+            $data['message'],
+            $data['tour_interest'] ?? null
         ]);
 
         return $this->pdo->lastInsertId();
@@ -64,7 +65,7 @@ class Contact
     public function update($id, $data)
     {
         // Build dynamic SET clause (only update provided keys)
-        $allowed = ['name', 'email', 'message'];
+        $allowed = ['name', 'email', 'message', 'tour_interest'];
         $setParts = [];
         $params = [];
 
