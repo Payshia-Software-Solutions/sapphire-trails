@@ -9,6 +9,7 @@ export const contactFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
+  phone: z.string().optional(),
   tourInterest: z.string().optional(),
   message: z.string().min(10, {
     message: "Message must be at least 10 characters.",

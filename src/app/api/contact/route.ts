@@ -5,14 +5,14 @@ const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { name, email, message, tourInterest } = body;
+  const { name, email, phone, message, tourInterest } = body;
 
   try {
     // Step 1: Forward the data to the PHP backend to save it
     const phpResponse = await fetch(`${API_BASE_URL}/contacts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, message, tour_interest: tourInterest }),
+      body: JSON.stringify({ name, email, phone, message, tour_interest: tourInterest }),
     });
 
     if (!phpResponse.ok) {
@@ -48,6 +48,7 @@ export async function POST(request: Request) {
           <p style="font-size: 16px;">You have received a new message from your website contact form.</p>
           <div style="background-color: ${backgroundColor}; border-radius: 8px; padding: 20px; margin: 25px 0;">
             <p style="font-size: 14px; margin: 0 0 10px 0;"><strong style="color: ${mutedColor};">From:</strong> ${name} &lt;${email}&gt;</p>
+            ${phone ? `<p style="font-size: 14px; margin: 0 0 10px 0;"><strong style="color: ${mutedColor};">Phone:</strong> ${phone}</p>` : ''}
             ${tourInterest ? `<p style="font-size: 14px; margin: 0 0 15px 0;"><strong style="color: ${mutedColor};">Tour Interest:</strong> ${tourInterest}</p>` : ''}
             <p style="font-size: 16px; white-space: pre-wrap; margin: 0;">${message}</p>
           </div>

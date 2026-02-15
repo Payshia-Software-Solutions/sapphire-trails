@@ -34,6 +34,7 @@ export function ContactSection() {
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       tourInterest: "Day Tour",
       message: "",
     },
@@ -159,6 +160,19 @@ export function ContactSection() {
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <Input placeholder="your.email@example.com" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                                <FormField
+                                control={form.control}
+                                name="phone"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Phone (Optional)</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Your phone number" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                     </FormItem>
