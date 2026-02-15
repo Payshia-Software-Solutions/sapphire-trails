@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { getFullImageUrl } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { CheckCircle } from 'lucide-react';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -72,6 +73,26 @@ const defaultContent = {
   ]
 };
 
+const trustPoints = [
+    { text: 'Government Licensed Mines' },
+    { text: 'Certified Gemologists' },
+    { text: 'Safety Equipment Provided' },
+];
+
+const TrustBar = () => (
+    <div className="my-6">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-8 text-center">
+            {trustPoints.map((point, index) => (
+                <div key={index} className="flex items-center justify-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium text-muted-foreground">{point.text}</span>
+                </div>
+            ))}
+        </div>
+    </div>
+);
+
+
 export function DiscoverSection() {
   const [content, setContent] = useState(defaultContent);
 
@@ -102,8 +123,12 @@ export function DiscoverSection() {
           </p>
         </ScrollAnimate>
 
+        <ScrollAnimate>
+            <TrustBar />
+        </ScrollAnimate>
+
         <ScrollAnimate 
-            className="mt-6 w-full mx-auto flex-grow min-h-0"
+            className="w-full mx-auto flex-grow min-h-0"
         >
             <div className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-4 h-full">
                 {content.images.map((image, index) => (
