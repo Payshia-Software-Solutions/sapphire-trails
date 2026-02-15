@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Header } from '@/components/layout/header';
@@ -8,7 +7,6 @@ import { DiscoverSection } from '@/components/sections/discover-section';
 import { ToursSection } from '@/components/sections/tours-section';
 import { ExploreRatnapuraSection } from '@/components/sections/explore-ratnapura-section';
 import { ArticlesSection } from '@/components/sections/articles-section';
-import { BookingSection } from '@/components/sections/booking-section';
 import { SubscriptionSection } from '@/components/sections/subscription-section';
 
 export default function Home() {
@@ -22,7 +20,6 @@ export default function Home() {
         <ExploreRatnapuraSection />
         <ArticlesSection />
         <SubscriptionSection />
-        <BookingSection />
         <Footer />
       </main>
     </div>
