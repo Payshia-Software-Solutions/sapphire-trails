@@ -1,3 +1,4 @@
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
@@ -5,7 +6,7 @@ import Image from 'next/image';
 
 export function SubscriptionSection() {
   return (
-    <section id="subscribe" className="relative w-full h-screen flex items-center justify-center bg-background scroll-section">
+    <section id="subscribe" className="relative w-full bg-background py-12 md:py-24 lg:py-32">
        <Image
         src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
         alt="A dark and moody image of the inside of a gem mine, with rock walls and dim lighting."

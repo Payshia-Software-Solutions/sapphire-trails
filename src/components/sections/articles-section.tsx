@@ -64,7 +64,7 @@ const ArticleCard = ({ article }: { article: typeof mockArticles[0] }) => (
 
 export function ArticlesSection() {
   return (
-    <section id="articles" className="w-full h-screen flex items-center justify-center bg-background scroll-section">
+    <section id="articles" className="w-full bg-background py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6">
         <ScrollAnimate>
           <div className="text-center mb-12">

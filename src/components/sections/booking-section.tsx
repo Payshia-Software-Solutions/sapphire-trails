@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
@@ -5,7 +6,7 @@ import Image from 'next/image';
 
 export function BookingSection() {
   return (
-    <section id="booking" className="relative w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
+    <section id="booking" className="relative w-full bg-background-alt py-12 md:py-24 lg:py-32">
       <Image
         src="https://content-provider.payshia.com/sapphire-trail/images/img4.webp"
         alt="People sifting for gems in a river"

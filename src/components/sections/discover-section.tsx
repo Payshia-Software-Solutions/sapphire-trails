@@ -112,9 +112,9 @@ export function DiscoverSection() {
   }, []);
 
   return (
-    <section id="about" className="w-full h-screen flex flex-col justify-center bg-background-alt scroll-section py-8 md:py-12">
-      <div className="container mx-auto px-4 md:px-6 flex flex-col h-full">
-        <ScrollAnimate className="max-w-3xl mx-auto text-center flex-shrink-0">
+    <section id="about" className="w-full bg-background-alt py-12 md:py-24 lg:py-32">
+      <div className="container mx-auto px-4 md:px-6">
+        <ScrollAnimate className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
             Discover Our Gem Mine Tours
           </h2>
@@ -128,13 +128,13 @@ export function DiscoverSection() {
         </ScrollAnimate>
 
         <ScrollAnimate 
-            className="w-full mx-auto flex-grow min-h-0"
+            className="w-full max-w-5xl mx-auto"
         >
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-4 md:h-full">
+            <div className="grid grid-cols-2 md:grid-cols-6 md:auto-rows-[150px] gap-2 md:gap-4">
                 {content.images.map((image, index) => (
                   <Dialog key={index}>
                     <DialogTrigger asChild>
-                      <div className={cn("relative w-full aspect-[4/3] md:h-full md:aspect-auto overflow-hidden rounded-lg group cursor-pointer", image.className)}>
+                      <div className={cn("relative w-full overflow-hidden rounded-lg group cursor-pointer aspect-[4/3] md:aspect-auto", image.className)}>
                           <Image
                               src={getFullImageUrl(image.src)}
                               alt={image.alt}
