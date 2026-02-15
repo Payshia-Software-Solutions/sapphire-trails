@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import { CalendarCheck, ArrowRight } from 'lucide-react';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -26,10 +27,16 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
       <div className="flex items-center gap-4 mt-auto">
         <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
-          <Link href={`/booking?tourType=${tour.id}`}>Book Now</Link>
+          <Link href={`/booking?tourType=${tour.id}`}>
+            <CalendarCheck className="mr-2 h-4 w-4" />
+            Book Now
+          </Link>
         </Button>
         <Button asChild variant="outline" className="text-primary border-primary hover:bg-primary/10 hover:text-primary rounded-full px-6">
-            <Link href={`/tours/${tour.slug}`}>More Info</Link>
+            <Link href={`/tours/${tour.slug}`}>
+                <ArrowRight className="mr-2 h-4 w-4" />
+                More Info
+            </Link>
         </Button>
       </div>
     </CardContent>

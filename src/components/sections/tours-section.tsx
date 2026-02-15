@@ -30,7 +30,10 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       <div className="flex justify-between items-center mt-auto pt-4 border-t border-border">
           <p className="text-2xl font-bold text-primary">{tour.price} <span className="text-sm font-normal text-muted-foreground">{tour.priceSuffix}</span></p>
           <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
-            <Link href={`/tours/${tour.slug}`}>View Details</Link>
+            <Link href={`/tours/${tour.slug}`}>
+              <ArrowRight className="mr-2 h-4 w-4" />
+              View Details
+            </Link>
           </Button>
       </div>
     </CardContent>
