@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import { getFullImageUrl } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -122,19 +123,23 @@ export function DiscoverSection() {
                           </div>
                       </div>
                     </DialogTrigger>
-                    <DialogContent className="w-auto max-w-[90vw] p-2 bg-transparent border-0 shadow-none">
-                        <div className="relative">
-                            <Image
-                                src={getFullImageUrl(image.src)}
-                                alt={image.alt}
-                                width={1600}
-                                height={900}
-                                className="object-contain max-h-[80vh] rounded-lg"
-                            />
-                             {image.hoverDescription && (
-                                <p className="mt-2 text-center text-white text-sm bg-black/50 rounded-b-lg p-3">{image.hoverDescription}</p>
-                            )}
-                        </div>
+                    <DialogContent className="max-w-6xl w-full p-0 border-0 bg-transparent">
+                        <Carousel className="w-full" opts={{ startIndex: index, loop: true }}>
+                            <CarouselContent>
+                                {content.images.map((img, i) => (
+                                    <CarouselItem key={i}>
+                                        <div className="relative aspect-video">
+                                            <Image src={getFullImageUrl(img.src)} alt={img.alt} fill className="object-contain" />
+                                        </div>
+                                         {img.hoverDescription && (
+                                            <p className="mt-2 text-center text-white text-sm bg-black/50 rounded-b-lg p-2 max-w-3xl mx-auto">{img.hoverDescription}</p>
+                                        )}
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                            <CarouselPrevious className="left-2 text-white bg-black/20 hover:bg-black/50 border-white/20" />
+                            <CarouselNext className="right-2 text-white bg-black/20 hover:bg-black/50 border-white/20" />
+                        </Carousel>
                     </DialogContent>
                   </Dialog>
                 ))}
@@ -144,3 +149,4 @@ export function DiscoverSection() {
     </section>
   );
 }
+
