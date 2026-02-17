@@ -50,7 +50,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background border-t border-white/10">
-      <div className="container mx-auto flex h-14 max-w-screen-2xl items-center justify-between px-4 md:px-6">
+      <div className="container mx-auto flex h-12 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
           <span className="font-serif text-lg md:text-2xl tracking-widest md:tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
         </Link>
