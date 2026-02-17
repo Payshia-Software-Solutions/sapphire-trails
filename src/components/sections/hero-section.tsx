@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -7,7 +6,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { ScrollAnimate } from '../shared/scroll-animate';
 import { cn } from '@/lib/utils';
-import { CalendarCheck } from 'lucide-react';
+import { CalendarCheck, ChevronDown } from 'lucide-react';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -86,6 +85,15 @@ export function HeroSection() {
           </Link>
         </Button>
       </ScrollAnimate>
+
+      {/* Scroll Down Indicator */}
+      <Link
+        href="#about"
+        className="absolute bottom-10 z-20 animate-scroll-down"
+        aria-label="Scroll to next section"
+      >
+        <ChevronDown className="h-10 w-10 text-white" />
+      </Link>
     </section>
   );
 }
