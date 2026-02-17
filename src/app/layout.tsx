@@ -110,7 +110,7 @@ export default function RootLayout({
       <head>
         <link
           rel="preload"
-          href="https://content-provider.payshia.com/sapphire-trail/hero/sapphire-trails-her-video.webm"
+          href="https://content-provider.payshia.com/sapphire-trail/hero/hero-video-sapphire-trail.webm"
           as="video"
           type="video/webm"
         />
