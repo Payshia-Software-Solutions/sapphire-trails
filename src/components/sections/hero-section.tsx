@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -35,7 +36,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
+    <section className="relative h-[calc(100vh-3rem)] w-full flex items-center justify-center overflow-hidden bg-black">
       {/* Static poster image */}
       <Image
         src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
