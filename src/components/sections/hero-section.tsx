@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { ScrollAnimate } from '../shared/scroll-animate';
 import { cn } from '@/lib/utils';
-import { CalendarCheck } from 'lucide-react';
+import { CalendarCheck, ChevronDown } from 'lucide-react';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
@@ -36,7 +36,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
+    <section className="relative h-[calc(100vh-3rem)] w-full flex items-center justify-center overflow-hidden bg-black">
       {/* Static poster image */}
       <Image
         src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
@@ -58,7 +58,7 @@ export function HeroSection() {
               isVideoVisible ? "opacity-100" : "opacity-0"
           )}
       >
-          <source src="https://content-provider.payshia.com/sapphire-trail/hero/sapphire-trails-her-video.webm" type="video/webm" />
+          <source src="https://content-provider.payshia.com/sapphire-trail/hero/hero-video-sapphire-trail.webm" type="video/webm" />
       </video>
       
       <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
@@ -86,6 +86,15 @@ export function HeroSection() {
           </Link>
         </Button>
       </ScrollAnimate>
+
+      {/* Scroll Down Indicator */}
+      <Link
+        href="#about"
+        className="absolute bottom-10 z-20 animate-scroll-down"
+        aria-label="Scroll to next section"
+      >
+        <ChevronDown className="h-10 w-10 text-white" />
+      </Link>
     </section>
   );
 }
