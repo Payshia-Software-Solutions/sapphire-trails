@@ -132,7 +132,7 @@ export default function PublicBookingViewPage() {
                 </Card>
 
                 <div className="text-center">
-                    <p className="text-sm text-muted-foreground">If you have any questions, please contact us at info@sapphiretrails.com</p>
+                    <p className="text-sm text-muted-foreground">If you have any questions, please contact us at info@sapphiretrails.lk</p>
                 </div>
             </div>
           )}

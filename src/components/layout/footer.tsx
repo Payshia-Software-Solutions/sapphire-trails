@@ -81,7 +81,7 @@ export function Footer() {
             <h3 className="font-headline text-lg tracking-widest text-primary mb-4">CONTACT US</h3>
             <div className="space-y-2 text-sm text-muted-foreground font-body">
                 <p>Grand Silver Ray, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka.</p>
-                <p>Email: info@sapphiretrails.com</p>
+                <p>Email: info@sapphiretrails.lk</p>
                 <p>Primary: 071 235 7700</p>
                 <p>Secondary: 071 638 1000</p>
                 <a href="https://maps.app.goo.gl/h562367TWEDda77J8" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-primary transition-colors">
@@ -112,8 +112,8 @@ export function Footer() {
           <p>
             © {new Date().getFullYear()} Sapphire Trails. All rights reserved.
           </p>
-          <Link href="https://payshia.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-            Powered by Payshia Software Solutions
+          <Link href="https://nebulync.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            Powered by Nebulync.com
           </Link>
         </div>
       </div>

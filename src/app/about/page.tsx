@@ -15,6 +15,9 @@ import { TrustSection } from '@/components/sections/TrustSection';
 export const metadata: Metadata = {
   title: 'About Sapphire Trails | Ethical & Safe Sri Lanka Gem Tours',
   description: 'Learn about our commitment to ethical gem mining, our safety standards, and why Ratnapura is the heart of the gem world. Discover the experts behind Sri Lanka\'s premier gem tours.',
+  alternates: {
+    canonical: '/about',
+  },
   openGraph: {
     title: 'About Sapphire Trails | Ethical & Safe Gem Tours in Sri Lanka',
     description: 'Learn about the experts behind Sri Lanka\'s premier gem tours, our commitment to ethical mining, and our high safety standards.',

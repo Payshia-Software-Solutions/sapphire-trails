@@ -11,6 +11,9 @@ import { TrustSection } from '@/components/sections/TrustSection';
 export const metadata: Metadata = {
   title: 'Ratnapura Gem Mine Tour Packages | Sapphire Trails',
   description: 'Explore our exclusive gem mine tour packages in Ratnapura. From private sapphire hunting to all-inclusive day trips, book the best Sri Lanka gem tour experience.',
+  alternates: {
+    canonical: '/tours',
+  },
   openGraph: {
     title: 'Ratnapura Gem Mine Tour Packages | Sapphire Trails',
     description: 'Choose your perfect Sri Lankan gem adventure. We offer the best private gem tour packages in Ratnapura.',

@@ -8,6 +8,9 @@ import Script from 'next/script';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sapphiretrails.lk'),
+  alternates: {
+    canonical: '/',
+  },
   title: {
     template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
     default: 'Gem Mine Tours Sri Lanka | Sapphire Trails - Luxury Ratnapura Mining Trips',

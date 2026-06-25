@@ -2,10 +2,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, User, LogOut, Shield } from 'lucide-react';
+import { Menu, User, LogOut, Shield, Mail, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
@@ -30,8 +30,22 @@ const navLinks = [
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showTopBar, setShowTopBar] = useState(true);
   const { user, logout } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowTopBar(false);
+      } else {
+        setShowTopBar(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -50,6 +64,28 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background border-b border-white/10">
+      {/* Top Bar */}
+      <div className={cn(
+        "w-full bg-black/40 text-xs text-muted-foreground border-b border-white/15 py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",
+        showTopBar ? "max-h-[40px] opacity-100" : "max-h-0 opacity-0 py-0 border-b-transparent"
+      )}>
+        <div className="container mx-auto max-w-screen-2xl flex items-center justify-between px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <a href="mailto:info@sapphiretrails.lk" className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
+              <Mail className="h-3 w-3 text-primary" />
+              <span>info@sapphiretrails.lk</span>
+            </a>
+            <a href="tel:+94712357700" className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
+              <Phone className="h-3 w-3 text-primary" />
+              <span>+94 71 235 7700</span>
+            </a>
+          </div>
+          <div className="hidden sm:block text-primary/75 font-serif tracking-[0.15em] uppercase text-[10px]">
+            Luxury Gem Tours
+          </div>
+        </div>
+      </div>
+
       <div className="container mx-auto flex h-12 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
           <span className="font-serif text-lg md:text-2xl tracking-widest md:tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>

@@ -4,4 +4,4 @@ Disallow: /api/
 Disallow: /admin/
 Allow: /
 
-Sitemap: https://www.sapphiretrails.com/sitemap.xml
+Sitemap: https://sapphiretrails.lk/sitemap.xml

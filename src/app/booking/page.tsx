@@ -9,6 +9,9 @@ import { TrustSection } from '@/components/sections/TrustSection';
 export const metadata: Metadata = {
   title: 'Book Your Gem Tour Adventure in Sri Lanka | Sapphire Trails',
   description: 'Book your gem tour adventure in Ratnapura, Sri Lanka. Select your gem tour package and reserve your unforgettable gem experience with Sapphire Trails.',
+  alternates: {
+    canonical: '/booking',
+  },
   openGraph: {
     title: 'Book Your Sapphire Trails Gem Tour Adventure',
     description: 'Complete your booking for a premier gem tour and gem experience in Ratnapura, Sri Lanka.',

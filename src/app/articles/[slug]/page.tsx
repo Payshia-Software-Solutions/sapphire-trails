@@ -144,6 +144,9 @@ export async function generateMetadata(
   const metadata: Metadata = {
     title: `${article.title} | Sapphire Trails`,
     description: article.description,
+    alternates: {
+      canonical: `/articles/${params.slug}`,
+    },
   }
 
   if (article.slug === 'complete-guide-to-gem-tour-experience') {
@@ -268,8 +271,37 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         { label: article.title, href: `/articles/${article.slug}` },
     ];
 
+    const breadcrumbStructuredData = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://sapphiretrails.lk"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Articles",
+          "item": "https://sapphiretrails.lk/articles"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": article.title,
+          "item": `https://sapphiretrails.lk/articles/${article.slug}`
+        }
+      ]
+    };
+
     return (
         <div className="flex min-h-screen flex-col bg-background">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+            />
             <Header />
             <main className="flex-1">
                 <PageHero title={pageTitle} breadcrumbs={breadcrumbs} />

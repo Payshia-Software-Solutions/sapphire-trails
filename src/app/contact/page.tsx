@@ -18,6 +18,9 @@ import { TrustSection } from '@/components/sections/TrustSection';
 export const metadata: Metadata = {
   title: 'Contact Sapphire Trails | Book Gem Mine Tours in Ratnapura, Sri Lanka',
   description: 'Get in touch with Sapphire Trails to book your exclusive gem mine tour. Located at Grand Silver Ray, Ratnapura. Call +94 71 235 7700 or message us today.',
+  alternates: {
+    canonical: '/contact',
+  },
   openGraph: {
     title: 'Contact Sapphire Trails to Book a Gem Tour in Sri Lanka',
     description: 'Have questions about our Sri Lanka gem tours or gem experiences? We are here to help.',

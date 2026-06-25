@@ -50,6 +50,9 @@ export async function generateMetadata(
   return {
     title: `Explore ${location.title} | Ratnapura Gem Tour Attraction`,
     description: `Explore ${location.title} on your gem tour of Ratnapura, Sri Lanka. ${location.cardDescription}`,
+    alternates: {
+      canonical: `/explore-ratnapura/${params.slug}`,
+    },
     openGraph: {
       title: `Explore ${location.title} | Attractions for Gem Tours in Sri Lanka`,
       description: `A must-see attraction for your Sri Lanka gem tour experience. ${location.cardDescription}`,
@@ -73,8 +76,37 @@ export default async function LocationPage({ params }: Props) {
     notFound();
   }
 
+  const breadcrumbStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://sapphiretrails.lk"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Explore Ratnapura",
+        "item": "https://sapphiretrails.lk/explore-ratnapura"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": location.title,
+        "item": `https://sapphiretrails.lk/explore-ratnapura/${params.slug}`
+      }
+    ]
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+      />
       <Header />
       <main className="flex-1">
         <LocationHero

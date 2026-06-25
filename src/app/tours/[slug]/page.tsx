@@ -50,6 +50,9 @@ export async function generateMetadata(
   return {
     title: `Book the ${tourPackage.tourPageTitle} | Ratnapura Gem Mine Tours`,
     description: `Experience one of the best gem tours in Ratnapura. Our ${tourPackage.tourPageTitle} is a private gem tour package offering an unforgettable Sri Lankan adventure. ${tourPackage.tourPageDescription}`,
+    alternates: {
+      canonical: `/tours/${params.slug}`,
+    },
     openGraph: {
       title: `Book the ${tourPackage.tourPageTitle} | Ratnapura Gem Mine Tours`,
       description: `Experience one of the best private gem tours in Ratnapura, Sri Lanka with our ${tourPackage.tourPageTitle} package.`,
@@ -98,11 +101,40 @@ export default async function TourDetailPage({ params }: Props) {
     }
   };
 
+  const breadcrumbStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://sapphiretrails.lk"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Tours",
+        "item": "https://sapphiretrails.lk/tours"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": tourPackage.tourPageTitle,
+        "item": `https://sapphiretrails.lk/tours/${params.slug}`
+      }
+    ]
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+      />
+      <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
       />
       <Header />
       <main className="flex-1">

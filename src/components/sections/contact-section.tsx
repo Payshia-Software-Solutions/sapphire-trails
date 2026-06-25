@@ -92,7 +92,7 @@ export function ContactSection() {
                         <Mail className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-foreground">Email</p>
-                            <a href="mailto:info@sapphiretrails.com" className="hover:text-primary transition-colors">info@sapphiretrails.com</a>
+                            <a href="mailto:info@sapphiretrails.lk" className="hover:text-primary transition-colors">info@sapphiretrails.lk</a>
                         </div>
                     </div>
                     <div className="flex items-start gap-4">

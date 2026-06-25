@@ -9,6 +9,9 @@ import { TrustSection } from '@/components/sections/TrustSection';
 export const metadata: Metadata = {
   title: 'Gem Tour Articles | Sapphire Trails',
   description: 'Explore articles about gem tours, gemstone tours, and gem mining tours in the Gem City, Ratnapura. Your expert guide from Sapphire Trails.',
+  alternates: {
+    canonical: '/articles',
+  },
   openGraph: {
     title: 'Gem Tour Articles | Sapphire Trails',
     description: 'Explore articles about gem tours, gemstone tours, and gem mining tours in the Gem City, Ratnapura.',
