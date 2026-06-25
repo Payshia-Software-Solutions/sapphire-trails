@@ -124,14 +124,19 @@ class SiteContentController
 
         // Handle image uploads and update the content data with new URLs
         foreach ($files as $key => $file) {
+            // Explode the key to handle nested structures
+            $keys = explode('.', str_replace(['[', ']'], ['.', ''], trim($key, ']')));
+            
             $newImageUrl = $this->handleImageUpload($file);
+            
             if ($newImageUrl) {
-                // The key from the form-data should point to where the URL needs to be stored.
-                // e.g., key 'hero.imageUrl' would update $contentData['hero']['imageUrl']
-                $keys = explode('.', $key);
                 $temp = &$contentData;
                 foreach ($keys as $k) {
                     if (!isset($temp[$k])) {
+                        // If a key is numeric, it implies we are at an array index
+                        if (is_numeric($k)) {
+                            $k = (int) $k;
+                        }
                         $temp[$k] = []; // Create nested structure if it doesn't exist
                     }
                     $temp = &$temp[$k];

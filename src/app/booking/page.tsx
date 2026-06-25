@@ -4,18 +4,19 @@ import { Footer } from '@/components/layout/footer';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { BookingPageContent } from '@/components/sections/booking-page-content';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export const metadata: Metadata = {
-  title: 'Book Your Tour',
-  description: 'Select your tour package, date, and number of guests to reserve your spot on an unforgettable adventure with Sapphire Trails.',
+  title: 'Book Your Gem Tour Adventure in Sri Lanka | Sapphire Trails',
+  description: 'Book your gem tour adventure in Ratnapura, Sri Lanka. Select your gem tour package and reserve your unforgettable gem experience with Sapphire Trails.',
   openGraph: {
-    title: 'Book Your Sapphire Trails Adventure',
-    description: 'Complete your booking for a luxury gem tour in Sri Lanka.',
+    title: 'Book Your Sapphire Trails Gem Tour Adventure',
+    description: 'Complete your booking for a premier gem tour and gem experience in Ratnapura, Sri Lanka.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
       width: 1200,
       height: 630,
-      alt: 'An overhead view of someone sifting for gems.'
+      alt: 'An overhead view of someone sifting for gems on a Sri Lankan gem tour.'
     }],
   }
 };
@@ -33,6 +34,7 @@ export default function BookingPage() {
           <BookingPageContent />
         </Suspense>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

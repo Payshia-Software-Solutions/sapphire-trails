@@ -5,22 +5,21 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { getFullImageUrl } from '@/lib/utils';
 import { ScrollAnimate } from '../shared/scroll-animate';
+import { cn } from '@/lib/utils';
+import { CalendarCheck, ChevronDown } from 'lucide-react';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
 
 const defaultContent = {
-  headline: "Sri Lanka's Only Luxury Gem Experience",
-  subheadline: "Experience luxury, culture, and adventure",
-  imageUrl: "https://content-provider.payshia.com/sapphire-trail/images/img35.webp",
-  imageAlt: "A dark and moody image of the inside of a gem mine, with rock walls and dim lighting.",
-  imageHint: "gem mine cave",
+  headline: "Sri Lanka Gem Mine Tour - An Exclusive Luxury Experience",
+  subheadline: "Discover the world's finest sapphires in Ratnapura with a professional gem mine tour.",
 };
 
 
 export function HeroSection() {
   const [content, setContent] = useState(defaultContent);
+  const [isVideoVisible, setIsVideoVisible] = useState(false);
 
   useEffect(() => {
     try {
@@ -37,15 +36,31 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative h-screen w-full flex items-center justify-center scroll-section">
+    <section className="relative h-[calc(100vh-3rem)] w-full flex items-center justify-center overflow-hidden bg-black">
+      {/* Static poster image */}
       <Image
-        src={finalImageUrl}
-        alt={content.imageAlt}
-        data-ai-hint={content.imageHint}
+        src="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
+        alt="A dark, moody gem mine interior which serves as a background poster."
         fill
-        className="z-0 object-cover"
+        className="absolute z-0 object-cover"
+        priority
       />
-      <div className="absolute inset-0 bg-black/50 z-10" />
+
+      {/* Video fades in on top */}
+      <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          onCanPlay={() => setIsVideoVisible(true)}
+          className={cn(
+              "absolute z-10 w-auto min-w-full min-h-full max-w-none object-cover transition-opacity duration-1000",
+              isVideoVisible ? "opacity-100" : "opacity-0"
+          )}
+      >
+          <source src="https://content-provider.payshia.com/sapphire-trail/hero/hero-video-sapphire-trail.webm" type="video/webm" />
+      </video>
+      
       <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white p-4 space-y-6">
 
         
@@ -60,15 +75,27 @@ export function HeroSection() {
           <h1 className="text-4xl md:text-5xl font-headline font-bold tracking-tight text-white max-w-3xl">
             {content.headline}
           </h1>
-          <p className="text-lg text-white/90">
+          <h2 className="text-lg text-white/90 max-w-2xl">
             {content.subheadline}
-          </p>
+          </h2>
         </div>
 
         <Button asChild size="lg">
-          <Link href="/booking">Book Now</Link>
+          <Link href="/booking">
+            <CalendarCheck className="mr-2 h-5 w-5" />
+            Book Now
+          </Link>
         </Button>
       </ScrollAnimate>
+
+      {/* Scroll Down Indicator */}
+      <Link
+        href="#about"
+        className="absolute bottom-10 z-20 animate-scroll-down"
+        aria-label="Scroll to next section"
+      >
+        <ChevronDown className="h-10 w-10 text-white" />
+      </Link>
     </section>
   );
 }

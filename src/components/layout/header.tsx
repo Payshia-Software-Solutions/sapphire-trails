@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, User, LogOut, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -24,7 +24,7 @@ const navLinks = [
   { href: '/about', label: 'About' },
   { href: '/tours', label: 'Tours' },
   { href: '/explore-ratnapura', label: 'Explore Ratnapura' },
-  { href: '/virtual-tour', label: 'Virtual Tour' },
+  { href: '/articles', label: 'Articles' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -49,8 +49,8 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background border-t border-white/10">
-      <div className="container mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-6">
+    <header className="sticky top-0 z-50 w-full bg-background border-b border-white/10">
+      <div className="container mx-auto flex h-12 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
           <span className="font-serif text-lg md:text-2xl tracking-widest md:tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
         </Link>
@@ -106,6 +106,9 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-full max-w-sm bg-background p-6 flex flex-col">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+              </SheetHeader>
               <div className="text-center mb-8">
                 <Link href="/" className="inline-block" onClick={() => setIsMenuOpen(false)}>
                    <Image 

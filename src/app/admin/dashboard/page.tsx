@@ -1,14 +1,14 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { type Booking } from '@/lib/bookings-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Users, Clock, CheckCircle, XCircle, LoaderCircle } from 'lucide-react';
 import { subDays, format, parseISO } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
+import placeholderImages from '@/lib/placeholder-images.json';
 
 import { BookingVolumeChart } from '@/components/admin/charts/booking-volume-chart';
 import { BookingStatusChart } from '@/components/admin/charts/booking-status-chart';
@@ -36,6 +36,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const adminUser = localStorage.getItem(ADMIN_SESSION_KEY);
@@ -47,41 +48,42 @@ export default function DashboardPage() {
   }, [router]);
   
   useEffect(() => {
-    async function fetchBookings() {
+    async function fetchData() {
+      setIsLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/bookings`);
-        if (!response.ok) {
+        const [bookingsRes, packagesRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/bookings`),
+          fetch(`${API_BASE_URL}/tours`)
+        ]);
+
+        if (!bookingsRes.ok) {
           throw new Error('Failed to fetch bookings.');
         }
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setBookings(data.map(mapServerBookingToClient));
+        const bookingsData = await bookingsRes.json();
+        if (Array.isArray(bookingsData)) {
+          setBookings(bookingsData.map(mapServerBookingToClient));
+        }
+
+        if (packagesRes.ok) {
+            const serverData = await packagesRes.json();
+            if(Array.isArray(serverData)) {
+                setTourPackages(serverData.map(mapServerPackage));
+            }
         }
       } catch (error) {
-        console.error("Failed to fetch bookings:", error);
+        console.error("Failed to fetch dashboard data:", error);
         toast({
           variant: 'destructive',
           title: 'Error',
           description: 'Could not load dashboard data from the server.'
         });
+      } finally {
+        setIsLoading(false);
       }
-    }
-    
-    async function fetchTourPackages() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/tours`);
-            if (response.ok) {
-                const serverData = await response.json();
-                if(Array.isArray(serverData)) {
-                    setTourPackages(serverData.map(mapServerPackage));
-                }
-            }
-        } catch(e) { console.error("Could not fetch tour packages", e); }
     }
 
     if (isAuthenticated) {
-      fetchBookings();
-      fetchTourPackages();
+      fetchData();
     }
   }, [isAuthenticated, toast]);
 
@@ -141,12 +143,23 @@ export default function DashboardPage() {
   if (!isAuthenticated) {
     return null;
   }
+  
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-muted-foreground">
+          <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+          <p>Loading Dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight text-primary">Dashboard</h1>
       
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
@@ -185,7 +198,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+       <div className="grid gap-6 lg:grid-cols-3">
             <Card className="lg:col-span-2">
                 <CardHeader>
                     <CardTitle>Booking Volume</CardTitle>
@@ -195,24 +208,24 @@ export default function DashboardPage() {
                     <BookingVolumeChart data={volumeData} />
                 </CardContent>
             </Card>
-            <Card>
+            <Card className="lg:col-span-2">
                  <CardHeader>
                     <CardTitle>Booking Status Distribution</CardTitle>
                     <CardDescription>Current snapshot</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="h-[300px]">
                     <BookingStatusChart data={statusData} />
                 </CardContent>
             </Card>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-2">
-             <Card>
+        <div className="grid gap-6 lg:grid-cols-3">
+             <Card className="lg:col-span-2">
                 <CardHeader>
                     <CardTitle>Tour Popularity</CardTitle>
                     <CardDescription>All-time booking counts per tour package.</CardDescription>
                 </CardHeader>
-                <CardContent className="h-[250px]">
+                <CardContent className="h-[230px] pt-4">
                     <TourPopularityChart data={tourData} />
                 </CardContent>
             </Card>
@@ -221,11 +234,11 @@ export default function DashboardPage() {
                     <CardTitle>Recent Bookings</CardTitle>
                     <CardDescription>The five most recent booking requests.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 overflow-y-auto">
                      {recentBookings.map((booking) => (
                         <div key={booking.id} className="flex items-center gap-4">
                             <Avatar className="h-9 w-9">
-                                <AvatarImage src={`https://placehold.co/100x100.png`} alt="Avatar" data-ai-hint="person portrait" />
+                                <AvatarImage src={placeholderImages['avatar-fallback'].src} alt={placeholderImages['avatar-fallback'].alt} data-ai-hint={placeholderImages['avatar-fallback'].hint} />
                                 <AvatarFallback>{booking.name.charAt(0).toUpperCase()}</AvatarFallback>
                             </Avatar>
                             <div className="grid gap-1">

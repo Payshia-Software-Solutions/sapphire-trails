@@ -1,0 +1,32 @@
+{
+  "testimonial-woman": {
+    "src": "https://picsum.photos/seed/test-woman/100/100",
+    "alt": "Testimonial author",
+    "hint": "woman portrait"
+  },
+  "testimonial-man": {
+    "src": "https://picsum.photos/seed/test-man/100/100",
+    "alt": "Testimonial author",
+    "hint": "man portrait"
+  },
+  "testimonial-person": {
+    "src": "https://picsum.photos/seed/test-person/100/100",
+    "alt": "Testimonial author",
+    "hint": "person smiling"
+  },
+  "avatar-fallback": {
+    "src": "https://picsum.photos/seed/avatar-fallback/100/100",
+    "alt": "Avatar",
+    "hint": "person portrait"
+  },
+  "gallery-600x400": {
+    "src": "https://picsum.photos/seed/gallery1/600/400",
+    "alt": "Placeholder image",
+    "hint": "landscape abstract"
+  },
+  "gallery-400x400": {
+    "src": "https://picsum.photos/seed/gallery2/400/400",
+    "alt": "Placeholder image",
+    "hint": "abstract texture"
+  }
+}

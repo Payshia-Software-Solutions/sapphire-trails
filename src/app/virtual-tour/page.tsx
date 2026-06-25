@@ -1,15 +1,17 @@
+
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { VirtualTourHero } from '@/components/sections/virtual-tour-hero';
 import { VirtualTourContent } from '@/components/sections/virtual-tour-content';
 import type { Metadata } from 'next';
+import { PageHero } from '@/components/shared/page-hero';
+import { TrustSection } from '@/components/sections/TrustSection';
 
 export const metadata: Metadata = {
-  title: 'Virtual Tour',
-  description: 'Experience the thrill of a gem mine from anywhere in the world. Our immersive virtual tour is coming soon.',
+  title: 'Virtual Gem Tour of a Ratnapura Mine | Sri Lanka',
+  description: 'Experience the thrill of a Sri Lankan gem mine from anywhere with our Ratnapura virtual gem tour. Coming soon from Sapphire Trails.',
   openGraph: {
-    title: 'Virtual Tour of a Sri Lankan Gem Mine',
-    description: 'Coming soon: an immersive 360-degree experience from Sapphire Trails.',
+    title: 'Virtual Gem Tour of a Sri Lankan Gem Mine in Ratnapura',
+    description: 'Coming soon: an immersive 360-degree virtual tour experience from Sapphire Trails.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
       width: 1200,
@@ -21,13 +23,15 @@ export const metadata: Metadata = {
 
 
 export default function VirtualTourPage() {
+  const breadcrumbs = [{ label: 'Virtual Tour', href: '/virtual-tour' }];
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1 bg-background-alt">
-        <VirtualTourHero />
+        <PageHero title="Virtual Tour" breadcrumbs={breadcrumbs} />
         <VirtualTourContent />
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );

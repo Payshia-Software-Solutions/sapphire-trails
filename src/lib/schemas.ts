@@ -9,6 +9,8 @@ export const contactFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
+  phone: z.string().optional(),
+  tourInterest: z.string().optional(),
   message: z.string().min(10, {
     message: "Message must be at least 10 characters.",
   }),
@@ -204,9 +206,6 @@ export const cmsFormSchema = z.object({
   hero: z.object({
     headline: z.string().min(1, "Headline is required."),
     subheadline: z.string().min(1, "Sub-headline is required."),
-    imageUrl: z.string().min(1, "An image is required."),
-    imageAlt: z.string().min(1, "Image alt text is required."),
-    imageHint: z.string().min(1, "Image hint is required."),
   }),
   discover: z.object({
     description: z.string().min(1, "Description is required."),
@@ -214,7 +213,8 @@ export const cmsFormSchema = z.object({
       src: z.string().min(1, "An image is required."),
       alt: z.string().min(1, "Alt text is required."),
       hint: z.string().min(1, "Image hint is required."),
-    })).length(3, "You must provide exactly 3 images."),
+      hoverDescription: z.string().optional(),
+    })).length(8, "You must provide exactly 8 images."),
   }),
   footer: z.object({
     facebookUrl: z.string().url("Please enter a valid URL for Facebook."),

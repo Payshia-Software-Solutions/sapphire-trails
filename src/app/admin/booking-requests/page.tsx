@@ -8,7 +8,7 @@ import { type Booking } from '@/lib/bookings-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, Clock, CheckCircle, XCircle, RefreshCw, Search, ListFilter } from 'lucide-react';
+import { Users, Clock, CheckCircle, XCircle, RefreshCw, Search, ListFilter, LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import {
@@ -64,6 +64,7 @@ export default function BookingRequestsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [tourTypeFilter, setTourTypeFilter] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchTourPackages() {
@@ -89,26 +90,30 @@ export default function BookingRequestsPage() {
     }
   }, [router]);
   
-  useEffect(() => {
-    async function fetchBookings() {
-      try {
-        const response = await fetch(`${API_BASE_URL}/bookings`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch bookings.');
-        }
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setBookings(data.map(mapServerBookingToClient).sort((a,b) => parseISO(b.date).getTime() - parseISO(a.date).getTime()));
-        }
-      } catch (error) {
-        console.error("Failed to fetch bookings:", error);
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Could not load bookings from the server.'
-        });
+  async function fetchBookings() {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/bookings`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch bookings.');
       }
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setBookings(data.map(mapServerBookingToClient).sort((a,b) => parseISO(b.date).getTime() - parseISO(a.date).getTime()));
+      }
+    } catch (error) {
+      console.error("Failed to fetch bookings:", error);
+      toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not load bookings from the server.'
+      });
+    } finally {
+      setIsLoading(false);
     }
+  }
+
+  useEffect(() => {
     if (isAuthenticated) {
       fetchBookings();
     }
@@ -227,7 +232,7 @@ export default function BookingRequestsPage() {
             <CardHeader className="border-b">
                 <CardTitle>All Requests</CardTitle>
                 <CardDescription>
-                  Showing {paginatedBookings.length} of {filteredBookings.length} records.
+                  Showing {isLoading ? 0 : paginatedBookings.length} of {isLoading ? 0 : filteredBookings.length} records.
                 </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -237,7 +242,7 @@ export default function BookingRequestsPage() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input placeholder="Search by name, email, or ID..." className="pl-10" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                         </div>
-                        <Button variant="outline"><RefreshCw className="mr-2 h-4 w-4" /> Refresh</Button>
+                        <Button variant="outline" onClick={fetchBookings} disabled={isLoading}><RefreshCw className={cn("mr-2 h-4 w-4", isLoading && "animate-spin")} /> Refresh</Button>
                     </div>
                      <div className="grid sm:grid-cols-2 gap-4">
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -261,80 +266,89 @@ export default function BookingRequestsPage() {
                      </div>
                 </div>
                 
-                {/* Mobile Card View */}
-                <div className="md:hidden p-4 space-y-4">
-                    {paginatedBookings.map((booking) => (
-                        <Card key={booking.id} className="bg-background-alt/50">
-                            <CardContent className="p-4">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <p className="font-bold text-lg">{booking.id}</p>
-                                        <p className="text-sm text-muted-foreground">ID: {booking.id}</p>
-                                        <p className="text-sm text-muted-foreground">{getTourPackage(booking.tourType)?.homepageTitle || 'Unknown Tour'}</p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">{booking.status}</Badge>
-                                        <Checkbox />
-                                    </div>
-                                </div>
-                                <div className="border-t my-4"></div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <span className="text-muted-foreground">Amount</span>
-                                    <span className="font-bold">{getBookingAmount(booking)}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-sm mt-2">
-                                    <span className="text-muted-foreground">Tour Date</span>
-                                    <span className="font-bold">{format(parseISO(booking.date), 'MMM dd, yyyy')}</span>
-                                </div>
-                                <Button className="w-full mt-4" asChild>
-                                  <Link href={`/admin/booking-requests/${booking.id}`}>Manage</Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                {isLoading ? (
+                  <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+                      <LoaderCircle className="h-12 w-12 text-muted-foreground/50 animate-spin" />
+                      <p>Fetching booking requests...</p>
+                  </div>
+                ) : (
+                <>
+                  {/* Mobile Card View */}
+                  <div className="md:hidden p-4 space-y-4">
+                      {paginatedBookings.map((booking) => (
+                          <Card key={booking.id} className="bg-background-alt/50">
+                              <CardContent className="p-4">
+                                  <div className="flex justify-between items-start">
+                                      <div>
+                                          <p className="font-bold text-lg">{booking.id}</p>
+                                          <p className="text-sm text-muted-foreground">ID: {booking.id}</p>
+                                          <p className="text-sm text-muted-foreground">{getTourPackage(booking.tourType)?.homepageTitle || 'Unknown Tour'}</p>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                          <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">{booking.status}</Badge>
+                                          <Checkbox />
+                                      </div>
+                                  </div>
+                                  <div className="border-t my-4"></div>
+                                  <div className="flex justify-between items-center text-sm">
+                                      <span className="text-muted-foreground">Amount</span>
+                                      <span className="font-bold">{getBookingAmount(booking)}</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-sm mt-2">
+                                      <span className="text-muted-foreground">Tour Date</span>
+                                      <span className="font-bold">{format(parseISO(booking.date), 'MMM dd, yyyy')}</span>
+                                  </div>
+                                  <Button className="w-full mt-4" asChild>
+                                    <Link href={`/admin/booking-requests/${booking.id}/view`}>Manage</Link>
+                                  </Button>
+                              </CardContent>
+                          </Card>
+                      ))}
+                  </div>
 
 
-                {/* Desktop Table View */}
-                <div className="hidden md:block">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Tour Package</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Guests</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                        {paginatedBookings.map((booking) => (
-                            <TableRow key={booking.id}>
-                                <TableCell>
-                                    <div className="font-medium break-words">{booking.name}</div>
-                                    <div className="text-sm text-muted-foreground hidden lg:block break-all">{booking.email}</div>
-                                </TableCell>
-                                <TableCell className="break-all">
-                                    {getTourPackage(booking.tourType)?.homepageTitle || `Tour ID: ${booking.tourType}`}
-                                </TableCell>
-                                <TableCell>{format(parseISO(booking.date), 'PPP')}</TableCell>
-                                <TableCell>{booking.guests}</TableCell>
-                                <TableCell>
-                                    <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">
-                                    {booking.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <Button variant="outline" size="sm" asChild>
-                                      <Link href={`/admin/booking-requests/${booking.id}`}>View/Manage</Link>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        </TableBody>
-                    </Table>
-                </div>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block">
+                      <Table>
+                          <TableHeader>
+                              <TableRow>
+                                  <TableHead>Name</TableHead>
+                                  <TableHead>Tour Package</TableHead>
+                                  <TableHead>Date</TableHead>
+                                  <TableHead>Guests</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead className="text-right">Actions</TableHead>
+                              </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                          {paginatedBookings.map((booking) => (
+                              <TableRow key={booking.id}>
+                                  <TableCell>
+                                      <div className="font-medium break-words">{booking.name}</div>
+                                      <div className="text-sm text-muted-foreground hidden lg:block break-all">{booking.email}</div>
+                                  </TableCell>
+                                  <TableCell className="break-all">
+                                      {getTourPackage(booking.tourType)?.homepageTitle || `Tour ID: ${booking.tourType}`}
+                                  </TableCell>
+                                  <TableCell>{format(parseISO(booking.date), 'PPP')}</TableCell>
+                                  <TableCell>{booking.guests}</TableCell>
+                                  <TableCell>
+                                      <Badge variant={getStatusBadgeVariant(booking.status)} className="capitalize">
+                                      {booking.status}
+                                      </Badge>
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                      <Button variant="outline" size="sm" asChild>
+                                        <Link href={`/admin/booking-requests/${booking.id}/view`}>View/Manage</Link>
+                                      </Button>
+                                  </TableCell>
+                              </TableRow>
+                          ))}
+                          </TableBody>
+                      </Table>
+                  </div>
+                </>
+                )}
             </CardContent>
              <CardFooter className="flex items-center justify-between border-t px-4 py-4">
                 <div className="text-sm text-muted-foreground">

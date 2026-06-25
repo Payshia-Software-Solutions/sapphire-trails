@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -20,6 +21,7 @@ import Image from 'next/image';
 import { mapServerLocationToClient, type Location, type GalleryImage } from '@/lib/locations-data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { API_BASE_URL } from '@/lib/utils';
+import placeholderImages from '@/lib/placeholder-images.json';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
 
@@ -463,7 +465,7 @@ export default function EditContentPage() {
                              </div>
                         </div>
                     )})}
-                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ id: undefined, src: 'https://placehold.co/600x400.png', alt: '', hint: '', file: undefined, isNew: true })}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ id: undefined, src: placeholderImages['gallery-600x400'].src, alt: '', hint: '', file: undefined, isNew: true })}>
                         <Plus className="mr-2 h-4 w-4" /> Add Image
                     </Button>
                 </CardContent>

@@ -20,6 +20,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { mapServerLocationToClient } from '@/lib/locations-data';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
 
@@ -101,7 +102,7 @@ export default function ManageContentPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 h-full">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Locations</h1>
@@ -115,78 +116,82 @@ export default function ManageContentPage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
+      <Card className="flex flex-col flex-1 overflow-hidden">
+        <CardHeader className="border-b">
           <CardTitle>Custom Added Locations</CardTitle>
           <CardDescription>
             This list is fetched from your server. Deleting an item is permanent.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {isLoading ? (
-             <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
-              <LoaderCircle className="h-12 w-12 text-muted-foreground/50 animate-spin" />
-              <p>Loading locations from server...</p>
-            </div>
-          ) : locations.length > 0 ? (
-            <div className="grid gap-6">
-              {locations.map((location) => (
-                <div key={location.slug} className="flex items-center gap-4 p-4 border rounded-lg">
-                  <Image
-                    src={location.cardImage}
-                    alt={location.title}
-                    width={80}
-                    height={80}
-                    className="rounded-md object-cover aspect-square bg-muted"
-                  />
-                  <div className="grid gap-1 text-sm flex-1">
-                    <div className="font-medium text-lg break-words">{location.title}</div>
-                    <div className="text-muted-foreground break-all">Slug: {location.slug}</div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button asChild variant="outline" size="icon">
-                      <Link href={`/admin/edit-content/${location.slug}`}>
-                        <Pencil className="h-4 w-4" />
-                        <span className="sr-only">Edit {location.title}</span>
-                      </Link>
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                         <Button variant="destructive" size="icon">
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete {location.title}</span>
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                          <AlertDialogDescription className="break-words">
-                            This action cannot be undone. This will permanently delete the content for <span className="font-semibold text-foreground">&quot;{location.title}&quot;</span>.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(location.slug)}>
-                            Yes, delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                  
+        <CardContent className="flex-1 p-0 overflow-y-auto">
+          <ScrollArea className="h-full">
+             <div className="p-6">
+               {isLoading ? (
+                  <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+                  <LoaderCircle className="h-12 w-12 text-muted-foreground/50 animate-spin" />
+                  <p>Loading locations from server...</p>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
-              <AlertTriangle className="h-12 w-12 text-muted-foreground/50" />
-              <p>No custom locations have been added yet.</p>
-              <Button asChild variant="link" className="text-primary">
-                <Link href="/admin/add-content">Add your first location</Link>
-              </Button>
-            </div>
-          )}
+              ) : locations.length > 0 ? (
+                <div className="grid gap-6">
+                  {locations.map((location) => (
+                    <div key={location.slug} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border rounded-lg">
+                      <Image
+                        src={location.cardImage}
+                        alt={location.title}
+                        width={80}
+                        height={80}
+                        className="rounded-md object-cover aspect-square bg-muted"
+                      />
+                      <div className="grid gap-1 text-sm flex-1">
+                        <div className="font-medium text-lg break-words">{location.title}</div>
+                        <div className="text-muted-foreground break-all">Slug: {location.slug}</div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <Button asChild variant="outline" size="icon">
+                          <Link href={`/admin/edit-content/${location.slug}`}>
+                            <Pencil className="h-4 w-4" />
+                            <span className="sr-only">Edit {location.title}</span>
+                          </Link>
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="icon">
+                              <Trash2 className="h-4 w-4" />
+                              <span className="sr-only">Delete {location.title}</span>
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription className="break-words">
+                                This action cannot be undone. This will permanently delete the content for <span className="font-semibold text-foreground">&quot;{location.title}&quot;</span>.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(location.slug)}>
+                                Yes, delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                      
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
+                  <AlertTriangle className="h-12 w-12 text-muted-foreground/50" />
+                  <p>No custom locations have been added yet.</p>
+                  <Button asChild variant="link" className="text-primary">
+                    <Link href="/admin/add-content">Add your first location</Link>
+                  </Button>
+                </div>
+              )}
+             </div>
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>

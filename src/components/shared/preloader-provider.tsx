@@ -5,12 +5,14 @@ import { usePathname } from 'next/navigation';
 import { PreLoader } from './pre-loader';
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { useScroll } from '@/contexts/scroll-context';
 
 export function PreloaderProvider({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const [isLoading, setIsLoading] = useState(true);
     const [isFadingOut, setIsFadingOut] = useState(false);
     const isInitialLoad = useRef(true);
+    const { scrollableElement } = useScroll();
 
     // This effect handles the visibility of the preloader.
     useEffect(() => {
@@ -31,12 +33,14 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
                     isInitialLoad.current = false;
                 }
                 // Scroll to top after animation is fully complete
-                window.scrollTo({ top: 0, behavior: 'instant' });
+                if (scrollableElement) {
+                    scrollableElement.scrollTo({ top: 0, behavior: 'instant' });
+                }
             }, 500); // This duration must match the CSS transition time
         }, delay);
         
         return () => clearTimeout(timer);
-    }, [pathname]);
+    }, [pathname, scrollableElement]);
 
     // This effect adds a click listener to show the preloader on navigation.
     useEffect(() => {

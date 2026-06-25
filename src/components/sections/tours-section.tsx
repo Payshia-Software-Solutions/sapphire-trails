@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import useEmblaCarousel from 'embla-carousel-react';
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
 const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
@@ -25,12 +25,18 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       />
     </div>
     <CardContent className="p-8 flex flex-col flex-grow">
-      <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
-      <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
+      <h3 className="text-xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
+      <p className="text-muted-foreground mb-6 flex-grow line-clamp-2">{tour.homepageDescription}</p>
       <div className="flex justify-between items-center mt-auto pt-4 border-t border-border">
-          <p className="text-2xl font-bold text-primary">{tour.price} <span className="text-sm font-normal text-muted-foreground">{tour.priceSuffix}</span></p>
+          <div className="flex flex-col items-start">
+            <span className="text-2xl font-bold text-primary">{tour.price}</span>
+            <span className="text-sm font-normal text-muted-foreground -mt-1">{tour.priceSuffix}</span>
+          </div>
           <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
-            <Link href={`/tours/${tour.slug}`}>More Info</Link>
+            <Link href={`/tours/${tour.slug}`}>
+              <ArrowRight className="mr-2 h-4 w-4" />
+              View Details
+            </Link>
           </Button>
       </div>
     </CardContent>
@@ -38,7 +44,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
 );
 
 export function ToursSection() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [emblaRef] = useEmblaCarousel({ loop: true, align: 'start' });
   const [tours, setTours] = useState<TourPackage[]>([]);
 
   useEffect(() => {
@@ -63,21 +69,13 @@ export function ToursSection() {
     }
     fetchTours();
   }, []);
-  
-  const scrollPrev = React.useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev()
-  }, [emblaApi]);
-
-  const scrollNext = React.useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext()
-  }, [emblaApi]);
 
   return (
-    <section id="tours" className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
+    <section id="tours" className="w-full bg-background-alt py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6">
         <ScrollAnimate className="text-center mb-12">
             <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
-                Choose Your Adventure
+                Our Exclusive Gem Mining Tour Packages
             </h2>
         </ScrollAnimate>
         <ScrollAnimate>
@@ -90,21 +88,15 @@ export function ToursSection() {
 
           {/* Mobile view swiper */}
           <div className="md:hidden relative">
-             <div className="overflow-hidden" ref={emblaRef}>
+             <div className="overflow-hidden -ml-4" ref={emblaRef}>
               <div className="flex">
                 {tours.map((tour, index) => (
-                  <div className="relative flex-[0_0_100%] min-w-0 p-2" key={index}>
+                  <div className="relative flex-[0_0_85%] min-w-0 pl-4" key={index}>
                     <TourCard tour={tour} />
                   </div>
                 ))}
               </div>
             </div>
-            <Button onClick={scrollPrev} className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 z-10 bg-background/50 hover:bg-background/80 border-0 text-foreground">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <Button onClick={scrollNext} className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 z-10 bg-background/50 hover:bg-background/80 border-0 text-foreground">
-              <ArrowRight className="h-4 w-4" />
-            </Button>
           </div>
         </ScrollAnimate>
       </div>

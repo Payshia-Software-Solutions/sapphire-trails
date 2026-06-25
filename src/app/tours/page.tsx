@@ -1,85 +1,62 @@
 
-'use client';
-
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { ToursHero } from '@/components/sections/tours-hero';
 import { Faq } from '@/components/sections/faq';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
+import { PageHero } from '@/components/shared/page-hero';
+import type { Metadata } from 'next';
+import { AllToursGrid } from '@/components/sections/all-tours-grid';
+import { TrustSection } from '@/components/sections/TrustSection';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+export const metadata: Metadata = {
+  title: 'Ratnapura Gem Mine Tour Packages | Sapphire Trails',
+  description: 'Explore our exclusive gem mine tour packages in Ratnapura. From private sapphire hunting to all-inclusive day trips, book the best Sri Lanka gem tour experience.',
+  openGraph: {
+    title: 'Ratnapura Gem Mine Tour Packages | Sapphire Trails',
+    description: 'Choose your perfect Sri Lankan gem adventure. We offer the best private gem tour packages in Ratnapura.',
+    images: [{
+      url: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
+      width: 1200,
+      height: 630,
+      alt: 'A person sifting for gems in a river on a gem tour in Ratnapura, Sri Lanka.',
+    }],
+  },
+};
 
-const TourCard = ({ tour }: { tour: TourPackage }) => (
-  <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
-    <div className="relative h-64 w-full">
-      <Image
-        src={tour.imageUrl}
-        alt={tour.imageAlt}
-        data-ai-hint={tour.imageHint}
-        fill
-        className="object-cover"
-      />
-    </div>
-    <CardContent className="p-8 flex flex-col flex-grow">
-      <h3 className="text-2xl font-headline font-bold text-primary mb-4">{tour.homepageTitle}</h3>
-      <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
-      <Button asChild className="w-fit bg-primary text-primary-foreground hover:bg-primary/90 mt-auto rounded-full px-6">
-        <Link href={`/booking?tourType=${tour.id}`}>Book Now</Link>
-      </Button>
-    </CardContent>
-  </Card>
-);
-
-function AllToursGrid() {
-    const [allTours, setAllTours] = useState<TourPackage[]>([]);
-
-    useEffect(() => {
-        async function fetchTours() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/tours`);
-                 if (!response.ok) {
-                    console.error('Failed to fetch from server.');
-                    return;
-                }
-
-                const data = await response.json();
-                if (Array.isArray(data)) {
-                    setAllTours(data.map(mapServerPackageToClient));
-                } else {
-                    console.error('Server response was not an array.');
-                }
-            } catch (e) {
-                console.error("Failed to fetch or parse packages.", e);
-            }
-        }
-        fetchTours();
-    }, []);
-
-    return (
-        <section className="w-full h-screen flex items-center justify-center bg-background-alt scroll-section">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
-                    {allTours.map((tour) => (
-                        <TourCard key={tour.id} tour={tour} />
-                    ))}
-                </div>
-            </div>
-        </section>
-    )
-}
+const faqStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What should I bring for the mine tour?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We recommend comfortable clothing, closed-toe shoes, sunscreen, a hat, and a reusable water bottle. Safety gear such as helmets will be provided. Don't forget your camera to capture the moments!"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the tour suitable for children?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, our tours are family-friendly. However, due to the nature of the gem mines, there may be some areas with restricted access for young children. Please contact us for specific details and to discuss arrangements for your family."
+      }
+    }
+  ]
+};
 
 export default function ToursPage() {
+  const breadcrumbs = [{ label: 'Tours', href: '/tours' }];
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col">
+       <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
       <Header />
-      <main className="flex-1 bg-background-alt">
-        <ToursHero />
+      <main className="flex-1">
+        <PageHero title="Our Tours" breadcrumbs={breadcrumbs} />
         <ScrollAnimate>
           <AllToursGrid />
         </ScrollAnimate>
@@ -87,6 +64,7 @@ export default function ToursPage() {
           <Faq />
         </ScrollAnimate>
       </main>
+      <TrustSection />
       <Footer />
     </div>
   );
