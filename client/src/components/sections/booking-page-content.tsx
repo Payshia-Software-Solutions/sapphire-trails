@@ -4,7 +4,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, HelpCircle, Clock, DollarSign, Gem, Shield, Users, LoaderCircle, X, Mail } from 'lucide-react';
+import { ArrowLeft, HelpCircle, Clock, DollarSign, Gem, Shield, Users, LoaderCircle, X, Mail, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -222,10 +222,15 @@ function BookingSummary({
         </Button>
 
         <div className="text-center text-xs text-muted-foreground">
-          <Link href="#" className="inline-flex items-center gap-1 hover:text-primary">
-            <HelpCircle className="h-3.5 w-3.5" />
-            Need help? View FAQ
-          </Link>
+          <a
+            href="https://wa.me/94712357700"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 hover:text-emerald-500 transition-colors text-muted-foreground"
+          >
+            <MessageCircle className="h-4 w-4 text-emerald-500 fill-emerald-500/10" />
+            <span>Need help? Chat on WhatsApp</span>
+          </a>
         </div>
       </CardContent>
     </Card>
