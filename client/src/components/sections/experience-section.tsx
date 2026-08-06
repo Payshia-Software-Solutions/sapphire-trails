@@ -19,7 +19,7 @@ const experienceItems = [
         description: "Unwind in serene, architecturally iconic suites at the Grand Silver Ray, our exclusive hospitality partner.",
         icon: BedDouble,
         image: {
-            src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-11-optimized.webp',
+            src: 'https://content-provider.payshia.com/silver-ray/room-images/89/BEDROOM-1-optimized-69470fe99fc4c.webp',
             alt: 'A luxurious and modern hotel room interior at Grand Silver Ray, our hospitality partner.',
             hint: 'luxury hotel room'
         }
