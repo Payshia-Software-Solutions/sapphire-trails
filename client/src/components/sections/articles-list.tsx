@@ -56,7 +56,7 @@ export function ArticlesList() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {mockArticles.map((article) => (
-            <Card key={article.slug} className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
+            <Card key={article.slug} className="bg-card border-border/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
               <Link href={`/articles/${article.slug}`} className="block">
                 <div className="relative h-56 w-full">
                   <Image

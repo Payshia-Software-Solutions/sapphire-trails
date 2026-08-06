@@ -56,7 +56,7 @@ export function Footer() {
     }, []);
 
   return (
-    <footer className="w-full bg-background border-t border-white/10">
+    <footer className="w-full bg-background border-t border-border">
       <div className="container mx-auto px-4 md:px-6 pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-center md:text-left">
           
@@ -108,7 +108,7 @@ export function Footer() {
 
         </div>
 
-        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground gap-2">
+        <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground gap-2">
           <p>
             © {new Date().getFullYear()} Sapphire Trails. All rights reserved.
           </p>

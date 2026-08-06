@@ -58,7 +58,7 @@ export function ExperienceSection() {
                 {experienceItems.map((item, index) => {
                     const Icon = item.icon;
                     return (
-                        <Card key={index} className="bg-card border-stone-800/50 flex flex-col w-full rounded-xl shadow-lg text-center">
+                        <Card key={index} className="bg-card border-border/50 flex flex-col w-full rounded-xl shadow-lg text-center">
                            {item.image && (
                                 <div className="relative h-48 w-full rounded-t-xl overflow-hidden">
                                     <Image

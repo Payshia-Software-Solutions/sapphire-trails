@@ -31,7 +31,7 @@ export function LocationVisitorInfo({ visitorInfo }: LocationVisitorInfoProps) {
                     {visitorInfo.map((info, index) => {
                         const Icon = iconMap[info.icon];
                         return (
-                            <Card key={index} className="bg-card border-stone-800/50 flex flex-col w-full rounded-xl overflow-hidden shadow-lg text-center p-6 items-center">
+                            <Card key={index} className="bg-card border-border/50 flex flex-col w-full rounded-xl overflow-hidden shadow-lg text-center p-6 items-center">
                                 {Icon && <Icon className="h-8 w-8 text-primary mb-3" />}
                                 <CardContent className="p-0">
                                     <h3 className="text-lg font-bold font-headline text-foreground">{info.title}</h3>

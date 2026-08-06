@@ -70,7 +70,7 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
         ) : (
           <div className={`grid grid-cols-1 ${gridColsClass} gap-8 lg:gap-12 items-stretch max-w-5xl mx-auto`}>
             {toursToShow.map(tour => (
-              <Card key={tour.id} className="bg-card border-stone-800/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
+              <Card key={tour.id} className="bg-card border-border/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
                 <div className="relative h-[400px] w-full">
                   <Image
                     src={tour.imageUrl}
@@ -99,7 +99,7 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                       </div>
                     ))}
                   </div>
-                  <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
+                  <div className="flex justify-between items-center mt-8 pt-6 border-t border-border">
                     <p className="text-3xl font-bold text-primary">{tour.price} <span className="text-sm font-normal text-muted-foreground">{tour.priceSuffix}</span></p>
                     <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href={`${tour.bookingLink}?tourType=${tour.id}`}>{tour.id === 'sapphire-trails-deluxe' ? 'Contact Us' : 'Book Now'}</Link></Button>
                   </div>

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, User, LogOut, Shield, Mail, Phone } from 'lucide-react';
+import { Menu, User, LogOut, Shield, Mail, Phone, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from 'next/navigation';
+import { useTheme } from '@/contexts/theme-context';
 
 
 const navLinks = [
@@ -32,6 +33,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showTopBar, setShowTopBar] = useState(true);
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
@@ -63,10 +65,10 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background border-b border-white/10">
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
       {/* Top Bar */}
       <div className={cn(
-        "w-full bg-black/40 text-xs text-muted-foreground border-b border-white/15 py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",
+        "w-full bg-background-alt/40 text-xs text-muted-foreground border-b border-border py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",
         showTopBar ? "max-h-[40px] opacity-100" : "max-h-0 opacity-0 py-0 border-b-transparent"
       )}>
         <div className="container mx-auto max-w-screen-2xl flex items-center justify-between px-4 md:px-6">
@@ -98,6 +100,10 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+          
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full text-primary hover:bg-primary/10">
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </Button>
             {user ? (
                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -169,9 +175,16 @@ export function Header() {
                 ))}
               </nav>
 
-              <div className="mt-auto pt-6 border-t border-border">
+              <div className="mt-auto pt-6 border-t border-border flex flex-col gap-4">
+                <Button variant="outline" onClick={toggleTheme} className="w-full text-primary border-primary hover:bg-primary/10">
+                  {theme === 'dark' ? (
+                    <span className="flex items-center justify-center gap-2"><Sun className="h-5 w-5" /> Light Mode</span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2"><Moon className="h-5 w-5" /> Dark Mode</span>
+                  )}
+                </Button>
                 {user ? (
-                  <div className="flex flex-col items-center gap-4">
+                  <div className="flex flex-col items-center gap-4 w-full">
                      {user.type === 'admin' && (
                         <Button variant="ghost" className="w-full" onClick={handleAdminClick}>
                            <Shield className="mr-2 h-5 w-5" />

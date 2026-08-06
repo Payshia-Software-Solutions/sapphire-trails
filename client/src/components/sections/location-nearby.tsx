@@ -63,7 +63,7 @@ export function LocationNearby({ mapEmbedUrl, nearbyAttractions }: LocationNearb
               {nearbyAttractions.map((attraction, index) => {
                 const Icon = iconMap[attraction.icon];
                 return (
-                  <Card key={index} className="p-4 bg-card flex items-center gap-4 border-stone-800/50">
+                  <Card key={index} className="p-4 bg-card flex items-center gap-4 border-border/50">
                     {Icon && <Icon className="h-6 w-6 text-primary flex-shrink-0" />}
                     <div>
                       <p className="font-semibold text-foreground">{attraction.name}</p>

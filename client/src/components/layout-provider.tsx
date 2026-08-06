@@ -8,6 +8,7 @@ import { WhatsAppButton } from '@/components/shared/whatsapp-button';
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { ScrollProvider, useScroll } from "@/contexts/scroll-context";
+import { ThemeProvider } from "@/contexts/theme-context";
 
 function BodyEffectManager() {
   const { setScrollableElement } = useScroll();
@@ -32,14 +33,16 @@ function BodyEffectManager() {
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <ScrollProvider>
-        <BodyEffectManager />
-        <PreloaderProvider>
-            {children}
-        </PreloaderProvider>
-        <WhatsAppButton />
-        <Toaster />
-      </ScrollProvider>
+      <ThemeProvider>
+        <ScrollProvider>
+          <BodyEffectManager />
+          <PreloaderProvider>
+              {children}
+          </PreloaderProvider>
+          <WhatsAppButton />
+          <Toaster />
+        </ScrollProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

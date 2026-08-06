@@ -49,7 +49,7 @@ export function TeamSection() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {teamMembers.map((member, index) => (
-                        <Card key={index} className="bg-card border-stone-800/50 flex flex-col w-full rounded-xl shadow-lg text-center">
+                        <Card key={index} className="bg-card border-border/50 flex flex-col w-full rounded-xl shadow-lg text-center">
                             <CardContent className="p-6 flex flex-col flex-grow items-center">
                                 <Avatar className="w-32 h-32 mb-6 border-4 border-primary/20 text-3xl">
                                     <AvatarFallback className="bg-muted text-muted-foreground">{getInitials(member.name)}</AvatarFallback>

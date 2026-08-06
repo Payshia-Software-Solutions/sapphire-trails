@@ -38,7 +38,7 @@ const mockArticles = [
 ];
 
 const ArticleCard = ({ article }: { article: typeof mockArticles[0] }) => (
-    <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
+    <Card className="bg-card border-border/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
         <Link href={`/articles/${article.slug}`} className="block">
         <div className="relative h-56 w-full">
             <Image

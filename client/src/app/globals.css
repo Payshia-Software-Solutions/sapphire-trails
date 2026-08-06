@@ -8,6 +8,38 @@ html {
 
 @layer base {
   :root {
+    --background: 0 0% 98%;
+    --background-alt: 0 0% 95%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 39 60% 35%; /* Rich bronze gold */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 90%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 39 60% 35%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 85%;
+    --input: 240 5.9% 85%;
+    --ring: 39 60% 35%;
+    --radius: 0.5rem;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --color-pending: hsl(var(--chart-3));
+    --color-accepted: hsl(var(--chart-2));
+    --color-rejected: hsl(var(--chart-5));
+  }
+
+  .dark {
     --background: 0 0% 4%;
     --background-alt: 0 0% 10%;
     --foreground: 0 0% 98%;
@@ -28,15 +60,6 @@ html {
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 39 58% 74%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --radius: 0.5rem;
-    --color-pending: hsl(var(--chart-3));
-    --color-accepted: hsl(var(--chart-2));
-    --color-rejected: hsl(var(--chart-5));
   }
 }
 
@@ -45,7 +68,7 @@ html {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
 

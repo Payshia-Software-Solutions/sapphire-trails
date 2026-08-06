@@ -38,7 +38,7 @@ export function LocationHighlights({ highlights }: LocationHighlightsProps) {
           {highlights.map((highlight, index) => {
             const Icon = iconMap[highlight.icon];
             return (
-              <Card key={index} className="bg-card border-stone-800/50 flex flex-col w-full rounded-xl overflow-hidden shadow-lg text-center p-6 items-center">
+              <Card key={index} className="bg-card border-border/50 flex flex-col w-full rounded-xl overflow-hidden shadow-lg text-center p-6 items-center">
                 {Icon && <Icon className="h-12 w-12 text-primary mb-4" />}
                 <CardContent className="p-0">
                   <h3 className="text-xl font-bold font-headline text-primary">{highlight.title}</h3>

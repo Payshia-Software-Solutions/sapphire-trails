@@ -172,7 +172,7 @@ export async function generateMetadata(
 }
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
-    <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10 rounded-xl overflow-hidden">
+    <Card className="bg-card border-border/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10 rounded-xl overflow-hidden">
       <Link href={`/tours/${tour.slug}`} className="block group">
           <div className="relative h-40 w-full">
           <Image
