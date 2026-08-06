@@ -9,11 +9,11 @@ export function TourDetailInclusions({ inclusions }: TourDetailInclusionsProps) 
   if (!inclusions || inclusions.length === 0) return null;
 
   return (
-    <section className="w-full py-16 md:py-24 bg-background-alt">
+    <section className="w-full py-10 md:py-14 bg-background-alt">
       <div className="container mx-auto px-4 md:px-10 max-w-screen-xl">
 
         {/* Section header */}
-        <div className="max-w-2xl mb-12">
+        <div className="max-w-2xl mb-6">
           <p className="text-primary font-serif uppercase tracking-widest text-xs mb-3">All-Inclusive</p>
           <h2 className="text-3xl md:text-4xl font-headline font-bold text-foreground leading-snug">
             What&apos;s Included

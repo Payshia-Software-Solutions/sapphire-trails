@@ -9,11 +9,11 @@ export function TourDetailItinerary({ itinerary }: TourDetailItineraryProps) {
   if (!itinerary || itinerary.length === 0) return null;
 
   return (
-    <section className="w-full py-16 md:py-24 bg-background">
+    <section className="w-full py-10 md:py-14 bg-background">
       <div className="container mx-auto px-4 md:px-10 max-w-screen-xl">
 
         {/* Section header */}
-        <div className="max-w-2xl mb-14">
+        <div className="max-w-2xl mb-8">
           <p className="text-primary font-serif uppercase tracking-widest text-xs mb-3">Step by Step</p>
           <h2 className="text-3xl md:text-4xl font-headline font-bold text-foreground leading-snug">
             Your Day&apos;s Itinerary
