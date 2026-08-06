@@ -30,14 +30,15 @@ async function getLocation(slug: string): Promise<Location | null> {
 }
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const location = await getLocation(params.slug);
+  const { slug } = await params;
+  const location = await getLocation(slug);
 
   if (!location) {
     return {
@@ -51,7 +52,7 @@ export async function generateMetadata(
     title: `Explore ${location.title} | Ratnapura Gem Tour Attraction`,
     description: `Explore ${location.title} on your gem tour of Ratnapura, Sri Lanka. ${location.cardDescription}`,
     alternates: {
-      canonical: `/explore-ratnapura/${params.slug}`,
+      canonical: `/explore-ratnapura/${slug}`,
     },
     openGraph: {
       title: `Explore ${location.title} | Attractions for Gem Tours in Sri Lanka`,
@@ -70,7 +71,8 @@ export async function generateMetadata(
 }
 
 export default async function LocationPage({ params }: Props) {
-  const location = await getLocation(params.slug);
+  const { slug } = await params;
+  const location = await getLocation(slug);
 
   if (!location) {
     notFound();
@@ -96,7 +98,7 @@ export default async function LocationPage({ params }: Props) {
         "@type": "ListItem",
         "position": 3,
         "name": location.title,
-        "item": `https://sapphiretrails.lk/explore-ratnapura/${params.slug}`
+        "item": `https://sapphiretrails.lk/explore-ratnapura/${slug}`
       }
     ]
   };

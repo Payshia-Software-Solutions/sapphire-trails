@@ -124,14 +124,15 @@ async function getTours(): Promise<TourPackage[]> {
 
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const article = getArticle(params.slug);
+  const { slug } = await params;
+  const article = getArticle(slug);
 
   if (!article) {
     return {
@@ -145,7 +146,7 @@ export async function generateMetadata(
     title: `${article.title} | Sapphire Trails`,
     description: article.description,
     alternates: {
-      canonical: `/articles/${params.slug}`,
+      canonical: `/articles/${slug}`,
     },
   }
 
@@ -254,8 +255,9 @@ function MoreArticles({ currentArticleSlug }: { currentArticleSlug: string }) {
     )
 }
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-    const article = getArticle(params.slug);
+export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const article = getArticle(slug);
     const tours = await getTours();
 
     if (!article) {
@@ -338,7 +340,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                             <div className="lg:col-span-1 xl:col-span-1">
                                 <div className="sticky top-24 space-y-12">
                                     <ToursSidebar tours={tours} />
-                                    <MoreArticles currentArticleSlug={params.slug} />
+                                    <MoreArticles currentArticleSlug={slug} />
                                 </div>
                             </div>
                         </div>

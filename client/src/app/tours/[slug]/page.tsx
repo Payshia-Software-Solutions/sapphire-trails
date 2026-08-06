@@ -30,14 +30,15 @@ async function getTourPackage(slug: string): Promise<TourPackage | null> {
 }
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const tourPackage = await getTourPackage(params.slug);
+  const { slug } = await params;
+  const tourPackage = await getTourPackage(slug);
 
   if (!tourPackage) {
     return {
@@ -51,7 +52,7 @@ export async function generateMetadata(
     title: `Book the ${tourPackage.tourPageTitle} | Ratnapura Gem Mine Tours`,
     description: `Experience one of the best gem tours in Ratnapura. Our ${tourPackage.tourPageTitle} is a private gem tour package offering an unforgettable Sri Lankan adventure. ${tourPackage.tourPageDescription}`,
     alternates: {
-      canonical: `/tours/${params.slug}`,
+      canonical: `/tours/${slug}`,
     },
     openGraph: {
       title: `Book the ${tourPackage.tourPageTitle} | Ratnapura Gem Mine Tours`,
@@ -71,7 +72,8 @@ export async function generateMetadata(
 
 
 export default async function TourDetailPage({ params }: Props) {
-  const tourPackage = await getTourPackage(params.slug);
+  const { slug } = await params;
+  const tourPackage = await getTourPackage(slug);
 
   if (!tourPackage) {
     notFound();
@@ -121,7 +123,7 @@ export default async function TourDetailPage({ params }: Props) {
         "@type": "ListItem",
         "position": 3,
         "name": tourPackage.tourPageTitle,
-        "item": `https://sapphiretrails.lk/tours/${params.slug}`
+        "item": `https://sapphiretrails.lk/tours/${slug}`
       }
     ]
   };
