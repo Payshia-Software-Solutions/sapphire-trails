@@ -2,7 +2,6 @@
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { OurStory } from '@/components/sections/our-story';
-import { TeamSection } from '@/components/sections/team-section';
 import type { Metadata } from 'next';
 import { ExperienceSection } from '@/components/sections/experience-section';
 import { PageHero } from '@/components/shared/page-hero';
@@ -40,7 +39,6 @@ export default function AboutPage() {
         <PageHero title="About Us" breadcrumbs={breadcrumbs} />
         <OurStory />
         <ExperienceSection />
-        <TeamSection />
         <EthicalMiningSection />
         <SafetyStandardsSection />
         <WhyRatnapuraSection />
