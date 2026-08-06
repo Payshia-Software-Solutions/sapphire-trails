@@ -1,7 +1,7 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import { Cinzel, Montserrat, Poppins } from 'next/font/google';
+// import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { LayoutProvider } from '@/components/layout-provider';
 import Script from 'next/script';
@@ -28,27 +28,9 @@ export const metadata: Metadata = {
   }
 };
 
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-poppins',
-  weight: ['400', '500'],
-});
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-montserrat',
-  weight: ['700'],
-});
-
-const cinzel = Cinzel({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-cinzel',
-  weight: ['400', '500', '600', '700', '800', '900'],
-});
+const poppins = { variable: 'font-sans' };
+const montserrat = { variable: 'font-sans' };
+const cinzel = { variable: 'font-serif' };
 
 export default function RootLayout({
   children,
