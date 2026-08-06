@@ -7,13 +7,25 @@ import {
 
 const faqData = [
     {
-        question: "What should I bring for the mine tour?",
-        answer: "We recommend comfortable clothing, closed-toe shoes, sunscreen, a hat, and a reusable water bottle. Safety gear such as helmets will be provided. Don't forget your camera to capture the moments!"
+        question: "What is Sapphire Trail Professional Gem Mining Tour?",
+        answer: "The Sapphire Trails Professional Gem Mining Tour offers an extraordinary journey into the heart of Sri Lanka's legendary gem industry, wrapped in the warmth of authentic Sri Lankan hospitality. This premium travel experience seamlessly blends discovery with indulgence, offering exquisite food and beverages, luxurious accommodations, and comfortable transportation."
     },
     {
-        question: "Is the tour suitable for children?",
-        answer: "Yes, our tours are family-friendly. However, due to the nature of the gem mines, there may be some areas with restricted access for young children. Please contact us for specific details and to discuss arrangements for your family."
-    }
+        question: "Do I need experience to participate?",
+        answer: "No experience is required. Our tours are beginner-friendly and guided by knowledgeable staff who will teach you how to identify and clean your finds."
+    },
+    {
+        question: "How long does a tour last?",
+        answer: "Most tours last between 06 to 08 hours. Private or extended experiences may be available upon request."
+    },
+    {
+        question: "Who can participate in this tour?",
+        answer: "Any local or foreign tourist can participate. However, only visitors in good physical condition can enter the mine."
+    },
+    {
+        question: "How do I make a reservation?",
+        answer: "You can make a reservation through our official website www.sapphiretrails.lk. You can also reserve your spot by contacting our Hotline at 0712357700 or 0716381000, or by sending an email to info@sapphiretrails.com."
+    },
 ]
 
 export function Faq() {
