@@ -70,7 +70,7 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
         ) : (
           <div className={`grid grid-cols-1 ${gridColsClass} gap-8 lg:gap-12 items-stretch max-w-5xl mx-auto`}>
             {toursToShow.map(tour => (
-              <Card key={tour.id} className="bg-card border-border/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
+              <Card key={tour.id} className="bg-card border-border/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-xl dark:shadow-black/60 shadow-stone-300/40 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
                 <div className="relative h-[400px] w-full">
                   <Image
                     src={tour.imageUrl}

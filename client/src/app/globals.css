@@ -8,27 +8,28 @@ html {
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --background-alt: 0 0% 95%;
-    --foreground: 240 10% 3.9%;
+    /* Warm Ivory & Sand Theme (Premium Luxury Boutique) */
+    --background: 35 25% 98%;      /* Smooth Ivory */
+    --background-alt: 35 20% 95%;  /* Sand Beige */
+    --foreground: 30 15% 15%;      /* Deep Espresso Brown instead of pure black */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 30 15% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 39 60% 35%; /* Rich bronze gold */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 90%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --popover-foreground: 30 15% 15%;
+    --primary: 39 60% 35%;         /* Rich Antique Gold/Bronze */
+    --primary-foreground: 35 25% 98%;
+    --secondary: 35 15% 90%;
+    --secondary-foreground: 30 15% 15%;
+    --muted: 35 10% 92%;
+    --muted-foreground: 30 10% 45%;
     --accent: 39 60% 35%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 85%;
-    --input: 240 5.9% 85%;
+    --accent-foreground: 30 15% 15%;
+    --destructive: 0 80% 40%;
+    --destructive-foreground: 35 25% 98%;
+    --border: 35 15% 85%;
+    --input: 35 15% 85%;
     --ring: 39 60% 35%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;             /* More rounded friendly corners */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -40,25 +41,26 @@ html {
   }
 
   .dark {
-    --background: 0 0% 4%;
-    --background-alt: 0 0% 10%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 39 58% 74%;
-    --primary-foreground: 40 80% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    /* Warm Obsidian & Antique Gold Theme */
+    --background: 30 15% 4%;       /* Warm Obsidian */
+    --background-alt: 30 10% 8%;   /* Dark Charcoal Slate */
+    --foreground: 35 15% 90%;      /* Soft Champagne Cream */
+    --card: 30 15% 5%;
+    --card-foreground: 35 15% 90%;
+    --popover: 30 15% 5%;
+    --popover-foreground: 35 15% 90%;
+    --primary: 39 58% 74%;         /* Bright Gold */
+    --primary-foreground: 30 15% 5%;
+    --secondary: 30 10% 12%;
+    --secondary-foreground: 35 15% 90%;
+    --muted: 30 10% 12%;
+    --muted-foreground: 30 5% 60%;
     --accent: 39 58% 74%;
-    --accent-foreground: 0 0% 4%;
+    --accent-foreground: 30 15% 4%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --destructive-foreground: 35 15% 90%;
+    --border: 30 10% 12%;
+    --input: 30 10% 12%;
     --ring: 39 58% 74%;
   }
 }

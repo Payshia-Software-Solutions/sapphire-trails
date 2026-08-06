@@ -22,7 +22,7 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
             setIsLoading(true);
         }
         
-        const delay = isInitialLoad.current ? 1000 : 200;
+        const delay = isInitialLoad.current ? 300 : 100;
         
         const timer = setTimeout(() => {
             setIsFadingOut(true);
