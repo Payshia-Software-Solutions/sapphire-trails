@@ -15,7 +15,7 @@ export function TourExperienceGallery({ images }: TourExperienceGalleryProps) {
   if (!images || images.length === 0) return null;
 
   return (
-    <section className="w-full py-10 md:py-14 bg-background-alt">
+    <section className="w-full py-10 md:py-14 bg-background">
       <div className="container mx-auto px-4 md:px-6 max-w-screen-2xl">
 
         {/* Section header */}
