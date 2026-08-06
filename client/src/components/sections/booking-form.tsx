@@ -111,25 +111,40 @@ export function BookingForm({ tourPackages, selectedTour, onSubmit }: { tourPack
                     )}
                 />
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                       control={form.control}
                       name="adults"
                       render={({ field }) => (
                       <FormItem>
                           <FormLabel>Adults</FormLabel>
-                          <Select onValueChange={(val) => field.onChange(parseInt(val))} defaultValue={String(field.value)}>
                           <FormControl>
-                              <SelectTrigger>
-                                  <SelectValue />
-                              </SelectTrigger>
+                            <div className="flex items-center gap-3 border border-input rounded-md px-3 py-1 w-full justify-between h-10">
+                              <span className="text-sm text-muted-foreground font-medium">Ages 12+</span>
+                              <div className="flex items-center gap-3">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-7 w-7 rounded-full text-foreground border-border hover:bg-primary/10"
+                                  disabled={field.value <= 1}
+                                  onClick={() => field.onChange(Math.max(1, field.value - 1))}
+                                >
+                                  -
+                                </Button>
+                                <span className="w-6 text-center text-sm font-semibold text-foreground">{field.value}</span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-7 w-7 rounded-full text-foreground border-border hover:bg-primary/10"
+                                  onClick={() => field.onChange(field.value + 1)}
+                                >
+                                  +
+                                </Button>
+                              </div>
+                            </div>
                           </FormControl>
-                          <SelectContent>
-                              {[...Array(10)].map((_, i) => (
-                                  <SelectItem key={i+1} value={String(i+1)}>{i+1} Adult(s)</SelectItem>
-                              ))}
-                          </SelectContent>
-                          </Select>
                           <FormMessage />
                       </FormItem>
                       )}
@@ -140,18 +155,33 @@ export function BookingForm({ tourPackages, selectedTour, onSubmit }: { tourPack
                       render={({ field }) => (
                       <FormItem>
                           <FormLabel>Children</FormLabel>
-                          <Select onValueChange={(val) => field.onChange(parseInt(val))} defaultValue={String(field.value)}>
                           <FormControl>
-                              <SelectTrigger>
-                                  <SelectValue />
-                              </SelectTrigger>
+                            <div className="flex items-center gap-3 border border-input rounded-md px-3 py-1 w-full justify-between h-10">
+                              <span className="text-sm text-muted-foreground font-medium">Ages 2-11</span>
+                              <div className="flex items-center gap-3">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-7 w-7 rounded-full text-foreground border-border hover:bg-primary/10"
+                                  disabled={field.value <= 0}
+                                  onClick={() => field.onChange(Math.max(0, field.value - 1))}
+                                >
+                                  -
+                                </Button>
+                                <span className="w-6 text-center text-sm font-semibold text-foreground">{field.value}</span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-7 w-7 rounded-full text-foreground border-border hover:bg-primary/10"
+                                  onClick={() => field.onChange(field.value + 1)}
+                                >
+                                  +
+                                </Button>
+                              </div>
+                            </div>
                           </FormControl>
-                          <SelectContent>
-                              {[...Array(6)].map((_, i) => (
-                                  <SelectItem key={i} value={String(i)}>{i} Child(ren)</SelectItem>
-                              ))}
-                          </SelectContent>
-                          </Select>
                           <FormMessage />
                       </FormItem>
                       )}

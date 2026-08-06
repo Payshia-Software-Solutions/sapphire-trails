@@ -163,40 +163,51 @@ function BookingSummary({
   const { formState: { isSubmitting } } = useFormContext();
 
   return (
-    <Card className="sticky top-24 shadow-lg">
-      <CardHeader>
-        <CardTitle>Booking Summary</CardTitle>
+    <Card className="sticky top-24 shadow-lg overflow-hidden border-border/80">
+      {selectedTour && (
+        <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-border">
+          <Image
+            src={selectedTour.heroImage}
+            alt={selectedTour.tourPageTitle}
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
+      <CardHeader className="pt-5">
+        <CardTitle className="text-xl">Booking Summary</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-5">
         {selectedTour ? (
           <div>
-            <p className="font-semibold text-primary">{selectedTour.tourPageTitle}</p>
-            <p className="text-sm text-muted-foreground">{selectedTour.duration}</p>
+            <p className="font-semibold text-primary font-headline text-lg leading-tight mb-1">{selectedTour.tourPageTitle}</p>
+            <p className="text-xs text-muted-foreground">{selectedTour.duration}</p>
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">Select a tour to see the summary.</p>
         )}
 
-        <div className="space-y-2 border-t pt-4 text-sm">
+        <div className="space-y-2 border-t border-border/50 pt-4 text-sm">
             <div className="flex justify-between">
                 <span className="text-muted-foreground">Date:</span>
-                <span className="font-medium">{selectedDate ? format(selectedDate, "PPP") : 'N/A'}</span>
+                <span className="font-medium text-foreground">{selectedDate ? format(selectedDate, "PPP") : 'N/A'}</span>
             </div>
              <div className="flex justify-between">
                 <span className="text-muted-foreground">Guests:</span>
-                <span className="font-medium">{totalGuests} Person(s)</span>
+                <span className="font-medium text-foreground">{totalGuests} Person(s)</span>
             </div>
         </div>
 
         {totalPrice !== null && (
-          <div className="space-y-2 border-t pt-4">
+          <div className="space-y-2 border-t border-border/50 pt-4">
               <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal:</span>
-                  <span className="font-medium">${totalPrice.toFixed(2)}</span>
+                  <span className="font-medium text-foreground">${totalPrice.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Taxes & Fees:</span>
-                  <span className="font-medium">$0.00</span>
+                  <span className="font-medium text-foreground">$0.00</span>
               </div>
               <div className="flex justify-between text-lg font-bold">
                   <span className="text-foreground">Total:</span>
@@ -205,14 +216,14 @@ function BookingSummary({
           </div>
         )}
         
-        <Button type="submit" form="booking-form-main" className="w-full" size="lg" disabled={!selectedTour || isSubmitting}>
+        <Button type="submit" form="booking-form-main" className="w-full rounded-full font-serif uppercase tracking-widest text-xs h-11" size="lg" disabled={!selectedTour || isSubmitting}>
             {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
             Complete Booking
         </Button>
 
         <div className="text-center text-xs text-muted-foreground">
           <Link href="#" className="inline-flex items-center gap-1 hover:text-primary">
-            <HelpCircle className="h-3 w-3" />
+            <HelpCircle className="h-3.5 w-3.5" />
             Need help? View FAQ
           </Link>
         </div>
