@@ -28,9 +28,6 @@ export const metadata: Metadata = {
   }
 };
 
-const poppins = { variable: 'font-sans' };
-const montserrat = { variable: 'font-sans' };
-const cinzel = { variable: 'font-serif' };
 
 export default function RootLayout({
   children,
@@ -92,12 +89,23 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <head />
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&family=Montserrat:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style dangerouslySetInnerHTML={{ __html: `
+          :root {
+            --font-cinzel: 'Cinzel', serif;
+            --font-poppins: 'Poppins', sans-serif;
+            --font-montserrat: 'Montserrat', sans-serif;
+          }
+        `}} />
+      </head>
       <body className={cn(
-        "font-body antialiased bg-background text-foreground",
-        poppins.variable,
-        montserrat.variable,
-        cinzel.variable
+        "font-body antialiased bg-background text-foreground"
       )}>
         <script
           type="application/ld+json"
