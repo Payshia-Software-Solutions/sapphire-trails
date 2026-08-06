@@ -23,7 +23,7 @@ import { LoaderCircle } from 'lucide-react';
 import { getFullImageUrl } from '@/lib/utils';
 
 const CMS_DATA_KEY = 'sapphire-cms-data';
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 const defaultContent = {
   description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka—the legendary 'City of Gems'—this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.",

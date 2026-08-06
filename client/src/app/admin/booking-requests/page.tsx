@@ -37,7 +37,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 const ADMIN_SESSION_KEY = 'adminUser';
 const ITEMS_PER_PAGE = 5;
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 const mapServerBookingToClient = (serverBooking: any): Booking => ({
   id: Number(serverBooking.id),

@@ -11,7 +11,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
   <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">

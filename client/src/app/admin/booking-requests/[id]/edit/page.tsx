@@ -22,7 +22,7 @@ import { CalendarIcon, ArrowLeft, LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 export default function EditBookingPage() {
   const router = useRouter();

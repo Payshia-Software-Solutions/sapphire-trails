@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import { CalendarCheck } from 'lucide-react';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
     <Card className="bg-card border-stone-800/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10 rounded-xl overflow-hidden">

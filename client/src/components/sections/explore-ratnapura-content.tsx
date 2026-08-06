@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { locationsData as staticLocationsData, mapServerLocationToClient } from "@/lib/locations-data";
 import type { Location } from '@/lib/locations-data';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 const LocationCard = ({ location }: { location: Location }) => (
   <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">

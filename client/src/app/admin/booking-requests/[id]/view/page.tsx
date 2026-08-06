@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Edit, LoaderCircle, User, Mail, Phone, Home, Ticket, Calendar, Users as GuestsIcon, MessageSquare, Check, X } from 'lucide-react';
 import { mapServerPackageToClient as mapServerPackage, type TourPackage } from '@/lib/packages-data';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 const InfoRow = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | number | undefined | null }) => (
     <div className="flex items-start">

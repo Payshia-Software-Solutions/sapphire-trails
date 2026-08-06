@@ -12,7 +12,7 @@ import { TourExperienceGallery } from '@/components/sections/tour-experience-gal
 import type { Metadata, ResolvingMetadata } from 'next';
 import { TrustSection } from '@/components/sections/TrustSection';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 const BASE_URL = 'https://sapphiretrails.lk';
 
 async function getTourPackage(slug: string): Promise<TourPackage | null> {

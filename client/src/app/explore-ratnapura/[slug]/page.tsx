@@ -13,7 +13,7 @@ import { LocationCta } from '@/components/sections/location-cta';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { TrustSection } from '@/components/sections/TrustSection';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 async function getLocation(slug: string): Promise<Location | null> {
     try {

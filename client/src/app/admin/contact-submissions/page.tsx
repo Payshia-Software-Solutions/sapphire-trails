@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { format, parseISO } from 'date-fns';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 interface Submission {
     id: number;

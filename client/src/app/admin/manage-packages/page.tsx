@@ -21,7 +21,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { mapServerPackageToClient } from '@/lib/packages-data';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 // A leaner type for what this page needs to display
 interface ManagedPackage {

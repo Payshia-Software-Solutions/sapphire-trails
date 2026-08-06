@@ -16,7 +16,7 @@ export interface User {
 }
 
 const USER_SESSION_KEY = 'sapphire-user';
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 interface AuthContextType {
   user: User | null;

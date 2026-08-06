@@ -2,7 +2,7 @@
 import { MetadataRoute } from 'next';
 
 const BASE_URL = 'https://sapphiretrails.lk';
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const staticRoutes = [

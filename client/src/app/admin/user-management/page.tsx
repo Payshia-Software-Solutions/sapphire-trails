@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState<AuthUser[]>([]);

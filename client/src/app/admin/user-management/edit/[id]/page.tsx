@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 function LoadingSkeleton() {
     return (

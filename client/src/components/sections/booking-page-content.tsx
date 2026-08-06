@@ -18,7 +18,7 @@ import Image from 'next/image';
 import { BookingForm } from '@/components/sections/booking-form';
 import { useToast } from "@/hooks/use-toast";
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 interface ConfirmationDetails {
     tourName: string;

@@ -17,7 +17,7 @@ import { format, parseISO } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { TrustSection } from '@/components/sections/TrustSection';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 export default function ProfilePage() {
   const { user, logout, isLoading } = useAuth();

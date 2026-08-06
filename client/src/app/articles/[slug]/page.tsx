@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { CalendarCheck, ArrowRight } from 'lucide-react';
 import { TrustSection } from '@/components/sections/TrustSection';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 const newArticleContent = `
 <p>Welcome to Sapphire Trails, the home of the authentic gem tour. When you book a gem tour with us, you aren't just taking a trip; you are stepping into history. A gem tour is the best way to understand the value of precious stones. Many travelers ask, "What makes a gem tour special?" The answer lies in the unique access a gem tour provides.</p>

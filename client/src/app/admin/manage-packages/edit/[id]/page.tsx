@@ -24,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import placeholderImages from '@/lib/placeholder-images.json';
 
 const iconOptions = ['MapPin', 'Gem', 'Landmark', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble', 'Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Waves', 'Camera', 'Tent', 'Thermometer'];
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 const steps = [
   { id: 1, name: 'Homepage Card', fields: ['homepageTitle', 'homepageDescription', 'imageAlt', 'imageHint'] as const },

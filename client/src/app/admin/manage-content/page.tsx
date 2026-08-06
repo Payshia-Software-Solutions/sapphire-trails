@@ -22,7 +22,7 @@ import Link from 'next/link';
 import { mapServerLocationToClient } from '@/lib/locations-data';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 // Simplified type for this page's needs
 interface ManagedLocation {

@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, LoaderCircle, User, Mail, Phone, Home, Ticket, Calendar, Users as GuestsIcon } from 'lucide-react';
 import { TrustSection } from '@/components/sections/TrustSection';
 
-const API_BASE_URL = 'https://server-sapphiretrails.payshia.com';
+import { API_BASE_URL } from '@/lib/utils';
 
 const InfoRow = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | number | undefined | null }) => (
     <div className="flex items-start">
