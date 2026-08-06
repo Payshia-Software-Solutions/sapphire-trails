@@ -222,7 +222,7 @@ function BookingSummary({
 }
 
 
-export function BookingPageContent() {
+export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -268,7 +268,16 @@ export function BookingPageContent() {
   const watchedDate = methods.watch('date');
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
 
-  const selectedTour = tourPackages.find(p => p.id === Number(watchedTourType));
+  const selectedTour = tourSlug 
+    ? tourPackages.find(p => p.slug === tourSlug)
+    : tourPackages.find(p => p.id === Number(watchedTourType));
+
+  useEffect(() => {
+    if (selectedTour && methods.getValues('tourType') !== selectedTour.id) {
+      methods.setValue('tourType', selectedTour.id);
+    }
+  }, [selectedTour, methods]);
+
   const totalGuests = (Number(watchedAdults) || 0) + (Number(watchedChildren) || 0);
 
   useEffect(() => {
@@ -393,9 +402,9 @@ export function BookingPageContent() {
   }
 
   return (
-    <div className="flex-1 bg-background-alt py-12 md:py-24">
-       <div className="container mx-auto px-4 md:px-6">
-        <div className="mb-8">
+    <div className="flex-1 bg-background-alt py-12 md:py-20">
+       <div className="container mx-auto px-4 md:px-6 max-w-screen-2xl">
+        <div className="mb-6">
             <Button variant="link" onClick={() => router.back()} className="text-foreground hover:text-primary p-0 h-auto">
                 <ArrowLeft className="mr-2 h-4 w-4"/>
                 Back to Tour Page
@@ -403,8 +412,15 @@ export function BookingPageContent() {
         </div>
         <FormProvider {...methods}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="lg:col-span-2 space-y-8">
-               <TourDisplayCard selectedTour={selectedTour} />
+            <div className="lg:col-span-2 space-y-6">
+              {tourSlug && selectedTour ? (
+                <div className="mb-2">
+                  <h1 className="text-3xl font-headline font-bold text-foreground">Book Your Tour</h1>
+                  <p className="text-muted-foreground mt-1">Reserve your spot for the <span className="font-semibold text-primary">{selectedTour.tourPageTitle}</span></p>
+                </div>
+              ) : (
+                <TourDisplayCard selectedTour={selectedTour} />
+              )}
               <BookingForm tourPackages={tourPackages} selectedTour={selectedTour} onSubmit={onSubmit} />
             </div>
             <div>

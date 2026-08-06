@@ -147,7 +147,7 @@ export default async function TourDetailPage({ params }: Props) {
             priceSuffix={tourPackage.priceSuffix}
             imageUrl={tourPackage.heroImage}
             imageHint={tourPackage.heroImageHint}
-            bookingLink={`${tourPackage.bookingLink}?tourType=${tourPackage.id}`}
+            bookingLink={`/tours/${slug}/book`}
         />
         <TourDetailHighlights 
             description={tourPackage.tourPageDescription}
@@ -169,7 +169,7 @@ export default async function TourDetailPage({ params }: Props) {
             price={tourPackage.price}
             priceSuffix={tourPackage.priceSuffix}
             duration={tourPackage.duration}
-            bookingLink={`${tourPackage.bookingLink}?tourType=${tourPackage.id}`}
+            bookingLink={`/tours/${slug}/book`}
         />
       </main>
       <TrustSection />
