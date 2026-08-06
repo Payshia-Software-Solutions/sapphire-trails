@@ -16,7 +16,7 @@ export function TourExperienceGallery({ images }: TourExperienceGalleryProps) {
 
   return (
     <section className="w-full py-10 md:py-14 bg-background-alt">
-      <div className="container mx-auto px-4 md:px-10 max-w-screen-xl">
+      <div className="container mx-auto px-4 md:px-6 max-w-screen-2xl">
 
         {/* Section header */}
         <div className="max-w-2xl mb-6">
