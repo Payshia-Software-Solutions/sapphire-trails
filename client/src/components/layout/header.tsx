@@ -88,7 +88,7 @@ export function Header() {
         </div>
       </div>
 
-      <div className="container mx-auto flex h-12 max-w-screen-2xl items-center justify-between px-4 md:px-6">
+      <div className="container mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
           <span className="font-serif text-lg md:text-2xl tracking-widest md:tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
         </Link>
@@ -130,9 +130,9 @@ export function Header() {
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
+               </DropdownMenu>
             ) : (
-                <Button asChild variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/10 hover:text-primary">
+                <Button asChild variant="outline" className="text-primary border-primary hover:bg-primary/10 hover:text-primary font-serif uppercase tracking-widest text-xs px-6 py-2 h-auto rounded-full">
                     <Link href="/auth">Login</Link>
                 </Button>
             )}
