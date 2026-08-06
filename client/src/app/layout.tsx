@@ -110,14 +110,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <head>
-        <link
-          rel="preload"
-          href="https://content-provider.payshia.com/sapphire-trail/hero/hero-video-sapphire-trail.webm"
-          as="video"
-          type="video/webm"
-        />
-      </head>
+      <head />
       <body className={cn(
         "font-body antialiased bg-background text-foreground",
         poppins.variable,
