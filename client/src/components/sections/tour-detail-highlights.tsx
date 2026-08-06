@@ -1,6 +1,5 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { type LucideIcon, Gem, Users, Mountain, Star, Coffee, BedDouble } from "lucide-react";
+import { type LucideIcon, Gem, Users, Mountain, Star, Coffee, BedDouble, Leaf, Bird, Home, Clock, CalendarDays, Ticket, AlertTriangle, Waves, Landmark, Camera, Tent, Thermometer, MapPin, Award, Package, Utensils, Shield } from "lucide-react";
 import type { TourHighlight } from "@/lib/packages-data";
 
 interface TourDetailHighlightsProps {
@@ -9,44 +8,46 @@ interface TourDetailHighlightsProps {
 }
 
 const iconMap: { [key: string]: LucideIcon } = {
-  Gem,
-  Users,
-  Mountain,
-  Star,
-  Coffee,
-  BedDouble,
+  Gem, Users, Mountain, Star, Coffee, BedDouble, Leaf, Bird, Home, Clock,
+  CalendarDays, Ticket, AlertTriangle, Waves, Landmark, Camera, Tent,
+  Thermometer, MapPin, Award, Package, Utensils, Shield,
 };
 
-
 export function TourDetailHighlights({ description, highlights }: TourDetailHighlightsProps) {
-  if (!highlights || highlights.length === 0) {
-    return null;
-  }
-  
+  if (!highlights || highlights.length === 0) return null;
+
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-headline font-bold mb-4 text-primary sm:text-4xl">
+    <section className="w-full py-16 md:py-24 bg-background">
+      <div className="container mx-auto px-4 md:px-10 max-w-screen-xl">
+
+        {/* Section header */}
+        <div className="max-w-2xl mb-14">
+          <p className="text-primary font-serif uppercase tracking-widest text-xs mb-3">About This Tour</p>
+          <h2 className="text-3xl md:text-4xl font-headline font-bold text-foreground leading-snug mb-5">
             Tour Highlights
-            </h2>
-            <p className="text-muted-foreground md:text-xl/relaxed mb-12">
-                {description}
-            </p>
+          </h2>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            {description}
+          </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto">
+
+        {/* Highlights grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {highlights.map((highlight, index) => {
             const Icon = iconMap[highlight.icon];
             return (
-              <Card key={index} className="bg-transparent border-0 shadow-none flex flex-col w-full text-center p-6 items-center">
-                <div className="flex items-center justify-center h-20 w-20 rounded-full bg-primary/10 mb-6">
-                    {Icon && <Icon className="h-10 w-10 text-primary" />}
+              <div
+                key={index}
+                className="group flex gap-5 p-6 rounded-2xl bg-background-alt border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300"
+              >
+                <div className="shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  {Icon && <Icon className="h-6 w-6 text-primary" />}
                 </div>
-                <CardContent className="p-0">
-                  <h3 className="text-xl font-bold font-headline text-primary">{highlight.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-2">{highlight.description}</p>
-                </CardContent>
-              </Card>
+                <div>
+                  <h3 className="font-headline font-bold text-foreground text-base mb-1">{highlight.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{highlight.description}</p>
+                </div>
+              </div>
             );
           })}
         </div>
