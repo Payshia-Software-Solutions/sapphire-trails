@@ -1,7 +1,7 @@
 
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Clock, Star, ArrowRight } from 'lucide-react';
+import { Clock, Star, ArrowRight, Users, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 interface TourDetailHeroProps {
@@ -16,55 +16,82 @@ interface TourDetailHeroProps {
 
 export function TourDetailHero({ title, duration, price, priceSuffix, imageUrl, imageHint, bookingLink }: TourDetailHeroProps) {
   return (
-    <section className="relative h-[75vh] min-h-[520px] w-full flex items-end bg-black">
-      {/* Hero Image */}
-      <Image
-        src={imageUrl}
-        alt={title}
-        data-ai-hint={imageHint}
-        fill
-        priority
-        className="z-0 object-cover object-center"
-      />
+    <section className="w-full bg-background-alt border-b border-border">
+      <div className="container mx-auto max-w-screen-xl px-4 md:px-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-16 items-center py-14 md:py-20">
 
-      {/* Deep gradient overlay — bottom heavy for text legibility */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/50 to-transparent" />
+          {/* Left — Text Content */}
+          <div className="flex flex-col justify-center order-2 lg:order-1 pt-8 lg:pt-0">
+            {/* Rating */}
+            <div className="flex items-center gap-1.5 mb-5">
+              {[1, 2, 3, 4, 5].map(i => (
+                <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+              ))}
+              <span className="text-muted-foreground text-sm ml-1 font-medium">Premium Gem Tour</span>
+            </div>
 
-      {/* Content */}
-      <div className="relative z-20 w-full container mx-auto max-w-screen-2xl px-4 md:px-10 pb-14 md:pb-20">
-        {/* Rating badge */}
-        <div className="flex items-center gap-1.5 mb-5">
-          {[1,2,3,4,5].map(i => (
-            <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-          ))}
-          <span className="text-white/70 text-sm ml-1">Premium Gem Tour</span>
-        </div>
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-headline font-bold text-foreground leading-tight mb-5">
+              {title}
+            </h1>
 
-        {/* Title */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-headline font-bold text-white leading-tight max-w-3xl">
-          {title}
-        </h1>
+            {/* Metadata pills */}
+            <div className="flex flex-wrap gap-3 mb-8">
+              <div className="flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground">
+                <Clock className="h-4 w-4 text-primary" />
+                {duration}
+              </div>
+              <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium">
+                <span className="font-bold text-primary">{price}</span>
+                <span className="text-muted-foreground">{priceSuffix}</span>
+              </div>
+            </div>
 
-        {/* Metadata pills */}
-        <div className="mt-6 flex flex-wrap gap-3">
-          <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 backdrop-blur-sm text-white text-sm font-medium">
-            <Clock className="h-4 w-4 text-primary" />
-            {duration}
+            {/* Trust badges */}
+            <div className="flex flex-wrap gap-4 mb-8 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Shield className="h-4 w-4 text-primary" />
+                <span>Safety Certified</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Users className="h-4 w-4 text-primary" />
+                <span>Expert Guided</span>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <div className="flex flex-wrap gap-3">
+              <Button asChild size="lg" className="rounded-full px-8 font-serif uppercase tracking-widest text-sm">
+                <Link href={bookingLink} className="flex items-center gap-2">
+                  Book This Tour
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="rounded-full px-8 text-sm border-border">
+                <a href="#itinerary">View Itinerary</a>
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-2 rounded-full border border-primary/40 bg-primary/20 px-5 py-2 backdrop-blur-sm text-white text-sm font-medium">
-            <span className="font-bold text-primary text-base">{price}</span>
-            <span className="text-white/70">{priceSuffix}</span>
-          </div>
-        </div>
 
-        {/* CTA */}
-        <div className="mt-8">
-          <Button asChild size="lg" className="rounded-full px-8 font-serif uppercase tracking-widest text-sm">
-            <Link href={bookingLink} className="flex items-center gap-2">
-              Book This Tour
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
+          {/* Right — Image */}
+          <div className="order-1 lg:order-2">
+            <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-xl border border-border">
+              <Image
+                src={imageUrl}
+                alt={title}
+                data-ai-hint={imageHint}
+                fill
+                priority
+                className="object-cover object-center"
+              />
+              {/* Price overlay badge */}
+              <div className="absolute bottom-4 left-4 rounded-xl bg-background/90 backdrop-blur-sm border border-border px-4 py-2.5 shadow-lg">
+                <p className="text-xs text-muted-foreground font-medium">Starting from</p>
+                <p className="text-xl font-bold text-primary font-headline">{price} <span className="text-sm font-normal text-muted-foreground">{priceSuffix}</span></p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
