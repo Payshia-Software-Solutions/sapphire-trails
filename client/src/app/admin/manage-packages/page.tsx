@@ -121,52 +121,68 @@ export default function ManagePackagesPage() {
               <p>Loading packages from server...</p>
             </div>
           ) : packages.length > 0 ? (
-            <div className="grid gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {packages.map((pkg) => (
-                <div key={pkg.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                  <Image
-                    src={pkg.imageUrl}
-                    alt={pkg.homepageTitle}
-                    width={80}
-                    height={80}
-                    className="rounded-md object-cover aspect-square bg-muted"
-                  />
-                  <div className="grid gap-1 text-sm flex-1">
-                    <div className="font-medium text-lg break-words">{pkg.homepageTitle}</div>
-                    <div className="text-muted-foreground break-all">ID: {pkg.id}</div>
+                <div key={pkg.id} className="bg-card border border-border/80 rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow">
+                  {/* Package Image Banner */}
+                  <div className="relative aspect-[3/2] w-full bg-muted overflow-hidden">
+                    {pkg.imageUrl ? (
+                      <img
+                        src={pkg.imageUrl}
+                        alt={pkg.homepageTitle}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-background-alt text-muted-foreground text-xs italic">
+                        No image
+                      </div>
+                    )}
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <Button asChild variant="outline" size="icon">
-                      <Link href={`/admin/manage-packages/edit/${pkg.id}`}>
-                        <Pencil className="h-4 w-4" />
-                        <span className="sr-only">Edit {pkg.homepageTitle}</span>
-                      </Link>
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                         <Button variant="destructive" size="icon">
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete {pkg.homepageTitle}</span>
+                  {/* Card Body */}
+                  <div className="p-4 flex flex-col flex-1 justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="font-bold text-base text-primary leading-snug line-clamp-2 min-h-[2.5rem] break-words" title={pkg.homepageTitle}>
+                        {pkg.homepageTitle}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-border/30 pt-3 mt-auto text-xs">
+                      <span className="font-mono text-muted-foreground">ID: {pkg.id}</span>
+                      
+                      <div className="flex items-center gap-1.5">
+                        <Button asChild variant="outline" size="sm" className="h-8 px-2.5">
+                          <Link href={`/admin/manage-packages/edit/${pkg.id}`}>
+                            <Pencil className="h-3.5 w-3.5 mr-1" />
+                            Edit
+                          </Link>
                         </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                          <AlertDialogDescription className="break-words">
-                            This action cannot be undone. This will permanently delete the package for <span className="font-semibold text-foreground">&quot;{pkg.homepageTitle}&quot;</span>.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(pkg.id, pkg.homepageTitle)}>
-                            Yes, delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                        
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm" className="h-8 px-2.5">
+                              <Trash2 className="h-3.5 w-3.5 mr-1" />
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription className="break-words">
+                                This action cannot be undone. This will permanently delete the package for <span className="font-semibold text-foreground">&quot;{pkg.homepageTitle}&quot;</span>.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(pkg.id, pkg.homepageTitle)}>
+                                Yes, delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
                   </div>
-                  
                 </div>
               ))}
             </div>
