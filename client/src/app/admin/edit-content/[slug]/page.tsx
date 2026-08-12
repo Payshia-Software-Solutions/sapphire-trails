@@ -163,6 +163,8 @@ export default function EditContentPage() {
     control: form.control,
     name: "nearbyAttractions",
   });
+  const watchedHighlights = form.watch('highlights') || [];
+  const watchedVisitorInfo = form.watch('visitorInfo') || [];
   
   const fetchLocationData = useCallback(async () => {
     if (!slug) {
@@ -606,6 +608,58 @@ export default function EditContentPage() {
                       </Button>
                   </CardContent>
               </Card>
+
+              <div className="border border-primary/20 rounded-2xl p-6 bg-primary/5 mt-8 space-y-6">
+                <div className="flex items-center gap-2 border-b border-primary/10 pb-3">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <h4 className="font-serif text-sm uppercase tracking-wider text-primary font-bold">Live Frontend Preview</h4>
+                </div>
+                
+                {/* Highlight Preview */}
+                <div className="space-y-4">
+                  <p className="text-xs uppercase font-semibold text-muted-foreground tracking-wider">Key Highlights Preview</p>
+                  {watchedHighlights.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">No highlights added yet.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {watchedHighlights.map((highlight: any, idx: number) => {
+                        const Icon = IconMap[highlight.icon] || HelpCircle;
+                        return (
+                          <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-6 items-center text-center shadow-lg">
+                            <Icon className="h-12 w-12 text-primary mb-4 shrink-0" />
+                            <h3 className="text-base font-bold font-headline text-primary break-words max-w-full">{highlight.title || 'Untitled'}</h3>
+                            <p className="text-xs text-muted-foreground mt-2 line-clamp-3">{highlight.description || 'No description'}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <Separator className="bg-primary/10" />
+
+                {/* Visitor Info Preview */}
+                <div className="space-y-4">
+                  <p className="text-xs uppercase font-semibold text-muted-foreground tracking-wider">Visitor Information Preview</p>
+                  {watchedVisitorInfo.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">No visitor info added yet.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {watchedVisitorInfo.map((info: any, idx: number) => {
+                        const Icon = IconMap[info.icon] || HelpCircle;
+                        return (
+                          <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-6 items-center text-center shadow-lg">
+                            <Icon className="h-8 w-8 text-primary mb-3 shrink-0" />
+                            <h3 className="text-sm font-bold font-headline text-foreground break-words max-w-full">{info.title || 'Untitled'}</h3>
+                            <p className="text-xs text-muted-foreground mt-2 truncate max-w-full">{info.line1}</p>
+                            {info.line2 && <p className="text-xs text-muted-foreground truncate max-w-full">{info.line2}</p>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="gallery" className="space-y-6 outline-none">
