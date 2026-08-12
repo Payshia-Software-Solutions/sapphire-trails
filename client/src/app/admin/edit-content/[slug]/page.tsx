@@ -516,15 +516,7 @@ export default function EditContentPage() {
                                           <Select onValueChange={field.onChange} value={field.value}>
                                           <FormControl>
                                               <SelectTrigger className="h-9">
-                                                  <div className="flex items-center gap-2">
-                                                      {field.value && IconMap[field.value] && (
-                                                          (() => {
-                                                              const Icon = IconMap[field.value];
-                                                              return <Icon className="h-4 w-4 text-primary shrink-0" />;
-                                                          })()
-                                                      )}
-                                                      <SelectValue placeholder="Icon" />
-                                                  </div>
+                                                  <SelectValue placeholder="Icon" />
                                               </SelectTrigger>
                                           </FormControl>
                                           <SelectContent>
@@ -579,15 +571,7 @@ export default function EditContentPage() {
                                           <Select onValueChange={field.onChange} value={field.value}>
                                           <FormControl>
                                               <SelectTrigger className="h-9">
-                                                  <div className="flex items-center gap-2">
-                                                      {field.value && IconMap[field.value] && (
-                                                          (() => {
-                                                              const Icon = IconMap[field.value];
-                                                              return <Icon className="h-4 w-4 text-primary shrink-0" />;
-                                                          })()
-                                                      )}
-                                                      <SelectValue placeholder="Icon" />
-                                                  </div>
+                                                  <SelectValue placeholder="Icon" />
                                               </SelectTrigger>
                                           </FormControl>
                                           <SelectContent>
@@ -693,15 +677,7 @@ export default function EditContentPage() {
                                           <Select onValueChange={field.onChange} value={field.value}>
                                           <FormControl>
                                               <SelectTrigger className="h-9">
-                                                  <div className="flex items-center gap-2">
-                                                      {field.value && IconMap[field.value] && (
-                                                          (() => {
-                                                              const Icon = IconMap[field.value];
-                                                              return <Icon className="h-4 w-4 text-primary shrink-0" />;
-                                                          })()
-                                                      )}
-                                                      <SelectValue placeholder="Select icon" />
-                                                  </div>
+                                                  <SelectValue placeholder="Select icon" />
                                               </SelectTrigger>
                                           </FormControl>
                                           <SelectContent>
