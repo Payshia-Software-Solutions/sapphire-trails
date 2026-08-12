@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LoaderCircle } from 'lucide-react';
+import { Menu, LoaderCircle, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { User as AuthUser } from '@/contexts/auth-context';
 import {
@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useTheme } from '@/contexts/theme-context';
 import './admin.css';
 
 
@@ -36,15 +37,7 @@ export default function AdminLayout({
   const isMounted = useRef(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  useEffect(() => {
-    // Force light theme on the admin panel
-    document.documentElement.classList.add('light');
-    
-    // Cleanup function to remove the light theme when leaving the admin panel
-    return () => {
-      document.documentElement.classList.remove('light');
-    };
-  }, []);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (isMounted.current) {
@@ -126,6 +119,9 @@ export default function AdminLayout({
                   {/* Can add search or breadcrumbs here */}
               </div>
               <div className="flex items-center gap-4">
+                <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full text-primary hover:bg-primary/10">
+                  {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                </Button>
                 {adminUser && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
