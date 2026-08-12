@@ -14,13 +14,68 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Trash2, LoaderCircle } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  Plus, 
+  Trash2, 
+  LoaderCircle,
+  MapPin, 
+  Gem, 
+  Landmark, 
+  Award, 
+  Utensils, 
+  Star, 
+  Package, 
+  Coffee, 
+  BedDouble, 
+  Leaf, 
+  Mountain, 
+  Bird, 
+  Home, 
+  Clock, 
+  CalendarDays, 
+  Ticket, 
+  Users, 
+  AlertTriangle, 
+  Waves, 
+  Camera, 
+  Tent, 
+  Thermometer,
+  HelpCircle
+} from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
 const iconOptions = ['MapPin', 'Gem', 'Landmark', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble', 'Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Waves', 'Camera', 'Tent', 'Thermometer'];
+
+const IconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  MapPin,
+  Gem,
+  Landmark,
+  Award,
+  Utensils,
+  Star,
+  Package,
+  Coffee,
+  BedDouble,
+  Leaf,
+  Mountain,
+  Bird,
+  Home,
+  Clock,
+  CalendarDays,
+  Ticket,
+  Users,
+  AlertTriangle,
+  Waves,
+  Camera,
+  Tent,
+  Thermometer,
+  HelpCircle,
+};
+
 import { API_BASE_URL } from '@/lib/utils';
 
 const steps = [
@@ -67,15 +122,15 @@ export default function AddPackagePage() {
       heroImage: '',
       heroImageHint: '',
       tourPageDescription: '',
-      tourHighlights: Array.from({ length: 3 }, () => ({ icon: 'Star' as const, title: '', description: '' })),
+      tourHighlights: [{ icon: 'Star' as const, title: '', description: '' }],
       inclusions: [{ text: '' }],
-      itinerary: Array.from({ length: 5 }, () => ({ time: '', title: '', description: '' })),
+      itinerary: [{ time: '', title: '', description: '' }],
       experienceGallery: [{ src: '', alt: '', hint: '' }],
       bookingLink: '/booking',
     },
   });
 
-  const { fields: highlightFields } = useFieldArray({
+  const { fields: highlightFields, append: appendHighlight, remove: removeHighlight } = useFieldArray({
     control: form.control,
     name: "tourHighlights",
   });
@@ -322,23 +377,59 @@ export default function AddPackagePage() {
             <div className={cn(currentStep === 3 ? 'block' : 'hidden')}>
                 <Card>
                     <CardHeader>
-                    <CardTitle>Tour Highlights (3)</CardTitle>
-                    <CardDescription>The three main highlights shown on the tour page.</CardDescription>
+                    <CardTitle>Tour Highlights</CardTitle>
+                    <CardDescription>The main highlights shown on the tour page.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                    {highlightFields.map((item, index) => (
-                        <div key={item.id} className="grid md:grid-cols-3 gap-4 p-4 border rounded-md items-end">
-                        <FormField control={form.control} name={`tourHighlights.${index}.icon`} render={({ field }) => (
-                            <FormItem><FormLabel>Icon</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Select icon" /></SelectTrigger></FormControl>
-                                    <SelectContent>{iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}</SelectContent>
-                                </Select><FormMessage />
-                            </FormItem> )} />
-                        <FormField control={form.control} name={`tourHighlights.${index}.title`} render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="Highlight title" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name={`tourHighlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Input placeholder="Short description" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        </div>
-                    ))}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {highlightFields.map((item, index) => (
+                            <div key={item.id} className="space-y-3 p-4 border border-border/60 rounded-xl relative bg-card shadow-sm text-left">
+                                <div className="flex justify-between items-center border-b pb-2 mb-2 border-border/30">
+                                   <p className="font-semibold text-xs tracking-wider uppercase text-primary">Highlight {index + 1}</p>
+                                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-full" onClick={() => removeHighlight(index)}>
+                                       <Trash2 className="h-3.5 w-3.5" />
+                                   </Button>
+                                </div>
+                                <div className="grid grid-cols-[120px_1fr] gap-3">
+                                  <FormField
+                                      control={form.control}
+                                      name={`tourHighlights.${index}.icon`}
+                                      render={({ field }) => (
+                                      <FormItem>
+                                          <FormLabel className="text-xs">Icon</FormLabel>
+                                          <Select onValueChange={field.onChange} value={field.value}>
+                                          <FormControl>
+                                              <SelectTrigger className="h-9">
+                                                  <SelectValue placeholder="Icon" />
+                                              </SelectTrigger>
+                                          </FormControl>
+                                          <SelectContent>
+                                              {iconOptions.map(iconName => {
+                                                  const Icon = IconMap[iconName] || HelpCircle;
+                                                  return (
+                                                      <SelectItem key={iconName} value={iconName}>
+                                                          <div className="flex items-center gap-2">
+                                                              <Icon className="h-4 w-4 text-primary shrink-0" />
+                                                              <span>{iconName}</span>
+                                                          </div>
+                                                      </SelectItem>
+                                                  );
+                                              })}
+                                          </SelectContent>
+                                          </Select>
+                                          <FormMessage />
+                                      </FormItem>
+                                      )}
+                                  />
+                                  <FormField control={form.control} name={`tourHighlights.${index}.title`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Title</FormLabel><FormControl><Input placeholder="Highlight title" className="h-9" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                </div>
+                                 <FormField control={form.control} name={`tourHighlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Description</FormLabel><FormControl><Input placeholder="Short description" className="h-9 text-xs" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            </div>
+                        ))}
+                      </div>
+                      <Button type="button" variant="outline" size="sm" className="rounded-full mt-2" onClick={() => appendHighlight({ icon: 'Star', title: '', description: '' })}>
+                          <Plus className="mr-2 h-4 w-4" /> Add Highlight
+                      </Button>
                     </CardContent>
                 </Card>
                 <Card className="mt-8">
