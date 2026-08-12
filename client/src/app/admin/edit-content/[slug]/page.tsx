@@ -15,7 +15,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, LoaderCircle, Plus, Trash2, Save } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  LoaderCircle, 
+  Plus, 
+  Trash2, 
+  Save,
+  Leaf, 
+  Mountain, 
+  Bird, 
+  Home, 
+  Clock, 
+  CalendarDays, 
+  Ticket, 
+  Users, 
+  AlertTriangle, 
+  Gem, 
+  Waves, 
+  Landmark, 
+  Camera, 
+  Tent, 
+  Thermometer,
+  HelpCircle
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,6 +47,25 @@ import { API_BASE_URL } from '@/lib/utils';
 import placeholderImages from '@/lib/placeholder-images.json';
 
 const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
+
+const IconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Leaf,
+  Mountain,
+  Bird,
+  Home,
+  Clock,
+  CalendarDays,
+  Ticket,
+  Users,
+  AlertTriangle,
+  Gem,
+  Waves,
+  Landmark,
+  Camera,
+  Tent,
+  Thermometer,
+  HelpCircle,
+};
 
 interface FormGalleryImage extends GalleryImage {
   id?: number;
@@ -475,11 +516,29 @@ export default function EditContentPage() {
                                           <Select onValueChange={field.onChange} value={field.value}>
                                           <FormControl>
                                               <SelectTrigger className="h-9">
-                                                  <SelectValue placeholder="Icon" />
+                                                  <div className="flex items-center gap-2">
+                                                      {field.value && IconMap[field.value] && (
+                                                          (() => {
+                                                              const Icon = IconMap[field.value];
+                                                              return <Icon className="h-4 w-4 text-primary shrink-0" />;
+                                                          })()
+                                                      )}
+                                                      <SelectValue placeholder="Icon" />
+                                                  </div>
                                               </SelectTrigger>
                                           </FormControl>
                                           <SelectContent>
-                                              {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
+                                              {iconOptions.map(iconName => {
+                                                  const Icon = IconMap[iconName] || HelpCircle;
+                                                  return (
+                                                      <SelectItem key={iconName} value={iconName}>
+                                                          <div className="flex items-center gap-2">
+                                                              <Icon className="h-4 w-4 text-primary shrink-0" />
+                                                              <span>{iconName}</span>
+                                                          </div>
+                                                      </SelectItem>
+                                                  );
+                                              })}
                                           </SelectContent>
                                           </Select>
                                           <FormMessage />
@@ -520,11 +579,29 @@ export default function EditContentPage() {
                                           <Select onValueChange={field.onChange} value={field.value}>
                                           <FormControl>
                                               <SelectTrigger className="h-9">
-                                                  <SelectValue placeholder="Icon" />
+                                                  <div className="flex items-center gap-2">
+                                                      {field.value && IconMap[field.value] && (
+                                                          (() => {
+                                                              const Icon = IconMap[field.value];
+                                                              return <Icon className="h-4 w-4 text-primary shrink-0" />;
+                                                          })()
+                                                      )}
+                                                      <SelectValue placeholder="Icon" />
+                                                  </div>
                                               </SelectTrigger>
                                           </FormControl>
                                           <SelectContent>
-                                              {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
+                                              {iconOptions.map(iconName => {
+                                                  const Icon = IconMap[iconName] || HelpCircle;
+                                                  return (
+                                                      <SelectItem key={iconName} value={iconName}>
+                                                          <div className="flex items-center gap-2">
+                                                              <Icon className="h-4 w-4 text-primary shrink-0" />
+                                                              <span>{iconName}</span>
+                                                          </div>
+                                                      </SelectItem>
+                                                  );
+                                              })}
                                           </SelectContent>
                                           </Select>
                                           <FormMessage />
@@ -615,12 +692,30 @@ export default function EditContentPage() {
                                           <FormLabel>Icon</FormLabel>
                                           <Select onValueChange={field.onChange} value={field.value}>
                                           <FormControl>
-                                              <SelectTrigger>
-                                                  <SelectValue placeholder="Select an icon" />
+                                              <SelectTrigger className="h-9">
+                                                  <div className="flex items-center gap-2">
+                                                      {field.value && IconMap[field.value] && (
+                                                          (() => {
+                                                              const Icon = IconMap[field.value];
+                                                              return <Icon className="h-4 w-4 text-primary shrink-0" />;
+                                                          })()
+                                                      )}
+                                                      <SelectValue placeholder="Select icon" />
+                                                  </div>
                                               </SelectTrigger>
                                           </FormControl>
                                           <SelectContent>
-                                              {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
+                                              {iconOptions.map(iconName => {
+                                                  const Icon = IconMap[iconName] || HelpCircle;
+                                                  return (
+                                                      <SelectItem key={iconName} value={iconName}>
+                                                          <div className="flex items-center gap-2">
+                                                              <Icon className="h-4 w-4 text-primary shrink-0" />
+                                                              <span>{iconName}</span>
+                                                          </div>
+                                                      </SelectItem>
+                                                  );
+                                              })}
                                           </SelectContent>
                                           </Select>
                                           <FormMessage />
