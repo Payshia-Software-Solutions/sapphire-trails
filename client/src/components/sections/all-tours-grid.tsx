@@ -27,7 +27,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       <p className="text-muted-foreground mb-6 flex-grow">{tour.homepageDescription}</p>
       <div className="flex items-center gap-4 mt-auto">
         <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
-          <Link href={`/booking?tourType=${tour.id}`}>
+          <Link href={`/tours/${tour.slug}/book`}>
             <CalendarCheck className="mr-2 h-4 w-4" />
             Book Now
           </Link>
@@ -77,14 +77,14 @@ export function AllToursGrid() {
 
     return (
         <section className="w-full py-12 md:py-24 bg-background-alt">
-            <div className="container mx-auto px-4 md:px-6">
+            <div className="container mx-auto px-4 md:px-6 max-w-screen-2xl">
                 {isLoading ? (
                     <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-4">
                         <LoaderCircle className="h-12 w-12 text-muted-foreground/50 animate-spin" />
                         <p>Fetching tour packages...</p>
                     </div>
                 ) : allTours.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-screen-2xl mx-auto">
                         {allTours.map((tour) => (
                             <TourCard key={tour.id} tour={tour} />
                         ))}
