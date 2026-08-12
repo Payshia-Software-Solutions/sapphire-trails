@@ -21,12 +21,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       setTheme(storedTheme);
       if (storedTheme === 'dark') {
         document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
       } else {
         document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
       }
     } else {
       // Default to dark
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
     }
   }, []);
 
@@ -36,8 +39,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('theme', newTheme);
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
     }
   };
 
