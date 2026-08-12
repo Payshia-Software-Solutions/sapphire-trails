@@ -358,15 +358,15 @@ export default function EditContentPage() {
 
   return (
     <div className="flex flex-col gap-6">
-       <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" onClick={() => router.push('/admin/manage-content')}>
-            <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight text-primary">Edit Location</h1>
-            <p className="text-muted-foreground break-words">Now editing: <span className="font-semibold">{form.getValues('title')}</span></p>
-        </div>
-      </div>
+        <div className="flex items-start gap-4">
+         <Button variant="outline" size="icon" className="shrink-0 mt-0.5" onClick={() => router.push('/admin/manage-content')}>
+             <ArrowLeft className="h-4 w-4" />
+         </Button>
+         <div className="flex flex-col gap-1">
+             <h1 className="text-3xl font-bold tracking-tight text-primary">Edit Location</h1>
+             <p className="text-muted-foreground text-sm break-words">Now editing: <span className="font-semibold text-foreground">{form.getValues('title')}</span></p>
+         </div>
+       </div>
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, handleFormError)} className="space-y-6">
