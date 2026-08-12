@@ -106,6 +106,21 @@ export default function EditContentPage() {
     control: form.control,
     name: "galleryImages",
   });
+
+  const { fields: highlightFields, append: appendHighlight, remove: removeHighlight } = useFieldArray({
+    control: form.control,
+    name: "highlights",
+  });
+
+  const { fields: visitorInfoFields, append: appendVisitorInfo, remove: removeVisitorInfo } = useFieldArray({
+    control: form.control,
+    name: "visitorInfo",
+  });
+
+  const { fields: nearbyAttractionFields, append: appendNearbyAttraction, remove: removeNearbyAttraction } = useFieldArray({
+    control: form.control,
+    name: "nearbyAttractions",
+  });
   
   const fetchLocationData = useCallback(async () => {
     if (!slug) {
@@ -471,19 +486,15 @@ export default function EditContentPage() {
                 </CardContent>
             </Card>
             
-            <Card>
+            <Card className="border-border/80 shadow-md">
                 <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
-                    {form.getValues('highlights')?.map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
-                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
-                                const currentHighlights = form.getValues('highlights');
-                                const newHighlights = currentHighlights?.filter((_, i) => i !== index);
-                                form.setValue('highlights', newHighlights);
-                            }}>
+                    {highlightFields.map((item, index) => (
+                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeHighlight(index)}>
                                 <Trash2 className="h-3 w-3" />
                             </Button>
-                             <p className="font-medium">Highlight {index + 1}</p>
+                             <p className="font-medium text-sm text-muted-foreground">Highlight {index + 1}</p>
                             <FormField
                                 control={form.control}
                                 name={`highlights.${index}.icon`}
@@ -508,28 +519,21 @@ export default function EditContentPage() {
                              <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Highlight description" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => {
-                        const currentHighlights = form.getValues('highlights') || [];
-                        form.setValue('highlights', [...currentHighlights, { icon: 'Leaf', title: '', description: '' }]);
-                    }}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendHighlight({ icon: 'Leaf', title: '', description: '' })}>
                         <Plus className="mr-2 h-4 w-4" /> Add Highlight
                     </Button>
                 </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-border/80 shadow-md">
                 <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
-                    {form.getValues('visitorInfo')?.map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
-                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
-                                const currentVisitorInfo = form.getValues('visitorInfo');
-                                const newVisitorInfo = currentVisitorInfo?.filter((_, i) => i !== index);
-                                form.setValue('visitorInfo', newVisitorInfo);
-                            }}>
+                    {visitorInfoFields.map((item, index) => (
+                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeVisitorInfo(index)}>
                                 <Trash2 className="h-3 w-3" />
                             </Button>
-                             <p className="font-medium">Info Item {index + 1}</p>
+                             <p className="font-medium text-sm text-muted-foreground">Info Item {index + 1}</p>
                             <FormField
                                 control={form.control}
                                 name={`visitorInfo.${index}.icon`}
@@ -555,28 +559,21 @@ export default function EditContentPage() {
                              <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel>Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => {
-                        const currentVisitorInfo = form.getValues('visitorInfo') || [];
-                        form.setValue('visitorInfo', [...currentVisitorInfo, { icon: 'Clock', title: '', line1: '', line2: '' }]);
-                    }}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendVisitorInfo({ icon: 'Clock', title: '', line1: '', line2: '' })}>
                         <Plus className="mr-2 h-4 w-4" /> Add Info Item
                     </Button>
                 </CardContent>
             </Card>
             
-            <Card>
+            <Card className="border-border/80 shadow-md">
                 <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
                     <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <Separator/>
-                    <p className="font-medium">Nearby Attractions</p>
-                    {form.getValues('nearbyAttractions')?.map((_, index) => (
-                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
-                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
-                                const currentNearbyAttractions = form.getValues('nearbyAttractions');
-                                const newNearbyAttractions = currentNearbyAttractions?.filter((_, i) => i !== index);
-                                form.setValue('nearbyAttractions', newNearbyAttractions);
-                            }}>
+                    <p className="font-medium text-sm text-muted-foreground">Nearby Attractions</p>
+                    {nearbyAttractionFields.map((item, index) => (
+                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeNearbyAttraction(index)}>
                                 <Trash2 className="h-3 w-3" />
                             </Button>
                             <div className="grid md:grid-cols-3 gap-4">
@@ -605,10 +602,7 @@ export default function EditContentPage() {
                             </div>
                         </div>
                     ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => {
-                        const currentNearbyAttractions = form.getValues('nearbyAttractions') || [];
-                        form.setValue('nearbyAttractions', [...currentNearbyAttractions, { icon: 'Gem', name: '', distance: '' }]);
-                    }}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendNearbyAttraction({ icon: 'Gem', name: '', distance: '' })}>
                         <Plus className="mr-2 h-4 w-4" /> Add Attraction
                     </Button>
                 </CardContent>
