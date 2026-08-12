@@ -117,6 +117,7 @@ export default function EditContentPage() {
   const [introImagePreview, setIntroImagePreview] = useState<string | null>(null);
   
   const [isSavingImage, setIsSavingImage] = useState<number | null>(null);
+  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
 
   const form = useForm<z.infer<typeof locationEditSchema>>({
     resolver: zodResolver(locationEditSchema),
@@ -495,170 +496,245 @@ export default function EditContentPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="highlights" className="space-y-6 outline-none">
-              <Card className="border-border/80 shadow-md">
-                  <CardHeader className="pb-3"><CardTitle className="text-xl">Key Highlights</CardTitle></CardHeader>
-                  <CardContent className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                        {highlightFields.map((item, index) => (
-                            <div key={item.id} className="space-y-3 p-4 border border-border/60 rounded-xl relative bg-card shadow-sm">
-                                <div className="flex justify-between items-center border-b pb-2 mb-2 border-border/30">
-                                   <p className="font-semibold text-xs tracking-wider uppercase text-primary">Highlight {index + 1}</p>
-                                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-full" onClick={() => removeHighlight(index)}>
-                                       <Trash2 className="h-3.5 w-3.5" />
-                                   </Button>
-                                </div>
-                                <div className="grid grid-cols-[120px_1fr] gap-3">
-                                  <FormField
-                                      control={form.control}
-                                      name={`highlights.${index}.icon`}
-                                      render={({ field }) => (
-                                      <FormItem>
-                                          <FormLabel className="text-xs">Icon</FormLabel>
-                                          <Select onValueChange={field.onChange} value={field.value}>
-                                          <FormControl>
-                                              <SelectTrigger className="h-9">
-                                                  <SelectValue placeholder="Icon" />
-                                              </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                              {iconOptions.map(iconName => {
-                                                  const Icon = IconMap[iconName] || HelpCircle;
-                                                  return (
-                                                      <SelectItem key={iconName} value={iconName}>
-                                                          <div className="flex items-center gap-2">
-                                                              <Icon className="h-4 w-4 text-primary shrink-0" />
-                                                              <span>{iconName}</span>
-                                                          </div>
-                                                      </SelectItem>
-                                                  );
-                                              })}
-                                          </SelectContent>
-                                          </Select>
-                                          <FormMessage />
-                                      </FormItem>
-                                      )}
-                                  />
-                                  <FormField control={form.control} name={`highlights.${index}.title`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Title</FormLabel><FormControl><Input placeholder="Highlight title" className="h-9" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                </div>
-                                 <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Description</FormLabel><FormControl><Textarea placeholder="Highlight description" className="min-h-[50px] text-xs py-1" rows={2} {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            </div>
-                        ))}
-                      </div>
-                      <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => appendHighlight({ icon: 'Leaf', title: '', description: '' })}>
-                          <Plus className="mr-2 h-4 w-4" /> Add Highlight
-                      </Button>
-                  </CardContent>
-              </Card>
-
-              <Card className="border-border/80 shadow-md">
-                  <CardHeader className="pb-3"><CardTitle className="text-xl">Visitor Information</CardTitle></CardHeader>
-                  <CardContent className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                        {visitorInfoFields.map((item, index) => (
-                            <div key={item.id} className="space-y-3 p-4 border border-border/60 rounded-xl relative bg-card shadow-sm">
-                                <div className="flex justify-between items-center border-b pb-2 mb-2 border-border/30">
-                                   <p className="font-semibold text-xs tracking-wider uppercase text-primary">Info Item {index + 1}</p>
-                                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-full" onClick={() => removeVisitorInfo(index)}>
-                                       <Trash2 className="h-3.5 w-3.5" />
-                                   </Button>
-                                </div>
-                                <div className="grid grid-cols-[120px_1fr] gap-3">
-                                  <FormField
-                                      control={form.control}
-                                      name={`visitorInfo.${index}.icon`}
-                                      render={({ field }) => (
-                                      <FormItem>
-                                          <FormLabel className="text-xs">Icon</FormLabel>
-                                          <Select onValueChange={field.onChange} value={field.value}>
-                                          <FormControl>
-                                              <SelectTrigger className="h-9">
-                                                  <SelectValue placeholder="Icon" />
-                                              </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                              {iconOptions.map(iconName => {
-                                                  const Icon = IconMap[iconName] || HelpCircle;
-                                                  return (
-                                                      <SelectItem key={iconName} value={iconName}>
-                                                          <div className="flex items-center gap-2">
-                                                              <Icon className="h-4 w-4 text-primary shrink-0" />
-                                                              <span>{iconName}</span>
-                                                          </div>
-                                                      </SelectItem>
-                                                  );
-                                              })}
-                                          </SelectContent>
-                                          </Select>
-                                          <FormMessage />
-                                      </FormItem>
-                                      )}
-                                  />
-                                  <FormField control={form.control} name={`visitorInfo.${index}.title`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Title</FormLabel><FormControl><Input placeholder="Info title" className="h-9" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                </div>
-                                <div className="grid grid-cols-2 gap-2">
-                                 <FormField control={form.control} name={`visitorInfo.${index}.line1`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Line 1</FormLabel><FormControl><Input placeholder="e.g., 6:00 AM - 6:00 PM" className="h-9 text-xs" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                 <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" className="h-9 text-xs" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                </div>
-                            </div>
-                        ))}
-                      </div>
-                      <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => appendVisitorInfo({ icon: 'Clock', title: '', line1: '', line2: '' })}>
-                          <Plus className="mr-2 h-4 w-4" /> Add Info Item
-                      </Button>
-                  </CardContent>
-              </Card>
-
-              <div className="border border-primary/20 rounded-2xl p-6 bg-primary/5 mt-8 space-y-6">
-                <div className="flex items-center gap-2 border-b border-primary/10 pb-3">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                  <h4 className="font-serif text-sm uppercase tracking-wider text-primary font-bold">Live Frontend Preview</h4>
-                </div>
+            <TabsContent value="highlights" className="outline-none">
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
                 
-                {/* Highlight Preview */}
-                <div className="space-y-4">
-                  <p className="text-xs uppercase font-semibold text-muted-foreground tracking-wider">Key Highlights Preview</p>
-                  {watchedHighlights.length === 0 ? (
-                    <p className="text-xs text-muted-foreground italic">No highlights added yet.</p>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {watchedHighlights.map((highlight: any, idx: number) => {
-                        const Icon = IconMap[highlight.icon] || HelpCircle;
-                        return (
-                          <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-6 items-center text-center shadow-lg">
-                            <Icon className="h-12 w-12 text-primary mb-4 shrink-0" />
-                            <h3 className="text-base font-bold font-headline text-primary break-words max-w-full">{highlight.title || 'Untitled'}</h3>
-                            <p className="text-xs text-muted-foreground mt-2 line-clamp-3">{highlight.description || 'No description'}</p>
+                {/* Left Column: Form Editors */}
+                <div className="xl:col-span-7 space-y-6">
+                  <Card className="border-border/80 shadow-md">
+                      <CardHeader className="pb-3"><CardTitle className="text-xl">Key Highlights</CardTitle></CardHeader>
+                      <CardContent className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                            {highlightFields.map((item, index) => (
+                                <div key={item.id} className="space-y-3 p-4 border border-border/60 rounded-xl relative bg-card shadow-sm">
+                                    <div className="flex justify-between items-center border-b pb-2 mb-2 border-border/30">
+                                       <p className="font-semibold text-xs tracking-wider uppercase text-primary">Highlight {index + 1}</p>
+                                       <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-full" onClick={() => removeHighlight(index)}>
+                                           <Trash2 className="h-3.5 w-3.5" />
+                                       </Button>
+                                    </div>
+                                    <div className="grid grid-cols-[120px_1fr] gap-3">
+                                      <FormField
+                                          control={form.control}
+                                          name={`highlights.${index}.icon`}
+                                          render={({ field }) => (
+                                          <FormItem>
+                                              <FormLabel className="text-xs">Icon</FormLabel>
+                                              <Select onValueChange={field.onChange} value={field.value}>
+                                              <FormControl>
+                                                  <SelectTrigger className="h-9">
+                                                      <SelectValue placeholder="Icon" />
+                                                  </SelectTrigger>
+                                              </FormControl>
+                                              <SelectContent>
+                                                  {iconOptions.map(iconName => {
+                                                      const Icon = IconMap[iconName] || HelpCircle;
+                                                      return (
+                                                          <SelectItem key={iconName} value={iconName}>
+                                                              <div className="flex items-center gap-2">
+                                                                  <Icon className="h-4 w-4 text-primary shrink-0" />
+                                                                  <span>{iconName}</span>
+                                                              </div>
+                                                          </SelectItem>
+                                                      );
+                                                  })}
+                                              </SelectContent>
+                                              </Select>
+                                              <FormMessage />
+                                          </FormItem>
+                                          )}
+                                      />
+                                      <FormField control={form.control} name={`highlights.${index}.title`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Title</FormLabel><FormControl><Input placeholder="Highlight title" className="h-9" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    </div>
+                                     <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Description</FormLabel><FormControl><Textarea placeholder="Highlight description" className="min-h-[50px] text-xs py-1" rows={2} {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                </div>
+                            ))}
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                          <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => appendHighlight({ icon: 'Leaf', title: '', description: '' })}>
+                              <Plus className="mr-2 h-4 w-4" /> Add Highlight
+                          </Button>
+                      </CardContent>
+                  </Card>
+
+                  <Card className="border-border/80 shadow-md">
+                      <CardHeader className="pb-3"><CardTitle className="text-xl">Visitor Information</CardTitle></CardHeader>
+                      <CardContent className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                            {visitorInfoFields.map((item, index) => (
+                                <div key={item.id} className="space-y-3 p-4 border border-border/60 rounded-xl relative bg-card shadow-sm">
+                                    <div className="flex justify-between items-center border-b pb-2 mb-2 border-border/30">
+                                       <p className="font-semibold text-xs tracking-wider uppercase text-primary">Info Item {index + 1}</p>
+                                       <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-full" onClick={() => removeVisitorInfo(index)}>
+                                           <Trash2 className="h-3.5 w-3.5" />
+                                       </Button>
+                                    </div>
+                                    <div className="grid grid-cols-[120px_1fr] gap-3">
+                                      <FormField
+                                          control={form.control}
+                                          name={`visitorInfo.${index}.icon`}
+                                          render={({ field }) => (
+                                          <FormItem>
+                                              <FormLabel className="text-xs">Icon</FormLabel>
+                                              <Select onValueChange={field.onChange} value={field.value}>
+                                              <FormControl>
+                                                  <SelectTrigger className="h-9">
+                                                      <SelectValue placeholder="Icon" />
+                                                  </SelectTrigger>
+                                              </FormControl>
+                                              <SelectContent>
+                                                  {iconOptions.map(iconName => {
+                                                      const Icon = IconMap[iconName] || HelpCircle;
+                                                      return (
+                                                          <SelectItem key={iconName} value={iconName}>
+                                                              <div className="flex items-center gap-2">
+                                                                  <Icon className="h-4 w-4 text-primary shrink-0" />
+                                                                  <span>{iconName}</span>
+                                                              </div>
+                                                          </SelectItem>
+                                                      );
+                                                  })}
+                                              </SelectContent>
+                                              </Select>
+                                              <FormMessage />
+                                          </FormItem>
+                                          )}
+                                      />
+                                      <FormField control={form.control} name={`visitorInfo.${index}.title`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Title</FormLabel><FormControl><Input placeholder="Info title" className="h-9" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                     <FormField control={form.control} name={`visitorInfo.${index}.line1`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Line 1</FormLabel><FormControl><Input placeholder="e.g., 6:00 AM - 6:00 PM" className="h-9 text-xs" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                     <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" className="h-9 text-xs" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    </div>
+                                </div>
+                            ))}
+                          </div>
+                          <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => appendVisitorInfo({ icon: 'Clock', title: '', line1: '', line2: '' })}>
+                              <Plus className="mr-2 h-4 w-4" /> Add Info Item
+                          </Button>
+                      </CardContent>
+                  </Card>
                 </div>
 
-                <Separator className="bg-primary/10" />
+                {/* Right Column: Live Sticky Preview Panel */}
+                <div className="xl:col-span-5 xl:sticky xl:top-6 space-y-6">
+                  <div className="border border-primary/20 rounded-2xl p-5 bg-primary/[0.03] shadow-md space-y-5">
+                     <div className="flex items-center justify-between border-b border-primary/10 pb-4">
+                        <div className="flex items-center gap-2">
+                           <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                           <h4 className="font-serif text-sm uppercase tracking-wider text-primary font-bold">Live Preview</h4>
+                        </div>
+                        
+                        {/* Device Toggles */}
+                        <div className="flex bg-background border border-border/80 p-0.5 rounded-lg text-xs font-semibold shadow-sm">
+                           <button
+                             type="button"
+                             onClick={() => setPreviewDevice('desktop')}
+                             className={cn(
+                               "px-3 py-1.5 rounded-md transition-all",
+                               previewDevice === 'desktop'
+                                 ? "bg-card text-primary shadow-sm border border-border/20"
+                                 : "text-muted-foreground hover:text-foreground"
+                             )}
+                           >
+                             Desktop
+                           </button>
+                           <button
+                             type="button"
+                             onClick={() => setPreviewDevice('mobile')}
+                             className={cn(
+                               "px-3 py-1.5 rounded-md transition-all",
+                               previewDevice === 'mobile'
+                                 ? "bg-card text-primary shadow-sm border border-border/20"
+                                 : "text-muted-foreground hover:text-foreground"
+                             )}
+                           >
+                             Mobile
+                           </button>
+                        </div>
+                     </div>
 
-                {/* Visitor Info Preview */}
-                <div className="space-y-4">
-                  <p className="text-xs uppercase font-semibold text-muted-foreground tracking-wider">Visitor Information Preview</p>
-                  {watchedVisitorInfo.length === 0 ? (
-                    <p className="text-xs text-muted-foreground italic">No visitor info added yet.</p>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {watchedVisitorInfo.map((info: any, idx: number) => {
-                        const Icon = IconMap[info.icon] || HelpCircle;
-                        return (
-                          <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-6 items-center text-center shadow-lg">
-                            <Icon className="h-8 w-8 text-primary mb-3 shrink-0" />
-                            <h3 className="text-sm font-bold font-headline text-foreground break-words max-w-full">{info.title || 'Untitled'}</h3>
-                            <p className="text-xs text-muted-foreground mt-2 truncate max-w-full">{info.line1}</p>
-                            {info.line2 && <p className="text-xs text-muted-foreground truncate max-w-full">{info.line2}</p>}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                     {/* Live Preview Viewport */}
+                     <div className={cn(
+                        "flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 min-h-[400px]",
+                        previewDevice === 'mobile' ? "bg-slate-100/50 dark:bg-zinc-900/40 border" : "bg-transparent border-0"
+                     )}>
+                        {/* Phone Simulator Frame */}
+                        <div className={cn(
+                           "transition-all duration-300 w-full",
+                           previewDevice === 'mobile'
+                             ? "max-w-[310px] border-[8px] border-slate-800 rounded-[2rem] bg-background shadow-2xl p-4 min-h-[500px] overflow-y-auto relative"
+                             : "max-w-full"
+                        )}>
+                           
+                           {/* Status bar for phone frame */}
+                           {previewDevice === 'mobile' && (
+                              <div className="w-full flex justify-between items-center px-1 pb-3 mb-2 border-b border-border/30 text-[10px] text-muted-foreground font-sans selection:bg-transparent">
+                                <span>9:41 AM</span>
+                                <div className="flex gap-1 items-center">
+                                  <span>📶</span>
+                                  <span>🔋</span>
+                                </div>
+                              </div>
+                           )}
+
+                           <div className="space-y-6">
+                              {/* Highlights Preview section */}
+                              <div className="space-y-3">
+                                 <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Key Highlights</h5>
+                                 {watchedHighlights.length === 0 ? (
+                                    <p className="text-[11px] text-muted-foreground italic text-center py-6 bg-background-alt/50 border border-dashed rounded-lg">No highlights added yet.</p>
+                                 ) : (
+                                    <div className={cn(
+                                       "grid gap-3",
+                                       previewDevice === 'mobile' ? "grid-cols-1" : "grid-cols-2"
+                                    )}>
+                                       {watchedHighlights.map((highlight: any, idx: number) => {
+                                          const Icon = IconMap[highlight.icon] || HelpCircle;
+                                          return (
+                                            <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-4 items-center text-center shadow-md">
+                                              <Icon className="h-8 w-8 text-primary mb-2.5 shrink-0" />
+                                              <h6 className="font-bold text-xs text-primary leading-tight break-words max-w-full">{highlight.title || 'Untitled'}</h6>
+                                              <p className="text-[10px] text-muted-foreground mt-1 line-clamp-3 leading-relaxed">{highlight.description || 'No description'}</p>
+                                            </div>
+                                          );
+                                       })}
+                                    </div>
+                                 )}
+                              </div>
+
+                              <Separator className="bg-border/60" />
+
+                              {/* Visitor Info Preview section */}
+                              <div className="space-y-3">
+                                 <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Visitor Information</h5>
+                                 {watchedVisitorInfo.length === 0 ? (
+                                    <p className="text-[11px] text-muted-foreground italic text-center py-6 bg-background-alt/50 border border-dashed rounded-lg">No visitor info added yet.</p>
+                                 ) : (
+                                    <div className={cn(
+                                       "grid gap-3",
+                                       previewDevice === 'mobile' ? "grid-cols-1" : "grid-cols-2"
+                                    )}>
+                                       {watchedVisitorInfo.map((info: any, idx: number) => {
+                                          const Icon = IconMap[info.icon] || HelpCircle;
+                                          return (
+                                            <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-4 items-center text-center shadow-md">
+                                              <Icon className="h-6 w-6 text-primary mb-2 shrink-0" />
+                                              <h6 className="font-bold text-xs text-foreground leading-tight break-words max-w-full">{info.title || 'Untitled'}</h6>
+                                              <p className="text-[10px] text-muted-foreground mt-1 truncate max-w-full">{info.line1}</p>
+                                              {info.line2 && <p className="text-[10px] text-muted-foreground truncate max-w-full">{info.line2}</p>}
+                                            </div>
+                                          );
+                                       })}
+                                    </div>
+                                 )}
+                              </div>
+                           </div>
+
+                        </div>
+                     </div>
+                  </div>
                 </div>
+
               </div>
             </TabsContent>
 
