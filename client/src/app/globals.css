@@ -42,25 +42,25 @@ html {
 
   .dark {
     /* Warm Obsidian & Antique Gold Theme */
-    --background: 30 15% 4%;       /* Warm Obsidian */
-    --background-alt: 30 10% 8%;   /* Dark Charcoal Slate */
-    --foreground: 35 15% 90%;      /* Soft Champagne Cream */
-    --card: 30 15% 5%;
+    --background: 30 12% 5.5%;       /* Warm Obsidian base */
+    --background-alt: 30 10% 8.5%;   /* Slightly lighter sidebar/header bg */
+    --foreground: 35 15% 90%;        /* Soft Champagne Cream */
+    --card: 30 8% 12%;               /* Distinct card surface */
     --card-foreground: 35 15% 90%;
-    --popover: 30 15% 5%;
+    --popover: 30 8% 12%;
     --popover-foreground: 35 15% 90%;
-    --primary: 39 58% 74%;         /* Bright Gold */
-    --primary-foreground: 30 15% 5%;
-    --secondary: 30 10% 12%;
+    --primary: 39 58% 74%;           /* Bright Gold */
+    --primary-foreground: 30 12% 5.5%;
+    --secondary: 30 8% 15%;
     --secondary-foreground: 35 15% 90%;
-    --muted: 30 10% 12%;
-    --muted-foreground: 30 5% 60%;
+    --muted: 30 8% 14%;
+    --muted-foreground: 30 5% 65%;
     --accent: 39 58% 74%;
-    --accent-foreground: 30 15% 4%;
+    --accent-foreground: 30 12% 5.5%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 35 15% 90%;
-    --border: 30 10% 12%;
-    --input: 30 10% 12%;
+    --border: 30 8% 18%;             /* Lighter border for separation */
+    --input: 30 8% 18%;
     --ring: 39 58% 74%;
   }
 }
