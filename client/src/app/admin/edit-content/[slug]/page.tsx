@@ -36,7 +36,8 @@ import {
   Camera, 
   Tent, 
   Thermometer,
-  HelpCircle
+  HelpCircle,
+  MapPin
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -46,7 +47,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { API_BASE_URL } from '@/lib/utils';
 import placeholderImages from '@/lib/placeholder-images.json';
 
-const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer'];
+const iconOptions = ['Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Gem', 'Waves', 'Landmark', 'Camera', 'Tent', 'Thermometer', 'MapPin'];
 
 const IconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Leaf,
@@ -65,6 +66,7 @@ const IconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Tent,
   Thermometer,
   HelpCircle,
+  MapPin,
 };
 
 interface FormGalleryImage extends GalleryImage {
@@ -118,6 +120,7 @@ export default function EditContentPage() {
   
   const [isSavingImage, setIsSavingImage] = useState<number | null>(null);
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
+  const [activeTab, setActiveTab] = useState<string>('general');
 
   const form = useForm<z.infer<typeof locationEditSchema>>({
     resolver: zodResolver(locationEditSchema),
@@ -166,6 +169,16 @@ export default function EditContentPage() {
   });
   const watchedHighlights = form.watch('highlights') || [];
   const watchedVisitorInfo = form.watch('visitorInfo') || [];
+  const watchedTitle = form.watch('title') || '';
+  const watchedCardDescription = form.watch('cardDescription') || '';
+  const watchedDistance = form.watch('distance') || '';
+  const watchedCategory = form.watch('category') || 'nature';
+  const watchedSubtitle = form.watch('subtitle') || '';
+  const watchedIntroTitle = form.watch('introTitle') || '';
+  const watchedIntroDescription = form.watch('introDescription') || '';
+  const watchedGallery = form.watch('galleryImages') || [];
+  const watchedMapEmbedUrl = form.watch('mapEmbedUrl') || '';
+  const watchedNearby = form.watch('nearbyAttractions') || [];
   
   const fetchLocationData = useCallback(async () => {
     if (!slug) {
@@ -414,93 +427,95 @@ export default function EditContentPage() {
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, handleFormError)} className="space-y-6">
-          <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full max-w-3xl mb-6 bg-background-alt border border-border/50 p-1 rounded-xl">
-              <TabsTrigger value="general" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">General Info</TabsTrigger>
-              <TabsTrigger value="highlights" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">Highlights & Info</TabsTrigger>
-              <TabsTrigger value="gallery" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">Gallery Images</TabsTrigger>
-              <TabsTrigger value="map" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">Map & Nearby</TabsTrigger>
-            </TabsList>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+              
+              {/* Left Column: Form Editors */}
+              <div className="xl:col-span-7 space-y-6">
+                <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full bg-background-alt border border-border/50 p-1 rounded-xl shadow-sm">
+                  <TabsTrigger value="general" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">General Info</TabsTrigger>
+                  <TabsTrigger value="highlights" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">Highlights & Info</TabsTrigger>
+                  <TabsTrigger value="gallery" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">Gallery Images</TabsTrigger>
+                  <TabsTrigger value="map" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">Map & Nearby</TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="general" className="space-y-6 outline-none">
-              <Card className="border-border/80 shadow-md">
-                  <CardHeader>
-                    <CardTitle>Basic Information</CardTitle>
-                    <CardDescription>This information appears on the location listing card.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug (Cannot be changed)</FormLabel><FormControl><Input {...field} disabled /></FormControl><FormMessage /></FormItem>)} />
-                    </div>
-                     <FormField
-                        control={form.control}
-                        name="category"
-                        render={({ field }) => (
+                {/* GENERAL TAB CONTENT */}
+                <TabsContent value="general" className="space-y-6 outline-none">
+                  <Card className="border-border/80 shadow-md">
+                      <CardHeader>
+                        <CardTitle>Basic Information</CardTitle>
+                        <CardDescription>This information appears on the location listing card.</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug (Cannot be changed)</FormLabel><FormControl><Input {...field} disabled /></FormControl><FormMessage /></FormItem>)} />
+                        </div>
+                         <FormField
+                            control={form.control}
+                            name="category"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Category</FormLabel>
+                                 <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select a category" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="nature">Nature & Wildlife</SelectItem>
+                                    <SelectItem value="agriculture">Agricultural & Energy</SelectItem>
+                                    <SelectItem value="cultural">Cultural & Religious</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <div className="space-y-4">
                           <FormItem>
-                            <FormLabel>Category</FormLabel>
-                             <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a category" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="nature">Nature & Wildlife</SelectItem>
-                                <SelectItem value="agriculture">Agricultural & Energy</SelectItem>
-                                <SelectItem value="cultural">Cultural & Religious</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
+                            <FormLabel>Card Image (Leave blank to keep current)</FormLabel>
+                            <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setCardImageFile, setCardImagePreview)} className="text-sm" /></FormControl>
                           </FormItem>
-                        )}
-                      />
-                    <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <div className="space-y-4">
-                      <FormItem>
-                        <FormLabel>Card Image (Leave blank to keep current)</FormLabel>
-                        <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setCardImageFile, setCardImagePreview)} className="text-sm" /></FormControl>
-                      </FormItem>
-                      {cardImagePreview && <Image src={cardImagePreview} alt="Card preview" width={200} height={100} className="rounded-md object-cover border" />}
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <FormField control={form.control} name="cardImageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    </div>
-                  </CardContent>
-              </Card>
+                          {cardImagePreview && <Image src={cardImagePreview} alt="Card preview" width={200} height={100} className="rounded-md object-cover border" />}
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <FormField control={form.control} name="cardImageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        </div>
+                      </CardContent>
+                  </Card>
 
-              <Card className="border-border/80 shadow-md">
-                  <CardHeader>
-                      <CardTitle>Hero & Intro Section</CardTitle>
-                      <CardDescription>Content for the top of the location detail page.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                      <FormField control={form.control} name="subtitle" render={({ field }) => (<FormItem><FormLabel>Hero Subtitle</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormItem>
-                        <FormLabel>Hero Image (Leave blank to keep current)</FormLabel>
-                        <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setHeroImageFile, setHeroImagePreview)} className="text-sm" /></FormControl>
-                      </FormItem>
-                      {heroImagePreview && <Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover border" />}
-                      <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <Separator/>
-                      <FormField control={form.control} name="introTitle" render={({ field }) => (<FormItem><FormLabel>Intro Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name="introDescription" render={({ field }) => (<FormItem><FormLabel>Intro Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormItem>
-                        <FormLabel>Intro Image (Leave blank to keep current)</FormLabel>
-                        <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setIntroImageFile, setIntroImagePreview)} className="text-sm" /></FormControl>
-                      </FormItem>
-                      {introImagePreview && <Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover border" />}
-                      <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  </CardContent>
-              </Card>
-            </TabsContent>
+                  <Card className="border-border/80 shadow-md">
+                      <CardHeader>
+                          <CardTitle>Hero & Intro Section</CardTitle>
+                          <CardDescription>Content for the top of the location detail page.</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                          <FormField control={form.control} name="subtitle" render={({ field }) => (<FormItem><FormLabel>Hero Subtitle</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          <FormItem>
+                            <FormLabel>Hero Image (Leave blank to keep current)</FormLabel>
+                            <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setHeroImageFile, setHeroImagePreview)} className="text-sm" /></FormControl>
+                          </FormItem>
+                          {heroImagePreview && <Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover border" />}
+                          <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          <Separator/>
+                          <FormField control={form.control} name="introTitle" render={({ field }) => (<FormItem><FormLabel>Intro Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          <FormField control={form.control} name="introDescription" render={({ field }) => (<FormItem><FormLabel>Intro Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          <FormItem>
+                            <FormLabel>Intro Image (Leave blank to keep current)</FormLabel>
+                            <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setIntroImageFile, setIntroImagePreview)} className="text-sm" /></FormControl>
+                          </FormItem>
+                          {introImagePreview && <Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover border" />}
+                          <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      </CardContent>
+                  </Card>
+                </TabsContent>
 
-            <TabsContent value="highlights" className="outline-none">
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-                
-                {/* Left Column: Form Editors */}
-                <div className="xl:col-span-7 space-y-6">
+                {/* HIGHLIGHTS TAB CONTENT */}
+                <TabsContent value="highlights" className="space-y-6 outline-none">
                   <Card className="border-border/80 shadow-md">
                       <CardHeader className="pb-3"><CardTitle className="text-xl">Key Highlights</CardTitle></CardHeader>
                       <CardContent className="space-y-4">
@@ -613,232 +628,378 @@ export default function EditContentPage() {
                           </Button>
                       </CardContent>
                   </Card>
-                </div>
+                </TabsContent>
 
-                {/* Right Column: Live Sticky Preview Panel */}
-                <div className="xl:col-span-5 xl:sticky xl:top-6 space-y-6">
-                  <div className="border border-primary/20 rounded-2xl p-5 bg-primary/[0.03] shadow-md space-y-5">
-                     <div className="flex items-center justify-between border-b border-primary/10 pb-4">
-                        <div className="flex items-center gap-2">
-                           <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                           <h4 className="font-serif text-sm uppercase tracking-wider text-primary font-bold">Live Preview</h4>
-                        </div>
-                        
-                        {/* Device Toggles */}
-                        <div className="flex bg-background border border-border/80 p-0.5 rounded-lg text-xs font-semibold shadow-sm">
-                           <button
-                             type="button"
-                             onClick={() => setPreviewDevice('desktop')}
-                             className={cn(
-                               "px-3 py-1.5 rounded-md transition-all",
-                               previewDevice === 'desktop'
-                                 ? "bg-card text-primary shadow-sm border border-border/20"
-                                 : "text-muted-foreground hover:text-foreground"
-                             )}
-                           >
-                             Desktop
-                           </button>
-                           <button
-                             type="button"
-                             onClick={() => setPreviewDevice('mobile')}
-                             className={cn(
-                               "px-3 py-1.5 rounded-md transition-all",
-                               previewDevice === 'mobile'
-                                 ? "bg-card text-primary shadow-sm border border-border/20"
-                                 : "text-muted-foreground hover:text-foreground"
-                             )}
-                           >
-                             Mobile
-                           </button>
-                        </div>
-                     </div>
-
-                     {/* Live Preview Viewport */}
-                     <div className={cn(
-                        "flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 min-h-[400px]",
-                        previewDevice === 'mobile' ? "bg-slate-100/50 dark:bg-zinc-900/40 border" : "bg-transparent border-0"
-                     )}>
-                        {/* Phone Simulator Frame */}
-                        <div className={cn(
-                           "transition-all duration-300 w-full",
-                           previewDevice === 'mobile'
-                             ? "max-w-[310px] border-[8px] border-slate-800 rounded-[2rem] bg-background shadow-2xl p-4 min-h-[500px] overflow-y-auto relative"
-                             : "max-w-full"
-                        )}>
-                           
-                           {/* Status bar for phone frame */}
-                           {previewDevice === 'mobile' && (
-                              <div className="w-full flex justify-between items-center px-1 pb-3 mb-2 border-b border-border/30 text-[10px] text-muted-foreground font-sans selection:bg-transparent">
-                                <span>9:41 AM</span>
-                                <div className="flex gap-1 items-center">
-                                  <span>📶</span>
-                                  <span>🔋</span>
-                                </div>
-                              </div>
-                           )}
-
-                           <div className="space-y-6">
-                              {/* Highlights Preview section */}
-                              <div className="space-y-3">
-                                 <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Key Highlights</h5>
-                                 {watchedHighlights.length === 0 ? (
-                                    <p className="text-[11px] text-muted-foreground italic text-center py-6 bg-background-alt/50 border border-dashed rounded-lg">No highlights added yet.</p>
-                                 ) : (
-                                    <div className={cn(
-                                       "grid gap-3",
-                                       previewDevice === 'mobile' ? "grid-cols-1" : "grid-cols-2"
-                                    )}>
-                                       {watchedHighlights.map((highlight: any, idx: number) => {
-                                          const Icon = IconMap[highlight.icon] || HelpCircle;
-                                          return (
-                                            <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-4 items-center text-center shadow-md">
-                                              <Icon className="h-8 w-8 text-primary mb-2.5 shrink-0" />
-                                              <h6 className="font-bold text-xs text-primary leading-tight break-words max-w-full">{highlight.title || 'Untitled'}</h6>
-                                              <p className="text-[10px] text-muted-foreground mt-1 line-clamp-3 leading-relaxed">{highlight.description || 'No description'}</p>
-                                            </div>
-                                          );
-                                       })}
-                                    </div>
-                                 )}
-                              </div>
-
-                              <Separator className="bg-border/60" />
-
-                              {/* Visitor Info Preview section */}
-                              <div className="space-y-3">
-                                 <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Visitor Information</h5>
-                                 {watchedVisitorInfo.length === 0 ? (
-                                    <p className="text-[11px] text-muted-foreground italic text-center py-6 bg-background-alt/50 border border-dashed rounded-lg">No visitor info added yet.</p>
-                                 ) : (
-                                    <div className={cn(
-                                       "grid gap-3",
-                                       previewDevice === 'mobile' ? "grid-cols-1" : "grid-cols-2"
-                                    )}>
-                                       {watchedVisitorInfo.map((info: any, idx: number) => {
-                                          const Icon = IconMap[info.icon] || HelpCircle;
-                                          return (
-                                            <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-4 items-center text-center shadow-md">
-                                              <Icon className="h-6 w-6 text-primary mb-2 shrink-0" />
-                                              <h6 className="font-bold text-xs text-foreground leading-tight break-words max-w-full">{info.title || 'Untitled'}</h6>
-                                              <p className="text-[10px] text-muted-foreground mt-1 truncate max-w-full">{info.line1}</p>
-                                              {info.line2 && <p className="text-[10px] text-muted-foreground truncate max-w-full">{info.line2}</p>}
-                                            </div>
-                                          );
-                                       })}
-                                    </div>
-                                 )}
-                              </div>
-                           </div>
-
-                        </div>
-                     </div>
-                  </div>
-                </div>
-
-              </div>
-            </TabsContent>
-
-            <TabsContent value="gallery" className="space-y-6 outline-none">
-              <Card className="border-border/80 shadow-md">
-                  <CardHeader>
-                      <CardTitle>Gallery Images</CardTitle>
-                      <CardDescription>Manage gallery images. Changes here are saved individually.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                      {galleryFields.map((item, index) => {
-                          const formItem = item as FormGalleryImage;
-                          return (
-                          <div key={item.id || `new-${index}`} className="space-y-4 p-4 border rounded-md relative">
-                               <div className="flex justify-between items-center">
-                                  <p className="font-medium text-muted-foreground">Image {index + 1}</p>
-                                   <Button type="button" variant="ghost" size="icon" onClick={() => handleGalleryDelete(formItem.id!, index)}>
-                                      <Trash2 className="h-4 w-4 text-destructive" />
-                                   </Button>
-                               </div>
-                               <div className="flex items-start gap-4">
-                                 <Image src={formItem.src} alt="gallery preview" width={100} height={100} className="rounded-md border object-cover"/>
-                                 <div className="flex-1 space-y-2">
-                                    <FormItem>
-                                      <FormLabel>{formItem.isNew ? "Select Image" : "Replace Image"}</FormLabel>
-                                      <FormControl>
-                                        <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
-                                      </FormControl>
-                                    </FormItem>
-                                 </div>
-                               </div>
-                               <div className="grid md:grid-cols-2 gap-4">
-                                  <FormField control={form.control} name={`galleryImages.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                  <FormField control={form.control} name={`galleryImages.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                               </div>
-                               <div className="flex justify-end">
-                                  <Button type="button" size="sm" onClick={() => handleGallerySave(index)} disabled={isSavingImage === index}>
-                                      {isSavingImage === index ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                                      {formItem.isNew ? "Save New Image" : "Save Changes"}
-                                  </Button>
-                               </div>
-                          </div>
-                      )})}
-                      <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ id: undefined, src: placeholderImages['gallery-600x400'].src, alt: '', hint: '', file: undefined, isNew: true })}>
-                          <Plus className="mr-2 h-4 w-4" /> Add Image
-                      </Button>
-                  </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="map" className="space-y-6 outline-none">
-              <Card className="border-border/80 shadow-md">
-                  <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
-                  <CardContent className="space-y-6">
-                      <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <Separator/>
-                      <p className="font-medium text-sm text-muted-foreground">Nearby Attractions</p>
-                      {nearbyAttractionFields.map((item, index) => (
-                          <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
-                               <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeNearbyAttraction(index)}>
-                                  <Trash2 className="h-3 w-3" />
-                              </Button>
-                              <div className="grid md:grid-cols-3 gap-4">
-                                  <FormField
-                                      control={form.control}
-                                      name={`nearbyAttractions.${index}.icon`}
-                                      render={({ field }) => (
-                                      <FormItem>
-                                          <FormLabel>Icon</FormLabel>
-                                          <Select onValueChange={field.onChange} value={field.value}>
+                {/* GALLERY TAB CONTENT */}
+                <TabsContent value="gallery" className="space-y-6 outline-none">
+                  <Card className="border-border/80 shadow-md">
+                      <CardHeader>
+                          <CardTitle>Gallery Images</CardTitle>
+                          <CardDescription>Manage gallery images. Changes here are saved individually.</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                          {galleryFields.map((item, index) => {
+                              const formItem = item as FormGalleryImage;
+                              return (
+                              <div key={item.id || `new-${index}`} className="space-y-4 p-4 border rounded-md relative">
+                                   <div className="flex justify-between items-center">
+                                      <p className="font-medium text-muted-foreground">Image {index + 1}</p>
+                                       <Button type="button" variant="ghost" size="icon" onClick={() => handleGalleryDelete(formItem.id!, index)}>
+                                          <Trash2 className="h-4 w-4 text-destructive" />
+                                       </Button>
+                                   </div>
+                                   <div className="flex items-start gap-4">
+                                     <Image src={formItem.src} alt="gallery preview" width={100} height={100} className="rounded-md border object-cover"/>
+                                     <div className="flex-1 space-y-2">
+                                        <FormItem>
+                                          <FormLabel>{formItem.isNew ? "Select Image" : "Replace Image"}</FormLabel>
                                           <FormControl>
-                                              <SelectTrigger className="h-9">
-                                                  <SelectValue placeholder="Select icon" />
-                                              </SelectTrigger>
+                                            <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
                                           </FormControl>
-                                          <SelectContent>
-                                              {iconOptions.map(iconName => {
-                                                  const Icon = IconMap[iconName] || HelpCircle;
-                                                  return (
-                                                      <SelectItem key={iconName} value={iconName}>
-                                                          <div className="flex items-center gap-2">
-                                                              <Icon className="h-4 w-4 text-primary shrink-0" />
-                                                              <span>{iconName}</span>
-                                                          </div>
-                                                      </SelectItem>
-                                                  );
-                                              })}
-                                          </SelectContent>
-                                          </Select>
-                                          <FormMessage />
-                                      </FormItem>
-                                      )}
-                                  />
-                                  <FormField control={form.control} name={`nearbyAttractions.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input placeholder="e.g., Adam's Peak" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                  <FormField control={form.control} name={`nearbyAttractions.${index}.distance`} render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input placeholder="e.g., 45 km away" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                        </FormItem>
+                                     </div>
+                                   </div>
+                                   <div className="grid md:grid-cols-2 gap-4">
+                                      <FormField control={form.control} name={`galleryImages.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                      <FormField control={form.control} name={`galleryImages.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                   </div>
+                                   <div className="flex justify-end">
+                                      <Button type="button" size="sm" onClick={() => handleGallerySave(index)} disabled={isSavingImage === index}>
+                                          {isSavingImage === index ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                          {formItem.isNew ? "Save New Image" : "Save Changes"}
+                                      </Button>
+                                   </div>
                               </div>
-                          </div>
-                      ))}
-                      <Button type="button" variant="outline" size="sm" onClick={() => appendNearbyAttraction({ icon: 'Gem', name: '', distance: '' })}>
-                          <Plus className="mr-2 h-4 w-4" /> Add Attraction
-                      </Button>
-                  </CardContent>
-              </Card>
-            </TabsContent>
+                          )})}
+                          <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ id: undefined, src: placeholderImages['gallery-600x400'].src, alt: '', hint: '', file: undefined, isNew: true })}>
+                              <Plus className="mr-2 h-4 w-4" /> Add Image
+                          </Button>
+                      </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* MAP & NEARBY TAB CONTENT */}
+                <TabsContent value="map" className="space-y-6 outline-none">
+                  <Card className="border-border/80 shadow-md">
+                      <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
+                      <CardContent className="space-y-6">
+                          <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          <Separator/>
+                          <p className="font-medium text-sm text-muted-foreground">Nearby Attractions</p>
+                          {nearbyAttractionFields.map((item, index) => (
+                              <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                                   <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeNearbyAttraction(index)}>
+                                      <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                  <div className="grid md:grid-cols-3 gap-4">
+                                      <FormField
+                                          control={form.control}
+                                          name={`nearbyAttractions.${index}.icon`}
+                                          render={({ field }) => (
+                                          <FormItem>
+                                              <FormLabel>Icon</FormLabel>
+                                              <Select onValueChange={field.onChange} value={field.value}>
+                                              <FormControl>
+                                                  <SelectTrigger className="h-9">
+                                                      <SelectValue placeholder="Select icon" />
+                                                  </SelectTrigger>
+                                              </FormControl>
+                                              <SelectContent>
+                                                  {iconOptions.map(iconName => {
+                                                      const Icon = IconMap[iconName] || HelpCircle;
+                                                      return (
+                                                          <SelectItem key={iconName} value={iconName}>
+                                                              <div className="flex items-center gap-2">
+                                                                  <Icon className="h-4 w-4 text-primary shrink-0" />
+                                                                  <span>{iconName}</span>
+                                                              </div>
+                                                          </SelectItem>
+                                                      );
+                                                  })}
+                                              </SelectContent>
+                                              </Select>
+                                              <FormMessage />
+                                          </FormItem>
+                                          )}
+                                      />
+                                      <FormField control={form.control} name={`nearbyAttractions.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input placeholder="e.g., Adam's Peak" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                      <FormField control={form.control} name={`nearbyAttractions.${index}.distance`} render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input placeholder="e.g., 45 km away" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                  </div>
+                              </div>
+                          ))}
+                          <Button type="button" variant="outline" size="sm" onClick={() => appendNearbyAttraction({ icon: 'Gem', name: '', distance: '' })}>
+                              <Plus className="mr-2 h-4 w-4" /> Add Attraction
+                          </Button>
+                      </CardContent>
+                  </Card>
+                </TabsContent>
+              </div>
+
+              {/* Right Column: Global Live Sticky Preview Panel */}
+              <div className="xl:col-span-5 xl:sticky xl:top-6 space-y-6">
+                <div className="border border-primary/20 rounded-2xl p-5 bg-primary/[0.03] shadow-md space-y-5">
+                   <div className="flex items-center justify-between border-b border-primary/10 pb-4">
+                      <div className="flex flex-col">
+                         <div className="flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                            <h4 className="font-serif text-sm uppercase tracking-wider text-primary font-bold">Live Preview</h4>
+                         </div>
+                         <span className="text-[10px] text-muted-foreground mt-0.5 capitalize font-semibold">
+                            Viewing: {activeTab === 'general' ? 'General Info' : activeTab === 'highlights' ? 'Highlights & Info' : activeTab === 'gallery' ? 'Gallery Grid' : 'Map & Nearby'}
+                         </span>
+                      </div>
+                      
+                      {/* Device Toggles */}
+                      <div className="flex bg-background border border-border/80 p-0.5 rounded-lg text-xs font-semibold shadow-sm">
+                         <button
+                           type="button"
+                           onClick={() => setPreviewDevice('desktop')}
+                           className={cn(
+                             "px-3 py-1.5 rounded-md transition-all",
+                             previewDevice === 'desktop'
+                               ? "bg-card text-primary shadow-sm border border-border/20"
+                               : "text-muted-foreground hover:text-foreground"
+                           )}
+                         >
+                           Desktop
+                         </button>
+                         <button
+                           type="button"
+                           onClick={() => setPreviewDevice('mobile')}
+                           className={cn(
+                             "px-3 py-1.5 rounded-md transition-all",
+                             previewDevice === 'mobile'
+                               ? "bg-card text-primary shadow-sm border border-border/20"
+                               : "text-muted-foreground hover:text-foreground"
+                           )}
+                         >
+                           Mobile
+                         </button>
+                      </div>
+                   </div>
+
+                   {/* Live Preview Viewport */}
+                   <div className={cn(
+                      "flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 min-h-[450px]",
+                      previewDevice === 'mobile' ? "bg-slate-100/50 dark:bg-zinc-900/40 border" : "bg-transparent border-0"
+                   )}>
+                      {/* Phone Simulator Frame */}
+                      <div className={cn(
+                         "transition-all duration-300 w-full",
+                         previewDevice === 'mobile'
+                           ? "max-w-[310px] border-[8px] border-slate-800 rounded-[2rem] bg-background shadow-2xl p-4 min-h-[500px] max-h-[580px] overflow-y-auto relative"
+                           : "max-w-full"
+                      )}>
+                         
+                         {/* Status bar for phone frame */}
+                         {previewDevice === 'mobile' && (
+                            <div className="w-full flex justify-between items-center px-1 pb-3 mb-2 border-b border-border/30 text-[10px] text-muted-foreground font-sans selection:bg-transparent">
+                              <span>9:41 AM</span>
+                              <div className="flex gap-1 items-center">
+                                <span>📶</span>
+                                <span>🔋</span>
+                              </div>
+                            </div>
+                         )}
+
+                         <div className="space-y-6">
+                            
+                            {/* 1. GENERAL TAB PREVIEW */}
+                            {activeTab === 'general' && (
+                               <div className="space-y-6">
+                                  {/* 1A. Listing Card Preview */}
+                                  <div className="space-y-2">
+                                     <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Card Listing Preview</h5>
+                                     <div className="bg-card border border-border/50 rounded-xl overflow-hidden shadow-md flex flex-col">
+                                        <div className="relative aspect-[3/2] w-full bg-muted overflow-hidden flex items-center justify-center">
+                                           {cardImagePreview ? (
+                                              <img src={cardImagePreview} alt="Card preview" className="object-cover w-full h-full" />
+                                           ) : (
+                                              <span className="text-xs text-muted-foreground italic">No image selected</span>
+                                           )}
+                                           <span className="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full capitalize font-sans">
+                                              {watchedCategory}
+                                           </span>
+                                        </div>
+                                        <div className="p-4 text-left">
+                                           <h3 className="text-base font-bold font-headline text-primary truncate">{watchedTitle || 'Location Title'}</h3>
+                                           <p className="text-[10px] text-muted-foreground mt-0.5 mb-1.5">{watchedDistance || 'Distance e.g. 45 km from Colombo'}</p>
+                                           <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">{watchedCardDescription || 'Card description text...'}</p>
+                                        </div>
+                                     </div>
+                                  </div>
+                                  
+                                  <Separator className="bg-border/60" />
+                                  
+                                  {/* 1B. Hero & Intro section miniature replica */}
+                                  <div className="space-y-2">
+                                     <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Hero & Intro Section</h5>
+                                     <div className="border border-border/60 rounded-xl overflow-hidden shadow-sm bg-card">
+                                        {/* Hero mockup banner */}
+                                        <div className="relative h-28 w-full bg-muted flex flex-col justify-end p-3 text-left">
+                                           {heroImagePreview && (
+                                              <img src={heroImagePreview} alt="Hero preview" className="absolute inset-0 object-cover w-full h-full opacity-60" />
+                                           )}
+                                           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
+                                           <div className="relative z-10 space-y-0.5">
+                                              <p className="text-[9px] uppercase tracking-wider text-primary font-bold">{watchedSubtitle || 'HERO SUBTITLE'}</p>
+                                              <h4 className="text-sm font-bold text-white leading-tight font-headline">{watchedTitle || 'Location Title'}</h4>
+                                           </div>
+                                        </div>
+                                        {/* Intro mockup paragraph */}
+                                        <div className="p-3 text-left space-y-2">
+                                           <h6 className="text-[11px] font-bold text-primary font-headline">{watchedIntroTitle || 'Introductory Title'}</h6>
+                                           <div className="flex gap-2 items-start">
+                                              {introImagePreview && (
+                                                 <img src={introImagePreview} alt="Intro preview" className="w-12 h-12 object-cover rounded border shrink-0" />
+                                              )}
+                                              <p className="text-[9px] text-muted-foreground leading-relaxed line-clamp-4">{watchedIntroDescription || 'Introductory description text...'}</p>
+                                           </div>
+                                        </div>
+                                     </div>
+                                  </div>
+                               </div>
+                            )}
+
+                            {/* 2. HIGHLIGHTS & INFO PREVIEW */}
+                            {activeTab === 'highlights' && (
+                               <div className="space-y-6">
+                                  {/* Key Highlights */}
+                                  <div className="space-y-3">
+                                     <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Key Highlights</h5>
+                                     {watchedHighlights.length === 0 ? (
+                                        <p className="text-[11px] text-muted-foreground italic text-center py-6 bg-background-alt/50 border border-dashed rounded-lg">No highlights added yet.</p>
+                                     ) : (
+                                        <div className={cn(
+                                           "grid gap-3",
+                                           previewDevice === 'mobile' ? "grid-cols-1" : "grid-cols-2"
+                                        )}>
+                                           {watchedHighlights.map((highlight: any, idx: number) => {
+                                              const Icon = IconMap[highlight.icon] || HelpCircle;
+                                              return (
+                                                <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-3 items-center text-center shadow-sm">
+                                                  <Icon className="h-8 w-8 text-primary mb-2 shrink-0" />
+                                                  <h6 className="font-bold text-xs text-primary leading-tight break-words max-w-full">{highlight.title || 'Untitled'}</h6>
+                                                  <p className="text-[10px] text-muted-foreground mt-1 line-clamp-3 leading-relaxed">{highlight.description || 'No description'}</p>
+                                                </div>
+                                              );
+                                           })}
+                                        </div>
+                                     )}
+                                  </div>
+
+                                  <Separator className="bg-border/60" />
+
+                                  {/* Visitor Info */}
+                                  <div className="space-y-3">
+                                     <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Visitor Information</h5>
+                                     {watchedVisitorInfo.length === 0 ? (
+                                        <p className="text-[11px] text-muted-foreground italic text-center py-6 bg-background-alt/50 border border-dashed rounded-lg">No visitor info added yet.</p>
+                                     ) : (
+                                        <div className={cn(
+                                           "grid gap-3",
+                                           previewDevice === 'mobile' ? "grid-cols-1" : "grid-cols-2"
+                                        )}>
+                                           {watchedVisitorInfo.map((info: any, idx: number) => {
+                                              const Icon = IconMap[info.icon] || HelpCircle;
+                                              return (
+                                                <div key={idx} className="bg-card border border-border/50 flex flex-col w-full rounded-xl p-3.5 items-center text-center shadow-sm">
+                                                  <Icon className="h-6 w-6 text-primary mb-2 shrink-0" />
+                                                  <h6 className="font-bold text-xs text-foreground leading-tight break-words max-w-full">{info.title || 'Untitled'}</h6>
+                                                  <p className="text-[10px] text-muted-foreground mt-1 truncate max-w-full">{info.line1}</p>
+                                                  {info.line2 && <p className="text-[10px] text-muted-foreground truncate max-w-full">{info.line2}</p>}
+                                                </div>
+                                              );
+                                           })}
+                                        </div>
+                                     )}
+                                  </div>
+                               </div>
+                            )}
+
+                            {/* 3. GALLERY PREVIEW */}
+                            {activeTab === 'gallery' && (
+                               <div className="space-y-3">
+                                  <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Gallery Grid</h5>
+                                  {watchedGallery.length === 0 ? (
+                                     <p className="text-[11px] text-muted-foreground italic text-center py-6 bg-background-alt/50 border border-dashed rounded-lg">No gallery images added yet.</p>
+                                  ) : (
+                                     <div className={cn(
+                                        "grid gap-2",
+                                        previewDevice === 'mobile' ? "grid-cols-2" : "grid-cols-3"
+                                     )}>
+                                        {watchedGallery.map((img: any, idx: number) => (
+                                           <div key={idx} className="relative aspect-square w-full rounded-lg overflow-hidden border border-border bg-muted group">
+                                              <img src={img.src} alt={img.alt || 'Gallery item'} className="object-cover w-full h-full" />
+                                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center p-1.5 transition-opacity duration-200">
+                                                 <span className="text-[8px] text-white truncate max-w-full font-semibold">{img.alt || 'No alt text'}</span>
+                                              </div>
+                                           </div>
+                                        ))}
+                                     </div>
+                                  )}
+                               </div>
+                            )}
+
+                            {/* 4. MAP & NEARBY PREVIEW */}
+                            {activeTab === 'map' && (
+                               <div className="space-y-6">
+                                  {/* Google Maps Mockup */}
+                                  <div className="space-y-2">
+                                     <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Location Map</h5>
+                                     <div className="relative h-28 w-full bg-muted border rounded-xl overflow-hidden flex items-center justify-center">
+                                        {watchedMapEmbedUrl ? (
+                                           <div className="absolute inset-0 bg-emerald-50/50 flex flex-col items-center justify-center text-center p-2 text-emerald-800">
+                                              <MapPin className="h-6 w-6 mb-1 animate-bounce" />
+                                              <span className="text-[9px] font-bold">Google Map Iframe Connected</span>
+                                              <span className="text-[8px] text-muted-foreground truncate max-w-full px-4">{watchedMapEmbedUrl}</span>
+                                           </div>
+                                        ) : (
+                                           <div className="flex flex-col items-center text-muted-foreground">
+                                              <MapPin className="h-6 w-6 mb-1" />
+                                              <span className="text-[10px] italic">No map embed url provided</span>
+                                           </div>
+                                        )}
+                                     </div>
+                                  </div>
+
+                                  <Separator className="bg-border/60" />
+
+                                  {/* Nearby Attractions */}
+                                  <div className="space-y-3">
+                                     <h5 className="font-serif text-[11px] uppercase tracking-widest text-primary/80 font-bold border-l-2 border-primary pl-2">Nearby Attractions</h5>
+                                     {watchedNearby.length === 0 ? (
+                                        <p className="text-[11px] text-muted-foreground italic text-center py-6 bg-background-alt/50 border border-dashed rounded-lg">No nearby attractions added yet.</p>
+                                     ) : (
+                                        <div className="space-y-2">
+                                           {watchedNearby.map((attr: any, idx: number) => {
+                                              const Icon = IconMap[attr.icon] || HelpCircle;
+                                              return (
+                                                <div key={idx} className="bg-card border border-border/50 flex items-center justify-between w-full rounded-xl p-3 shadow-sm text-left">
+                                                  <div className="flex items-center gap-2.5 min-w-0">
+                                                     <div className="p-1.5 bg-primary/10 rounded-lg shrink-0">
+                                                        <Icon className="h-4 w-4 text-primary" />
+                                                     </div>
+                                                     <span className="text-xs font-bold text-foreground truncate min-w-0">{attr.name || 'Unnamed Attraction'}</span>
+                                                  </div>
+                                                  <span className="text-[10px] bg-primary/5 border border-primary/20 text-primary px-2 py-0.5 rounded-full shrink-0 font-medium">{attr.distance || 'e.g. 5 km away'}</span>
+                                                </div>
+                                              );
+                                           })}
+                                        </div>
+                                     )}
+                                  </div>
+                               </div>
+                            )}
+
+                         </div>
+
+                      </div>
+                   </div>
+                </div>
+              </div>
+
+            </div>
           </Tabs>
 
           <div className="flex justify-end pt-4 border-t border-border/50">
