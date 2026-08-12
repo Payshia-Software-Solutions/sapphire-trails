@@ -18,6 +18,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, LoaderCircle, Plus, Trash2, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { mapServerLocationToClient, type Location, type GalleryImage } from '@/lib/locations-data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { API_BASE_URL } from '@/lib/utils';
@@ -368,251 +369,269 @@ export default function EditContentPage() {
       </div>
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, handleFormError)} className="space-y-8">
-            <Card>
-                <CardHeader>
-                  <CardTitle>Basic Information</CardTitle>
-                  <CardDescription>This information appears on the location listing card.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug (Cannot be changed)</FormLabel><FormControl><Input {...field} disabled /></FormControl><FormMessage /></FormItem>)} />
-                  </div>
-                   <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                           <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="nature">Nature & Wildlife</SelectItem>
-                              <SelectItem value="agriculture">Agricultural & Energy</SelectItem>
-                              <SelectItem value="cultural">Cultural & Religious</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <div className="space-y-4">
-                    <FormItem>
-                      <FormLabel>Card Image (Leave blank to keep current)</FormLabel>
-                      <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setCardImageFile, setCardImagePreview)} className="text-sm" /></FormControl>
-                    </FormItem>
-                    {cardImagePreview && <Image src={cardImagePreview} alt="Card preview" width={200} height={100} className="rounded-md object-cover border" />}
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="cardImageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  </div>
-                </CardContent>
-            </Card>
+        <form onSubmit={form.handleSubmit(onSubmit, handleFormError)} className="space-y-6">
+          <Tabs defaultValue="general" className="w-full">
+            <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full max-w-3xl mb-6 bg-background-alt border border-border/50 p-1 rounded-xl">
+              <TabsTrigger value="general" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">General Info</TabsTrigger>
+              <TabsTrigger value="highlights" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">Highlights & Info</TabsTrigger>
+              <TabsTrigger value="gallery" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">Gallery Images</TabsTrigger>
+              <TabsTrigger value="map" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm text-sm py-2">Map & Nearby</TabsTrigger>
+            </TabsList>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Hero & Intro Section</CardTitle>
-                    <CardDescription>Content for the top of the location detail page.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <FormField control={form.control} name="subtitle" render={({ field }) => (<FormItem><FormLabel>Hero Subtitle</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormItem>
-                      <FormLabel>Hero Image (Leave blank to keep current)</FormLabel>
-                      <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setHeroImageFile, setHeroImagePreview)} className="text-sm" /></FormControl>
-                    </FormItem>
-                    {heroImagePreview && <Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover border" />}
-                    <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <Separator/>
-                    <FormField control={form.control} name="introTitle" render={({ field }) => (<FormItem><FormLabel>Intro Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="introDescription" render={({ field }) => (<FormItem><FormLabel>Intro Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormItem>
-                      <FormLabel>Intro Image (Leave blank to keep current)</FormLabel>
-                      <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setIntroImageFile, setIntroImagePreview)} className="text-sm" /></FormControl>
-                    </FormItem>
-                    {introImagePreview && <Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover border" />}
-                    <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                </CardContent>
-            </Card>
+            <TabsContent value="general" className="space-y-6 outline-none">
+              <Card className="border-border/80 shadow-md">
+                  <CardHeader>
+                    <CardTitle>Basic Information</CardTitle>
+                    <CardDescription>This information appears on the location listing card.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug (Cannot be changed)</FormLabel><FormControl><Input {...field} disabled /></FormControl><FormMessage /></FormItem>)} />
+                    </div>
+                     <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category</FormLabel>
+                             <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a category" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="nature">Nature & Wildlife</SelectItem>
+                                <SelectItem value="agriculture">Agricultural & Energy</SelectItem>
+                                <SelectItem value="cultural">Cultural & Religious</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    <FormField control={form.control} name="cardDescription" render={({ field }) => (<FormItem><FormLabel>Card Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <div className="space-y-4">
+                      <FormItem>
+                        <FormLabel>Card Image (Leave blank to keep current)</FormLabel>
+                        <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setCardImageFile, setCardImagePreview)} className="text-sm" /></FormControl>
+                      </FormItem>
+                      {cardImagePreview && <Image src={cardImagePreview} alt="Card preview" width={200} height={100} className="rounded-md object-cover border" />}
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormField control={form.control} name="cardImageHint" render={({ field }) => (<FormItem><FormLabel>Card Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <FormField control={form.control} name="distance" render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    </div>
+                  </CardContent>
+              </Card>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Gallery Images</CardTitle>
-                    <CardDescription>Manage gallery images. Changes here are saved individually.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {galleryFields.map((item, index) => {
-                        const formItem = item as FormGalleryImage;
-                        return (
-                        <div key={item.id || `new-${index}`} className="space-y-4 p-4 border rounded-md relative">
-                             <div className="flex justify-between items-center">
-                                <p className="font-medium text-muted-foreground">Image {index + 1}</p>
-                                 <Button type="button" variant="ghost" size="icon" onClick={() => handleGalleryDelete(formItem.id!, index)}>
-                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                 </Button>
-                             </div>
-                             <div className="flex items-start gap-4">
-                               <Image src={formItem.src} alt="gallery preview" width={100} height={100} className="rounded-md border object-cover"/>
-                               <div className="flex-1 space-y-2">
+              <Card className="border-border/80 shadow-md">
+                  <CardHeader>
+                      <CardTitle>Hero & Intro Section</CardTitle>
+                      <CardDescription>Content for the top of the location detail page.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                      <FormField control={form.control} name="subtitle" render={({ field }) => (<FormItem><FormLabel>Hero Subtitle</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <FormItem>
+                        <FormLabel>Hero Image (Leave blank to keep current)</FormLabel>
+                        <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setHeroImageFile, setHeroImagePreview)} className="text-sm" /></FormControl>
+                      </FormItem>
+                      {heroImagePreview && <Image src={heroImagePreview} alt="Hero preview" width={200} height={100} className="rounded-md object-cover border" />}
+                      <FormField control={form.control} name="heroImageHint" render={({ field }) => (<FormItem><FormLabel>Hero Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <Separator/>
+                      <FormField control={form.control} name="introTitle" render={({ field }) => (<FormItem><FormLabel>Intro Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <FormField control={form.control} name="introDescription" render={({ field }) => (<FormItem><FormLabel>Intro Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <FormItem>
+                        <FormLabel>Intro Image (Leave blank to keep current)</FormLabel>
+                        <FormControl><Input type="file" accept="image/*" onChange={(e) => handleMainImageChange(e, setIntroImageFile, setIntroImagePreview)} className="text-sm" /></FormControl>
+                      </FormItem>
+                      {introImagePreview && <Image src={introImagePreview} alt="Intro preview" width={200} height={100} className="rounded-md object-cover border" />}
+                      <FormField control={form.control} name="introImageHint" render={({ field }) => (<FormItem><FormLabel>Intro Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="highlights" className="space-y-6 outline-none">
+              <Card className="border-border/80 shadow-md">
+                  <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
+                  <CardContent className="space-y-4">
+                      {highlightFields.map((item, index) => (
+                          <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                              <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeHighlight(index)}>
+                                  <Trash2 className="h-3 w-3" />
+                              </Button>
+                               <p className="font-medium text-sm text-muted-foreground">Highlight {index + 1}</p>
+                              <FormField
+                                  control={form.control}
+                                  name={`highlights.${index}.icon`}
+                                  render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>{formItem.isNew ? "Select Image" : "Replace Image"}</FormLabel>
-                                    <FormControl>
-                                      <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
-                                    </FormControl>
+                                      <FormLabel>Icon</FormLabel>
+                                      <Select onValueChange={field.onChange} value={field.value}>
+                                      <FormControl>
+                                          <SelectTrigger>
+                                              <SelectValue placeholder="Select an icon" />
+                                          </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                          {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
+                                      </SelectContent>
+                                      </Select>
+                                      <FormMessage />
                                   </FormItem>
-                               </div>
-                             </div>
-                             <div className="grid md:grid-cols-2 gap-4">
-                                <FormField control={form.control} name={`galleryImages.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField control={form.control} name={`galleryImages.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             </div>
-                             <div className="flex justify-end">
-                                <Button type="button" size="sm" onClick={() => handleGallerySave(index)} disabled={isSavingImage === index}>
-                                    {isSavingImage === index ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                                    {formItem.isNew ? "Save New Image" : "Save Changes"}
-                                </Button>
-                             </div>
-                        </div>
-                    )})}
-                    <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ id: undefined, src: placeholderImages['gallery-600x400'].src, alt: '', hint: '', file: undefined, isNew: true })}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Image
-                    </Button>
-                </CardContent>
-            </Card>
-            
-            <Card className="border-border/80 shadow-md">
-                <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
-                <CardContent className="space-y-4">
-                    {highlightFields.map((item, index) => (
-                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
-                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeHighlight(index)}>
-                                <Trash2 className="h-3 w-3" />
-                            </Button>
-                             <p className="font-medium text-sm text-muted-foreground">Highlight {index + 1}</p>
-                            <FormField
-                                control={form.control}
-                                name={`highlights.${index}.icon`}
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Icon</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select an icon" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
-                                    </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                             <FormField control={form.control} name={`highlights.${index}.title`} render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="Highlight title" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Highlight description" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        </div>
-                    ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => appendHighlight({ icon: 'Leaf', title: '', description: '' })}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Highlight
-                    </Button>
-                </CardContent>
-            </Card>
+                                  )}
+                              />
+                               <FormField control={form.control} name={`highlights.${index}.title`} render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="Highlight title" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                               <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Highlight description" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          </div>
+                      ))}
+                      <Button type="button" variant="outline" size="sm" onClick={() => appendHighlight({ icon: 'Leaf', title: '', description: '' })}>
+                          <Plus className="mr-2 h-4 w-4" /> Add Highlight
+                      </Button>
+                  </CardContent>
+              </Card>
 
-            <Card className="border-border/80 shadow-md">
-                <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
-                <CardContent className="space-y-4">
-                    {visitorInfoFields.map((item, index) => (
-                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
-                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeVisitorInfo(index)}>
-                                <Trash2 className="h-3 w-3" />
-                            </Button>
-                             <p className="font-medium text-sm text-muted-foreground">Info Item {index + 1}</p>
-                            <FormField
-                                control={form.control}
-                                name={`visitorInfo.${index}.icon`}
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Icon</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select an icon" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
-                                    </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                             <FormField control={form.control} name={`visitorInfo.${index}.title`} render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="Info title" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={form.control} name={`visitorInfo.${index}.line1`} render={({ field }) => (<FormItem><FormLabel>Line 1</FormLabel><FormControl><Input placeholder="e.g., 6:00 AM - 6:00 PM" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel>Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        </div>
-                    ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => appendVisitorInfo({ icon: 'Clock', title: '', line1: '', line2: '' })}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Info Item
-                    </Button>
-                </CardContent>
-            </Card>
-            
-            <Card className="border-border/80 shadow-md">
-                <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
-                <CardContent className="space-y-6">
-                    <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <Separator/>
-                    <p className="font-medium text-sm text-muted-foreground">Nearby Attractions</p>
-                    {nearbyAttractionFields.map((item, index) => (
-                        <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
-                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeNearbyAttraction(index)}>
-                                <Trash2 className="h-3 w-3" />
-                            </Button>
-                            <div className="grid md:grid-cols-3 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name={`nearbyAttractions.${index}.icon`}
-                                    render={({ field }) => (
+              <Card className="border-border/80 shadow-md">
+                  <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
+                  <CardContent className="space-y-4">
+                      {visitorInfoFields.map((item, index) => (
+                          <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                              <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeVisitorInfo(index)}>
+                                  <Trash2 className="h-3 w-3" />
+                              </Button>
+                               <p className="font-medium text-sm text-muted-foreground">Info Item {index + 1}</p>
+                              <FormField
+                                  control={form.control}
+                                  name={`visitorInfo.${index}.icon`}
+                                  render={({ field }) => (
+                                  <FormItem>
+                                      <FormLabel>Icon</FormLabel>
+                                      <Select onValueChange={field.onChange} value={field.value}>
+                                      <FormControl>
+                                          <SelectTrigger>
+                                              <SelectValue placeholder="Select an icon" />
+                                          </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                          {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
+                                      </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                  </FormItem>
+                                  )}
+                              />
+                               <FormField control={form.control} name={`visitorInfo.${index}.title`} render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="Info title" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                               <FormField control={form.control} name={`visitorInfo.${index}.line1`} render={({ field }) => (<FormItem><FormLabel>Line 1</FormLabel><FormControl><Input placeholder="e.g., 6:00 AM - 6:00 PM" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                               <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel>Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                          </div>
+                      ))}
+                      <Button type="button" variant="outline" size="sm" onClick={() => appendVisitorInfo({ icon: 'Clock', title: '', line1: '', line2: '' })}>
+                          <Plus className="mr-2 h-4 w-4" /> Add Info Item
+                      </Button>
+                  </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="gallery" className="space-y-6 outline-none">
+              <Card className="border-border/80 shadow-md">
+                  <CardHeader>
+                      <CardTitle>Gallery Images</CardTitle>
+                      <CardDescription>Manage gallery images. Changes here are saved individually.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                      {galleryFields.map((item, index) => {
+                          const formItem = item as FormGalleryImage;
+                          return (
+                          <div key={item.id || `new-${index}`} className="space-y-4 p-4 border rounded-md relative">
+                               <div className="flex justify-between items-center">
+                                  <p className="font-medium text-muted-foreground">Image {index + 1}</p>
+                                   <Button type="button" variant="ghost" size="icon" onClick={() => handleGalleryDelete(formItem.id!, index)}>
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                   </Button>
+                               </div>
+                               <div className="flex items-start gap-4">
+                                 <Image src={formItem.src} alt="gallery preview" width={100} height={100} className="rounded-md border object-cover"/>
+                                 <div className="flex-1 space-y-2">
                                     <FormItem>
-                                        <FormLabel>Icon</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select an icon" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
-                                        </SelectContent>
-                                        </Select>
-                                        <FormMessage />
+                                      <FormLabel>{formItem.isNew ? "Select Image" : "Replace Image"}</FormLabel>
+                                      <FormControl>
+                                        <Input type="file" accept="image/*" onChange={(e) => handleGalleryFileChange(e, index)} className="text-sm" />
+                                      </FormControl>
                                     </FormItem>
-                                    )}
-                                />
-                                <FormField control={form.control} name={`nearbyAttractions.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input placeholder="e.g., Adam's Peak" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField control={form.control} name={`nearbyAttractions.${index}.distance`} render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input placeholder="e.g., 45 km away" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            </div>
-                        </div>
-                    ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => appendNearbyAttraction({ icon: 'Gem', name: '', distance: '' })}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Attraction
-                    </Button>
-                </CardContent>
-                 <CardFooter className="justify-end">
-                    <Button type="submit" size="lg" disabled={isSubmitting}>
-                        {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                        Save Changes
-                    </Button>
-                </CardFooter>
-            </Card>
+                                 </div>
+                               </div>
+                               <div className="grid md:grid-cols-2 gap-4">
+                                  <FormField control={form.control} name={`galleryImages.${index}.alt`} render={({ field }) => (<FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input placeholder="Alt text for accessibility" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                  <FormField control={form.control} name={`galleryImages.${index}.hint`} render={({ field }) => (<FormItem><FormLabel>Hint</FormLabel><FormControl><Input placeholder="AI Hint" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                               </div>
+                               <div className="flex justify-end">
+                                  <Button type="button" size="sm" onClick={() => handleGallerySave(index)} disabled={isSavingImage === index}>
+                                      {isSavingImage === index ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                      {formItem.isNew ? "Save New Image" : "Save Changes"}
+                                  </Button>
+                               </div>
+                          </div>
+                      )})}
+                      <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ id: undefined, src: placeholderImages['gallery-600x400'].src, alt: '', hint: '', file: undefined, isNew: true })}>
+                          <Plus className="mr-2 h-4 w-4" /> Add Image
+                      </Button>
+                  </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="map" className="space-y-6 outline-none">
+              <Card className="border-border/80 shadow-md">
+                  <CardHeader><CardTitle>Map & Nearby</CardTitle></CardHeader>
+                  <CardContent className="space-y-6">
+                      <FormField control={form.control} name="mapEmbedUrl" render={({ field }) => (<FormItem><FormLabel>Google Maps Embed URL</FormLabel><FormControl><Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <Separator/>
+                      <p className="font-medium text-sm text-muted-foreground">Nearby Attractions</p>
+                      {nearbyAttractionFields.map((item, index) => (
+                          <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
+                               <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeNearbyAttraction(index)}>
+                                  <Trash2 className="h-3 w-3" />
+                              </Button>
+                              <div className="grid md:grid-cols-3 gap-4">
+                                  <FormField
+                                      control={form.control}
+                                      name={`nearbyAttractions.${index}.icon`}
+                                      render={({ field }) => (
+                                      <FormItem>
+                                          <FormLabel>Icon</FormLabel>
+                                          <Select onValueChange={field.onChange} value={field.value}>
+                                          <FormControl>
+                                              <SelectTrigger>
+                                                  <SelectValue placeholder="Select an icon" />
+                                              </SelectTrigger>
+                                          </FormControl>
+                                          <SelectContent>
+                                              {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
+                                          </SelectContent>
+                                          </Select>
+                                          <FormMessage />
+                                      </FormItem>
+                                      )}
+                                  />
+                                  <FormField control={form.control} name={`nearbyAttractions.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input placeholder="e.g., Adam's Peak" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                  <FormField control={form.control} name={`nearbyAttractions.${index}.distance`} render={({ field }) => (<FormItem><FormLabel>Distance</FormLabel><FormControl><Input placeholder="e.g., 45 km away" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                              </div>
+                          </div>
+                      ))}
+                      <Button type="button" variant="outline" size="sm" onClick={() => appendNearbyAttraction({ icon: 'Gem', name: '', distance: '' })}>
+                          <Plus className="mr-2 h-4 w-4" /> Add Attraction
+                      </Button>
+                  </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex justify-end pt-4 border-t border-border/50">
+              <Button type="submit" size="lg" disabled={isSubmitting} className="rounded-full px-8 font-serif uppercase tracking-widest text-xs h-11">
+                  {isSubmitting ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  Save Changes
+              </Button>
+          </div>
         </form>
       </Form>
     </div>
