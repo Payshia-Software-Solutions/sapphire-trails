@@ -454,79 +454,93 @@ export default function EditContentPage() {
 
             <TabsContent value="highlights" className="space-y-6 outline-none">
               <Card className="border-border/80 shadow-md">
-                  <CardHeader><CardTitle>Key Highlights</CardTitle></CardHeader>
+                  <CardHeader className="pb-3"><CardTitle className="text-xl">Key Highlights</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
-                      {highlightFields.map((item, index) => (
-                          <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
-                              <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeHighlight(index)}>
-                                  <Trash2 className="h-3 w-3" />
-                              </Button>
-                               <p className="font-medium text-sm text-muted-foreground">Highlight {index + 1}</p>
-                              <FormField
-                                  control={form.control}
-                                  name={`highlights.${index}.icon`}
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>Icon</FormLabel>
-                                      <Select onValueChange={field.onChange} value={field.value}>
-                                      <FormControl>
-                                          <SelectTrigger>
-                                              <SelectValue placeholder="Select an icon" />
-                                          </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                          {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
-                                      </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                               <FormField control={form.control} name={`highlights.${index}.title`} render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="Highlight title" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                               <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Highlight description" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                          </div>
-                      ))}
-                      <Button type="button" variant="outline" size="sm" onClick={() => appendHighlight({ icon: 'Leaf', title: '', description: '' })}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                        {highlightFields.map((item, index) => (
+                            <div key={item.id} className="space-y-3 p-4 border border-border/60 rounded-xl relative bg-card shadow-sm">
+                                <div className="flex justify-between items-center border-b pb-2 mb-2 border-border/30">
+                                   <p className="font-semibold text-xs tracking-wider uppercase text-primary">Highlight {index + 1}</p>
+                                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-full" onClick={() => removeHighlight(index)}>
+                                       <Trash2 className="h-3.5 w-3.5" />
+                                   </Button>
+                                </div>
+                                <div className="grid grid-cols-[120px_1fr] gap-3">
+                                  <FormField
+                                      control={form.control}
+                                      name={`highlights.${index}.icon`}
+                                      render={({ field }) => (
+                                      <FormItem>
+                                          <FormLabel className="text-xs">Icon</FormLabel>
+                                          <Select onValueChange={field.onChange} value={field.value}>
+                                          <FormControl>
+                                              <SelectTrigger className="h-9">
+                                                  <SelectValue placeholder="Icon" />
+                                              </SelectTrigger>
+                                          </FormControl>
+                                          <SelectContent>
+                                              {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
+                                          </SelectContent>
+                                          </Select>
+                                          <FormMessage />
+                                      </FormItem>
+                                      )}
+                                  />
+                                  <FormField control={form.control} name={`highlights.${index}.title`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Title</FormLabel><FormControl><Input placeholder="Highlight title" className="h-9" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                </div>
+                                 <FormField control={form.control} name={`highlights.${index}.description`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Description</FormLabel><FormControl><Textarea placeholder="Highlight description" className="min-h-[50px] text-xs py-1" rows={2} {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            </div>
+                        ))}
+                      </div>
+                      <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => appendHighlight({ icon: 'Leaf', title: '', description: '' })}>
                           <Plus className="mr-2 h-4 w-4" /> Add Highlight
                       </Button>
                   </CardContent>
               </Card>
 
               <Card className="border-border/80 shadow-md">
-                  <CardHeader><CardTitle>Visitor Information</CardTitle></CardHeader>
+                  <CardHeader className="pb-3"><CardTitle className="text-xl">Visitor Information</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
-                      {visitorInfoFields.map((item, index) => (
-                          <div key={item.id} className="space-y-4 p-4 border rounded-md relative">
-                              <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeVisitorInfo(index)}>
-                                  <Trash2 className="h-3 w-3" />
-                              </Button>
-                               <p className="font-medium text-sm text-muted-foreground">Info Item {index + 1}</p>
-                              <FormField
-                                  control={form.control}
-                                  name={`visitorInfo.${index}.icon`}
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>Icon</FormLabel>
-                                      <Select onValueChange={field.onChange} value={field.value}>
-                                      <FormControl>
-                                          <SelectTrigger>
-                                              <SelectValue placeholder="Select an icon" />
-                                          </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                          {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
-                                      </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                               <FormField control={form.control} name={`visitorInfo.${index}.title`} render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="Info title" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                               <FormField control={form.control} name={`visitorInfo.${index}.line1`} render={({ field }) => (<FormItem><FormLabel>Line 1</FormLabel><FormControl><Input placeholder="e.g., 6:00 AM - 6:00 PM" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                               <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel>Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                          </div>
-                      ))}
-                      <Button type="button" variant="outline" size="sm" onClick={() => appendVisitorInfo({ icon: 'Clock', title: '', line1: '', line2: '' })}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                        {visitorInfoFields.map((item, index) => (
+                            <div key={item.id} className="space-y-3 p-4 border border-border/60 rounded-xl relative bg-card shadow-sm">
+                                <div className="flex justify-between items-center border-b pb-2 mb-2 border-border/30">
+                                   <p className="font-semibold text-xs tracking-wider uppercase text-primary">Info Item {index + 1}</p>
+                                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-full" onClick={() => removeVisitorInfo(index)}>
+                                       <Trash2 className="h-3.5 w-3.5" />
+                                   </Button>
+                                </div>
+                                <div className="grid grid-cols-[120px_1fr] gap-3">
+                                  <FormField
+                                      control={form.control}
+                                      name={`visitorInfo.${index}.icon`}
+                                      render={({ field }) => (
+                                      <FormItem>
+                                          <FormLabel className="text-xs">Icon</FormLabel>
+                                          <Select onValueChange={field.onChange} value={field.value}>
+                                          <FormControl>
+                                              <SelectTrigger className="h-9">
+                                                  <SelectValue placeholder="Icon" />
+                                              </SelectTrigger>
+                                          </FormControl>
+                                          <SelectContent>
+                                              {iconOptions.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
+                                          </SelectContent>
+                                          </Select>
+                                          <FormMessage />
+                                      </FormItem>
+                                      )}
+                                  />
+                                  <FormField control={form.control} name={`visitorInfo.${index}.title`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Title</FormLabel><FormControl><Input placeholder="Info title" className="h-9" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                 <FormField control={form.control} name={`visitorInfo.${index}.line1`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Line 1</FormLabel><FormControl><Input placeholder="e.g., 6:00 AM - 6:00 PM" className="h-9 text-xs" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                 <FormField control={form.control} name={`visitorInfo.${index}.line2`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Line 2</FormLabel><FormControl><Input placeholder="e.g., Daily" className="h-9 text-xs" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                </div>
+                            </div>
+                        ))}
+                      </div>
+                      <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => appendVisitorInfo({ icon: 'Clock', title: '', line1: '', line2: '' })}>
                           <Plus className="mr-2 h-4 w-4" /> Add Info Item
                       </Button>
                   </CardContent>
