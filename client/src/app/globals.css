@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  :root {
+    /* Warm Ivory & Sand Theme (Premium Luxury Boutique) */
+    --background: 35 25% 98%;      /* Smooth Ivory */
+    --background-alt: 35 20% 95%;  /* Sand Beige */
+    --foreground: 30 15% 15%;      /* Deep Espresso Brown instead of pure black */
+    --card: 0 0% 100%;
+    --card-foreground: 30 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 15% 15%;
+    --primary: 39 60% 35%;         /* Rich Antique Gold/Bronze */
+    --primary-foreground: 35 25% 98%;
+    --secondary: 35 15% 90%;
+    --secondary-foreground: 30 15% 15%;
+    --muted: 35 10% 92%;
+    --muted-foreground: 30 10% 45%;
+    --accent: 39 60% 35%;
+    --accent-foreground: 30 15% 15%;
+    --destructive: 0 80% 40%;
+    --destructive-foreground: 35 25% 98%;
+    --border: 35 15% 85%;
+    --input: 35 15% 85%;
+    --ring: 39 60% 35%;
+    --radius: 0.75rem;             /* More rounded friendly corners */
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --color-pending: hsl(var(--chart-3));
+    --color-accepted: hsl(var(--chart-2));
+    --color-rejected: hsl(var(--chart-5));
+  }
+
+  .dark {
+    /* Warm Obsidian & Antique Gold Theme */
+    --background: 30 12% 5.5%;       /* Warm Obsidian base */
+    --background-alt: 30 10% 8.5%;   /* Slightly lighter sidebar/header bg */
+    --foreground: 35 15% 90%;        /* Soft Champagne Cream */
+    --card: 30 8% 12%;               /* Distinct card surface */
+    --card-foreground: 35 15% 90%;
+    --popover: 30 8% 12%;
+    --popover-foreground: 35 15% 90%;
+    --primary: 39 58% 74%;           /* Bright Gold */
+    --primary-foreground: 30 12% 5.5%;
+    --secondary: 30 8% 15%;
+    --secondary-foreground: 35 15% 90%;
+    --muted: 30 8% 14%;
+    --muted-foreground: 30 5% 65%;
+    --accent: 39 58% 74%;
+    --accent-foreground: 30 12% 5.5%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 35 15% 90%;
+    --border: 30 8% 18%;             /* Lighter border for separation */
+    --input: 30 8% 18%;
+    --ring: 39 58% 74%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+}
+
+.parallax-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+}
+
+.parallax-content {
+  position: relative;
+  z-index: 1;
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  header,
+  nav,
+  aside,
+  button,
+  .print\\:hidden,
+  [aria-label="Chat with us"],
+  a[href^="https://wa.me"] {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+}

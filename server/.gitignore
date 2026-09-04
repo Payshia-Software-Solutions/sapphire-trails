@@ -1,0 +1,9 @@
+# Ignore sensitive configuration
+.env
+.env.local
+config/database.php
+
+# Ignore temporary uploads except .htaccess
+uploads/*
+!uploads/.htaccess
+!uploads/.gitkeep
