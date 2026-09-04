@@ -4,7 +4,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, HelpCircle, Clock, DollarSign, Gem, Shield, Users, LoaderCircle, X, Mail, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Clock, DollarSign, Gem, Shield, Users, LoaderCircle, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,95 +17,10 @@ import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data'
 import Image from 'next/image';
 import { BookingForm } from '@/components/sections/booking-form';
 import { useToast } from "@/hooks/use-toast";
+import { trackInitiateBooking, trackBookingSuccess } from '@/lib/analytics';
 
 import { API_BASE_URL } from '@/lib/utils';
 
-interface ConfirmationDetails {
-    tourName: string;
-    date: Date;
-    guests: number;
-    totalPrice: number;
-    bookingId: number;
-}
-
-function BookingConfirmation({ details, onClose }: { details: ConfirmationDetails, onClose: () => void }) {
-    const router = useRouter();
-
-    const handleViewBooking = () => {
-        router.push(`/booking/${details.bookingId}/view`);
-    };
-    
-    const handleExploreTours = () => {
-        router.push('/tours');
-    };
-    
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 animate-in fade-in-0">
-            <div className="relative w-full max-w-lg bg-background-alt rounded-2xl p-8 md:p-12 text-center text-white/90 shadow-2xl shadow-primary/20 border border-border">
-                <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-muted-foreground hover:text-white" onClick={onClose}>
-                    <X className="h-6 w-6" />
-                </Button>
-                
-                <div className="flex flex-col items-center">
-                   <div style={{
-                      display: 'inline-block',
-                      backgroundColor: 'hsl(39, 58%, 74%)',
-                      height: '60px',
-                      width: '60px',
-                      borderRadius: '50%',
-                      marginBottom: '15px'
-                    }}>
-                        <Image 
-                            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMxYzFjMWUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSIyMCA2IDkgMTcgNCAxMiI+PC9wb2x5bGluZT48L3N2Zz4=" 
-                            alt="Checkmark" 
-                            width={36} height={36} 
-                            style={{ margin: '12px' }}
-                        />
-                    </div>
-                     <div style={{ marginBottom: '20px' }}>
-                        <Image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" width={16} height={16} style={{ display: 'inline-block', margin: '0 4px' }}/>
-                        <Image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" width={16} height={16} style={{ display: 'inline-block', margin: '0 4px' }}/>
-                        <Image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlPSJoc2woMzksIDU4JSwgNDAlKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yLjcgMTAuM2EyLjQgMi40IDAgMCAwIDAgMy40bDcuNSA3LjVjLjkuOSAyLjUuOSAzLjQgMGw3LjUtNy41YTIuNCAyLjQgMCAwIDAgMC0zLjRsLTcuNS03LjVhMi40IDIuNCAwIDAgMC0zLjQgMFoiLz48L3N2Zz4=" alt="Diamond" width={16} height={16} style={{ display: 'inline-block', margin: '0 4px' }}/>
-                    </div>
-                    <h2 className="text-4xl font-headline font-bold text-white mb-2">Your Booking is Confirmed!</h2>
-                    <p className="text-muted-foreground max-w-md">
-                        Thank you for booking the {details.tourName}. A confirmation email has been sent to you.
-                    </p>
-                </div>
-
-                <div className="my-8 text-left bg-card/50 border border-border rounded-lg p-6 space-y-4">
-                     <h3 className="text-xl font-headline font-semibold text-primary mb-4">Booking Summary</h3>
-                     <div className="flex justify-between items-center text-sm border-b border-border pb-3">
-                         <span className="text-muted-foreground">Tour Name</span>
-                         <span className="font-semibold text-white">{details.tourName}</span>
-                     </div>
-                     <div className="flex justify-between items-center text-sm border-b border-border pb-3">
-                         <span className="text-muted-foreground">Date & Time</span>
-                         <span className="font-semibold text-white">{format(details.date, "MMMM dd, yyyy")} • 9:00 AM</span>
-                     </div>
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-3">
-                         <span className="text-muted-foreground">Guests</span>
-                         <span className="font-semibold text-white">{details.guests} Person(s)</span>
-                     </div>
-                      <div className="flex justify-between items-center text-sm">
-                         <span className="text-muted-foreground">Total Paid</span>
-                         <span className="font-semibold text-primary text-lg">${details.totalPrice.toFixed(2)}</span>
-                     </div>
-                </div>
-
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-6">
-                    <Mail className="h-4 w-4 text-primary" />
-                    <span>Check your inbox for full details</span>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
-                    <Button size="lg" className="w-full" onClick={handleViewBooking}>View My Booking</Button>
-                    <Button size="lg" variant="outline" className="w-full" onClick={handleExploreTours}>Explore More Tours</Button>
-                </div>
-            </div>
-        </div>
-    );
-}
 
 function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
     if (!selectedTour) return null;
@@ -161,15 +76,17 @@ function BookingSummary({
   totalPrice: number | null;
 }) {
   const { formState: { isSubmitting } } = useFormContext();
+  const summaryImg = selectedTour?.heroImage || selectedTour?.imageUrl || 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp';
 
   return (
     <Card className="sticky top-24 shadow-lg overflow-hidden border-border/80">
       {selectedTour && (
-        <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-border">
+        <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-border bg-slate-900">
           <Image
-            src={selectedTour.heroImage}
-            alt={selectedTour.tourPageTitle}
+            src={summaryImg}
+            alt={selectedTour.tourPageTitle || 'Tour Package'}
             fill
+            sizes="(max-width: 1024px) 100vw, 33vw"
             className="object-cover"
             priority
           />
@@ -243,26 +160,11 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  
+  const tourSlugParam = tourSlug || searchParams.get('tour') || searchParams.get('slug');
   const tourTypeParam = searchParams.get('tourType');
 
   const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [confirmationDetails, setConfirmationDetails] = useState<ConfirmationDetails | null>(null);
-
-  useEffect(() => {
-    async function fetchTourPackages() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/tours`);
-            if (response.ok) {
-                const serverData = await response.json();
-                if(Array.isArray(serverData)) {
-                    setTourPackages(serverData.map(mapServerPackageToClient));
-                }
-            }
-        } catch(e) { console.error("Could not fetch tour packages", e); }
-    }
-    fetchTourPackages();
-  }, []);
 
   const methods = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -271,6 +173,8 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
       email: user?.email || "",
       phone: user?.phone || "",
       address: "",
+      transportService: "none",
+      transportNotes: "",
       tourType: tourTypeParam ? Number(tourTypeParam) : undefined,
       adults: 1,
       children: 0,
@@ -284,9 +188,37 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
   const watchedDate = methods.watch('date');
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
 
-  const selectedTour = tourSlug 
-    ? tourPackages.find(p => p.slug === tourSlug)
-    : tourPackages.find(p => p.id === Number(watchedTourType));
+  useEffect(() => {
+    async function fetchTourPackages() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/tours`);
+            if (response.ok) {
+                const serverData = await response.json();
+                if(Array.isArray(serverData)) {
+                    const mapped = serverData.map(mapServerPackageToClient);
+                    setTourPackages(mapped);
+
+                    // Auto-select package if slug or tourType is provided in URL
+                    if (tourSlugParam) {
+                      const found = mapped.find(p => p.slug === tourSlugParam);
+                      if (found) methods.setValue('tourType', found.id);
+                    } else if (tourTypeParam) {
+                      const found = mapped.find(p => String(p.id) === String(tourTypeParam));
+                      if (found) methods.setValue('tourType', found.id);
+                    } else if (mapped.length > 0 && !methods.getValues('tourType')) {
+                      // Direct /booking: Auto-select 1st package by default!
+                      methods.setValue('tourType', mapped[0].id);
+                    }
+                }
+            }
+        } catch(e) { console.error("Could not fetch tour packages", e); }
+    }
+    fetchTourPackages();
+  }, [tourSlugParam, tourTypeParam, methods]);
+
+  const selectedTour = watchedTourType
+    ? tourPackages.find(p => p.id === Number(watchedTourType))
+    : (tourSlugParam ? tourPackages.find(p => p.slug === tourSlugParam) : tourPackages[0]);
 
   useEffect(() => {
     if (selectedTour && methods.getValues('tourType') !== selectedTour.id) {
@@ -355,6 +287,21 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
    const pricePerPerson = parseFloat(selectedTour.price.replace(/[^0-9.-]+/g,""));
    const totalPriceOnSubmit = !isNaN(pricePerPerson) ? pricePerPerson * totalGuestsOnSubmit : 0;
 
+   // Format vehicle arrangement into clear note
+   let fullMessage = (data.message || '').trim();
+   if (data.transportService && data.transportService !== 'none') {
+     const transportLabels: Record<string, string> = {
+       airport_pickup: 'Airport Pickup (CMB Bandaranaike Airport → Ratnapura)',
+       airport_roundtrip: 'Round-trip Airport Transfer (CMB Airport ⇄ Ratnapura)',
+       hotel_transfer: 'Private Hotel Pickup & Tour Chauffeur',
+       custom: 'Custom Island-wide Transport Arrangement',
+     };
+     const label = transportLabels[data.transportService] || data.transportService;
+     const details = data.transportNotes ? ` [Flight / Pickup Details: ${data.transportNotes.trim()}]` : '';
+     const transportHeader = `🚗 Vehicle Arrangement: ${label}${details}`;
+     fullMessage = fullMessage ? `${transportHeader}\n\n📝 Special Requests: ${fullMessage}` : transportHeader;
+   }
+
    const payload = {
        user_id: user ? user.id : null,
        tour_package_id: data.tourType,
@@ -363,11 +310,13 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
        email: data.email,
        phone: data.phone,
        address: data.address,
+       transport_service: data.transportService,
+       transport_notes: data.transportNotes,
        adults: data.adults,
        children: data.children,
        guests: totalGuestsOnSubmit,
        tour_date: format(data.date, 'yyyy-MM-dd'),
-       message: data.message,
+       message: fullMessage,
        type: user ? user.type : 'client',
    };
    
@@ -388,16 +337,18 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
        
        const savedBooking = await response.json();
        
-       setConfirmationDetails({
+       // Dispatch GA4 Purchase & Meta Pixel Purchase/Schedule Events
+       trackBookingSuccess({
+           bookingId: savedBooking.id,
            tourName: selectedTour.tourPageTitle,
-           date: data.date,
+           tourId: selectedTour.id,
+           totalValue: totalPriceOnSubmit,
            guests: totalGuestsOnSubmit,
-           totalPrice: totalPriceOnSubmit,
-           bookingId: savedBooking.id
+           currency: 'USD',
        });
 
-       setIsSubmitted(true);
        methods.reset();
+       router.push(`/booking/confirmation?id=${savedBooking.id}`);
    } catch (error) {
        console.error("Booking submission failed:", error);
        toast({
@@ -406,15 +357,6 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
            description: error instanceof Error ? error.message : "Could not connect to the server.",
        });
    }
-  }
-
-  const handleCloseConfirmation = () => {
-    setIsSubmitted(false);
-    setConfirmationDetails(null);
-  };
-
-  if (isSubmitted && confirmationDetails) {
-    return <BookingConfirmation details={confirmationDetails} onClose={handleCloseConfirmation} />
   }
 
   return (
@@ -435,9 +377,19 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
                   <p className="text-muted-foreground mt-1">Reserve your spot for the <span className="font-semibold text-primary">{selectedTour.tourPageTitle}</span></p>
                 </div>
               ) : (
-                <TourDisplayCard selectedTour={selectedTour} />
+                <div className="mb-2">
+                  <h1 className="text-2xl sm:text-3xl font-headline font-bold text-foreground">Book Your Private Expedition</h1>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                    Select your preferred tour package below and customize your journey with Sapphire Trails.
+                  </p>
+                </div>
               )}
-              <BookingForm tourPackages={tourPackages} selectedTour={selectedTour} onSubmit={onSubmit} />
+              <BookingForm 
+                tourPackages={tourPackages} 
+                selectedTour={selectedTour} 
+                isDirectBooking={!tourSlug} 
+                onSubmit={onSubmit} 
+              />
             </div>
             <div>
               <BookingSummary 

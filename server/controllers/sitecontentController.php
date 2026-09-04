@@ -1,5 +1,6 @@
 <?php
-require_once './models/SiteContent.php';
+require_once __DIR__ . '/../models/SiteContent.php';
+require_once __DIR__ . '/../lib/ImageOptimizer.php';
 
 class SiteContentController
 {
@@ -9,7 +10,7 @@ class SiteContentController
     public function __construct($pdo)
     {
         $this->model = new SiteContent($pdo);
-        $this->ftpConfig = include('./config/ftp.php');
+        $this->ftpConfig = include(__DIR__ . '/../config/ftp.php');
     }
 
     private function ensureDirectoryExists($ftp_conn, $dir)
@@ -61,28 +62,30 @@ class SiteContentController
     
     private function generateUniqueFileName($originalName)
     {
-        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
-        $name = pathinfo($originalName, PATHINFO_FILENAME);
-        $safeName = preg_replace('/[^a-zA-Z0-9-_]/', '', $name);
-        return $safeName . '-' . uniqid() . '.' . $ext;
+        return ImageOptimizer::generateWebPFileName($originalName);
     }
     
     private function handleImageUpload($file, $ftpSubDir = 'cms')
     {
         if ($file && $file['error'] === UPLOAD_ERR_OK) {
-            $filename = $this->generateUniqueFileName($file['name']);
-            $localPath = './uploads/' . $filename;
-            $ftpPath = '/' . $ftpSubDir . '/' . $filename;
+            $webpFilename = ImageOptimizer::generateWebPFileName($file['name']);
+            $tempSource = './uploads/temp_' . $webpFilename;
+            $webpPath = './uploads/' . $webpFilename;
+            $ftpPath = '/' . $ftpSubDir . '/' . $webpFilename;
 
             if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
-            move_uploaded_file($file['tmp_name'], $localPath);
+            if (move_uploaded_file($file['tmp_name'], $tempSource)) {
+                ImageOptimizer::convertToWebP($tempSource, $webpPath, 88);
+                @unlink($tempSource);
 
-            if ($this->uploadToFTP($localPath, $ftpPath)) {
-                unlink($localPath);
-                return $ftpPath; // Return the FTP path on success
+                if ($this->uploadToFTP($webpPath, $ftpPath)) {
+                    @unlink($webpPath);
+                    return $ftpPath;
+                }
+                @unlink($webpPath);
             }
         }
-        return null; // Return null on failure or if no file
+        return null;
     }
     
     public function getSection($section_key)
@@ -95,6 +98,82 @@ class SiteContentController
             echo json_encode(['error' => 'Content section not found.']);
         }
     }
+
+    public function uploadImage()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method Not Allowed']);
+            return;
+        }
+
+        $folder = isset($_POST['folder']) && !empty($_POST['folder']) 
+            ? trim($_POST['folder'], '/') 
+            : 'cms';
+
+        // Sanitize folder path (e.g. cms/proposal, cms/about, cms/homepage, cms/tours)
+        $folder = preg_replace('/[^a-zA-Z0-9_\-\/]/', '', $folder);
+        if (empty($folder)) {
+            $folder = 'cms';
+        }
+
+        if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+            http_response_code(400);
+            echo json_encode(['error' => 'No image uploaded or upload error occurred.']);
+            return;
+        }
+
+        $file = $_FILES['image'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/bmp'];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($mimeType, $allowedTypes)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid file format. Allowed types: JPG, PNG, WEBP, GIF, SVG, BMP.']);
+            return;
+        }
+
+        // Generate clean webp filename and prepare paths
+        $webpFilename = ImageOptimizer::generateWebPFileName($file['name']);
+        $tempSource = './uploads/temp_' . $webpFilename;
+        $tempWebp = './uploads/' . $webpFilename;
+        $ftpPath = '/' . $folder . '/' . $webpFilename;
+
+        if (!is_dir('./uploads')) {
+            mkdir('./uploads', 0777, true);
+        }
+
+        if (!move_uploaded_file($file['tmp_name'], $tempSource)) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to process local uploaded file.']);
+            return;
+        }
+
+        // Convert image to high-fidelity WebP (quality 88)
+        ImageOptimizer::convertToWebP($tempSource, $tempWebp, 88);
+        @unlink($tempSource);
+
+        if ($this->uploadToFTP($tempWebp, $ftpPath)) {
+            @unlink($tempWebp);
+            $cdnBaseUrl = 'https://content-provider.payshia.com/sapphire-trail';
+            $fullUrl = $cdnBaseUrl . '/' . ltrim($ftpPath, '/');
+            echo json_encode([
+                'success' => true,
+                'message' => 'Image converted to WebP and uploaded to FTP server successfully.',
+                'url' => $fullUrl,
+                'path' => $ftpPath,
+                'filename' => $webpFilename,
+                'folder' => $folder
+            ]);
+        } else {
+            @unlink($tempWebp);
+            http_response_code(500);
+            echo json_encode(['error' => 'FTP upload failed. Please verify FTP credentials and connectivity.']);
+        }
+    }
+
 
     public function updateSection($section_key)
     {

@@ -1,4 +1,9 @@
 <?php
+require_once __DIR__ . '/LocationGalleryImage.php';
+require_once __DIR__ . '/LocationHighlight.php';
+require_once __DIR__ . '/LocationVisitorInfo.php';
+require_once __DIR__ . '/LocationNearbyAttractions.php';
+
 // Updated Location Model with Sub-Models Injected and Debug Logging
 class Location
 {
@@ -8,13 +13,13 @@ class Location
     private $visitorInfo;
     private $nearbyAttractions;
 
-    public function __construct($pdo, $galleryImage, $highlight, $visitorInfo, $nearbyAttractions)
+    public function __construct($pdo, $galleryImage = null, $highlight = null, $visitorInfo = null, $nearbyAttractions = null)
     {
         $this->pdo = $pdo;
-        $this->galleryImage = $galleryImage;
-        $this->highlight = $highlight;
-        $this->visitorInfo = $visitorInfo;
-        $this->nearbyAttractions = $nearbyAttractions;
+        $this->galleryImage = $galleryImage ?: new LocationGalleryImage($pdo);
+        $this->highlight = $highlight ?: new LocationHighlight($pdo);
+        $this->visitorInfo = $visitorInfo ?: new LocationVisitorInfo($pdo);
+        $this->nearbyAttractions = $nearbyAttractions ?: new LocationNearbyAttractions($pdo);
     }
 
     public function getAll()
@@ -233,6 +238,24 @@ class Location
             foreach ($data['nearby_attractions'] as $item) {
                 $item['location_slug'] = $slug;
                 $this->nearbyAttractions->create($item);
+            }
+        }
+
+        // Sync gallery images if provided
+        if (isset($data['gallery_images']) && is_array($data['gallery_images'])) {
+            $this->galleryImage->deleteByLocationSlug($slug);
+            foreach ($data['gallery_images'] as $index => $img) {
+                $imgUrl = !empty($img['image_url']) ? $img['image_url'] : ($img['src'] ?? '');
+                if (!empty($imgUrl)) {
+                    $this->galleryImage->create([
+                        'location_slug' => $slug,
+                        'image_url'     => $imgUrl,
+                        'alt_text'      => $img['alt_text'] ?? $img['alt'] ?? '',
+                        'hint'          => $img['hint'] ?? '',
+                        'is_360'        => !empty($img['is_360']) || !empty($img['is360']) ? 1 : 0,
+                        'sort_order'    => $img['sort_order'] ?? ($index + 1)
+                    ]);
+                }
             }
         }
 

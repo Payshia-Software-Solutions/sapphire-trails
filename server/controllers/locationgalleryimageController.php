@@ -1,5 +1,7 @@
 <?php
-require_once './models/LocationGalleryImage.php';
+require_once __DIR__ . '/../models/LocationGalleryImage.php';
+require_once __DIR__ . '/../lib/FileValidator.php';
+require_once __DIR__ . '/../lib/ImageOptimizer.php';
 
 class LocationGalleryImageController
 {
@@ -9,7 +11,7 @@ class LocationGalleryImageController
     public function __construct($pdo)
     {
         $this->model = new LocationGalleryImage($pdo);
-        $this->ftpConfig = include('./config/ftp.php');
+        $this->ftpConfig = include(__DIR__ . '/../config/ftp.php');
     }
 
     private function ensureDirectoryExists($ftp_conn, $dir)
@@ -33,8 +35,8 @@ class LocationGalleryImageController
         $ftp_username = $this->ftpConfig['ftp_username'];
         $ftp_password = $this->ftpConfig['ftp_password'];
 
-        $ftp_conn = ftp_connect($ftp_server);
-        if (!$ftp_conn || !ftp_login($ftp_conn, $ftp_username, $ftp_password)) {
+        $ftp_conn = @ftp_connect($ftp_server);
+        if (!$ftp_conn || !@ftp_login($ftp_conn, $ftp_username, $ftp_password)) {
             error_log("FTP connection/login failed");
             return false;
         }
@@ -59,14 +61,6 @@ class LocationGalleryImageController
         return true;
     }
 
-    private function generateUniqueFileName($originalName)
-    {
-        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
-        $name = pathinfo($originalName, PATHINFO_FILENAME);
-        $safeName = preg_replace('/[^a-zA-Z0-9-_]/', '', $name);
-        return $safeName . '-' . uniqid() . '.' . $ext;
-    }
-
     public function getAll()
     {
         echo json_encode($this->model->getAll());
@@ -82,28 +76,51 @@ class LocationGalleryImageController
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 
         if (strpos($contentType, 'multipart/form-data') !== false) {
-            $slug = $_POST['location_slug'] ?? null;
+            $slug = preg_replace('/[^a-zA-Z0-9-_]/', '', $_POST['location_slug'] ?? '');
             $file = $_FILES['image'] ?? null;
             $alt = $_POST['alt_text'] ?? '';
             $hint = $_POST['hint'] ?? '';
-            $is360 = $_POST['is_360'] ?? 0;
-            $order = $_POST['sort_order'] ?? 0;
+            $is360 = (int)($_POST['is_360'] ?? 0);
+            $order = (int)($_POST['sort_order'] ?? 0);
 
-            if (!$slug || !$file || $file['error'] !== UPLOAD_ERR_OK) {
+            if (empty($slug) || !$file) {
                 http_response_code(400);
-                echo json_encode(['error' => 'Missing required fields or file error']);
+                echo json_encode(['error' => 'Missing location_slug or image file']);
                 return;
             }
 
-            $filename = $this->generateUniqueFileName($file['name']);
-            $localPath = './uploads/' . $filename;
+            // Validate image securely
+            $validation = FileValidator::validateImage($file);
+            if (!$validation['valid']) {
+                http_response_code(400);
+                echo json_encode(['error' => $validation['error']]);
+                return;
+            }
+
+            $filename = ImageOptimizer::generateWebPFileName($file['name']);
+            $tempPath = __DIR__ . '/../uploads/temp_' . $filename;
+            $localPath = __DIR__ . '/../uploads/' . $filename;
             $ftpPath = '/location-images/' . $slug . '/gallery/' . $filename;
 
-            if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
-            move_uploaded_file($file['tmp_name'], $localPath);
+            if (!is_dir(__DIR__ . '/../uploads')) {
+                mkdir(__DIR__ . '/../uploads', 0755, true);
+            }
+
+            if (!move_uploaded_file($file['tmp_name'], $tempPath)) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to process uploaded file']);
+                return;
+            }
+
+            // Convert to high-fidelity WebP
+            ImageOptimizer::convertToWebP($tempPath, $localPath, 88);
+            @unlink($tempPath);
 
             if ($this->uploadToFTP($localPath, $ftpPath)) {
-                unlink($localPath);
+                if (file_exists($localPath)) {
+                    unlink($localPath);
+                }
+
 
                 $id = $this->model->create([
                     'location_slug' => $slug,
@@ -115,8 +132,15 @@ class LocationGalleryImageController
                 ]);
 
                 http_response_code(201);
-                echo json_encode(['message' => 'Gallery image uploaded and saved', 'id' => $id]);
+                echo json_encode([
+                    'message' => 'Gallery image uploaded and saved', 
+                    'id' => $id,
+                    'image_url' => $ftpPath
+                ]);
             } else {
+                if (file_exists($localPath)) {
+                    unlink($localPath);
+                }
                 http_response_code(500);
                 echo json_encode(['error' => 'FTP upload failed']);
             }
@@ -152,20 +176,29 @@ class LocationGalleryImageController
             'sort_order' => $data['sort_order'] ?? $image['sort_order'],
         ];
 
-        // If a new file is uploaded, replace the image
+        // If a new file is uploaded, validate and replace
         if ($file && $file['error'] === UPLOAD_ERR_OK) {
-            $filename = $this->generateUniqueFileName($file['name']);
-            $localPath = './uploads/' . $filename;
+            $validation = FileValidator::validateImage($file);
+            if (!$validation['valid']) {
+                http_response_code(400);
+                echo json_encode(['error' => $validation['error']]);
+                return;
+            }
+
+            $filename = FileValidator::generateSafeFileName($file['name']);
+            $localPath = __DIR__ . '/../uploads/' . $filename;
             $ftpPath = '/location-images/' . $image['location_slug'] . '/gallery/' . $filename;
 
-            move_uploaded_file($file['tmp_name'], $localPath);
-            if ($this->uploadToFTP($localPath, $ftpPath)) {
-                unlink($localPath);
-                $updateData['image_url'] = $ftpPath;
-            } else {
-                 http_response_code(500);
-                 echo json_encode(['error' => 'FTP upload failed for new image.']);
-                 return;
+            if (move_uploaded_file($file['tmp_name'], $localPath)) {
+                if ($this->uploadToFTP($localPath, $ftpPath)) {
+                    if (file_exists($localPath)) unlink($localPath);
+                    $updateData['image_url'] = $ftpPath;
+                } else {
+                    if (file_exists($localPath)) unlink($localPath);
+                    http_response_code(500);
+                    echo json_encode(['error' => 'FTP upload failed for new image.']);
+                    return;
+                }
             }
         }
         

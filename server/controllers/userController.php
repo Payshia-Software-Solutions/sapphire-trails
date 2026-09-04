@@ -1,5 +1,7 @@
 <?php
-require_once './models/User.php';
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../lib/JWT.php';
+require_once __DIR__ . '/../lib/Env.php';
 
 class UserController
 {
@@ -12,11 +14,18 @@ class UserController
 
     public function getAll()
     {
-        echo json_encode($this->model->getAll());
+        $users = $this->model->getAll();
+        foreach ($users as &$user) {
+            unset($user['password_hash']);
+        }
+        echo json_encode($users);
     }
     
     public function getByType($type) {
         $users = $this->model->getByType($type);
+        foreach ($users as &$user) {
+            unset($user['password_hash']);
+        }
         echo json_encode($users);
     }
 
@@ -24,6 +33,7 @@ class UserController
     {
         $user = $this->model->getById($id);
         if ($user) {
+            unset($user['password_hash']);
             echo json_encode($user);
         } else {
             http_response_code(404);
@@ -35,6 +45,12 @@ class UserController
     {
         $data = json_decode(file_get_contents('php://input'), true);
 
+        if (!$data || empty($data['email']) || empty($data['password'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Email and password are required']);
+            return;
+        }
+
         if ($this->model->getByEmail($data['email'])) {
             http_response_code(409); // 409 Conflict
             echo json_encode(['error' => 'User with this email already exists']);
@@ -44,8 +60,23 @@ class UserController
         try {
             $newUserId = $this->model->create($data);
             $newUser = $this->model->getById($newUserId);
+            unset($newUser['password_hash']);
+
+            $secret = Env::get('APP_SECRET', 'sapphire_trails_default_fallback_secret_key');
+            $jwtExpiresIn = (int) Env::get('JWT_EXPIRES_IN', 86400);
+
+            $token = JWT::encode([
+                'id' => $newUser['id'],
+                'email' => $newUser['email'],
+                'role' => $newUser['type'] ?? 'client',
+                'type' => $newUser['type'] ?? 'client'
+            ], $secret, $jwtExpiresIn);
+
             http_response_code(201);
-            echo json_encode($newUser); // Return the new user object directly
+            echo json_encode([
+                'token' => $token,
+                'user' => $newUser
+            ]);
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
@@ -55,15 +86,32 @@ class UserController
     public function login()
     {
         $data = json_decode(file_get_contents('php://input'), true);
-        $user = $this->model->getByEmail($data['email']);
+        if (!$data || empty($data['email']) || empty($data['password'])) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Email and password are required']);
+            return;
+        }
+
+        $user = $this->model->getByEmail(trim($data['email']));
 
         if ($user && password_verify($data['password'], $user['password_hash'])) {
-            // Unset password hash before sending user data
             unset($user['password_hash']);
-            
-            // Consistently return the user data inside a "user" object
-            echo json_encode(['user' => $user]);
 
+            $secret = Env::get('APP_SECRET', 'sapphire_trails_default_fallback_secret_key');
+            $jwtExpiresIn = (int) Env::get('JWT_EXPIRES_IN', 86400);
+
+            $token = JWT::encode([
+                'id' => $user['id'],
+                'email' => $user['email'],
+                'role' => $user['type'] ?? 'client',
+                'type' => $user['type'] ?? 'client'
+            ], $secret, $jwtExpiresIn);
+            
+            echo json_encode([
+                'message' => 'Login successful',
+                'token' => $token,
+                'user' => $user
+            ]);
         } else {
             http_response_code(401);
             echo json_encode(['message' => 'Invalid credentials']);
@@ -74,17 +122,18 @@ class UserController
     {
         $deleted = $this->model->delete($id);
         if ($deleted) {
-            http_response_code(204); // No Content
+            http_response_code(200);
+            echo json_encode(['message' => 'User deleted successfully']);
         } else {
             http_response_code(404);
             echo json_encode(['error' => 'User not found']);
         }
     }
- public function update($id)
+
+    public function update($id)
     {
         $data = json_decode(file_get_contents('php://input'), true);
         
-        // Validate that user exists
         $existingUser = $this->model->getById($id);
         if (!$existingUser) {
             http_response_code(404);
@@ -92,7 +141,6 @@ class UserController
             return;
         }
         
-        // Check if email is being updated and if it conflicts with another user
         if (isset($data['email']) && $data['email'] !== $existingUser['email']) {
             $emailExists = $this->model->getByEmail($data['email']);
             if ($emailExists) {
@@ -106,8 +154,8 @@ class UserController
             $updated = $this->model->update($id, $data);
             
             if ($updated) {
-                // Return the updated user data
                 $updatedUser = $this->model->getById($id);
+                unset($updatedUser['password_hash']);
                 http_response_code(200);
                 echo json_encode($updatedUser);
             } else {

@@ -1,14 +1,16 @@
 <?php
-require_once './models/TourExperienceGallery.php';
+require_once __DIR__ . '/../models/TourExperienceGallery.php';
+require_once __DIR__ . '/../lib/FileValidator.php';
 
 class TourExperienceGalleryController
 {
     private $model;
-    private $uploadBasePath = '/path/to/ftp_root/tour-experience-gallery/';
+    private $uploadBasePath;
 
     public function __construct($pdo)
     {
         $this->model = new TourExperienceGallery($pdo);
+        $this->uploadBasePath = __DIR__ . '/../uploads/tour-experience-gallery/';
     }
 
     public function getByTourPackageId($packageId)
@@ -16,7 +18,6 @@ class TourExperienceGalleryController
         $images = $this->model->getByTourPackageId($packageId);
         echo json_encode($images);
     }
-    
 
     public function delete($packageId, $id)
     {
@@ -38,12 +39,6 @@ class TourExperienceGalleryController
 
     public function update($packageId, $id)
     {
-        // if ($_SERVER['REQUEST_METHOD'] !== 'POST' || strtolower($_POST['_method'] ?? '') !== 'put') {
-        //     http_response_code(405);
-        //     echo json_encode(['error' => 'Invalid method']);
-        //     return;
-        // }
-
         $existing = $this->model->getByPackageAndId($packageId, $id);
         if (!$existing) {
             http_response_code(404);
@@ -62,18 +57,28 @@ class TourExperienceGalleryController
         }
 
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            $fileTmp = $_FILES['image']['tmp_name'];
-            $fileName = basename($_FILES['image']['name']);
+            $validation = FileValidator::validateImage($_FILES['image']);
+            if (!$validation['valid']) {
+                http_response_code(400);
+                echo json_encode(['error' => $validation['error']]);
+                return;
+            }
+
+            if (!is_dir($this->uploadBasePath)) {
+                mkdir($this->uploadBasePath, 0755, true);
+            }
+
+            $fileName = FileValidator::generateSafeFileName($_FILES['image']['name']);
             $targetPath = $this->uploadBasePath . $fileName;
 
-            if (move_uploaded_file($fileTmp, $targetPath)) {
-                // Delete old file
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                // Delete old file if present
                 $oldPath = $this->uploadBasePath . basename($existing['image_url']);
-                if (file_exists($oldPath)) {
+                if (!empty($existing['image_url']) && file_exists($oldPath)) {
                     unlink($oldPath);
                 }
 
-                $updateData['image_url'] = '/tour-experience-gallery/' . $fileName;
+                $updateData['image_url'] = '/uploads/tour-experience-gallery/' . $fileName;
             } else {
                 http_response_code(500);
                 echo json_encode(['error' => 'Failed to upload new image']);
@@ -88,7 +93,7 @@ class TourExperienceGalleryController
             echo json_encode(['message' => 'Image updated successfully']);
         } catch (PDOException $e) {
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
         }
     }
 }

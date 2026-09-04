@@ -7,7 +7,8 @@ import { useState, useEffect, useRef } from 'react';
 import { AdminSidebar, navLinks } from '@/components/admin/sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LoaderCircle, Sun, Moon } from 'lucide-react';
+import { Menu, LoaderCircle, Sun, Moon, Globe, ExternalLink } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import type { User as AuthUser } from '@/contexts/auth-context';
 import {
@@ -40,6 +41,7 @@ export default function AdminLayout({
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (isMounted.current) {
       setIsLoading(true);
       const timer = setTimeout(() => setIsLoading(false), 1500);
@@ -51,7 +53,8 @@ export default function AdminLayout({
 
    useEffect(() => {
     const userSessionRaw = localStorage.getItem(ADMIN_SESSION_KEY);
-    if (userSessionRaw) {
+    const token = localStorage.getItem('sapphire_token');
+    if (userSessionRaw && token) {
       try {
         const user: AuthUser = JSON.parse(userSessionRaw);
         if (user && user.type === 'admin') {
@@ -71,10 +74,10 @@ export default function AdminLayout({
   }, [pathname, router]);
 
   const layout = (
-      <div className="grid h-screen w-full overflow-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="fixed inset-0 grid w-full h-full overflow-hidden md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] bg-background">
         <AdminSidebar />
-        <div className="flex flex-col overflow-hidden">
-          <header className="flex h-14 items-center gap-4 border-b bg-background-alt px-4 lg:h-[60px] lg:px-6 shrink-0">
+        <div className="flex flex-col h-full overflow-hidden">
+          <header className="flex h-14 items-center gap-4 border-b bg-background-alt px-4 lg:h-[60px] lg:px-6 shrink-0 z-10">
               <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                   <SheetTrigger asChild>
                       <Button
@@ -113,12 +116,37 @@ export default function AdminLayout({
                           </Link>
                           ))}
                       </nav>
+                      <div className="mt-auto pt-6 border-t border-border/40 text-center">
+                          <a 
+                              href="https://nebulync.com/" 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors font-medium group"
+                          >
+                              <span>Powered by</span>
+                              <span className="font-semibold text-foreground group-hover:text-primary underline decoration-primary/40 underline-offset-2">Nebulync.com</span>
+                          </a>
+                      </div>
                   </SheetContent>
               </Sheet>
               <div className="w-full flex-1">
                   {/* Can add search or breadcrumbs here */}
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                {/* Live Public Website Link */}
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3 gap-1.5 rounded-full text-xs font-semibold border-primary/30 text-primary hover:bg-primary/10 transition-colors shadow-xs"
+                >
+                  <Link href="/" target="_blank" rel="noopener noreferrer" title="View Public Website">
+                    <Globe className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Live Website</span>
+                    <ExternalLink className="h-3 w-3 opacity-70" />
+                  </Link>
+                </Button>
+
                 <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full text-primary hover:bg-primary/10">
                   {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                 </Button>
@@ -139,18 +167,39 @@ export default function AdminLayout({
                       <DropdownMenuItem asChild className="cursor-pointer">
                           <Link href="/admin/profile">Profile</Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                          <Link href="/" target="_blank" rel="noopener noreferrer">Visit Public Website</Link>
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
               </div>
           </header>
-          <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-            {children}
+
+          <main className="flex-1 overflow-y-auto p-4 lg:p-6 flex flex-col justify-between">
+            <div className="flex-1">
+              {children}
+            </div>
+            <footer className="mt-8 pt-4 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
+              <p>&copy; {new Date().getFullYear()} Sapphire Trails. All rights reserved.</p>
+              <p className="flex items-center gap-1">
+                <span>Powered by</span>
+                <a 
+                  href="https://nebulync.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="font-semibold text-foreground hover:text-primary transition-colors underline decoration-primary/40 underline-offset-2"
+                >
+                  Nebulync.com
+                </a>
+              </p>
+            </footer>
           </main>
         </div>
       </div>
   );
+
 
   return (
     <>

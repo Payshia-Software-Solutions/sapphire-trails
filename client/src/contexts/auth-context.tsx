@@ -1,9 +1,10 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/lib/utils';
+import { setAuthToken, removeAuthToken, getAuthToken } from '@/lib/api';
 
 // Unified user data type
 export interface User {
@@ -16,15 +17,17 @@ export interface User {
 }
 
 const USER_SESSION_KEY = 'sapphire-user';
-import { API_BASE_URL } from '@/lib/utils';
+const ADMIN_SESSION_KEY = 'adminUser';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, pass: string) => Promise<User | null>;
   signup: (name: string, email: string, phone: string | undefined, pass: string) => Promise<boolean>;
+  updateUser: (updatedUser: Partial<User>) => void;
   logout: () => void;
 }
+
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -38,8 +41,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem(USER_SESSION_KEY);
-      if (storedUser) {
+      const token = getAuthToken();
+      if (storedUser && token) {
         setUser(JSON.parse(storedUser));
+      } else if (!token && storedUser) {
+        // Stale session without token
+        localStorage.removeItem(USER_SESSION_KEY);
+        localStorage.removeItem(ADMIN_SESSION_KEY);
+        setUser(null);
       }
     } catch (error) {
       console.error('Failed to parse user session data', error);
@@ -52,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, pass: string): Promise<User | null> => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
+      const response = await fetch(`${API_BASE_URL}/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,13 +77,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       const loggedInUser: User = data.user;
-      if (!loggedInUser) {
-        throw new Error('Login successful, but no user data was returned from the server.');
+      const token: string = data.token;
+
+      if (!loggedInUser || !token) {
+        throw new Error('Login successful, but incomplete authentication data was returned.');
       }
 
+      // Store token and user state
+      setAuthToken(token);
       setUser(loggedInUser);
       localStorage.setItem(USER_SESSION_KEY, JSON.stringify(loggedInUser));
-      localStorage.setItem('adminUser', JSON.stringify(loggedInUser)); // Also set admin key for admin panel access
+      if (loggedInUser.type === 'admin') {
+        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(loggedInUser));
+      }
+
       toast({ title: 'Success!', description: 'You have logged in successfully.' });
       return loggedInUser;
 
@@ -113,11 +129,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(errorMessage);
       }
 
-      const newUser: User = data;
+      const newUser: User = data.user || data;
+      const token: string = data.token;
+
       if (!newUser) {
-          throw new Error('Sign-up successful, but no user data was returned from the server.');
+        throw new Error('Sign-up successful, but no user data was returned from the server.');
       }
       
+      if (token) {
+        setAuthToken(token);
+      }
       setUser(newUser);
       localStorage.setItem(USER_SESSION_KEY, JSON.stringify(newUser));
       toast({ title: 'Welcome!', description: 'Your account has been created successfully.' });
@@ -133,17 +154,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateUser = (updatedFields: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      const updated = { ...prev, ...updatedFields };
+      localStorage.setItem(USER_SESSION_KEY, JSON.stringify(updated));
+      if (updated.type === 'admin') {
+        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
   const logout = () => {
     setUser(null);
+    removeAuthToken();
     localStorage.removeItem(USER_SESSION_KEY);
-    localStorage.removeItem('adminUser');
+    localStorage.removeItem(ADMIN_SESSION_KEY);
     toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
     if (pathname.startsWith('/profile') || pathname.startsWith('/booking') || pathname.startsWith('/admin')) {
-         router.push('/');
+      router.push('/auth');
     }
   };
 
-  const value = { user, isLoading, login, signup, logout };
+  const value = { user, isLoading, login, signup, updateUser, logout };
+
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

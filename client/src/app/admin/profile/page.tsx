@@ -30,10 +30,10 @@ export default function AdminProfilePage() {
       if (user && user.type === 'admin') {
         setAdminUser(user);
       } else {
-         router.push('/admin/login');
+         router.push('/auth?redirect=/admin/profile');
       }
     } else {
-      router.push('/admin/login');
+      router.push('/auth?redirect=/admin/profile');
     }
   }, [router]);
 

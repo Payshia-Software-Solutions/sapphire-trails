@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import { TourDetailHero } from '@/components/sections/tour-detail-hero';
+import { TourDetailNav } from '@/components/sections/tour-detail-nav';
 import { TourDetailHighlights } from '@/components/sections/tour-detail-highlights';
 import { TourDetailInclusions } from '@/components/sections/tour-detail-inclusions';
 import { TourDetailItinerary } from '@/components/sections/tour-detail-itinerary';
@@ -48,15 +49,28 @@ export async function generateMetadata(
 
   const previousImages = (await parent).openGraph?.images || []
 
+  const metaTitle = tourPackage.metaTitle?.trim() 
+    ? tourPackage.metaTitle 
+    : `Book the ${tourPackage.tourPageTitle} | Ratnapura Gem Mine Tours`;
+
+  const metaDescription = tourPackage.metaDescription?.trim()
+    ? tourPackage.metaDescription
+    : `Experience one of the best gem tours in Ratnapura. Our ${tourPackage.tourPageTitle} is a private gem tour package offering an unforgettable Sri Lankan adventure. ${tourPackage.tourPageDescription}`;
+
+  const canonical = tourPackage.canonicalUrl?.trim()
+    ? tourPackage.canonicalUrl
+    : `/tours/${slug}`;
+
   return {
-    title: `Book the ${tourPackage.tourPageTitle} | Ratnapura Gem Mine Tours`,
-    description: `Experience one of the best gem tours in Ratnapura. Our ${tourPackage.tourPageTitle} is a private gem tour package offering an unforgettable Sri Lankan adventure. ${tourPackage.tourPageDescription}`,
+    title: metaTitle,
+    description: metaDescription,
+    keywords: tourPackage.metaKeywords ? tourPackage.metaKeywords.split(',').map(k => k.trim()) : undefined,
     alternates: {
-      canonical: `/tours/${slug}`,
+      canonical: canonical,
     },
     openGraph: {
-      title: `Book the ${tourPackage.tourPageTitle} | Ratnapura Gem Mine Tours`,
-      description: `Experience one of the best private gem tours in Ratnapura, Sri Lanka with our ${tourPackage.tourPageTitle} package.`,
+      title: metaTitle,
+      description: metaDescription,
       images: [
         {
           url: tourPackage.heroImage,
@@ -67,6 +81,12 @@ export async function generateMetadata(
         ...previousImages,
       ],
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: metaTitle,
+      description: metaDescription,
+      images: [tourPackage.heroImage],
+    }
   }
 }
 
@@ -103,6 +123,27 @@ export default async function TourDetailPage({ params }: Props) {
     }
   };
 
+  const touristTripStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    "name": tourPackage.tourPageTitle,
+    "description": tourPackage.tourPageDescription,
+    "image": tourPackage.heroImage,
+    "touristType": ["EcoTourism", "LuxuryTourism", "GemstoneTourism"],
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "USD",
+      "price": tourPackage.price.replace(/[^0-9.]/g, ''),
+      "availability": "https://schema.org/InStock",
+      "url": `${BASE_URL}${tourPackage.bookingLink}?tourType=${tourPackage.id}`
+    },
+    "provider": {
+      "@type": "TravelAgency",
+      "name": "Sapphire Trails Sri Lanka",
+      "url": "https://sapphiretrails.lk"
+    }
+  };
+
   const breadcrumbStructuredData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -136,6 +177,10 @@ export default async function TourDetailPage({ params }: Props) {
       />
       <script
           type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(touristTripStructuredData) }}
+      />
+      <script
+          type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
       />
       <Header />
@@ -145,8 +190,14 @@ export default async function TourDetailPage({ params }: Props) {
             duration={tourPackage.duration}
             price={tourPackage.price}
             priceSuffix={tourPackage.priceSuffix}
-            imageUrl={tourPackage.heroImage}
+            imageUrl={tourPackage.heroImage || tourPackage.imageUrl}
             imageHint={tourPackage.heroImageHint}
+            bookingLink={`/tours/${slug}/book`}
+            galleryImages={tourPackage.experienceGallery}
+        />
+        <TourDetailNav
+            tourTitle={tourPackage.tourPageTitle}
+            price={tourPackage.price}
             bookingLink={`/tours/${slug}/book`}
         />
         <TourDetailHighlights 
@@ -154,9 +205,9 @@ export default async function TourDetailPage({ params }: Props) {
             highlights={tourPackage.tourHighlights}
         />
         {/* Itinerary + Inclusions side by side on desktop */}
-        <section className="w-full py-10 md:py-14 bg-background-alt">
-          <div className="container mx-auto px-4 md:px-6 max-w-screen-2xl">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+        <section className="w-full py-16 sm:py-24 bg-background-alt border-b border-border/80">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-2xl">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
               <TourDetailItinerary itinerary={tourPackage.itinerary} />
               <TourDetailInclusions
                 inclusions={tourPackage.inclusions.map(i => i.title)}

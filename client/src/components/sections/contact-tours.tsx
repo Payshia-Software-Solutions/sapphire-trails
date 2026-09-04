@@ -31,7 +31,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
         <div className="flex items-center justify-between gap-4 mt-auto">
           <p className="text-lg font-bold text-primary">{tour.price}</p>
           <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4">
-            <Link href={`/booking?tourType=${tour.id}`}>
+            <Link href={`/tours/${tour.slug}/book`}>
               <CalendarCheck className="mr-2 h-4 w-4" />
               Book
             </Link>

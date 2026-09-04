@@ -1,11 +1,23 @@
 <?php
-// Set CORS headers for every response
-header("Access-Control-Allow-Origin: *");
+require_once __DIR__ . '/../lib/Env.php';
+
+// Load CORS settings
+$allowedOriginsConfig = Env::get('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001,http://sapphiretrails.lk,https://sapphiretrails.lk');
+$allowedOrigins = array_map('trim', explode(',', $allowedOriginsConfig));
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (!empty($origin) && (in_array($origin, $allowedOrigins, true) || in_array('*', $allowedOrigins, true))) {
+    header("Access-Control-Allow-Origin: $origin");
+    header("Access-Control-Allow-Credentials: true");
+} else {
+    // Default fallback
+    header("Access-Control-Allow-Origin: *");
+}
+
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
 // Handle OPTIONS requests (preflight)
-
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit();
@@ -13,95 +25,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 ini_set('memory_limit', '256M');
 
-// Report all PHP errors
-error_reporting(E_ALL);
+// Environment-based error display configuration
+$appEnv = Env::get('APP_ENV', 'development');
+if ($appEnv === 'production') {
+    error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '1');
+} else {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
 
-// Display errors in the browser (for development)
-ini_set('display_errors', 1);
-
-// Transactions Route files 
-$userRoutes = require './routes/userRoutes.php';
-$adminRoutes = require './routes/adminRoutes.php';
-$tourRoutes = require './routes/tourpackageRoutes.php';
-$locationRoutes = require './routes/locationRoutes.php';
-$bookingRoutes = require './routes/bookingRoutes.php';
-$locationgalleryimageRoutes = require './routes/locationgalleryimageRoutes.php';
-$siteContentRoutes = require './routes/sitecontentRoutes.php';
-$tourexperiencegalleryRoutes = require './routes/tourexperiencegalleryRoutes.php';
-$contactRoutes = require './routes/contactRoutes.php';
-
-
+// Transaction Route files 
+$userRoutes = require __DIR__ . '/userRoutes.php';
+$adminRoutes = require __DIR__ . '/adminRoutes.php';
+$tourRoutes = require __DIR__ . '/tourpackageRoutes.php';
+$locationRoutes = require __DIR__ . '/locationRoutes.php';
+$bookingRoutes = require __DIR__ . '/bookingRoutes.php';
+$locationgalleryimageRoutes = require __DIR__ . '/locationgalleryimageRoutes.php';
+$siteContentRoutes = require __DIR__ . '/sitecontentRoutes.php';
+$tourexperiencegalleryRoutes = require __DIR__ . '/tourexperiencegalleryRoutes.php';
+$contactRoutes = require __DIR__ . '/contactRoutes.php';
+$icalRoutes = require __DIR__ . '/icalRoutes.php';
+$mailRoutes = require __DIR__ . '/mailRoutes.php';
+$invoiceRoutes = require __DIR__ . '/invoiceRoutes.php';
+$analyticsRoutes = require __DIR__ . '/analyticsRoutes.php';
 
 // Combine all routes
 $routes = array_merge(
-     $userRoutes,
-     $adminRoutes,
-     $tourRoutes,
+    $userRoutes,
+    $adminRoutes,
+    $tourRoutes,
     $locationRoutes,
     $bookingRoutes,
     $locationgalleryimageRoutes,
     $siteContentRoutes,
     $tourexperiencegalleryRoutes,
-    $contactRoutes
+    $contactRoutes,
+    $icalRoutes,
+    $mailRoutes,
+    $invoiceRoutes,
+    $analyticsRoutes
 );
 
-// Define the home route with trailing slash
-
+// Define the home route
 $routes['GET /'] = function () {
-    // Serve the index.html file
-    readfile('./views/index.html');
+    if (file_exists(__DIR__ . '/../views/index.html')) {
+        readfile(__DIR__ . '/../views/index.html');
+    } else {
+        echo json_encode(['status' => 'online', 'service' => 'Sapphire Trails API']);
+    }
 };
 
 // Get request method and URI
 $method = $_SERVER['REQUEST_METHOD'];
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);  // Get only the path, not query parameters
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Ensure URI always has a trailing slash
-if (substr($uri, -1) !== '/') {
-    // $uri .= '/';
-}
-
-// Determine if the application is running on localhost
-if ($_SERVER['HTTP_HOST'] === 'localhost') {
-    // Adjust URI if needed (only on localhost)
+// Determine if the application is running in a local subdirectory
+if ($_SERVER['HTTP_HOST'] === 'localhost' || strpos($_SERVER['HTTP_HOST'], 'localhost:') === 0) {
     $uri = str_replace(['/sapphire-trails/server', '/sapphire_trails_server'], '', $uri);
-} else {
-    // Adjust URI if needed (if using a subdirectory)
-    $uri = $uri;
 }
-// Set the header for JSON responses, except for HTML pages
-if ($uri !== '/') {
+
+// Set the header for JSON responses, except for HTML pages and iCal export
+if ($uri !== '/' && strpos($uri, '/ical/export') === false) {
     header('Content-Type: application/json');
 }
 
-// echo $uri;
-// Debugging
-error_log("Method: $method");
-error_log("URI: $uri");
-// echo $uri;
-// Define a generic regex pattern for routes with placeholders like {id}, {username}, etc.
+$routeRegexPattern = "#\{[a-zA-Z0-9_]+\}#";
 
-$routeRegexPattern = "#\{[a-zA-Z0-9_]+\}#"; // Matches anything inside {}
 // Route matching
-
 foreach ($routes as $route => $handler) {
     list($routeMethod, $routeUri) = explode(' ', $route, 2);
-    // Replace all placeholders like {id}, {username}, etc. with a generic regex that matches alphanumeric strings
     $routeRegex = preg_replace($routeRegexPattern, '([a-zA-Z0-9_\-]+)', $routeUri);
     $routeRegex = "#^" . rtrim($routeRegex, '/') . "/?$#";
-    error_log("Checking route: $routeRegex");
-    // Check if the route matches the request
+
     if ($method === $routeMethod && preg_match($routeRegex, $uri, $matches)) {
-
         array_shift($matches); // Remove the full match
-        error_log("Route matched: $route");
-
-        // Call the route handler with dynamic parameters
         call_user_func_array($handler, $matches);
         exit;
     }
 }
 
 // Default 404 response
-header("HTTP/1.1 404 Not Found");
+http_response_code(404);
 echo json_encode(['error' => 'Route not found']);

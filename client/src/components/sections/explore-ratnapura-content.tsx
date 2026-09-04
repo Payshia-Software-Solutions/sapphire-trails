@@ -1,56 +1,91 @@
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, ArrowRight, Sparkles, Compass } from "lucide-react";
 import { locationsData as staticLocationsData, mapServerLocationToClient } from "@/lib/locations-data";
 import type { Location } from '@/lib/locations-data';
+import { API_BASE_URL, getFullImageUrl } from '@/lib/utils';
+import { useSiteContent } from '@/lib/site-content';
 
-import { API_BASE_URL } from '@/lib/utils';
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80';
 
-const LocationCard = ({ location }: { location: Location }) => (
-  <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
-    <Card className="bg-transparent border-0 shadow-none flex flex-col h-full">
-      <div className="overflow-hidden rounded-lg">
-        <Image
-          src={location.cardImage}
-          alt={location.title}
-          data-ai-hint={location.imageHint}
-          width={600}
-          height={400}
-          className="object-cover w-full h-auto aspect-[3/2] transition-transform duration-300 group-hover:scale-105"
-        />
-      </div>
-      <CardContent className="p-4 flex flex-col flex-grow bg-transparent text-left">
-        <h3 className="text-xl font-headline font-bold text-primary">{location.title}</h3>
-        <p className="text-sm text-muted-foreground mt-1 mb-2">{location.distance}</p>
-        <p className="text-sm text-muted-foreground">{location.cardDescription}</p>
-      </CardContent>
-    </Card>
-  </Link>
-);
+const LocationCard = ({ location }: { location: Location }) => {
+  const resolvedImage = getFullImageUrl(location.cardImage) || FALLBACK_IMAGE;
+
+  return (
+    <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
+      <Card className="bg-card hover:bg-card/80 border-border/80 hover:border-primary/50 transition-all duration-300 flex flex-col h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-xl group">
+        
+        {/* Card Thumbnail Box */}
+        <div className="relative aspect-[16/10] overflow-hidden bg-black/40">
+          <img
+            src={resolvedImage}
+            alt={location.title}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE; }}
+            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          
+          <Badge className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-primary border-primary/30 text-[11px] font-semibold uppercase tracking-wider">
+            {location.category === 'agriculture' ? 'Gem Mining' : location.category === 'cultural' ? 'Cultural' : 'Nature'}
+          </Badge>
+
+          {location.distance && (
+            <Badge variant="outline" className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md text-white border-white/20 text-[10px]">
+              <MapPin className="h-3 w-3 mr-1 text-primary" />
+              {location.distance}
+            </Badge>
+          )}
+        </div>
+
+        {/* Card Text Content */}
+        <CardContent className="p-5 flex flex-col flex-grow justify-between text-left space-y-3">
+          <div>
+            <h3 className="text-xl font-bold font-serif text-foreground group-hover:text-primary transition-colors leading-snug">
+              {location.title}
+            </h3>
+            <p className="text-xs text-muted-foreground mt-2 line-clamp-3 leading-relaxed">
+              {location.cardDescription}
+            </p>
+          </div>
+
+          <div className="pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
+            <span>Explore Attraction</span>
+            <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1.5 transition-transform" />
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+};
 
 export function ExploreRatnapuraContent() {
+  const { content } = useSiteContent();
+  const catalogHeader = content.explore?.catalogHeader || {
+    badge: 'Curated Destinations',
+    heading: 'Discover Ratnapura Attractions',
+    subtitle: 'From world-famous alluvial gem gravel pits to virgin rainforest sanctuaries and sacred temples.'
+  };
+
   const [allLocations, setAllLocations] = useState<Location[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchLocations() {
       try {
         const response = await fetch(`${API_BASE_URL}/locations`);
         if (!response.ok) {
-          console.error('Failed to fetch from server, using static data.');
-          setAllLocations(staticLocationsData); // Fallback to static if needed
+          setAllLocations(staticLocationsData);
           return;
         }
 
         const data = await response.json();
         if (Array.isArray(data)) {
           const serverLocations = data.map(mapServerLocationToClient);
-          // Combine server data with static data and remove duplicates
           const combined = [...staticLocationsData, ...serverLocations];
           const uniqueLocations: { [key: string]: Location } = {};
           for (const loc of combined) {
@@ -58,12 +93,12 @@ export function ExploreRatnapuraContent() {
           }
           setAllLocations(Object.values(uniqueLocations));
         } else {
-          console.error('Server response was not an array, using static data.');
           setAllLocations(staticLocationsData);
         }
       } catch (e) {
-        console.error("Failed to fetch or parse locations, using static data as fallback.", e);
         setAllLocations(staticLocationsData);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchLocations();
@@ -74,64 +109,77 @@ export function ExploreRatnapuraContent() {
   const culturalLocations = allLocations.filter(loc => loc.category === 'cultural');
 
   return (
-    <section className="w-full h-screen flex items-center justify-center bg-background scroll-section">
-      <div className="container mx-auto px-4 md:px-6">
-        <Tabs defaultValue="nature" className="w-full">
-          <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 bg-transparent p-0">
-            <TabsTrigger value="nature" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-2">
-              <span className="hidden sm:inline">Nature & Wildlife</span>
-              <span className="sm:hidden">Nature</span>
-            </TabsTrigger>
-            <TabsTrigger value="agriculture" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-2">
-              <span className="hidden sm:inline">Agricultural & Energy</span>
-              <span className="sm:hidden">Agriculture</span>
-            </TabsTrigger>
-            <TabsTrigger value="cultural" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-2">
-              <span className="hidden sm:inline">Cultural & Religious</span>
-              <span className="sm:hidden">Cultural</span>
-            </TabsTrigger>
-          </TabsList>
+    <section className="w-full py-16 sm:py-24 bg-background">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 border border-primary/20 px-3.5 py-1 rounded-full">
+            <Compass className="h-3.5 w-3.5" />
+            <span>{catalogHeader.badge}</span>
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-bold font-serif text-foreground tracking-tight">
+            {catalogHeader.heading}
+          </h2>
+          <p className="text-base text-muted-foreground mt-3 leading-relaxed">
+            {catalogHeader.subtitle}
+          </p>
+        </div>
+
+
+        {/* Category Tabs */}
+        <Tabs defaultValue="all" className="w-full">
+          <div className="flex justify-center mb-10">
+            <TabsList className="grid grid-cols-4 max-w-2xl w-full bg-background-alt border border-border p-1 rounded-xl">
+              <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm">
+                All ({allLocations.length})
+              </TabsTrigger>
+              <TabsTrigger value="nature" className="rounded-lg text-xs sm:text-sm">
+                Nature ({natureLocations.length})
+              </TabsTrigger>
+              <TabsTrigger value="agriculture" className="rounded-lg text-xs sm:text-sm">
+                Gem Mining ({agricultureLocations.length})
+              </TabsTrigger>
+              <TabsTrigger value="cultural" className="rounded-lg text-xs sm:text-sm">
+                Cultural ({culturalLocations.length})
+              </TabsTrigger>
+            </TabsList>
+          </div>
           
-          <TabsContent value="nature" className="mt-12">
-            {natureLocations.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {natureLocations.map((location) => (
-                    <LocationCard key={location.slug} location={location} />
-                ))}
-                </div>
-            ) : (
-                <div className="text-center text-muted-foreground py-16">
-                    <p>No locations found for this category.</p>
-                </div>
-            )}
+          {/* TAB ALL */}
+          <TabsContent value="all" className="mt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {allLocations.map((location) => (
+                <LocationCard key={location.slug} location={location} />
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* TAB NATURE */}
+          <TabsContent value="nature" className="mt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {natureLocations.map((location) => (
+                <LocationCard key={location.slug} location={location} />
+              ))}
+            </div>
           </TabsContent>
           
-          <TabsContent value="agriculture" className="mt-12">
-             {agricultureLocations.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {agricultureLocations.map((location) => (
-                    <LocationCard key={location.slug} location={location} />
-                ))}
-                </div>
-            ) : (
-                <div className="text-center text-muted-foreground py-16">
-                    <p>Content for Agricultural & Energy coming soon.</p>
-                </div>
-            )}
+          {/* TAB AGRICULTURE */}
+          <TabsContent value="agriculture" className="mt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {agricultureLocations.map((location) => (
+                <LocationCard key={location.slug} location={location} />
+              ))}
+            </div>
           </TabsContent>
           
-          <TabsContent value="cultural" className="mt-12">
-            {culturalLocations.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {culturalLocations.map((location) => (
-                    <LocationCard key={location.slug} location={location} />
-                ))}
-                </div>
-            ) : (
-                <div className="text-center text-muted-foreground py-16">
-                    <p>Content for Cultural & Religious coming soon.</p>
-                </div>
-            )}
+          {/* TAB CULTURAL */}
+          <TabsContent value="cultural" className="mt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {culturalLocations.map((location) => (
+                <LocationCard key={location.slug} location={location} />
+              ))}
+            </div>
           </TabsContent>
 
         </Tabs>

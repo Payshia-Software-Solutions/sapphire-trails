@@ -4,10 +4,10 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { mapServerLocationToClient, type Location } from '@/lib/locations-data';
 import { LocationHero } from '@/components/sections/location-hero';
+import { LocationNav } from '@/components/sections/location-nav';
 import { LocationIntro } from '@/components/sections/location-intro';
 import { LocationGallery } from '@/components/sections/location-gallery';
-import { LocationHighlights } from '@/components/sections/location-highlights';
-import { LocationVisitorInfo } from '@/components/sections/location-visitor-info';
+import { LocationExperienceGuide } from '@/components/sections/location-experience-guide';
 import { LocationNearby } from '@/components/sections/location-nearby';
 import { LocationCta } from '@/components/sections/location-cta';
 import type { Metadata, ResolvingMetadata } from 'next';
@@ -103,11 +103,31 @@ export default async function LocationPage({ params }: Props) {
     ]
   };
 
+  const touristAttractionStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    "name": location.title,
+    "description": location.cardDescription || location.intro.description,
+    "image": location.heroImage,
+    "url": `https://sapphiretrails.lk/explore-ratnapura/${slug}`,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Ratnapura",
+      "addressRegion": "Sabaragamuwa Province",
+      "addressCountry": "LK"
+    },
+    "touristType": ["EcoTourism", "CulturalTourism", "GemstoneTourism"]
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+      />
+      <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(touristAttractionStructuredData) }}
       />
       <Header />
       <main className="flex-1">
@@ -116,7 +136,10 @@ export default async function LocationPage({ params }: Props) {
           subtitle={location.subtitle}
           imageUrl={location.heroImage}
           imageHint={location.heroImageHint}
+          distance={location.distance}
+          category={location.category}
         />
+        <LocationNav locationTitle={location.title} />
         <LocationIntro
           distance={location.distance}
           title={location.intro.title}
@@ -124,14 +147,18 @@ export default async function LocationPage({ params }: Props) {
           imageUrl={location.intro.imageUrl}
           imageHint={location.intro.imageHint}
         />
+        <LocationExperienceGuide 
+          highlights={location.highlights} 
+          visitorInfo={location.visitorInfo} 
+        />
         <LocationGallery images={location.galleryImages} />
-        <LocationHighlights highlights={location.highlights} />
-        <LocationVisitorInfo visitorInfo={location.visitorInfo} />
         <LocationNearby
+          currentLocationTitle={location.title}
+          currentLocationImage={location.cardImage || location.heroImage || location.intro.imageUrl}
           mapEmbedUrl={location.map.embedUrl}
           nearbyAttractions={location.map.nearbyAttractions}
         />
-        <LocationCta />
+        <LocationCta locationTitle={location.title} />
       </main>
       <TrustSection />
       <Footer />

@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 
 import { API_BASE_URL } from '@/lib/utils';
+import { authFetch } from '@/lib/api';
 
 export default function CreateAdminPage() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function CreateAdminPage() {
 
   const onSubmit = async (data: z.infer<typeof adminCreationSchema>) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/users/`, {
+      const response = await authFetch(`${API_BASE_URL}/users/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

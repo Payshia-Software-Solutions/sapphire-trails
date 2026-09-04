@@ -3,6 +3,7 @@
 import { Users, Award, ShieldCheck, Gem } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import { useSiteContent } from '@/lib/site-content';
 
 interface Stat {
     icon: LucideIcon;
@@ -10,35 +11,14 @@ interface Stat {
     label: string;
 }
 
-const statsData: Stat[] = [
-  {
-    icon: Users,
-    value: "5,000+",
-    label: "Happy Guests"
-  },
-  {
-    icon: Award,
-    value: "27+",
-    label: "Years of Hospitality Excellence"
-  },
-  {
-    icon: ShieldCheck,
-    value: "100%",
-    label: "Safety Record"
-  },
-  {
-    icon: Gem,
-    value: "50+",
-    label: "Active Mine Pits Accessed"
-  }
-];
+const defaultIcons = [Users, Award, ShieldCheck, Gem];
 
 const StatCounter = ({ stat }: { stat: Stat }) => {
     const [count, setCount] = useState(0);
     const ref = useRef<HTMLDivElement>(null);
     const hasAnimated = useRef(false);
 
-    const endValue = parseInt(stat.value.replace(/[^0-9]/g, ''));
+    const endValue = parseInt(stat.value.replace(/[^0-9]/g, '')) || 0;
     const suffix = stat.value.replace(/[0-9,]/g, '');
 
     useEffect(() => {
@@ -94,12 +74,22 @@ const StatCounter = ({ stat }: { stat: Stat }) => {
 };
 
 export function StatsSection() {
+  const { content } = useSiteContent();
+  const statsList = content.homepage.stats || [];
+
   return (
-    <section className="w-full py-12 md:py-24 bg-background">
-        <div className="container mx-auto px-4 md:px-6">
+    <section className="w-full py-16 md:py-20 bg-primary/[0.04] border-y border-primary/20">
+        <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {statsData.map((stat, index) => (
-                <StatCounter key={index} stat={stat} />
+            {statsList.map((stat, index) => (
+                <StatCounter 
+                  key={index} 
+                  stat={{
+                    icon: defaultIcons[index % defaultIcons.length],
+                    value: stat.value,
+                    label: stat.label
+                  }} 
+                />
             ))}
           </div>
         </div>

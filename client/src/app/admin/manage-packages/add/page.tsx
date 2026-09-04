@@ -41,11 +41,16 @@ import {
   Camera, 
   Tent, 
   Thermometer,
-  HelpCircle
+  HelpCircle,
+  Wand2,
+  Sparkles,
+  Monitor,
+  Smartphone
 } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
+import { authFetch } from '@/lib/api';
 import { Progress } from '@/components/ui/progress';
 
 const iconOptions = ['MapPin', 'Gem', 'Landmark', 'Award', 'Utensils', 'Star', 'Package', 'Coffee', 'BedDouble', 'Leaf', 'Mountain', 'Bird', 'Home', 'Clock', 'CalendarDays', 'Ticket', 'Users', 'AlertTriangle', 'Waves', 'Camera', 'Tent', 'Thermometer'];
@@ -76,14 +81,13 @@ const IconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   HelpCircle,
 };
 
-import { API_BASE_URL } from '@/lib/utils';
-
 const steps = [
   { id: 1, name: 'Homepage Card', fields: ['homepageTitle', 'homepageDescription', 'imageUrl', 'imageAlt', 'imageHint'] as const },
   { id: 2, name: 'Tour Page Details', fields: ['tourPageTitle', 'duration', 'price', 'priceSuffix', 'tourPageDescription', 'heroImage', 'heroImageHint'] as const },
   { id: 3, name: 'Highlights & Inclusions', fields: ['tourHighlights', 'inclusions'] as const },
   { id: 4, name: 'Itinerary', fields: ['itinerary'] as const },
   { id: 5, name: 'Experience Gallery & Booking', fields: ['experienceGallery', 'bookingLink'] as const },
+  { id: 6, name: 'SEO & Search Metadata', fields: ['metaTitle', 'metaDescription', 'metaKeywords', 'canonicalUrl'] as const },
 ];
 
 export default function AddPackagePage() {
@@ -92,6 +96,7 @@ export default function AddPackagePage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isClient, setIsClient] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serpView, setSerpView] = useState<'desktop' | 'mobile'>('desktop');
   
   const [cardImageFile, setCardImageFile] = useState<File | null>(null);
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
@@ -100,7 +105,6 @@ export default function AddPackagePage() {
   
   const [galleryImageFiles, setGalleryImageFiles] = useState<(File | null)[]>([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState<(string | null)[]>([]);
-
 
   useEffect(() => {
     setIsClient(true);
@@ -127,6 +131,10 @@ export default function AddPackagePage() {
       itinerary: [{ time: '', title: '', description: '' }],
       experienceGallery: [{ src: '', alt: '', hint: '' }],
       bookingLink: '/booking',
+      metaTitle: '',
+      metaDescription: '',
+      metaKeywords: '',
+      canonicalUrl: '',
     },
   });
 
@@ -208,6 +216,30 @@ export default function AddPackagePage() {
     }
   };
 
+  const handleAutoFillSEO = () => {
+    const title = form.getValues('tourPageTitle') || form.getValues('homepageTitle') || '';
+    const desc = form.getValues('tourPageDescription') || form.getValues('homepageDescription') || '';
+    if (!title) {
+      toast({
+        variant: 'destructive',
+        title: 'Tour Title Needed',
+        description: 'Please enter a Tour Title before auto-generating SEO metadata.',
+      });
+      return;
+    }
+    const generatedTitle = `Book the ${title} | Ratnapura Gem Mine Tours`;
+    const cleanDesc = desc.replace(/\s+/g, ' ').trim();
+    const generatedDesc = `Experience the exclusive ${title} in Ratnapura Sri Lanka. ${cleanDesc.slice(0, 100)}... Book with Sapphire Trails.`;
+    const generatedKeywords = `${title.toLowerCase()}, gem mine tour ratnapura, private gem expedition, sri lanka gem tours, sapphire trails`;
+
+    form.setValue('metaTitle', generatedTitle.slice(0, 70));
+    form.setValue('metaDescription', generatedDesc.slice(0, 160));
+    form.setValue('metaKeywords', generatedKeywords);
+    toast({
+      title: '🎯 SEO Metadata Auto-Generated',
+      description: 'Optimized Meta Title, Description, and Target Keywords have been filled.',
+    });
+  };
 
   async function onSubmit(data: z.infer<typeof packageFormSchema>) {
      if (!cardImageFile) {
@@ -242,7 +274,6 @@ export default function AddPackagePage() {
     formData.append('homepage_description', data.homepageDescription);
     formData.append('homepage_image_alt', data.imageAlt);
     formData.append('homepage_image_hint', data.imageHint);
-    
     formData.append('tour_page_title', data.tourPageTitle);
     formData.append('duration', data.duration);
     formData.append('price', data.price);
@@ -250,6 +281,10 @@ export default function AddPackagePage() {
     formData.append('hero_image_hint', data.heroImageHint);
     formData.append('tour_page_description', data.tourPageDescription);
     formData.append('booking_link', data.bookingLink);
+    formData.append('meta_title', data.metaTitle || '');
+    formData.append('meta_description', data.metaDescription || '');
+    formData.append('meta_keywords', data.metaKeywords || '');
+    formData.append('canonical_url', data.canonicalUrl || '');
 
     // 3. Stringify and append array fields
     formData.append('highlights', JSON.stringify(data.tourHighlights.map((h, i) => ({ ...h, sort_order: i + 1 }))));
@@ -272,7 +307,7 @@ export default function AddPackagePage() {
 
     try {
       // First, create the package without gallery images
-      const response = await fetch(`${API_BASE_URL}/tours/`, {
+      const response = await authFetch(`${API_BASE_URL}/tours/`, {
         method: 'POST',
         body: formData,
       });
@@ -301,6 +336,25 @@ export default function AddPackagePage() {
     }
   }
 
+  const onFormError = (errors: any) => {
+    const errorKeys = Object.keys(errors);
+    if (errorKeys.length === 0) return;
+
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      const hasErrorInStep = step.fields.some(f => errorKeys.includes(f));
+      if (hasErrorInStep) {
+        setCurrentStep(step.id);
+        toast({
+          variant: "destructive",
+          title: `Validation Error in ${step.name}`,
+          description: `Please complete the required fields in Step ${step.id} (${step.name}).`,
+        });
+        return;
+      }
+    }
+  };
+
   const progressValue = (currentStep / steps.length) * 100;
   
   if (!isClient) {
@@ -319,13 +373,32 @@ export default function AddPackagePage() {
         </div>
       </div>
       
-      <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep-1].name}</span></p>
+      <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-medium text-muted-foreground">Step {currentStep} of {steps.length}: <span className="text-primary font-semibold">{steps[currentStep-1].name}</span></p>
+            <div className="flex items-center gap-1.5">
+              {steps.map(s => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => setCurrentStep(s.id)}
+                  className={cn(
+                    "px-2.5 py-1 text-xs rounded-md transition-colors font-medium border",
+                    currentStep === s.id
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background-alt text-muted-foreground border-border hover:bg-accent hover:text-foreground"
+                  )}
+                >
+                  {s.id}. {s.name}
+                </button>
+              ))}
+            </div>
+          </div>
           <Progress value={progressValue} className="h-2" />
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-8">
             {/* Step 1: Homepage Card */}
             <div className={cn(currentStep === 1 ? 'block' : 'hidden')}>
                 <Card>
@@ -536,6 +609,172 @@ export default function AddPackagePage() {
                     <CardContent>
                          <FormField control={form.control} name="bookingLink" render={({ field }) => (<FormItem><FormLabel>Booking Link</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     </CardContent>
+                </Card>
+             </div>
+
+             {/* Step 6: SEO & Search Metadata */}
+             <div className={cn(currentStep === 6 ? 'block' : 'hidden')}>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-border/50">
+                    <div>
+                      <CardTitle className="text-base font-semibold flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        Search Engine Optimization (SEO) &amp; Social Metadata
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Configure how this tour package appears on Google search results, social shares, and SEO rankings.
+                      </CardDescription>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAutoFillSEO}
+                      className="gap-1 text-xs h-8 text-primary border-primary/40 hover:bg-primary/10"
+                    >
+                      <Wand2 className="h-3.5 w-3.5" /> Auto-Generate SEO
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pt-4">
+                    {/* Meta Title */}
+                    <FormField
+                      control={form.control}
+                      name="metaTitle"
+                      render={({ field }) => {
+                        const currentLen = (field.value || '').length;
+                        const isOptimal = currentLen >= 35 && currentLen <= 60;
+                        return (
+                          <FormItem className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <FormLabel className="text-xs font-semibold">Custom Meta Title</FormLabel>
+                              <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${isOptimal ? 'bg-emerald-500/20 text-emerald-400' : currentLen > 60 ? 'bg-destructive/20 text-destructive' : 'bg-muted text-muted-foreground'}`}>
+                                {currentLen} / 60 chars {isOptimal ? '(Optimal)' : currentLen > 60 ? '(Too Long)' : '(Short)'}
+                              </span>
+                            </div>
+                            <FormControl>
+                              <Input
+                                placeholder={`e.g. Book the ${form.watch('tourPageTitle') || 'Tour'} | Ratnapura Gem Mine Tours`}
+                                {...field}
+                                className="h-9 text-xs"
+                              />
+                            </FormControl>
+                            <p className="text-[11px] text-muted-foreground">
+                              Leave empty to use the default: <code>Book the [Tour Title] | Ratnapura Gem Mine Tours</code>.
+                            </p>
+                            <FormMessage className="text-xs" />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
+                    {/* Meta Description */}
+                    <FormField
+                      control={form.control}
+                      name="metaDescription"
+                      render={({ field }) => {
+                        const currentLen = (field.value || '').length;
+                        const isOptimal = currentLen >= 120 && currentLen <= 160;
+                        return (
+                          <FormItem className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <FormLabel className="text-xs font-semibold">Custom Meta Description</FormLabel>
+                              <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${isOptimal ? 'bg-emerald-500/20 text-emerald-400' : currentLen > 160 ? 'bg-destructive/20 text-destructive' : 'bg-muted text-muted-foreground'}`}>
+                                {currentLen} / 160 chars {isOptimal ? '(Optimal)' : currentLen > 160 ? '(Too Long)' : '(Short)'}
+                              </span>
+                            </div>
+                            <FormControl>
+                              <Textarea
+                                rows={3}
+                                placeholder="e.g. Experience an exclusive private gem tour in Ratnapura Sri Lanka with master gemologists, pit excavation, and luxury dining."
+                                {...field}
+                                className="text-xs resize-none"
+                              />
+                            </FormControl>
+                            <p className="text-[11px] text-muted-foreground">
+                              Recommended length: 120-160 characters.
+                            </p>
+                            <FormMessage className="text-xs" />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
+                    {/* Focus Keywords */}
+                    <FormField
+                      control={form.control}
+                      name="metaKeywords"
+                      render={({ field }) => (
+                        <FormItem className="space-y-1.5">
+                          <FormLabel className="text-xs font-semibold">Focus SEO Keywords &amp; Tags</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g. gem mine tours ratnapura, luxury gem expedition, ceylon sapphires"
+                              {...field}
+                              className="h-9 text-xs"
+                            />
+                          </FormControl>
+                          <p className="text-[11px] text-muted-foreground">
+                            Comma-separated search keywords.
+                          </p>
+                          <FormMessage className="text-xs" />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Canonical URL */}
+                    <FormField
+                      control={form.control}
+                      name="canonicalUrl"
+                      render={({ field }) => (
+                        <FormItem className="space-y-1.5">
+                          <FormLabel className="text-xs font-semibold">Canonical URL Override (Optional)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="/tours/custom-slug"
+                              {...field}
+                              className="h-9 text-xs font-mono"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs" />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Live SERP Preview */}
+                    <div className="pt-3 border-t border-border/60 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold">Live Google Search Preview</span>
+                        <div className="flex items-center rounded-lg border border-border p-0.5 bg-background-alt text-[10px]">
+                          <button
+                            type="button"
+                            onClick={() => setSerpView('desktop')}
+                            className={`px-2 py-0.5 rounded flex items-center gap-1 ${serpView === 'desktop' ? 'bg-primary text-primary-foreground font-semibold' : 'text-muted-foreground'}`}
+                          >
+                            <Monitor className="h-3 w-3" /> Desktop
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSerpView('mobile')}
+                            className={`px-2 py-0.5 rounded flex items-center gap-1 ${serpView === 'mobile' ? 'bg-primary text-primary-foreground font-semibold' : 'text-muted-foreground'}`}
+                          >
+                            <Smartphone className="h-3 w-3" /> Mobile
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className={`p-3.5 bg-white dark:bg-[#1f1f1f] text-black dark:text-white rounded-xl border border-border shadow-sm text-left ${serpView === 'mobile' ? 'max-w-[280px] mx-auto' : 'w-full'}`}>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400 truncate flex items-center gap-1 font-mono">
+                          <span>https://sapphiretrails.lk</span> › tours › <span className="text-emerald-600 dark:text-emerald-400">new-tour-package</span>
+                        </div>
+                        <div className="text-xs sm:text-sm font-semibold text-[#1a0dab] dark:text-[#8ab4f8] hover:underline cursor-pointer line-clamp-1 mt-0.5">
+                          {form.watch('metaTitle')?.trim() || (form.watch('tourPageTitle') ? `Book the ${form.watch('tourPageTitle')} | Ratnapura Gem Mine Tours` : 'Sapphire Trails Tour Package')}
+                        </div>
+                        <div className="text-[11px] text-gray-600 dark:text-gray-300 line-clamp-2 mt-1 leading-relaxed">
+                          {form.watch('metaDescription')?.trim() || (form.watch('tourPageDescription') || 'Experience an unforgettable private gem mine tour in Ratnapura Sri Lanka with master gemologists.')}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
                 </Card>
              </div>
           

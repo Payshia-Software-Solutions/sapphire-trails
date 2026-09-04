@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/TourExperienceGallery.php';
+require_once __DIR__ . '/TourItinerary.php';
 
 class TourPackage
 {
@@ -7,11 +8,11 @@ class TourPackage
     private $tourItinerary;
     private $tourExperienceGallery;
 
-    public function __construct($pdo, $tourItinerary, $tourExperienceGallery)
+    public function __construct($pdo, $tourItinerary = null, $tourExperienceGallery = null)
     {
         $this->pdo = $pdo;
-        $this->tourItinerary = $tourItinerary;
-        $this->tourExperienceGallery = $tourExperienceGallery;
+        $this->tourItinerary = $tourItinerary ?: new TourItinerary($pdo);
+        $this->tourExperienceGallery = $tourExperienceGallery ?: new TourExperienceGallery($pdo);
     }
 
     public function getAll()
@@ -71,8 +72,9 @@ class TourPackage
                 slug, homepage_title, homepage_description, homepage_image_url,
                 homepage_image_alt, homepage_image_hint, tour_page_title, duration, price,
                 price_suffix, hero_image_url, hero_image_hint, tour_page_description, booking_link,
+                meta_title, meta_description, meta_keywords, canonical_url,
                 created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         ");
 
         $stmt->execute([
@@ -80,7 +82,8 @@ class TourPackage
             $data['homepage_title'], $data['homepage_description'], $data['homepage_image_url'],
             $data['homepage_image_alt'], $data['homepage_image_hint'], $data['tour_page_title'],
             $data['duration'], $data['price'], $data['price_suffix'], $data['hero_image_url'],
-            $data['hero_image_hint'], $data['tour_page_description'], $data['booking_link']
+            $data['hero_image_hint'], $data['tour_page_description'], $data['booking_link'],
+            $data['meta_title'] ?? null, $data['meta_description'] ?? null, $data['meta_keywords'] ?? null, $data['canonical_url'] ?? null
         ]);
 
         $packageId = $this->pdo->lastInsertId();
@@ -110,7 +113,9 @@ class TourPackage
                 homepage_title = ?, homepage_description = ?, homepage_image_url = ?,
                 homepage_image_alt = ?, homepage_image_hint = ?, tour_page_title = ?,
                 duration = ?, price = ?, price_suffix = ?, hero_image_url = ?,
-                hero_image_hint = ?, tour_page_description = ?, booking_link = ?, updated_at = NOW()
+                hero_image_hint = ?, tour_page_description = ?, booking_link = ?,
+                meta_title = ?, meta_description = ?, meta_keywords = ?, canonical_url = ?,
+                updated_at = NOW()
             WHERE id = ?
         ");
 
@@ -118,7 +123,9 @@ class TourPackage
             $data['homepage_title'], $data['homepage_description'], $data['homepage_image_url'],
             $data['homepage_image_alt'], $data['homepage_image_hint'], $data['tour_page_title'],
             $data['duration'], $data['price'], $data['price_suffix'], $data['hero_image_url'],
-            $data['hero_image_hint'], $data['tour_page_description'], $data['booking_link'], $id
+            $data['hero_image_hint'], $data['tour_page_description'], $data['booking_link'],
+            $data['meta_title'] ?? null, $data['meta_description'] ?? null, $data['meta_keywords'] ?? null, $data['canonical_url'] ?? null,
+            $id
         ]);
 
         // Delete old relational data

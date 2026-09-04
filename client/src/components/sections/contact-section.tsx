@@ -18,12 +18,19 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { contactFormSchema } from "@/lib/schemas"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import { LoaderCircle, MapPin, Mail, Phone } from "lucide-react"
+import { LoaderCircle, MapPin, Mail, Phone, Clock, MessageSquare } from "lucide-react"
+
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { useSiteContent } from "@/lib/site-content"
+import { trackLeadSubmission } from "@/lib/analytics"
 
 export function ContactSection() {
+  const { content } = useSiteContent();
+  const contact = content.contact;
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isMapActive, setIsMapActive] = useState(false);
@@ -55,16 +62,16 @@ export function ContactSection() {
 
         setIsSubmitted(true);
         form.reset();
+        trackLeadSubmission('contact_page_form');
         toast({
-            title: "Message Sent!",
-            description: "Thank you for contacting us. We'll get back to you shortly.",
+            title: 'Message Sent!',
+            description: 'Thank you for reaching out. We will get back to you shortly.',
         });
-
-    } catch (error) {
+    } catch (error: any) {
         toast({
-            variant: "destructive",
-            title: "Error",
-            description: error instanceof Error ? error.message : "An unknown error occurred.",
+            variant: 'destructive',
+            title: 'Error',
+            description: error.message || 'Something went wrong. Please try again.',
         });
     } finally {
         setIsLoading(false);
@@ -85,45 +92,75 @@ export function ContactSection() {
                         <MapPin className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-foreground">Our Location</p>
-                            <p>Grand Silver Ray, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka.</p>
+                            <p>{contact.physicalAddress}</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-4">
                         <Mail className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-foreground">Email</p>
-                            <a href="mailto:info@sapphiretrails.lk" className="hover:text-primary transition-colors">info@sapphiretrails.lk</a>
+                            <a href={`mailto:${contact.primaryEmail}`} className="hover:text-primary transition-colors">{contact.primaryEmail}</a>
                         </div>
                     </div>
                     <div className="flex items-start gap-4">
                         <Phone className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-foreground">Phone</p>
-                            <a href="tel:+94712357700" className="hover:text-primary transition-colors">Primary: 071 235 7700</a>
-                            <br/>
-                            <a href="tel:+94716381000" className="hover:text-primary transition-colors">Secondary: 071 638 1000</a>
+                            <a href={`tel:${contact.primaryPhone.replace(/\s+/g, '')}`} className="hover:text-primary transition-colors">Primary: {contact.primaryPhone}</a>
+                            {contact.secondaryPhone && (
+                              <>
+                                <br/>
+                                <a href={`tel:${contact.secondaryPhone.replace(/\s+/g, '')}`} className="hover:text-primary transition-colors">Secondary: {contact.secondaryPhone}</a>
+                              </>
+                            )}
                         </div>
                     </div>
                 </div>
-                 <div
-                    className="relative aspect-video rounded-lg overflow-hidden border border-border"
-                    onClick={() => setIsMapActive(true)}
-                  >
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.918184840201!2d80.48564107549169!3d6.657062193337755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae3eb9ab0fcd781%3A0xafc2aff7a4bb736f!2sSapphire%20Trails!5e0!3m2!1sen!2sde!4v1771163604693!5m2!1sen!2sde"
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen={true}
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        className="w-full absolute inset-0"
-                    ></iframe>
-                     {!isMapActive && (
-                        <div className="absolute inset-0 bg-transparent cursor-pointer"></div>
-                    )}
+                {/* Operating Hours & Concierge Assistance Card */}
+                <div className="p-6 rounded-2xl bg-card border border-border/80 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between border-b pb-3">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-primary" />
+                      <span className="font-bold text-sm text-foreground">Expedition Hours &amp; Lounge</span>
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                      ● Open Daily
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-xs text-muted-foreground">
+                    <div className="flex justify-between py-1 border-b border-border/40">
+                      <span>Monday – Saturday</span>
+                      <span className="font-semibold text-foreground font-mono">{contact.openingHoursWeekdays}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-border/40">
+                      <span>Sunday &amp; Poya Days</span>
+                      <span className="font-semibold text-foreground font-mono">{contact.openingHoursWeekends}</span>
+                    </div>
+                    <div className="flex justify-between py-1">
+                      <span>Expedition Departures</span>
+                      <span className="font-semibold text-primary">Private / On-Demand</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <Button
+                      asChild
+                      className="w-full h-10 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold gap-2 shadow-sm"
+                    >
+                      <a
+                        href={`https://wa.me/${contact.whatsappNumber.replace(/[^0-9]/g, '')}?text=Hello%20Sapphire%20Trails%2C%20I%20would%20like%20to%20inquire%20about%20a%20private%20gem%20tour.`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                        <span>Chat Directly on WhatsApp (24/7)</span>
+                      </a>
+                    </Button>
+                  </div>
                 </div>
             </div>
+
             <div>
                  {isSubmitted ? (
                     <div className="flex flex-col items-center justify-center text-center rounded-lg border bg-card text-card-foreground shadow-sm p-12 h-full">

@@ -1,40 +1,42 @@
+'use client';
 
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { PageHero } from '@/components/shared/page-hero';
-import type { Metadata } from 'next';
+import { ArticlesHeroSection } from '@/components/sections/articles-hero';
 import { ArticlesList } from '@/components/sections/articles-list';
 import { TrustSection } from '@/components/sections/TrustSection';
-
-export const metadata: Metadata = {
-  title: 'Gem Tour Articles | Sapphire Trails',
-  description: 'Explore articles about gem tours, gemstone tours, and gem mining tours in the Gem City, Ratnapura. Your expert guide from Sapphire Trails.',
-  alternates: {
-    canonical: '/articles',
-  },
-  openGraph: {
-    title: 'Gem Tour Articles | Sapphire Trails',
-    description: 'Explore articles about gem tours, gemstone tours, and gem mining tours in the Gem City, Ratnapura.',
-    images: [{
-      url: 'https://content-provider.payshia.com/sapphire-trail/images/img33.webp',
-      width: 1200,
-      height: 630,
-      alt: 'A collection of colorful polished gemstones from a Ratnapura gem tour.'
-    }],
-  }
-};
+import { useSiteContent, getSectionThemeClass } from '@/lib/site-content';
 
 export default function ArticlesPage() {
   const breadcrumbs = [{ label: 'Articles', href: '/articles' }];
+  const { content } = useSiteContent();
+  const articles = content.articles;
+  const vis = articles?.sectionVisibility || {};
+  const sty = articles?.sectionStyles || {};
+
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background selection:bg-primary/20 selection:text-primary">
       <Header />
       <main className="flex-1">
-        <PageHero title="Articles & Insights" breadcrumbs={breadcrumbs} />
-        <ArticlesList />
+        {/* 1. Unified Proportional Articles Hero */}
+        {vis.hero !== false && (
+          <div className={getSectionThemeClass(sty.hero)}>
+            <ArticlesHeroSection breadcrumbs={breadcrumbs} />
+          </div>
+        )}
+
+        {/* 2. Featured Spotlight, Search & Filterable Articles Grid */}
+        {vis.list !== false && (
+          <div className={getSectionThemeClass(sty.list)}>
+            <ArticlesList />
+          </div>
+        )}
       </main>
+
+      {/* 3. Global Trust Strip & Footer */}
       <TrustSection />
       <Footer />
     </div>
   );
 }
+

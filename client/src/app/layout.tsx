@@ -4,7 +4,7 @@ import './globals.css';
 // import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { LayoutProvider } from '@/components/layout-provider';
-import Script from 'next/script';
+import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sapphiretrails.lk'),
@@ -15,8 +15,22 @@ export const metadata: Metadata = {
     template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
     default: 'Gem Mine Tours Sri Lanka | Sapphire Trails - Luxury Ratnapura Mining Trips',
   },
-  description: 'Book the ultimate Gem Mine Tour in Ratnapura, Sri Lanka. Experience active mining pits, traditional gem washing, and luxury service with Sapphire Trails.',
+  icons: {
+    icon: [
+      { url: '/img/favicon.ico' },
+      { url: '/img/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/img/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/img/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/img/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: '/img/favicon.ico',
+    apple: [
+      { url: '/img/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/site.webmanifest',
   openGraph: {
+
     title: 'Gem Mine Tours Sri Lanka | Sapphire Trails - Luxury Ratnapura Mining Trips',
     description: 'Book the ultimate Gem Mine Tour in Ratnapura, Sri Lanka. Experience active mining pits, traditional gem washing, and luxury service with Sapphire Trails.',
     images: [{
@@ -27,6 +41,7 @@ export const metadata: Metadata = {
     }],
   }
 };
+
 
 
 export default function RootLayout({
@@ -88,8 +103,29 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('theme');
+                  var theme = stored ? stored : 'dark';
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.classList.add('light');
+                  }
+                } catch (e) {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -122,17 +158,7 @@ export default function RootLayout({
         <LayoutProvider>
             {children}
         </LayoutProvider>
-        <Script 
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-TX702Y4CLS" 
-        />
-        <Script 
-          id="google-analytics"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-TX702Y4CLS');"
-          }}
-        />
+        <AnalyticsTracker />
       </body>
     </html>
   );

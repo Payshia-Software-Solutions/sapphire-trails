@@ -1,0 +1,21 @@
+# Disable script execution in uploads directory
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Deny direct execution of scripts
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|phar|sh|pl|cgi|exe|bat|cmd|js|py)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Only allow legitimate static image/media assets
+<FilesMatch "(?i)\.(jpg|jpeg|png|gif|webp|avif|svg|ico|pdf)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+Options -ExecCGI -Indexes

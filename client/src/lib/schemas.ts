@@ -19,8 +19,10 @@ export const contactFormSchema = z.object({
 export const bookingFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
-  phone: z.string().optional(),
-  address: z.string().min(5, { message: "Address must be at least 5 characters." }),
+  phone: z.string().min(7, { message: "Contact phone number is required (with country code)." }),
+  address: z.string().optional(),
+  transportService: z.enum(['none', 'airport_pickup', 'airport_roundtrip', 'hotel_transfer', 'custom']).default('none'),
+  transportNotes: z.string().optional(),
   tourType: z.coerce.number({
     required_error: "You need to select a tour type.",
   }),
@@ -48,6 +50,7 @@ export const locationFormSchema = z.object({
   }),
   cardDescription: z.string().min(10, "Card description must be at least 10 characters."),
   distance: z.string().min(2, "Distance is required."),
+  cardImageHint: z.string().optional(),
 
   // Hero
   subtitle: z.string().min(3, "Subtitle is required."),
@@ -153,7 +156,7 @@ export const adminProfilePasswordSchema = z.object({
 
 // Tour Package Schema
 export const tourHighlightSchema = z.object({
-  icon: iconEnum,
+  icon: z.string().min(1, "Highlight icon is required."),
   title: z.string().min(3, "Highlight title is required."),
   description: z.string().min(10, "Highlight description is required."),
 });
@@ -170,6 +173,7 @@ export const galleryImageSchema = z.object({
     alt: z.string().min(3, "Alt text is required."),
     hint: z.string().min(2, "Hint is required."),
     file: z.any().optional(),
+    isNew: z.boolean().optional(),
 });
 
 export const packageFormSchema = z.object({
@@ -198,6 +202,12 @@ export const packageFormSchema = z.object({
   experienceGallery: z.array(galleryImageSchema).min(1, "At least one gallery image is required.").max(8, "You can upload a maximum of 8 gallery images."),
   
   bookingLink: z.string().min(1, "Booking link is required.").startsWith("/", { message: "Booking link must be a relative path starting with '/'." }),
+
+  // SEO & Metadata
+  metaTitle: z.string().max(80, "Meta title should be 80 characters or less.").optional().or(z.literal('')),
+  metaDescription: z.string().max(200, "Meta description should be 200 characters or less.").optional().or(z.literal('')),
+  metaKeywords: z.string().optional().or(z.literal('')),
+  canonicalUrl: z.string().optional().or(z.literal('')),
 });
 
 

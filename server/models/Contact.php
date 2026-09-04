@@ -6,13 +6,52 @@ class Contact
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
+        $this->ensureSchema();
+    }
+
+    /** Ensure status and other optional columns exist in contact table */
+    private function ensureSchema()
+    {
+        try {
+            // Check if status column exists
+            $checkStatus = $this->pdo->query("SHOW COLUMNS FROM contact LIKE 'status'")->fetch();
+            if (!$checkStatus) {
+                $this->pdo->exec("ALTER TABLE contact ADD COLUMN status VARCHAR(50) NOT NULL DEFAULT 'unread' AFTER message");
+            }
+
+            // Check if phone column exists
+            $checkPhone = $this->pdo->query("SHOW COLUMNS FROM contact LIKE 'phone'")->fetch();
+            if (!$checkPhone) {
+                $this->pdo->exec("ALTER TABLE contact ADD COLUMN phone VARCHAR(100) NULL AFTER email");
+            }
+
+            // Check if tour_interest column exists
+            $checkInterest = $this->pdo->query("SHOW COLUMNS FROM contact LIKE 'tour_interest'")->fetch();
+            if (!$checkInterest) {
+                $this->pdo->exec("ALTER TABLE contact ADD COLUMN tour_interest VARCHAR(255) NULL AFTER phone");
+            }
+
+            // Check if subject column exists
+            $checkSubject = $this->pdo->query("SHOW COLUMNS FROM contact LIKE 'subject'")->fetch();
+            if (!$checkSubject) {
+                $this->pdo->exec("ALTER TABLE contact ADD COLUMN subject VARCHAR(255) NULL AFTER tour_interest");
+            }
+        } catch (\Exception $e) {
+            error_log("Contact schema check notice: " . $e->getMessage());
+        }
     }
 
     /** List all contact messages (newest first) */
     public function getAll()
     {
         $stmt = $this->pdo->query("
-            SELECT id, name, email, message, created_at
+            SELECT id, name, email, 
+                   COALESCE(phone, '') AS phone,
+                   COALESCE(tour_interest, '') AS tour_interest,
+                   COALESCE(subject, '') AS subject,
+                   message, 
+                   COALESCE(status, 'unread') AS status, 
+                   created_at
             FROM contact
             ORDER BY created_at DESC
         ");
@@ -23,7 +62,13 @@ class Contact
     public function getById($id)
     {
         $stmt = $this->pdo->prepare("
-            SELECT id, name, email, message, created_at
+            SELECT id, name, email, 
+                   COALESCE(phone, '') AS phone,
+                   COALESCE(tour_interest, '') AS tour_interest,
+                   COALESCE(subject, '') AS subject,
+                   message, 
+                   COALESCE(status, 'unread') AS status, 
+                   created_at
             FROM contact
             WHERE id = ?
         ");
@@ -35,7 +80,13 @@ class Contact
     public function getByEmail($email)
     {
         $stmt = $this->pdo->prepare("
-            SELECT id, name, email, message, created_at
+            SELECT id, name, email, 
+                   COALESCE(phone, '') AS phone,
+                   COALESCE(tour_interest, '') AS tour_interest,
+                   COALESCE(subject, '') AS subject,
+                   message, 
+                   COALESCE(status, 'unread') AS status, 
+                   created_at
             FROM contact
             WHERE email = ?
             ORDER BY created_at DESC
@@ -47,24 +98,45 @@ class Contact
     /** Create a new contact message */
     public function create($data)
     {
+        $status = $data['status'] ?? 'unread';
+        $phone = $data['phone'] ?? null;
+        $tourInterest = $data['tour_interest'] ?? null;
+        $subject = $data['subject'] ?? 'Website Inquiry';
+
         $stmt = $this->pdo->prepare("
-            INSERT INTO contact (name, email, message)
-            VALUES (?, ?, ?)
+            INSERT INTO contact (name, email, phone, tour_interest, subject, message, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $data['name'],
             $data['email'],
-            $data['message']
+            $phone,
+            $tourInterest,
+            $subject,
+            $data['message'],
+            $status
         ]);
 
         return $this->pdo->lastInsertId();
     }
 
-    /** Update a contact message (rare, but handy for admin notes/fixes) */
+    /** Update status specifically */
+    public function updateStatus($id, $status)
+    {
+        $validStatuses = ['unread', 'read', 'replied', 'resolved', 'pending'];
+        if (!in_array($status, $validStatuses)) {
+            $status = 'read';
+        }
+
+        $stmt = $this->pdo->prepare("UPDATE contact SET status = ? WHERE id = ?");
+        $stmt->execute([$status, $id]);
+        return $stmt->rowCount();
+    }
+
+    /** Update a contact message (only update provided keys) */
     public function update($id, $data)
     {
-        // Build dynamic SET clause (only update provided keys)
-        $allowed = ['name', 'email', 'message'];
+        $allowed = ['name', 'email', 'phone', 'tour_interest', 'subject', 'message', 'status'];
         $setParts = [];
         $params = [];
 
@@ -75,7 +147,7 @@ class Contact
             }
         }
 
-        if (empty($setParts)) return 0; // nothing to update
+        if (empty($setParts)) return 0;
 
         $sql = "UPDATE contact SET " . implode(', ', $setParts) . " WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
@@ -93,3 +165,4 @@ class Contact
         return $stmt->rowCount();
     }
 }
+

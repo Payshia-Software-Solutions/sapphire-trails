@@ -1,9 +1,11 @@
 <?php
-require_once './models/TourPackage.php';
-require_once './models/TourHighlights.php';
-require_once './models/TourInclusion.php';
-require_once './models/TourItinerary.php';
-require_once './models/TourExperienceGallery.php';
+require_once __DIR__ . '/../models/TourPackage.php';
+require_once __DIR__ . '/../models/TourHighlights.php';
+require_once __DIR__ . '/../models/TourInclusion.php';
+require_once __DIR__ . '/../models/TourItinerary.php';
+require_once __DIR__ . '/../models/TourExperienceGallery.php';
+require_once __DIR__ . '/../lib/ImageOptimizer.php';
+
 
 class TourPackageController
 {
@@ -19,7 +21,7 @@ class TourPackageController
         $experienceGallery = new TourExperienceGallery($pdo);
 
         $this->model = new TourPackage($pdo, $tourItinerary, $experienceGallery);
-        $this->ftpConfig = include('./config/ftp.php');
+        $this->ftpConfig = include(__DIR__ . '/../config/ftp.php');
         $this->experienceGallery = $experienceGallery;
     }
 
@@ -72,10 +74,7 @@ class TourPackageController
 
     private function generateUniqueFileName($originalName)
     {
-        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
-        $name = pathinfo($originalName, PATHINFO_FILENAME);
-        $safeName = preg_replace('/[^a-zA-Z0-9-_]/', '', $name);
-        return $safeName . '-' . uniqid() . '.' . $ext;
+        return ImageOptimizer::generateWebPFileName($originalName);
     }
 
     public function getAll()
@@ -124,32 +123,45 @@ class TourPackageController
             $data['experience_gallery'] = [];
 
             $data['homepage_image_url'] = 'default_home.jpg';
-            $data['hero_image_url'] = 'default_hero.jpg';
+            $data['meta_title'] = $data['meta_title'] ?? $data['metaTitle'] ?? null;
+            $data['meta_description'] = $data['meta_description'] ?? $data['metaDescription'] ?? null;
+            $data['meta_keywords'] = $data['meta_keywords'] ?? $data['metaKeywords'] ?? null;
+            $data['canonical_url'] = $data['canonical_url'] ?? $data['canonicalUrl'] ?? null;
 
             try {
                 $packageId = $this->model->create($data);
 
                 if ($homepageFile && $homepageFile['error'] === UPLOAD_ERR_OK) {
                     $fileName = $this->generateUniqueFileName($homepageFile['name']);
+                    $tempPath = './uploads/temp_' . $fileName;
                     $localPath = './uploads/' . $fileName;
                     $ftpPath = '/tour-images/' . $packageId . '/' . $fileName;
 
-                    move_uploaded_file($homepageFile['tmp_name'], $localPath);
-                    if ($this->uploadToFTP($localPath, $ftpPath)) {
-                        $data['homepage_image_url'] = $ftpPath;
-                        unlink($localPath);
+                    if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
+                    if (move_uploaded_file($homepageFile['tmp_name'], $tempPath)) {
+                        ImageOptimizer::convertToWebP($tempPath, $localPath, 88);
+                        @unlink($tempPath);
+                        if ($this->uploadToFTP($localPath, $ftpPath)) {
+                            $data['homepage_image_url'] = $ftpPath;
+                            @unlink($localPath);
+                        }
                     }
                 }
 
                 if ($heroFile && $heroFile['error'] === UPLOAD_ERR_OK) {
                     $fileName = $this->generateUniqueFileName($heroFile['name']);
+                    $tempPath = './uploads/temp_' . $fileName;
                     $localPath = './uploads/' . $fileName;
                     $ftpPath = '/tour-images/' . $packageId . '/' . $fileName;
 
-                    move_uploaded_file($heroFile['tmp_name'], $localPath);
-                    if ($this->uploadToFTP($localPath, $ftpPath)) {
-                        $data['hero_image_url'] = $ftpPath;
-                        unlink($localPath);
+                    if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
+                    if (move_uploaded_file($heroFile['tmp_name'], $tempPath)) {
+                        ImageOptimizer::convertToWebP($tempPath, $localPath, 88);
+                        @unlink($tempPath);
+                        if ($this->uploadToFTP($localPath, $ftpPath)) {
+                            $data['hero_image_url'] = $ftpPath;
+                            @unlink($localPath);
+                        }
                     }
                 }
 
@@ -163,23 +175,29 @@ class TourPackageController
                         if ($galleryImages['error'][$index] !== UPLOAD_ERR_OK) continue;
 
                         $fileName = $this->generateUniqueFileName($originalName);
+                        $tempPath = './uploads/temp_' . $fileName;
                         $localPath = './uploads/' . $fileName;
                         $ftpPath = '/tour-images/' . $packageId . '/experience/' . $fileName;
 
-                        move_uploaded_file($galleryImages['tmp_name'][$index], $localPath);
-                        if ($this->uploadToFTP($localPath, $ftpPath)) {
-                            unlink($localPath);
-                            $meta = $galleryMeta[$index] ?? [];
-                            $this->experienceGallery->create([
-                                'tour_package_id' => $packageId,
-                                'image_url' => $ftpPath,
-                                'alt_text' => $meta['alt_text'] ?? '',
-                                'hint' => $meta['hint'] ?? '',
-                                'sort_order' => $meta['sort_order'] ?? $index
-                            ]);
+                        if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
+                        if (move_uploaded_file($galleryImages['tmp_name'][$index], $tempPath)) {
+                            ImageOptimizer::convertToWebP($tempPath, $localPath, 88);
+                            @unlink($tempPath);
+                            if ($this->uploadToFTP($localPath, $ftpPath)) {
+                                @unlink($localPath);
+                                $meta = $galleryMeta[$index] ?? [];
+                                $this->experienceGallery->create([
+                                    'tour_package_id' => $packageId,
+                                    'image_url' => $ftpPath,
+                                    'alt_text' => $meta['alt_text'] ?? '',
+                                    'hint' => $meta['hint'] ?? '',
+                                    'sort_order' => $meta['sort_order'] ?? $index
+                                ]);
+                            }
                         }
                     }
                 }
+
 
                 $fullPackage = $this->model->getById($packageId);
                 $fullPackage['slug_url'] = 'https://yourdomain.com/tours/' . $fullPackage['slug'];
@@ -207,8 +225,28 @@ class TourPackageController
     }
 
     $data = $_POST;
-    $homepageFile = $_FILES['homepage_image'] ?? null;
-    $heroFile = $_FILES['hero_image'] ?? null;
+    $homepageFile = $_FILES['homepage_image'] ?? $_FILES['image'] ?? null;
+    $heroFile = $_FILES['hero_image'] ?? $_FILES['heroImage'] ?? null;
+
+    // Normalize camelCase to snake_case
+    $data['homepage_title'] = $data['homepage_title'] ?? $data['homepageTitle'] ?? null;
+    $data['homepage_description'] = $data['homepage_description'] ?? $data['homepageDescription'] ?? null;
+    $data['homepage_image_alt'] = $data['homepage_image_alt'] ?? $data['imageAlt'] ?? '';
+    $data['homepage_image_hint'] = $data['homepage_image_hint'] ?? $data['imageHint'] ?? '';
+    $data['tour_page_title'] = $data['tour_page_title'] ?? $data['tourPageTitle'] ?? null;
+    $data['duration'] = $data['duration'] ?? null;
+    $data['price'] = $data['price'] ?? null;
+    $data['price_suffix'] = $data['price_suffix'] ?? $data['priceSuffix'] ?? 'per person';
+    $data['hero_image_hint'] = $data['hero_image_hint'] ?? $data['heroImageHint'] ?? '';
+    $data['tour_page_description'] = $data['tour_page_description'] ?? $data['tourPageDescription'] ?? null;
+    $data['booking_link'] = $data['booking_link'] ?? $data['bookingLink'] ?? '/booking';
+    $data['highlights'] = $data['highlights'] ?? $data['tourHighlights'] ?? null;
+    $data['inclusions'] = $data['inclusions'] ?? null;
+    $data['itinerary'] = $data['itinerary'] ?? null;
+    $data['meta_title'] = $data['meta_title'] ?? $data['metaTitle'] ?? null;
+    $data['meta_description'] = $data['meta_description'] ?? $data['metaDescription'] ?? null;
+    $data['meta_keywords'] = $data['meta_keywords'] ?? $data['metaKeywords'] ?? null;
+    $data['canonical_url'] = $data['canonical_url'] ?? $data['canonicalUrl'] ?? null;
 
     $required = [
         'homepage_title', 'homepage_description',
@@ -263,6 +301,11 @@ class TourPackageController
             unlink($localPath);
         }
     }
+
+    $data['meta_title'] = $data['meta_title'] ?? $data['metaTitle'] ?? null;
+    $data['meta_description'] = $data['meta_description'] ?? $data['metaDescription'] ?? null;
+    $data['meta_keywords'] = $data['meta_keywords'] ?? $data['metaKeywords'] ?? null;
+    $data['canonical_url'] = $data['canonical_url'] ?? $data['canonicalUrl'] ?? null;
 
     try {
         $this->model->update($id, $data);

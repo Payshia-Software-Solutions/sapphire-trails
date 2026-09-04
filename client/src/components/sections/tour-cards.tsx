@@ -101,7 +101,11 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                   </div>
                   <div className="flex justify-between items-center mt-8 pt-6 border-t border-border">
                     <p className="text-3xl font-bold text-primary">{tour.price} <span className="text-sm font-normal text-muted-foreground">{tour.priceSuffix}</span></p>
-                    <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8"><Link href={`${tour.bookingLink}?tourType=${tour.id}`}>{tour.id === 'sapphire-trails-deluxe' ? 'Contact Us' : 'Book Now'}</Link></Button>
+                    <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8">
+                      <Link href={tour.id === 'sapphire-trails-deluxe' ? '/contact' : (tour.slug ? `/tours/${tour.slug}/book` : `/booking?tourType=${tour.id}`)}>
+                        {tour.id === 'sapphire-trails-deluxe' ? 'Contact Us' : 'Book Now'}
+                      </Link>
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

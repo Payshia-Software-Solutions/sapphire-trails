@@ -57,6 +57,12 @@ export interface TourPackage {
     experienceGallery: GalleryImage[];
     
     bookingLink: string;
+
+    // SEO & Metadata
+    metaTitle?: string;
+    metaDescription?: string;
+    metaKeywords?: string;
+    canonicalUrl?: string;
 }
 
 const IMAGE_BASE_URL = 'https://content-provider.payshia.com/sapphire-trail';
@@ -96,6 +102,10 @@ export const mapServerPackageToClient = (pkg: any): TourPackage => ({
       hint: img.hint || ''
   })),
   bookingLink: pkg.booking_link || '/booking',
+  metaTitle: pkg.meta_title || '',
+  metaDescription: pkg.meta_description || '',
+  metaKeywords: pkg.meta_keywords || '',
+  canonicalUrl: pkg.canonical_url || '',
 });
 
 // This array is now empty. All tour packages should be managed and fetched from the server.

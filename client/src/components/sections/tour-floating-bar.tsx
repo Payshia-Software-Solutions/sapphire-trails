@@ -33,7 +33,7 @@ export function TourFloatingBar({ price, priceSuffix, duration, bookingLink }: T
 
   return (
     <div
-      className={`fixed top-24 right-4 md:right-8 z-40 transition-all duration-300 ease-in-out w-64
+      className={`hidden md:block fixed top-24 right-4 md:right-8 z-40 transition-all duration-300 ease-in-out w-64
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-16 pointer-events-none'}
       `}
     >

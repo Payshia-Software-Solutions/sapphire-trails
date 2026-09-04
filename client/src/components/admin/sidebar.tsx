@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, CalendarCheck, FileText, Settings, Package, Users, LogOut, type LucideIcon, MessageSquare } from 'lucide-react';
+import { LayoutGrid, CalendarCheck, CalendarDays, FileText, Settings, Package, Users, LogOut, type LucideIcon, MessageSquare, Mail, Receipt, Activity, BookOpen, Star, Send } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 
 export interface NavLink {
@@ -15,12 +16,21 @@ export interface NavLink {
 export const navLinks: NavLink[] = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutGrid },
   { href: '/admin/booking-requests', label: 'Booking Requests', icon: CalendarCheck },
+  { href: '/admin/calendar', label: 'Booking Calendar', icon: CalendarDays },
+  { href: '/admin/invoices', label: 'Invoices', icon: Receipt },
   { href: '/admin/contact-submissions', label: 'Contact Submissions', icon: MessageSquare },
-  { href: '/admin/cms', label: 'CMS', icon: FileText },
+  { href: '/admin/subscribers', label: 'Newsletter & Leads', icon: Send },
+  { href: '/admin/mail-settings', label: 'Mail & Logs', icon: Mail },
+  { href: '/admin/analytics', label: 'Analytics & Pixels', icon: Activity },
+  { href: '/admin/cms', label: 'Master CMS', icon: FileText },
+  { href: '/admin/manage-articles', label: 'Manage Articles', icon: BookOpen },
+
+  { href: '/admin/manage-reviews', label: 'Manage Reviews', icon: Star },
   { href: '/admin/manage-content', label: 'Manage Locations', icon: Settings },
   { href: '/admin/manage-packages', label: 'Manage Packages', icon: Package },
   { href: '/admin/user-management', label: 'User Management', icon: Users },
 ];
+
 
 const ADMIN_SESSION_KEY = 'adminUser';
 
@@ -66,13 +76,25 @@ export function AdminSidebar() {
             )})}
           </nav>
         </div>
-        <div className="mt-auto p-4">
-            <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+        <div className="mt-auto p-4 border-t border-border/40 space-y-2">
+            <Button variant="ghost" className="w-full justify-start text-xs text-muted-foreground hover:text-foreground" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
             </Button>
+            <div className="pt-1 text-center">
+                <a 
+                    href="https://nebulync.com/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors font-medium group"
+                >
+                    <span>Powered by</span>
+                    <span className="font-semibold text-foreground group-hover:text-primary underline decoration-primary/40 underline-offset-2">Nebulync.com</span>
+                </a>
+            </div>
         </div>
       </div>
     </aside>
   );
 }
+

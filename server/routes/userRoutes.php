@@ -1,31 +1,55 @@
 <?php
-require_once './controllers/userController.php'; // Adjust path if needed
+require_once __DIR__ . '/../controllers/userController.php';
+require_once __DIR__ . '/../lib/AuthMiddleware.php';
 
 $pdo = $GLOBALS['pdo'];
 $userController = new UserController($pdo);
 
 return [
+    // Get all users (Admin only)
     'GET /users/' => function () use ($userController) {
-        $userController->getAll(); // Changed from getAllUsers()
+        AuthMiddleware::requireAdmin();
+        $userController->getAll();
     },
+
+    // Get user by ID (Authenticated user or Admin)
     'GET /users/{id}/' => function ($id) use ($userController) {
-        $userController->getById($id); // Changed from getUserById()
+        $currentUser = AuthMiddleware::requireAuth();
+        // Allow if user is accessing their own profile OR user is admin
+        $role = $currentUser['role'] ?? ($currentUser['type'] ?? '');
+        if ($currentUser['id'] != $id && !in_array($role, ['admin', 'superadmin'])) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden: You can only access your own profile']);
+            exit;
+        }
+        $userController->getById($id);
     },
+
+    // Public registration
     'POST /users/' => function () use ($userController) {
-        $userController->create(); // Changed from createUser()
+        $userController->create();
     },
+
+    // Public login
     'POST /login/' => function () use ($userController) {
-        $userController->login(); // This one is correct
+        $userController->login();
     },
+
+    // Update user profile
     'PUT /users/{id}/' => function ($id) use ($userController) {
-        // You don't have an update method in your controller yet
-        // You'll need to add this method to UserController
+        $currentUser = AuthMiddleware::requireAuth();
+        $role = $currentUser['role'] ?? ($currentUser['type'] ?? '');
+        if ($currentUser['id'] != $id && !in_array($role, ['admin', 'superadmin'])) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden: You can only edit your own profile']);
+            exit;
+        }
         $userController->update($id);
     },
+
+    // Delete user (Admin only)
     'DELETE /users/{id}/' => function ($id) use ($userController) {
-        $userController->delete($id); // Changed from deleteUser()
-    },
-     'PUT /users/{id}/' => function ($id) use ($userController) {
-        $userController->update($id);
+        AuthMiddleware::requireAdmin();
+        $userController->delete($id);
     },
 ];

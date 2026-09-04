@@ -214,14 +214,11 @@ class LocationController
         echo json_encode(['message' => 'Location deleted successfully']);
     }
 
-    // POST /locations/{slug}/ with _method=PUT
+    // PUT or POST /locations/{slug}/
     public function update($slug)
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['_method']) || strtolower($_POST['_method']) !== 'put') {
-            http_response_code(405);
-            echo json_encode(['error' => 'Invalid method. Use POST with _method=PUT']);
-            return;
-        }
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        $isJson = strpos($contentType, 'application/json') !== false;
 
         $existing = $this->model->getBySlug($slug);
         if (!$existing) {
@@ -230,53 +227,72 @@ class LocationController
             return;
         }
 
-        $data = $_POST;
-        $data['slug'] = $slug; 
+        if ($isJson) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Invalid JSON payload']);
+                return;
+            }
+            $data['slug'] = $slug;
+        } else {
+            $data = $_POST;
+            $data['slug'] = $slug; 
 
-        $cardImage = $_FILES['card_image'] ?? null;
-        $heroImage = $_FILES['hero_image'] ?? null;
-        $introImage = $_FILES['intro_image'] ?? null;
+            $cardImage = $_FILES['card_image'] ?? null;
+            $heroImage = $_FILES['hero_image'] ?? null;
+            $introImage = $_FILES['intro_image'] ?? null;
 
-        if ($cardImage && $cardImage['error'] === UPLOAD_ERR_OK) {
-            $filename = $this->generateUniqueFileName($cardImage['name']);
-            $local = './uploads/' . $filename;
-            $ftp = '/location-images/' . $slug . '/' . $filename;
-            if (move_uploaded_file($cardImage['tmp_name'], $local)) {
-                if ($this->uploadToFTP($local, $ftp)) {
-                    $data['card_image_url'] = $ftp;
-                    unlink($local);
+            if ($cardImage && $cardImage['error'] === UPLOAD_ERR_OK) {
+                $filename = $this->generateUniqueFileName($cardImage['name']);
+                $local = './uploads/' . $filename;
+                $ftp = '/location-images/' . $slug . '/' . $filename;
+                if (move_uploaded_file($cardImage['tmp_name'], $local)) {
+                    if ($this->uploadToFTP($local, $ftp)) {
+                        $data['card_image_url'] = $ftp;
+                        unlink($local);
+                    }
                 }
             }
-        }
 
-        if ($heroImage && $heroImage['error'] === UPLOAD_ERR_OK) {
-            $filename = $this->generateUniqueFileName($heroImage['name']);
-            $local = './uploads/' . $filename;
-            $ftp = '/location-images/' . $slug . '/' . $filename;
-            if (move_uploaded_file($heroImage['tmp_name'], $local)) {
-                if ($this->uploadToFTP($local, $ftp)) {
-                    $data['hero_image_url'] = $ftp;
-                    unlink($local);
+            if ($heroImage && $heroImage['error'] === UPLOAD_ERR_OK) {
+                $filename = $this->generateUniqueFileName($heroImage['name']);
+                $local = './uploads/' . $filename;
+                $ftp = '/location-images/' . $slug . '/' . $filename;
+                if (move_uploaded_file($heroImage['tmp_name'], $local)) {
+                    if ($this->uploadToFTP($local, $ftp)) {
+                        $data['hero_image_url'] = $ftp;
+                        unlink($local);
+                    }
                 }
             }
-        }
 
-        if ($introImage && $introImage['error'] === UPLOAD_ERR_OK) {
-            $filename = $this->generateUniqueFileName($introImage['name']);
-            $local = './uploads/' . $filename;
-            $ftp = '/location-images/' . $slug . '/' . $filename;
-            if (move_uploaded_file($introImage['tmp_name'], $local)) {
-                if ($this->uploadToFTP($local, $ftp)) {
-                    $data['intro_image_url'] = $ftp;
-                    unlink($local);
+            if ($introImage && $introImage['error'] === UPLOAD_ERR_OK) {
+                $filename = $this->generateUniqueFileName($introImage['name']);
+                $local = './uploads/' . $filename;
+                $ftp = '/location-images/' . $slug . '/' . $filename;
+                if (move_uploaded_file($introImage['tmp_name'], $local)) {
+                    if ($this->uploadToFTP($local, $ftp)) {
+                        $data['intro_image_url'] = $ftp;
+                        unlink($local);
+                    }
                 }
             }
-        }
 
-        // Handle JSON fields
-        $data['highlights'] = isset($data['highlights']) && is_string($data['highlights']) ? json_decode($data['highlights'], true) : [];
-        $data['visitor_info'] = isset($data['visitor_info']) && is_string($data['visitor_info']) ? json_decode($data['visitor_info'], true) : [];
-        $data['nearby_attractions'] = isset($data['nearby_attractions']) && is_string($data['nearby_attractions']) ? json_decode($data['nearby_attractions'], true) : [];
+            // Handle stringified JSON fields from FormData
+            if (isset($data['highlights']) && is_string($data['highlights'])) {
+                $data['highlights'] = json_decode($data['highlights'], true) ?: [];
+            }
+            if (isset($data['visitor_info']) && is_string($data['visitor_info'])) {
+                $data['visitor_info'] = json_decode($data['visitor_info'], true) ?: [];
+            }
+            if (isset($data['nearby_attractions']) && is_string($data['nearby_attractions'])) {
+                $data['nearby_attractions'] = json_decode($data['nearby_attractions'], true) ?: [];
+            }
+            if (isset($data['gallery_images']) && is_string($data['gallery_images'])) {
+                $data['gallery_images'] = json_decode($data['gallery_images'], true) ?: [];
+            }
+        }
 
         $data['card_image_hint'] = $data['card_image_hint'] ?? '';
         $data['hero_image_hint'] = $data['hero_image_hint'] ?? '';

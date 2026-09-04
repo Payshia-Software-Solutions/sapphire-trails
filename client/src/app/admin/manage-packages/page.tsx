@@ -22,6 +22,7 @@ import Link from 'next/link';
 import { mapServerPackageToClient } from '@/lib/packages-data';
 
 import { API_BASE_URL } from '@/lib/utils';
+import { authFetch } from '@/lib/api';
 
 // A leaner type for what this page needs to display
 interface ManagedPackage {
@@ -71,7 +72,7 @@ export default function ManagePackagesPage() {
 
   const handleDelete = async (id: number, title: string) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/tours/${id}`, {
+        const response = await authFetch(`${API_BASE_URL}/tours/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) {

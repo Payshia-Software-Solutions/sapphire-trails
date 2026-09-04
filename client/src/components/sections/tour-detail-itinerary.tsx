@@ -1,5 +1,5 @@
-
 import type { ItineraryItem } from "@/lib/packages-data";
+import { Clock, MapPin, CheckCircle, Navigation, Sparkles } from "lucide-react";
 
 interface TourDetailItineraryProps {
   itinerary: ItineraryItem[];
@@ -9,41 +9,52 @@ export function TourDetailItinerary({ itinerary }: TourDetailItineraryProps) {
   if (!itinerary || itinerary.length === 0) return null;
 
   return (
-    <div id="itinerary" className="flex flex-col">
-      {/* Column header */}
-      <div className="mb-8">
-        <p className="text-primary font-serif uppercase tracking-widest text-xs mb-2">Step by Step</p>
-        <h2 className="text-2xl md:text-3xl font-headline font-bold text-foreground leading-snug">
-          Your Day&apos;s Itinerary
+    <div id="itinerary" className="flex flex-col space-y-6 scroll-mt-28">
+      
+      {/* Column Header */}
+      <div>
+        <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-2">
+          <Clock className="h-3.5 w-3.5" />
+          <span>Curated Timeline</span>
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-foreground tracking-tight">
+          Step-by-Step Daily Itinerary
         </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          A seamlessly paced itinerary tailored for comfort, depth, and discovery.
+        </p>
       </div>
 
-      {/* Timeline */}
-      <div className="space-y-0">
+      {/* Luxury Timeline Container */}
+      <div className="space-y-3.5 sm:space-y-4 pt-2">
         {itinerary.map((item, index) => (
-          <div key={index} className="relative flex gap-5">
-            {/* Time + line */}
-            <div className="flex flex-col items-center">
-              <div className="flex flex-col items-center justify-center shrink-0 w-14 pt-1">
-                <span className="text-sm font-bold text-primary font-serif leading-none">{item.time.split(' ')[0]}</span>
-                <span className="text-xs text-muted-foreground">{item.time.split(' ').slice(1).join(' ')}</span>
+          <div 
+            key={index} 
+            className="group relative flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-6 p-4 sm:p-5 rounded-2xl bg-background border border-border/80 hover:border-primary/40 hover:shadow-lg transition-all duration-300"
+          >
+            {/* Time Badge Column */}
+            <div className="flex items-center sm:flex-col sm:items-center shrink-0 gap-2 sm:gap-0 sm:w-24">
+              <div className="px-2.5 py-0.5 sm:py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] sm:text-xs font-mono font-bold whitespace-nowrap">
+                {item.time}
               </div>
-              {index < itinerary.length - 1 && (
-                <div className="w-px flex-1 bg-border mt-2 min-h-[36px]" />
-              )}
+              <div className="text-[10px] text-muted-foreground uppercase tracking-widest sm:mt-1 font-semibold">
+                Step 0{index + 1}
+              </div>
             </div>
 
-            {/* Content */}
-            <div className={`flex-1 pb-5 ${index === itinerary.length - 1 ? 'pb-0' : ''}`}>
-              <div className="absolute left-[52px] top-2 h-2.5 w-2.5 rounded-full border-2 border-primary bg-background ring-2 ring-background" />
-              <div className="ml-2 p-4 rounded-xl bg-background border border-border hover:border-primary/20 transition-colors">
-                <h3 className="font-headline font-bold text-foreground text-sm mb-1">{item.title}</h3>
-                <p className="text-muted-foreground text-xs leading-relaxed">{item.description}</p>
-              </div>
+            {/* Content Column */}
+            <div className="flex-1 space-y-1">
+              <h3 className="font-serif font-bold text-foreground text-sm sm:text-base group-hover:text-primary transition-colors">
+                {item.title}
+              </h3>
+              <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
+                {item.description}
+              </p>
             </div>
           </div>
         ))}
       </div>
+
     </div>
   );
 }

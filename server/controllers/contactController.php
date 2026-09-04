@@ -1,13 +1,18 @@
 <?php
-require_once './models/Contact.php';
+require_once __DIR__ . '/../models/Contact.php';
+require_once __DIR__ . '/../lib/Mailer.php';
 
 class ContactController
 {
+    private $pdo;
     private $model;
+    private $mailer;
 
     public function __construct($pdo)
     {
+        $this->pdo = $pdo;
         $this->model = new Contact($pdo);
+        $this->mailer = new Mailer($pdo);
     }
 
     public function getAll()
@@ -46,6 +51,8 @@ class ContactController
         $name    = trim($data['name']   ?? '');
         $email   = trim($data['email']  ?? '');
         $message = trim($data['message'] ?? '');
+        $phone   = trim($data['phone']   ?? '');
+        $subject = trim($data['subject'] ?? 'Website Inquiry');
 
         if ($name === '' || $email === '' || $message === '') {
             http_response_code(422);
@@ -66,6 +73,16 @@ class ContactController
             ]);
 
             $created = $this->model->getById($newId);
+            $created['phone'] = $phone;
+            $created['subject'] = $subject;
+
+            // Dispatch customer and admin contact emails in backend
+            try {
+                $this->mailer->sendContactEmails($created);
+            } catch (\Exception $e) {
+                error_log("Mailer contact dispatch error: " . $e->getMessage());
+            }
+
             http_response_code(201);
             echo json_encode($created);
 
@@ -107,6 +124,76 @@ class ContactController
         }
     }
 
+    public function updateStatus($id)
+    {
+        $existing = $this->model->getById($id);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Contact message not found']);
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        $status = $data['status'] ?? 'read';
+
+        try {
+            $this->model->updateStatus($id, $status);
+            echo json_encode($this->model->getById($id));
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+        }
+    }
+
+    public function reply($id)
+    {
+        $existing = $this->model->getById($id);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Contact inquiry not found']);
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        $to = trim($data['to'] ?? $existing['email']);
+        $subject = trim($data['subject'] ?? ('Re: ' . ($existing['subject'] ?: 'Your Inquiry with Sapphire Trails')));
+        $message = trim($data['message'] ?? '');
+
+        if (empty($message)) {
+            http_response_code(422);
+            echo json_encode(['error' => 'Reply message cannot be empty']);
+            return;
+        }
+
+        if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            http_response_code(422);
+            echo json_encode(['error' => 'Invalid recipient email address']);
+            return;
+        }
+
+        try {
+            $result = $this->mailer->sendInquiryReplyEmail($existing, $message, $subject);
+
+            if ($result['success']) {
+                // Auto mark status as replied
+                $this->model->updateStatus($id, 'replied');
+
+                http_response_code(200);
+                echo json_encode([
+                    'message'    => "Reply dispatched successfully to $to",
+                    'status'     => 'replied',
+                    'submission' => $this->model->getById($id)
+                ]);
+            } else {
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to send email: ' . ($result['error'] ?? 'SMTP delivery failure')]);
+            }
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Reply error: ' . $e->getMessage()]);
+        }
+    }
+
     public function delete($id)
     {
         $deleted = $this->model->delete($id);
@@ -118,3 +205,5 @@ class ContactController
         }
     }
 }
+
+

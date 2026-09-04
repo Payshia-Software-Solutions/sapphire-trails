@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from 'next/image';
@@ -7,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
 import useEmblaCarousel from 'embla-carousel-react';
 import React from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, MapPin } from 'lucide-react';
+import { useSiteContent } from '@/lib/site-content';
 
 const gallery = [
   {
@@ -45,26 +45,37 @@ const gallery = [
 ];
 
 export function ExploreRatnapuraSection() {
+  const { content } = useSiteContent();
+  const exploreHeader = content.homepage.exploreHeader;
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
 
   const scrollPrev = React.useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev()
+    if (emblaApi) emblaApi.scrollPrev();
   }, [emblaApi]);
 
   const scrollNext = React.useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext()
+    if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
   return (
     <section id="ratnapura" className="w-full bg-background py-12 md:py-24 lg:py-32">
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <ScrollAnimate className="flex flex-col items-center text-center space-y-8">
-          <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
-            Explore Ratnapura
-          </h2>
+          <div className="space-y-3 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary">
+              <MapPin className="h-3.5 w-3.5" />
+              {exploreHeader.tagline || 'Regional Wonders'}
+            </div>
+            <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
+              {exploreHeader.heading || 'Explore Ratnapura'}
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto">
+              {exploreHeader.subtitle}
+            </p>
+          </div>
 
           {/* Desktop view */}
-          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
             {gallery.map((image, index) => (
               <Link key={index} href={`/explore-ratnapura/${image.slug}`} className="group relative overflow-hidden rounded-xl block">
                 <Image
@@ -75,9 +86,9 @@ export function ExploreRatnapuraSection() {
                   height={750}
                   className="object-cover w-full h-[400px] transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 text-left">
-                    <h3 className="text-xl font-headline font-bold text-white">{image.title}</h3>
-                    <p className="text-sm text-white/90 mt-2">{image.description}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-5 text-left transition-all duration-300">
+                  <h3 className="text-lg sm:text-xl font-headline font-bold text-white drop-shadow-md">{image.title}</h3>
+                  <p className="text-xs sm:text-sm text-white/85 mt-1.5 line-clamp-2 group-hover:line-clamp-none transition-all">{image.description}</p>
                 </div>
               </Link>
             ))}
@@ -90,7 +101,7 @@ export function ExploreRatnapuraSection() {
                 {gallery.map((image, index) => (
                   <div className="flex-grow-0 flex-shrink-0 basis-full min-w-0 pl-4" key={index}>
                     <Link href={`/explore-ratnapura/${image.slug}`} className="group relative overflow-hidden rounded-xl block">
-                       <Image
+                      <Image
                         src={image.src}
                         alt={image.alt}
                         data-ai-hint={image.hint}
@@ -98,10 +109,10 @@ export function ExploreRatnapuraSection() {
                         height={750}
                         className="object-cover w-full h-[450px]"
                       />
-                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-6 text-left">
-                         <h3 className="text-xl font-headline font-bold text-white">{image.title}</h3>
-                         <p className="text-sm text-white/90 mt-2">{image.description}</p>
-                       </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-6 text-left">
+                        <h3 className="text-xl font-headline font-bold text-white">{image.title}</h3>
+                        <p className="text-sm text-white/90 mt-2">{image.description}</p>
+                      </div>
                     </Link>
                   </div>
                 ))}

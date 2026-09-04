@@ -18,6 +18,7 @@ import { ArrowLeft, LoaderCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { API_BASE_URL } from '@/lib/utils';
+import { authFetch } from '@/lib/api';
 
 function LoadingSkeleton() {
     return (
@@ -67,7 +68,7 @@ export default function EditUserPage() {
     const fetchUser = useCallback(async () => {
         if (!id) return;
         try {
-            const response = await fetch(`${API_BASE_URL}/users/${id}`);
+            const response = await authFetch(`${API_BASE_URL}/users/${id}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch user data');
             }
@@ -105,7 +106,7 @@ export default function EditUserPage() {
                 payload.password = data.password;
             }
 
-            const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+            const response = await authFetch(`${API_BASE_URL}/users/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
