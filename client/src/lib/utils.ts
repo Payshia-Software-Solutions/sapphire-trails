@@ -5,7 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://server-sapphiretrails.payshia.com';
+export const API_BASE_URL = (() => {
+  const envUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  if (process.env.NODE_ENV === 'production') {
+    if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
+      return 'https://server-sapphiretrails.payshia.com';
+    }
+  }
+  return envUrl || 'https://server-sapphiretrails.payshia.com';
+})();
 export const CDN_BASE_URL = process.env.NEXT_PUBLIC_CDN_BASE_URL || 'https://content-provider.payshia.com/sapphire-trail';
 
 // Helper to construct full URL from a relative path with smart CDN/local detection

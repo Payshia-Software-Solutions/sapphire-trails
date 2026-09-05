@@ -16,15 +16,26 @@ import { TrustSection } from '@/components/sections/TrustSection';
 import { API_BASE_URL } from '@/lib/utils';
 
 async function getLocation(slug: string): Promise<Location | null> {
+    const url = `${API_BASE_URL}/locations/${slug}`;
     try {
-        const response = await fetch(`${API_BASE_URL}/locations/${slug}`);
-        if (response.ok) {
-            const data = await response.json();
-            return mapServerLocationToClient(data);
+        const response = await fetch(url, {
+            cache: 'no-store',
+            headers: {
+                'Accept': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            console.error(`[getLocation] Failed to fetch location "${slug}" from ${url}. Status: ${response.status} ${response.statusText}`);
+            return null;
         }
-        return null;
-    } catch (error) {
-        console.error("Failed to fetch location", error);
+        const data = await response.json();
+        if (!data || data.error) {
+            console.warn(`[getLocation] Location not found for slug "${slug}":`, data?.error || 'Empty data');
+            return null;
+        }
+        return mapServerLocationToClient(data);
+    } catch (error: any) {
+        console.error(`[getLocation] Network/Fetch error for slug "${slug}" from ${url}:`, error?.message || error);
         return null;
     }
 }
