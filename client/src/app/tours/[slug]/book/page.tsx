@@ -8,15 +8,26 @@ import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data'
 import { API_BASE_URL } from '@/lib/utils';
 
 async function getTourPackage(slug: string): Promise<TourPackage | null> {
+    const url = `${API_BASE_URL}/tours/slug/${slug}/`;
     try {
-        const response = await fetch(`${API_BASE_URL}/tours/slug/${slug}/`);
+        const response = await fetch(url, {
+            cache: 'no-store',
+            headers: {
+                'Accept': 'application/json',
+            },
+        });
         if (!response.ok) {
+            console.error(`[Booking.getTourPackage] Failed to fetch slug "${slug}" from ${url}. Status: ${response.status} ${response.statusText}`);
             return null;
         }
         const data = await response.json();
+        if (!data || data.error) {
+            console.warn(`[Booking.getTourPackage] Tour package not found for slug "${slug}":`, data?.error || 'Empty data');
+            return null;
+        }
         return mapServerPackageToClient(data);
-    } catch (error) {
-        console.error("Failed to fetch tour package by slug", error);
+    } catch (error: any) {
+        console.error(`[Booking.getTourPackage] Network/Fetch error for slug "${slug}" from ${url}:`, error?.message || error);
         return null;
     }
 }
