@@ -18,7 +18,7 @@ import {
   Tag
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { type ArticleItem, getStoredArticles } from '@/lib/articles-data';
+import { type ArticleItem, getStoredArticles, fetchArticles } from '@/lib/articles-data';
 import { useSiteContent } from '@/lib/site-content';
 
 export function ArticlesList() {
@@ -33,7 +33,14 @@ export function ArticlesList() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
+    // Initial sync from cache
     setArticles(getStoredArticles());
+    // Live async update from database
+    fetchArticles(3600).then((live) => {
+      if (live && live.length > 0) {
+        setArticles(live);
+      }
+    }).catch(console.error);
   }, []);
 
   const categories = useMemo(() => {

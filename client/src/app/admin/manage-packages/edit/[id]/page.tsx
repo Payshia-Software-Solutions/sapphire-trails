@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { packageFormSchema } from '@/lib/schemas';
 import { useToast } from '@/hooks/use-toast';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -334,6 +335,11 @@ export default function EditPackageStudioPage() {
         title: '✅ Tour Package Saved!',
         description: 'Your changes are live and synced with the public tour page.',
       });
+
+      // Purge Next.js static cache on-demand for immediate live update
+      const pathsToRevalidate = ['/tours', '/'];
+      if (tourSlug) pathsToRevalidate.push(`/tours/${tourSlug}`);
+      triggerRevalidation(pathsToRevalidate);
 
       fetchPackageData();
       setCardImageFile(null);

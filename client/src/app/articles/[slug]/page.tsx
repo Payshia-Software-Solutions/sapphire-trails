@@ -25,6 +25,10 @@ import {
 } from 'lucide-react';
 import { TrustSection } from '@/components/sections/TrustSection';
 import { API_BASE_URL } from '@/lib/utils';
+import { fetchArticles, fetchArticleBySlug } from '@/lib/articles-data';
+
+export const revalidate = 3600;
+export const dynamicParams = true;
 
 // Comprehensive, authoritative gemology & expedition articles
 const articlesDatabase: Record<string, {
@@ -287,13 +291,33 @@ const articlesDatabase: Record<string, {
   }
 };
 
-function getArticle(slug: string) {
+export async function generateStaticParams() {
+  try {
+    const articles = await fetchArticles(3600);
+    if (articles && articles.length > 0) {
+      return articles.map((article) => ({
+        slug: article.slug,
+      }));
+    }
+  } catch (e) {
+    console.error('Error generating static params for articles:', e);
+  }
+  return Object.keys(articlesDatabase).map((slug) => ({ slug }));
+}
+
+async function getArticle(slug: string) {
+  try {
+    const remote = await fetchArticleBySlug(slug, 3600);
+    if (remote) return remote;
+  } catch (e) {
+    console.error(`Error fetching article by slug '${slug}':`, e);
+  }
   return articlesDatabase[slug] || null;
 }
 
 async function getTours(): Promise<TourPackage[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/tours`, { next: { revalidate: 60 } });
+    const response = await fetch(`${API_BASE_URL}/tours`, { next: { revalidate: 3600 } });
     if (!response.ok) return [];
     const data = await response.json();
     if (Array.isArray(data)) return data.map(mapServerPackageToClient);
@@ -313,7 +337,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getArticle(slug);
 
   if (!article) {
     return { title: 'Article Not Found | Sapphire Trails' };
@@ -345,14 +369,19 @@ export async function generateMetadata(
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getArticle(slug);
   const tours = await getTours();
 
   if (!article) {
     notFound();
   }
 
-  const otherArticles = Object.values(articlesDatabase)
+  let allArticles = await fetchArticles(3600);
+  if (!allArticles || allArticles.length === 0) {
+    allArticles = Object.values(articlesDatabase) as any;
+  }
+
+  const otherArticles = allArticles
     .filter(item => item.slug !== slug)
     .slice(0, 3);
 

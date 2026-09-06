@@ -7,11 +7,14 @@ import { TrustSection } from '@/components/sections/TrustSection';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import { API_BASE_URL } from '@/lib/utils';
 
+export const revalidate = 3600;
+export const dynamicParams = true;
+
 async function getTourPackage(slug: string): Promise<TourPackage | null> {
     const url = `${API_BASE_URL}/tours/slug/${slug}/`;
     try {
         const response = await fetch(url, {
-            cache: 'no-store',
+            next: { revalidate: 3600 },
             headers: {
                 'Accept': 'application/json',
             },

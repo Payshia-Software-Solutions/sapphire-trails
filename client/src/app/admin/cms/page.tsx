@@ -79,6 +79,12 @@ import Image from 'next/image';
 const defaultStatsIcons = [Users, Award, ShieldCheck, Gem];
 const defaultValuesIcons = [HeartHandshake, Trees, ShieldCheck, Award];
 const defaultJourneyIcons = [Pickaxe, Waves, Sparkles, Gem];
+const defaultJourneyStepImages = [
+  "https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp",
+  "https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp",
+  "https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp",
+  "https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp",
+];
 
 const defaultPointsPerCard = [
   ['100% Government Licensed Pits (NGJA)', 'Direct artisan profit sharing', 'Strict zero child-labor policy'],
@@ -171,6 +177,7 @@ export default function MasterCmsPage() {
   const [footerSection, setFooterSection] = useState<'brand' | 'columns' | 'partner' | 'socials' | 'bottom'>('brand');
 
   const fileInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
+  const journeyStepFileRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
   const aboutJourneyFileRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
   const aboutExpFileRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
   const ourStoryFileRef = useRef<HTMLInputElement | null>(null);
@@ -691,6 +698,45 @@ export default function MasterCmsPage() {
       toast({
         title: 'Reset to Defaults',
         description: 'Click "Save All Changes" to commit the default content.',
+      });
+    }
+  };
+
+  const handleJourneyStepImageChange = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    toast({
+      title: 'Uploading to FTP...',
+      description: `Uploading ${file.name} to FTP /cms/homepage/journey folder...`,
+    });
+    try {
+      const res = await uploadCmsImage(file, 'cms/homepage/journey');
+      const newSteps = [...content.homepage.journey.steps];
+      if (newSteps[index]) {
+        newSteps[index] = {
+          ...newSteps[index],
+          image: res.url,
+        };
+        setContent({
+          ...content,
+          homepage: {
+            ...content.homepage,
+            journey: {
+              ...content.homepage.journey,
+              steps: newSteps,
+            },
+          },
+        });
+        toast({
+          title: `Step #${index + 1} Photo Uploaded!`,
+          description: `Permanent CDN URL: ${res.url}`,
+        });
+      }
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: err.message || 'Failed to upload to FTP server.',
       });
     }
   };
@@ -1392,11 +1438,57 @@ export default function MasterCmsPage() {
 
                     <div className="space-y-3 pt-1">
                       {hp.journey.steps.map((step, idx) => (
-                        <div key={idx} className="p-3.5 rounded-xl border bg-muted/20 space-y-2">
+                        <div key={idx} className="p-3.5 rounded-xl border bg-muted/20 space-y-2.5">
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-bold text-primary">Step {step.step || `0${idx + 1}`}</span>
                             <span className="text-[10px] text-muted-foreground">{step.subtitle}</span>
                           </div>
+
+                          {/* Step Image Picker */}
+                          <div className="flex items-center gap-3">
+                            <div className="relative w-20 h-16 rounded-lg overflow-hidden border border-border bg-slate-900 shrink-0">
+                              <Image 
+                                src={step.image || defaultJourneyStepImages[idx % defaultJourneyStepImages.length]} 
+                                alt={step.title} 
+                                fill 
+                                className="object-cover" 
+                              />
+                            </div>
+
+                            <div className="space-y-1 flex-1">
+                              <input 
+                                type="file" 
+                                accept="image/*" 
+                                className="hidden" 
+                                ref={(el) => { journeyStepFileRefs.current[idx] = el; }}
+                                onChange={(e) => handleJourneyStepImageChange(idx, e)}
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => journeyStepFileRefs.current[idx]?.click()}
+                                className="w-full text-xs h-7 gap-1.5 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5"
+                              >
+                                <Upload className="h-3 w-3 text-primary" />
+                                <span>Upload Step Photo</span>
+                              </Button>
+                              <Input
+                                value={step.image || ''}
+                                placeholder="Or paste image URL..."
+                                className="text-[10px] h-6 font-mono"
+                                onChange={(e) => {
+                                  const newSteps = [...hp.journey.steps];
+                                  newSteps[idx] = {
+                                    ...newSteps[idx],
+                                    image: e.target.value,
+                                  };
+                                  setContent({ ...content, homepage: { ...content.homepage, journey: { ...content.homepage.journey, steps: newSteps } } });
+                                }}
+                              />
+                            </div>
+                          </div>
+
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <div className="space-y-1">
                               <Label className="text-[11px]">Title</Label>
@@ -1405,7 +1497,10 @@ export default function MasterCmsPage() {
                                 className="text-xs h-8"
                                 onChange={(e) => {
                                   const newSteps = [...hp.journey.steps];
-                                  newSteps[idx].title = e.target.value;
+                                  newSteps[idx] = {
+                                    ...newSteps[idx],
+                                    title: e.target.value,
+                                  };
                                   setContent({ ...content, homepage: { ...content.homepage, journey: { ...content.homepage.journey, steps: newSteps } } });
                                 }}
                               />
@@ -1417,7 +1512,10 @@ export default function MasterCmsPage() {
                                 className="text-xs h-8"
                                 onChange={(e) => {
                                   const newSteps = [...hp.journey.steps];
-                                  newSteps[idx].subtitle = e.target.value;
+                                  newSteps[idx] = {
+                                    ...newSteps[idx],
+                                    subtitle: e.target.value,
+                                  };
                                   setContent({ ...content, homepage: { ...content.homepage, journey: { ...content.homepage.journey, steps: newSteps } } });
                                 }}
                               />
@@ -1431,7 +1529,10 @@ export default function MasterCmsPage() {
                               className="text-xs"
                               onChange={(e) => {
                                 const newSteps = [...hp.journey.steps];
-                                newSteps[idx].description = e.target.value;
+                                newSteps[idx] = {
+                                  ...newSteps[idx],
+                                  description: e.target.value,
+                                };
                                 setContent({ ...content, homepage: { ...content.homepage, journey: { ...content.homepage.journey, steps: newSteps } } });
                               }}
                             />
@@ -1547,8 +1648,8 @@ export default function MasterCmsPage() {
                       <Button type="button" variant="outline" size="sm" onClick={() => setHomeSection('journey')} className="text-xs gap-1.5">
                         <ArrowLeft className="h-3.5 w-3.5" /> 4-Step Journey
                       </Button>
-                      <Button type="button" size="sm" onClick={() => setHomeSection('headers')} className="text-xs gap-1.5">
-                        Next: Section Headers <ArrowRight className="h-3.5 w-3.5" />
+                      <Button type="button" size="sm" onClick={() => setHomeSection('tours')} className="text-xs gap-1.5">
+                        Next: Curated Tours <ArrowRight className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </CardContent>
@@ -2163,13 +2264,29 @@ export default function MasterCmsPage() {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                          {hp.journey.steps.map((s, idx) => (
-                            <div key={idx} className="p-3 rounded-xl border bg-card space-y-1">
-                              <span className="text-[10px] font-mono font-bold text-primary">STEP {s.step || `0${idx + 1}`}</span>
-                              <h4 className="text-xs font-headline font-bold text-foreground">{s.title}</h4>
-                              <p className="text-[10px] text-muted-foreground line-clamp-2">{s.description}</p>
-                            </div>
-                          ))}
+                          {hp.journey.steps.map((s, idx) => {
+                            const stepImg = s.image || defaultJourneyStepImages[idx % defaultJourneyStepImages.length];
+                            return (
+                              <div key={idx} className="rounded-xl border bg-card overflow-hidden shadow-xs flex flex-col">
+                                <div className="relative h-24 w-full bg-slate-100 overflow-hidden">
+                                  <Image
+                                    src={stepImg}
+                                    alt={s.title || `Step ${idx + 1}`}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                  <div className="absolute top-1.5 left-1.5 bg-black/70 backdrop-blur-xs text-primary px-2 py-0.5 rounded text-[10px] font-mono font-bold">
+                                    STEP {s.step || `0${idx + 1}`}
+                                  </div>
+                                </div>
+                                <div className="p-2.5 space-y-1 flex-1">
+                                  <span className="text-[9px] uppercase tracking-wider text-primary font-semibold block">{s.subtitle}</span>
+                                  <h4 className="text-xs font-headline font-bold text-foreground line-clamp-1">{s.title}</h4>
+                                  <p className="text-[10px] text-muted-foreground line-clamp-2 leading-relaxed">{s.description}</p>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
