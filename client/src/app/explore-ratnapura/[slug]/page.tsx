@@ -15,11 +15,32 @@ import { TrustSection } from '@/components/sections/TrustSection';
 
 import { API_BASE_URL } from '@/lib/utils';
 
+export const revalidate = 3600;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/locations/`, { next: { revalidate: 3600 } });
+    if (!response.ok) return [];
+    const data = await response.json();
+    if (Array.isArray(data)) {
+      return data
+        .filter((loc: any) => Boolean(loc.slug))
+        .map((loc: any) => ({
+          slug: loc.slug,
+        }));
+    }
+  } catch (error) {
+    console.error('[generateStaticParams] Failed to fetch locations:', error);
+  }
+  return [];
+}
+
 async function getLocation(slug: string): Promise<Location | null> {
     const url = `${API_BASE_URL}/locations/${slug}`;
     try {
         const response = await fetch(url, {
-            cache: 'no-store',
+            next: { revalidate: 3600 },
             headers: {
                 'Accept': 'application/json',
             },

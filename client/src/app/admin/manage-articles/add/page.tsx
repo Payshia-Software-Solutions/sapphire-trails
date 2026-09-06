@@ -38,10 +38,11 @@ import Link from 'next/link';
 import { 
   type ArticleItem, 
   getStoredArticles, 
-  saveStoredArticles 
+  saveStoredArticles,
+  createArticleApi
 } from '@/lib/articles-data';
 
-export const PRESET_AVATARS = [
+const PRESET_AVATARS = [
   {
     id: 'rohan',
     name: 'Dr. Rohan Samarasinghe, FGA',
@@ -101,11 +102,10 @@ export default function AddArticlePage() {
   const [readTime, setReadTime] = useState('5 min read');
   
   // Format current date as YYYY-MM-DD for native input[type="date"]
-  const today = new Date().toISOString().split('T')[0];
-  const [publishedDate, setPublishedDate] = useState(today);
+  const [publishedDate, setPublishedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const [imageUrl, setImageUrl] = useState('https://content-provider.payshia.com/sapphire-trail/images/img37.webp');
-  const [imageHint, setImageHint] = useState('gemstones collection');
+  const [imageUrl, setImageUrl] = useState('');
+  const [imageHint, setImageHint] = useState('');
   
   // Selected Avatar
   const [authorName, setAuthorName] = useState(PRESET_AVATARS[0].name);
@@ -121,7 +121,7 @@ export default function AddArticlePage() {
 
   // Visual WYSIWYG View State
   const [isCodeView, setIsCodeView] = useState(false);
-  const editorRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Duplicate slug check
@@ -185,7 +185,7 @@ export default function AddArticlePage() {
     setAuthorAvatar(preset.url);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanSlug = articleSlug.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
 
@@ -251,18 +251,30 @@ export default function AddArticlePage() {
       contentHtml: finalHtml,
     };
 
-    const updatedArticles = [newItem, ...allArticles];
+    try {
+      // Persist to Live MySQL Database
+      const created = await createArticleApi(newItem);
+      const updatedArticles = [created, ...allArticles];
+      saveStoredArticles(updatedArticles);
 
-    saveStoredArticles(updatedArticles);
-
-    setTimeout(() => {
-      setIsSubmitting(false);
       toast({
         title: '✨ Article Published Successfully',
-        description: `"${newItem.title}" is now live on the website.`,
+        description: `"${newItem.title}" is now saved to the live database and live on the website.`,
       });
       router.push('/admin/manage-articles');
-    }, 400);
+    } catch (err: any) {
+      console.error('Failed to create article via API:', err);
+      // Fallback local save so user work is never lost
+      const updatedArticles = [newItem, ...allArticles];
+      saveStoredArticles(updatedArticles);
+      toast({
+        title: 'Article Saved Locally',
+        description: `Saved locally. Warning: ${err.message || 'Database connection issue.'}`,
+      });
+      router.push('/admin/manage-articles');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

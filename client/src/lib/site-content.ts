@@ -28,6 +28,7 @@ export interface SiteContentData {
         title: string;
         subtitle: string;
         description: string;
+        image?: string;
       }>;
     };
     discover: {
@@ -420,25 +421,29 @@ export const defaultSiteContent: SiteContentData = {
           step: '01',
           title: 'Descend into Active Mining Pits',
           subtitle: 'Authentic Underground Experience',
-          description: 'Equipped with safety gear, descend into real 40–60ft traditional timbered mine shafts. Meet veteran miners and witness ancient hand-drilling methods in action.'
+          description: 'Equipped with safety gear, descend into real 40–60ft traditional timbered mine shafts. Meet veteran miners and witness ancient hand-drilling methods in action.',
+          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp',
         },
         {
           step: '02',
           title: 'Traditional Gem Gravel Washing',
           subtitle: 'Hands-on Illama Washing',
-          description: 'Stand alongside local miners in mountain stream beds. Master the ancient technique of swirling conical bamboo baskets to separate heavy sapphire gravel from silt.'
+          description: 'Stand alongside local miners in mountain stream beds. Master the ancient technique of swirling conical bamboo baskets to separate heavy sapphire gravel from silt.',
+          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp',
         },
         {
           step: '03',
           title: 'Ratnapura Street Gem Market',
           subtitle: "The World's Sapphire Capital",
-          description: 'Step into the bustling alleys of Ratnapura where rough gemstones are traded using secret hand signals and optical torches in a centuries-old open-air bazaar.'
+          description: 'Step into the bustling alleys of Ratnapura where rough gemstones are traded using secret hand signals and optical torches in a centuries-old open-air bazaar.',
+          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp',
         },
         {
           step: '04',
           title: 'Gemologist Valuation & Workshop',
           subtitle: 'Authentication & Lapidary',
-          description: 'Conclude at our partner laboratory at Grand Silver Ray. Examine raw Ceylon Sapphires, Padparadschas, and Star stones under high-power microscopes.'
+          description: 'Conclude at our partner laboratory at Grand Silver Ray. Examine raw Ceylon Sapphires, Padparadschas, and Star stones under high-power microscopes.',
+          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp',
         }
       ]
     },

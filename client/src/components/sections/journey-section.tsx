@@ -62,7 +62,7 @@ export function JourneySection() {
                 {/* Image Container */}
                 <div className="relative h-48 sm:h-52 w-full overflow-hidden">
                   <Image
-                    src={defaultStepImages[idx % defaultStepImages.length]}
+                    src={step.image || defaultStepImages[idx % defaultStepImages.length]}
                     alt={step.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"

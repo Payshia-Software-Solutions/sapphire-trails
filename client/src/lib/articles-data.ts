@@ -229,3 +229,129 @@ export function saveStoredArticles(articles: ArticleItem[]): void {
     console.error("Failed to save articles", e);
   }
 }
+
+import { API_BASE_URL } from './utils';
+import { authFetch } from './api';
+
+export function normalizeArticle(raw: any): ArticleItem {
+  return {
+    id: String(raw.id || ''),
+    slug: raw.slug || '',
+    title: raw.title || '',
+    subtitle: raw.subtitle || '',
+    description: raw.description || '',
+    imageUrl: raw.imageUrl || raw.image_url || 'https://content-provider.payshia.com/sapphire-trail/images/img37.webp',
+    imageHint: raw.imageHint || raw.image_hint || '',
+    category: raw.category || 'General',
+    readTime: raw.readTime || raw.read_time || '5 min read',
+    publishedDate: raw.publishedDate || raw.published_date || 'February 2026',
+    status: raw.status || 'published',
+    author: {
+      name: raw.author?.name || raw.author_name || 'Editorial Team',
+      role: raw.author?.role || raw.author_role || 'Contributor',
+      avatar: raw.author?.avatar || raw.author_avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'
+    },
+    keyTakeaways: Array.isArray(raw.keyTakeaways) 
+      ? raw.keyTakeaways 
+      : (Array.isArray(raw.key_takeaways) ? raw.key_takeaways : []),
+    contentHtml: raw.contentHtml || raw.content_html || ''
+  };
+}
+
+/**
+ * Fetch all articles from live API with ISR support and robust fallback
+ */
+export async function fetchArticles(revalidateSeconds = 3600): Promise<ArticleItem[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/articles`, {
+      next: { revalidate: revalidateSeconds },
+    });
+    if (!res.ok) {
+      console.warn(`[Articles] Live API fetch failed with status ${res.status}. Falling back to default list.`);
+      return initialArticles;
+    }
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      return data.map(normalizeArticle);
+    }
+  } catch (err) {
+    console.error('[Articles] Live API connection error:', err);
+  }
+  return initialArticles;
+}
+
+/**
+ * Fetch a single article by slug with ISR support and fallback
+ */
+export async function fetchArticleBySlug(slug: string, revalidateSeconds = 3600): Promise<ArticleItem | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/articles/${slug}`, {
+      next: { revalidate: revalidateSeconds },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.slug) {
+        return normalizeArticle(data);
+      }
+    }
+  } catch (err) {
+    console.error(`[Articles] Live API error fetching slug '${slug}':`, err);
+  }
+
+  // Fallback to initial articles
+  const localMatch = initialArticles.find((a) => a.slug === slug);
+  return localMatch || null;
+}
+
+/**
+ * Admin API: Create article
+ */
+export async function createArticleApi(article: Partial<ArticleItem>): Promise<ArticleItem> {
+  const res = await authFetch('/articles', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(article),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to create article');
+  }
+
+  return normalizeArticle(data.article || data);
+}
+
+/**
+ * Admin API: Update article
+ */
+export async function updateArticleApi(identifier: string, article: Partial<ArticleItem>): Promise<ArticleItem> {
+  const res = await authFetch(`/articles/${identifier}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(article),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to update article');
+  }
+
+  return normalizeArticle(data.article || data);
+}
+
+/**
+ * Admin API: Delete article
+ */
+export async function deleteArticleApi(identifier: string): Promise<boolean> {
+  const res = await authFetch(`/articles/${identifier}`, {
+    method: 'DELETE',
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to delete article');
+  }
+
+  return true;
+}
+

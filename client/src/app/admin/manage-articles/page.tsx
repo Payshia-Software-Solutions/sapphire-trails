@@ -15,7 +15,8 @@ import {
   Search, 
   Clock, 
   Calendar, 
-  Eye
+  Eye,
+  LoaderCircle
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -33,7 +34,9 @@ import Link from 'next/link';
 import { 
   type ArticleItem, 
   getStoredArticles, 
-  saveStoredArticles 
+  saveStoredArticles,
+  fetchArticles,
+  deleteArticleApi
 } from '@/lib/articles-data';
 
 export default function ManageArticlesPage() {
@@ -41,10 +44,28 @@ export default function ManageArticlesPage() {
   const [articles, setArticles] = useState<ArticleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load articles
+  // Load articles from Live Database API
   useEffect(() => {
-    setArticles(getStoredArticles());
+    async function load() {
+      setIsLoading(true);
+      try {
+        const liveArticles = await fetchArticles(0);
+        if (liveArticles && liveArticles.length > 0) {
+          setArticles(liveArticles);
+          saveStoredArticles(liveArticles);
+        } else {
+          setArticles(getStoredArticles());
+        }
+      } catch (e) {
+        console.error('Failed to load live articles:', e);
+        setArticles(getStoredArticles());
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    load();
   }, []);
 
   const categories = ['all', ...Array.from(new Set(articles.map(a => a.category)))];
@@ -57,14 +78,28 @@ export default function ManageArticlesPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const handleDeleteArticle = (id: string) => {
-    const nextArticles = articles.filter(a => a.id !== id);
-    setArticles(nextArticles);
-    saveStoredArticles(nextArticles);
-    toast({
-      title: 'Article Deleted',
-      description: 'The article was removed from the live site.',
-    });
+  const handleDeleteArticle = async (id: string, slug: string) => {
+    try {
+      await deleteArticleApi(id || slug);
+      const nextArticles = articles.filter(a => a.id !== id && a.slug !== slug);
+      setArticles(nextArticles);
+      saveStoredArticles(nextArticles);
+      toast({
+        title: 'Article Deleted',
+        description: 'The article was permanently removed from the live database.',
+      });
+    } catch (err: any) {
+      console.error('Failed to delete article:', err);
+      // Fallback local deletion
+      const nextArticles = articles.filter(a => a.id !== id && a.slug !== slug);
+      setArticles(nextArticles);
+      saveStoredArticles(nextArticles);
+      toast({
+        variant: 'destructive',
+        title: 'Notice',
+        description: err.message || 'Article deleted locally.',
+      });
+    }
   };
 
   return (
@@ -121,9 +156,21 @@ export default function ManageArticlesPage() {
       </Card>
 
       {/* Articles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredArticles.map(article => (
-          <Card key={article.id} className="bg-card border border-border/80 rounded-2xl overflow-hidden shadow-md flex flex-col justify-between group hover:border-primary/50 transition-all">
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-3">
+          <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm">Connecting to live database & loading articles...</p>
+        </div>
+      ) : filteredArticles.length === 0 ? (
+        <div className="text-center py-16 text-muted-foreground bg-card border border-border/60 rounded-2xl p-8">
+          <BookOpen className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
+          <p className="text-base font-medium">No articles found.</p>
+          <p className="text-xs text-muted-foreground mt-1">Try adjusting your search query or create a new article.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredArticles.map(article => (
+            <Card key={article.id || article.slug} className="bg-card border border-border/80 rounded-2xl overflow-hidden shadow-md flex flex-col justify-between group hover:border-primary/50 transition-all">
             
             {/* Thumbnail Header */}
             <div>
@@ -210,7 +257,7 @@ export default function ManageArticlesPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDeleteArticle(article.id)} className="bg-destructive text-destructive-foreground">
+                      <AlertDialogAction onClick={() => handleDeleteArticle(article.id, article.slug)} className="bg-destructive text-destructive-foreground">
                         Delete
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -222,6 +269,7 @@ export default function ManageArticlesPage() {
           </Card>
         ))}
       </div>
+      )}
 
     </div>
   );
