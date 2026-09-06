@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
+import { triggerRevalidation } from '@/lib/revalidate';
 
 export interface SiteContentData {
   // 1. Complete Homepage Sections
@@ -1343,6 +1344,8 @@ export async function saveSiteContent(data: SiteContentData): Promise<{ success:
     if (typeof window !== 'undefined') {
       localStorage.setItem(SITE_CONTENT_STORAGE_KEY, JSON.stringify(data));
       window.dispatchEvent(new Event(SITE_CONTENT_CHANGE_EVENT));
+      // Revalidate homepage and primary static pages on-demand
+      triggerRevalidation(['/', '/about-us', '/contact']);
     }
 
     return { success: true, message: 'All website content saved successfully!' };

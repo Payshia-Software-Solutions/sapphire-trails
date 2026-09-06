@@ -23,6 +23,7 @@ import { mapServerPackageToClient } from '@/lib/packages-data';
 
 import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
+import { triggerRevalidation } from '@/lib/revalidate';
 
 // A leaner type for what this page needs to display
 interface ManagedPackage {
@@ -80,6 +81,7 @@ export default function ManagePackagesPage() {
             throw new Error(errorData.error || 'Failed to delete package.');
         }
         setPackages(prev => prev.filter(p => p.id !== id));
+        triggerRevalidation(['/tours', '/']);
         toast({
             title: 'Package Deleted',
             description: `Package "${title}" has been deleted.`,

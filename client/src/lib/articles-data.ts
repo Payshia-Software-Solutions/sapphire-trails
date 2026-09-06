@@ -303,6 +303,8 @@ export async function fetchArticleBySlug(slug: string, revalidateSeconds = 3600)
   return localMatch || null;
 }
 
+import { triggerRevalidation } from './revalidate';
+
 /**
  * Admin API: Create article
  */
@@ -318,7 +320,12 @@ export async function createArticleApi(article: Partial<ArticleItem>): Promise<A
     throw new Error(data.error || 'Failed to create article');
   }
 
-  return normalizeArticle(data.article || data);
+  const created = normalizeArticle(data.article || data);
+
+  // Trigger On-Demand ISR revalidation so live pages update immediately
+  triggerRevalidation(['/articles', `/articles/${created.slug}`, '/']);
+
+  return created;
 }
 
 /**
@@ -336,7 +343,12 @@ export async function updateArticleApi(identifier: string, article: Partial<Arti
     throw new Error(data.error || 'Failed to update article');
   }
 
-  return normalizeArticle(data.article || data);
+  const updated = normalizeArticle(data.article || data);
+
+  // Trigger On-Demand ISR revalidation so live pages update immediately
+  triggerRevalidation(['/articles', `/articles/${updated.slug}`, '/']);
+
+  return updated;
 }
 
 /**
@@ -351,6 +363,9 @@ export async function deleteArticleApi(identifier: string): Promise<boolean> {
   if (!res.ok) {
     throw new Error(data.error || 'Failed to delete article');
   }
+
+  // Trigger On-Demand ISR revalidation
+  triggerRevalidation(['/articles', '/']);
 
   return true;
 }
