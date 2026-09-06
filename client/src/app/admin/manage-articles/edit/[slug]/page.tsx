@@ -39,10 +39,12 @@ import Link from 'next/link';
 import { 
   type ArticleItem, 
   getStoredArticles, 
-  saveStoredArticles 
+  saveStoredArticles,
+  fetchArticleBySlug,
+  updateArticleApi
 } from '@/lib/articles-data';
 
-export const PRESET_AVATARS = [
+const PRESET_AVATARS = [
   {
     id: 'rohan',
     name: 'Dr. Rohan Samarasinghe, FGA',
@@ -115,50 +117,64 @@ export default function EditArticlePage({ params }: { params: Promise<{ slug: st
   // Visual WYSIWYG Content State
   const [contentHtml, setContentHtml] = useState('');
   const [isCodeView, setIsCodeView] = useState(false);
-  const editorRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const articles = getStoredArticles();
-    const found = articles.find(a => a.slug === slug);
-
-    if (found) {
-      setArticleId(found.id);
-      setTitle(found.title);
-      setArticleSlug(found.slug);
-      setSubtitle(found.subtitle || '');
-      setDescription(found.description);
-      setCategory(found.category);
-      setReadTime(found.readTime);
-      
-      // Parse or format existing date to YYYY-MM-DD for date input
+    async function loadArticle() {
+      setIsLoading(true);
+      let found: ArticleItem | null = null;
       try {
-        const parsed = new Date(found.publishedDate);
-        if (!isNaN(parsed.getTime())) {
-          setPublishedDate(parsed.toISOString().split('T')[0]);
-        } else {
-          setPublishedDate(new Date().toISOString().split('T')[0]);
-        }
-      } catch {
-        setPublishedDate(new Date().toISOString().split('T')[0]);
+        found = await fetchArticleBySlug(slug, 0);
+      } catch (e) {
+        console.error('Failed to fetch article from API:', e);
       }
 
-      setImageUrl(found.imageUrl);
-      setImageHint(found.imageHint);
-      setAuthorName(found.author?.name || PRESET_AVATARS[0].name);
-      setAuthorRole(found.author?.role || PRESET_AVATARS[0].role);
-      setAuthorAvatar(found.author?.avatar || PRESET_AVATARS[0].url);
-      setKeyTakeaways(found.keyTakeaways || []);
-      setContentHtml(found.contentHtml || '');
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Article Not Found',
-        description: 'The requested article could not be located.',
-      });
-      router.push('/admin/manage-articles');
+      if (!found) {
+        const articles = getStoredArticles();
+        found = articles.find(a => a.slug === slug) || null;
+      }
+
+      if (found) {
+        setArticleId(found.id);
+        setTitle(found.title);
+        setArticleSlug(found.slug);
+        setSubtitle(found.subtitle || '');
+        setDescription(found.description);
+        setCategory(found.category);
+        setReadTime(found.readTime);
+        
+        // Parse or format existing date to YYYY-MM-DD for date input
+        try {
+          const parsed = new Date(found.publishedDate);
+          if (!isNaN(parsed.getTime())) {
+            setPublishedDate(parsed.toISOString().split('T')[0]);
+          } else {
+            setPublishedDate(new Date().toISOString().split('T')[0]);
+          }
+        } catch {
+          setPublishedDate(new Date().toISOString().split('T')[0]);
+        }
+
+        setImageUrl(found.imageUrl);
+        setImageHint(found.imageHint);
+        setAuthorName(found.author?.name || PRESET_AVATARS[0].name);
+        setAuthorRole(found.author?.role || PRESET_AVATARS[0].role);
+        setAuthorAvatar(found.author?.avatar || PRESET_AVATARS[0].url);
+        setKeyTakeaways(found.keyTakeaways || []);
+        setContentHtml(found.contentHtml || '');
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Article Not Found',
+          description: 'The requested article could not be located.',
+        });
+        router.push('/admin/manage-articles');
+      }
+      setIsLoading(false);
     }
-    setIsLoading(false);
+
+    loadArticle();
   }, [slug, router, toast]);
 
   // Execute formatting command on contentEditable visual editor
@@ -219,7 +235,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ slug: st
     setAuthorAvatar(preset.url);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanSlug = articleSlug.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
 
@@ -285,18 +301,30 @@ export default function EditArticlePage({ params }: { params: Promise<{ slug: st
       contentHtml: finalHtml,
     };
 
-    const updatedArticles = allArticles.map(a => (a.id === articleId || a.slug === slug) ? updatedItem : a);
+    try {
+      // Save to Live MySQL Database
+      const updated = await updateArticleApi(articleId || slug, updatedItem);
+      const updatedArticles = allArticles.map(a => (a.id === articleId || a.slug === slug) ? updated : a);
+      saveStoredArticles(updatedArticles);
 
-    saveStoredArticles(updatedArticles);
-
-    setTimeout(() => {
-      setIsSubmitting(false);
       toast({
-        title: '✨ Article Published Successfully',
-        description: `"${updatedItem.title}" has been updated on the live website.`,
+        title: '✨ Article Saved Successfully',
+        description: `"${updatedItem.title}" has been updated in the live database.`,
       });
       router.push('/admin/manage-articles');
-    }, 400);
+    } catch (err: any) {
+      console.error('Failed to update article via API:', err);
+      // Fallback local save
+      const updatedArticles = allArticles.map(a => (a.id === articleId || a.slug === slug) ? updatedItem : a);
+      saveStoredArticles(updatedArticles);
+      toast({
+        title: 'Article Saved Locally',
+        description: `Saved locally. Warning: ${err.message || 'Database update failed.'}`,
+      });
+      router.push('/admin/manage-articles');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {

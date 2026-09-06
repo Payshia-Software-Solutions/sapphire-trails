@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { packageFormSchema } from '@/lib/schemas';
 import { useToast } from '@/hooks/use-toast';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -322,6 +323,8 @@ export default function AddPackagePage() {
         title: 'Package Added!',
         description: `Package "${data.homepageTitle}" has been saved successfully.`,
       });
+      // Purge Next.js static cache on-demand for immediate live update
+      triggerRevalidation(['/tours', '/']);
       router.push('/admin/manage-packages');
 
     } catch (error) {

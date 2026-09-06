@@ -58,6 +58,7 @@ $icalRoutes = require __DIR__ . '/icalRoutes.php';
 $mailRoutes = require __DIR__ . '/mailRoutes.php';
 $invoiceRoutes = require __DIR__ . '/invoiceRoutes.php';
 $analyticsRoutes = require __DIR__ . '/analyticsRoutes.php';
+$articleRoutes = require __DIR__ . '/articleRoutes.php';
 
 // Combine all routes
 $routes = array_merge(
@@ -73,7 +74,8 @@ $routes = array_merge(
     $icalRoutes,
     $mailRoutes,
     $invoiceRoutes,
-    $analyticsRoutes
+    $analyticsRoutes,
+    $articleRoutes
 );
 
 // Define the home route
