@@ -15,6 +15,21 @@ export const metadata: Metadata = {
     template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
     default: 'Gem Mine Tours Sri Lanka | Sapphire Trails - Luxury Ratnapura Mining Trips',
   },
+  description: 'Book the ultimate Gem Mine Tour in Ratnapura (Rathnapura), Sri Lanka. Experience active mining pits, traditional gem washing, and private luxury sapphire tours with Sapphire Trails.',
+  keywords: [
+    'Gem mining Rathnapura',
+    'Gem mining Ratnapura',
+    'Gem tours',
+    'gem mine tours',
+    'gem mine tours rathnapura',
+    'sri lanka gem mine tour',
+    'srilankan gem tours',
+    'sri lankan gem tours',
+    'gem mining tour',
+    'Ceylon sapphire tours',
+    'Ratnapura gem market',
+    'gem washing experience Sri Lanka'
+  ],
   icons: {
     icon: [
       { url: '/img/favicon.ico' },
@@ -30,9 +45,8 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-
     title: 'Gem Mine Tours Sri Lanka | Sapphire Trails - Luxury Ratnapura Mining Trips',
-    description: 'Book the ultimate Gem Mine Tour in Ratnapura, Sri Lanka. Experience active mining pits, traditional gem washing, and luxury service with Sapphire Trails.',
+    description: 'Book the ultimate Gem Mine Tour in Ratnapura (Rathnapura), Sri Lanka. Experience active mining pits, traditional gem washing, and luxury service with Sapphire Trails.',
     images: [{
       url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
       width: 1200,
@@ -95,11 +109,67 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "TouristAttraction",
     "name": "Sapphire Trails Gem Mine Tours",
-    "description": "Professional gem mine tours in Sri Lanka.",
+    "alternateName": [
+      "Ratnapura Gem Mine Tours",
+      "Rathnapura Gem Mining Tour",
+      "Sri Lankan Gem Tours",
+      "Ceylon Gem Mine Tour"
+    ],
+    "description": "Authentic and luxury gem mine tours in Ratnapura (Rathnapura), Sri Lanka. Experience active underground mining pit descent, traditional river gem gravel washing, and certified gemologist consultations.",
+    "touristType": ["EcoTourism", "CulturalTourism", "GemstoneTourism", "LuxuryTourism"],
     "location": {
       "@type": "Place",
-      "name": "Sri Lanka"
+      "name": "Ratnapura, Sri Lanka",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Ratnapura",
+        "addressRegion": "Sabaragamuwa",
+        "addressCountry": "LK"
+      }
     }
+  };
+
+  const siteNavigationSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Sapphire Trails Navigation",
+    "itemListElement": [
+      {
+        "@type": "SiteNavigationElement",
+        "position": 1,
+        "name": "Gem Mine Tours",
+        "description": "Book authentic gem mine tours and packages in Ratnapura.",
+        "url": "https://sapphiretrails.lk/tours"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "position": 2,
+        "name": "Explore Ratnapura",
+        "description": "Discover attractions, gem markets, and culture in the City of Gems.",
+        "url": "https://sapphiretrails.lk/explore-ratnapura"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "position": 3,
+        "name": "Articles & Guides",
+        "description": "Authoritative guides on Ceylon sapphires and gem mining expeditions.",
+        "url": "https://sapphiretrails.lk/articles"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "position": 4,
+        "name": "About Us",
+        "description": "Learn about Sapphire Trails and our ethical mining heritage.",
+        "url": "https://sapphiretrails.lk/about"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "position": 5,
+        "name": "Contact Us",
+        "description": "Get in touch with our concierge team for custom tour bookings.",
+        "url": "https://sapphiretrails.lk/contact"
+      }
+    ]
   };
 
   return (
@@ -154,6 +224,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(touristAttractionSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavigationSchema) }}
         />
         <LayoutProvider>
             {children}

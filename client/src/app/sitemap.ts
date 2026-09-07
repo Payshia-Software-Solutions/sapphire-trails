@@ -56,20 +56,43 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }
 
         let articleRoutes: MetadataRoute.Sitemap = [];
-        const articlesRes = await fetch(`${API_BASE_URL}/articles`, { next: { revalidate: 86400 } });
-        if (articlesRes.ok) {
-            const articles = await articlesRes.json();
-            if (Array.isArray(articles)) {
-                articleRoutes = articles
-                    .filter((a: any) => Boolean(a.slug))
-                    .map((a: any) => ({
-                        url: `${BASE_URL}/articles/${a.slug}`,
-                        lastModified: a.updated_at ? new Date(a.updated_at).toISOString() : new Date().toISOString(),
-                        changeFrequency: 'weekly' as 'weekly',
-                        priority: 0.7,
-                    }));
+        const seenSlugs = new Set<string>();
+
+        try {
+            const articlesRes = await fetch(`${API_BASE_URL}/articles`, { next: { revalidate: 86400 } });
+            if (articlesRes.ok) {
+                const articles = await articlesRes.json();
+                if (Array.isArray(articles)) {
+                    articles
+                        .filter((a: any) => Boolean(a.slug))
+                        .forEach((a: any) => {
+                            seenSlugs.add(a.slug);
+                            articleRoutes.push({
+                                url: `${BASE_URL}/articles/${a.slug}`,
+                                lastModified: a.updated_at ? new Date(a.updated_at).toISOString() : new Date().toISOString(),
+                                changeFrequency: 'weekly' as 'weekly',
+                                priority: 0.7,
+                            });
+                        });
+                }
             }
+        } catch (err) {
+            console.warn("Could not fetch remote articles for sitemap, falling back to local list:", err);
         }
+
+        // Ensure built-in pillar articles are always present in sitemap
+        const { initialArticles } = await import('@/lib/articles-data');
+        initialArticles.forEach((art) => {
+            if (!seenSlugs.has(art.slug)) {
+                seenSlugs.add(art.slug);
+                articleRoutes.push({
+                    url: `${BASE_URL}/articles/${art.slug}`,
+                    lastModified: new Date().toISOString(),
+                    changeFrequency: 'weekly' as 'weekly',
+                    priority: 0.7,
+                });
+            }
+        });
         
         return [...staticRoutes, ...tourRoutes, ...locationRoutes, ...articleRoutes];
 

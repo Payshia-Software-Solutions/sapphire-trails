@@ -398,10 +398,10 @@ export const defaultSiteContent: SiteContentData = {
 
   homepage: {
     hero: {
-      tagline: 'THE OFFICIAL SRI LANKA GEM MINE TOUR • RATNAPURA',
+      tagline: 'THE OFFICIAL SRI LANKA GEM MINE TOUR • RATNAPURA (RATHNAPURA)',
       headlineLine1: 'Sri Lanka Gem Mine Tour',
       headlineLine2: 'AN EXCLUSIVE LUXURY EXPERIENCE',
-      subheadline: "Discover the world's finest Ceylon sapphires with Sri Lanka's premier luxury gem mine tour. Private active pit descent, river washing, and licensed gemologists.",
+      subheadline: "Discover the world's finest Ceylon sapphires with Sri Lanka's premier luxury gem mining tour. Experience active pit descent, traditional gem washing, and private excursions led by licensed gemologists.",
       ctaPrimaryText: 'Book Your Experience',
       ctaSecondaryText: 'Explore Packages',
       videoUrl: 'https://content-provider.payshia.com/sapphire-trail/hero/hero-video-sapphire-trail.webm',
@@ -415,8 +415,8 @@ export const defaultSiteContent: SiteContentData = {
     ],
     journey: {
       tagline: 'The Signature Gemological Trail',
-      heading: 'The 4-Step Expedition Journey',
-      subtitle: 'From subterranean timber-reinforced shafts to the world-famous street trading bazaar, experience every stage of Ceylon sapphire heritage.',
+      heading: 'The Authentic Ratnapura Gem Mining Tour Experience',
+      subtitle: 'From subterranean timber-reinforced shafts to the world-famous street trading bazaar, experience every stage of authentic Sri Lankan gem tours.',
       steps: [
         {
           step: '01',
@@ -451,62 +451,62 @@ export const defaultSiteContent: SiteContentData = {
     discover: {
       tagline: 'Authentic Ratnapura Exploration',
       heading: 'Discover Our Gem Mine Tours',
-      description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura, Sri Lanka—the legendary 'City of Gems'—this authentic gemstone tour takes you into actual mining pits. Discover the ancient tradition behind world-famous Ceylon Sapphires, guided by experts. It's a rich experience far beyond the usual tourist trail.",
+      description: "Get more than just a glimpse of this captivating world with our unique Gem Mine Tours. In the heart of Ratnapura (Rathnapura), Sri Lanka—the legendary 'City of Gems'—our private gem mining tour takes you into active mining pits and illam washing pools. Discover the ancient heritage behind Ceylon Sapphires, guided by licensed gemologists on premier Sri Lankan gem tours.",
       images: [
         { 
           src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp', 
-          alt: 'A tourist gets fitted with a safety harness before a gem tour.', 
+          alt: 'Safety harness fitting before descending into an active gem mining pit in Rathnapura Sri Lanka.', 
           hint: 'gem tour safety',
-          hoverDescription: 'Prepare for an authentic Gem Mine Tour. Safety and adventure go hand-in-hand as you get ready to descend into a real mine.'
+          hoverDescription: 'Prepare for an authentic Gem Mine Tour in Rathnapura. Safety and adventure go hand-in-hand as you descend into a real mine pit.'
         },
         { 
           src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp', 
-          alt: 'A happy tourist smiles while holding his helmet straps during a gem mine tour.', 
+          alt: 'Traveler enjoying a private gem mining tour experience in Ratnapura Sri Lanka.', 
           hint: 'happy tourist gem tour',
-          hoverDescription: 'The thrill of discovery on our Gem Tour. This hands-on experience is what makes our gem tours unforgettable.'
+          hoverDescription: 'The thrill of discovery on our Sri Lankan Gem Tour. Hands-on exploration makes our gem mine tours unforgettable.'
         },
         { 
           src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp', 
-          alt: 'A miner works inside a dimly lit, traditional gem mine.', 
+          alt: 'Inside an authentic timbered gem mine shaft on a Sri Lanka gem mine tour in Ratnapura.', 
           hint: 'traditional gem mine',
-          hoverDescription: 'Deep inside a traditional mine. This is the heart of our Gem Mine Tour, showcasing the authentic mining process.'
+          hoverDescription: 'Deep inside a traditional mine shaft. This is the heart of our Gem Mine Tour, showcasing authentic artisanal extraction.'
         },
         { 
           src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp', 
-          alt: 'A couple examines a glowing gemstone with a light tool.', 
+          alt: 'Examining rough Ceylon sapphire illuminated with optical torch on a Ratnapura gem tour.', 
           hint: 'examining gemstone',
-          hoverDescription: 'Inspecting a freshly found sapphire. Every Gem Tour concludes with a close-up look at these precious stones.'
+          hoverDescription: 'Inspecting a freshly uncovered sapphire crystal. Every Gem Tour includes expert optical analysis of rough stones.'
         },
         { 
           src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-5-optimized.webp', 
-          alt: 'A person holds a piece of paper with several rough gemstones on it.', 
+          alt: 'Freshly washed rough gemstones and corundum found on a gem mining tour in Rathnapura.', 
           hint: 'rough gemstones hand',
-          hoverDescription: 'The rewards of a successful Gem Mine Tour. Hold raw, uncut sapphires straight from the earth.'
+          hoverDescription: 'The tangible rewards of a Sri Lankan gem mining tour. Hold raw, unheated sapphires straight from the gravel bed.'
         },
         { 
           src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp', 
-          alt: 'A tourist gives a thumbs-up while wearing a hard hat.', 
+          alt: 'Guest exploring active gem mining pits on an exclusive Sri Lankan gem tour.', 
           hint: 'tourist thumbs up',
-          hoverDescription: 'An unforgettable adventure. Our guests love the unique access provided by our expert-led Gem Tour.'
+          hoverDescription: 'An unforgettable adventure. Our guests enjoy exclusive VIP access on certified Ratnapura gem mine tours.'
         },
         { 
           src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp', 
-          alt: 'A person sharpens a tool on a traditional gem cutting wheel.', 
+          alt: 'Artisan master shaping a natural sapphire on a traditional gem cutting wheel in Ratnapura.', 
           hint: 'gem cutting wheel',
-          hoverDescription: 'The art of transformation. Witness traditional gem cutting, a key part of the complete Gem Mine Tour experience.'
+          hoverDescription: 'The heritage art of lapidary transformation. Witness traditional faceting during your complete gem mine tour.'
         },
         { 
           src: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp', 
-          alt: 'A gemologist sorts and grades small gemstones at a well-lit desk.', 
+          alt: 'Licensed gemologist inspecting and grading natural Ceylon sapphires on a Ratnapura gem expedition.', 
           hint: 'gemologist sorting gems',
-          hoverDescription: 'From rough stone to finished jewel. Our gemologists explain the sorting process, an essential part of every Gem Tour.'
+          hoverDescription: 'From raw illam gravel to high-jewelry certification. Our gemologists guide you through grading on every tour.'
         },
       ]
     },
     toursHeader: {
       tagline: 'Private VIP Itineraries',
-      heading: 'Curated Gem Mine Tours',
-      subtitle: 'All-inclusive private expeditions with certified gemologists, pit descents, river washing, and luxury transfers.'
+      heading: 'Signature Sri Lankan Gem Mine Tours & Packages',
+      subtitle: 'All-inclusive private gem mining tours in Ratnapura (Rathnapura) with certified gemologists, active pit descents, river washing, and luxury transfers.'
     },
     reviewsHeader: {
       tagline: 'Verified Guest Experiences',
