@@ -13,7 +13,14 @@ import Link from "next/link";
 import { useSiteContent } from "@/lib/site-content";
 
 const faqs = [
-
+  {
+    q: "How do I book an authentic Gem Mining Tour in Ratnapura (Rathnapura), Sri Lanka?",
+    a: "You can easily reserve your private Sri Lankan gem mine tour online through our booking portal on sapphiretrails.lk, via WhatsApp at +94 71 235 7700, or by consulting our concierge. We offer all-inclusive day expeditions and multi-day gemological journeys starting from Colombo, Kandy, Galle, or directly in Ratnapura."
+  },
+  {
+    q: "What makes a Sri Lankan gem mine tour unique compared to other world destinations?",
+    a: "Unlike hard-rock diamond or emerald extraction elsewhere, Sri Lanka features ancient alluvial gravel layers ('Illam') located in Ratnapura (Rathnapura). Visitors can experience authentic hand-dug shafts, traditional wicker basket river washing ('Garilla'), open-air street trading markets, and Ceylon sapphire lapidaries—all in one immersive gem mining tour."
+  },
   {
     q: "Is it safe to descend into the active gem mines?",
     a: "Yes, 100%. We operate strictly with government-licensed, timber-reinforced traditional mines inspected for structural integrity. Every guest is outfitted with safety harnesses, hard hats, and LED headlamps. You are guided one-on-one by our veteran mining team and licensed guide throughout the descent."
