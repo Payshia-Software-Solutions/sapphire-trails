@@ -7,24 +7,28 @@ import {
 
 const faqData = [
     {
-        question: "What is Sapphire Trail Professional Gem Mining Tour?",
-        answer: "The Sapphire Trails Professional Gem Mining Tour offers an extraordinary journey into the heart of Sri Lanka's legendary gem industry, wrapped in the warmth of authentic Sri Lankan hospitality. This premium travel experience seamlessly blends discovery with indulgence, offering exquisite food and beverages, luxurious accommodations, and comfortable transportation."
+        question: "What is the Sapphire Trails Sri Lankan Gem Mining Tour?",
+        answer: "The Sapphire Trails Professional Gem Mining Tour offers an extraordinary journey into the heart of Sri Lanka's legendary gem industry in Ratnapura (Rathnapura), wrapped in the warmth of authentic Sri Lankan hospitality. This premium travel experience seamlessly blends active pit discovery with luxury service, offering exquisite dining, private transfers, and certified gemologist guidance."
     },
     {
-        question: "Do I need experience to participate?",
-        answer: "No experience is required. Our tours are beginner-friendly and guided by knowledgeable staff who will teach you how to identify and clean your finds."
+        question: "Where do the gem mine tours take place?",
+        answer: "Our tours are hosted in Ratnapura (also spelled Rathnapura), known globally as the 'City of Gems'. We visit active government-licensed mining shafts, riverside illam washing pits, and the vibrant morning street gem market in the Sabaragamuwa basin."
     },
     {
-        question: "How long does a tour last?",
-        answer: "Most tours last between 06 to 08 hours. Private or extended experiences may be available upon request."
+        question: "Do I need prior experience to participate in a gem mining tour?",
+        answer: "No experience is required. Our gem tours are beginner-friendly and guided step-by-step by master miners and licensed gemologists who teach you how to identify, wash, and inspect rough Ceylon sapphires and minerals."
+    },
+    {
+        question: "How long does a typical gem mine tour last?",
+        answer: "Most full-day gem tours last between 6 to 8 hours. Customized multi-day Sri Lankan gem expeditions and proposal packages are also available upon request."
     },
     {
         question: "Who can participate in this tour?",
-        answer: "Any local or foreign tourist can participate. However, only visitors in good physical condition can enter the mine."
+        answer: "Our gem tours are family-friendly and open to both international travelers and locals. Guests of all ages can enjoy the river washing and street gem market, while entering the underground mine shafts requires basic physical mobility."
     },
     {
         question: "How do I make a reservation?",
-        answer: "You can make a reservation through our official website www.sapphiretrails.lk. You can also reserve your spot by contacting our Hotline at 0712357700 or 0716381000, or by sending an email to info@sapphiretrails.com."
+        answer: "You can reserve your tour directly on our official website at sapphiretrails.lk, contact our concierge hotline at +94 71 235 7700 or +94 71 638 1000, or message us via WhatsApp for instant confirmation."
     },
 ]
 

@@ -35,6 +35,113 @@ class Article
         
         $this->pdo->exec($sql);
         $this->seedInitialArticlesIfEmpty();
+        $this->ensurePillarArticleExists();
+    }
+
+    private function ensurePillarArticleExists()
+    {
+        try {
+            $pillarArticles = [
+                [
+                    'slug' => 'gem-mining-tours-ratnapura-sri-lanka-guide',
+                    'title' => 'The Ultimate Guide to Gem Mining Tours in Ratnapura (Rathnapura), Sri Lanka',
+                    'subtitle' => 'Everything you need to know about booking, active pit descents, river washing, and discovering Ceylon sapphires on Sri Lankan gem tours.',
+                    'description' => 'Comprehensive traveler guide to gem mining tours in Ratnapura (Rathnapura), Sri Lanka. Learn about underground mine access, traditional illam washing, gem market etiquette, and private sapphire expeditions with Sapphire Trails.',
+                    'image_url' => 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp',
+                    'image_hint' => 'gem mining pit descent Ratnapura',
+                    'category' => 'Expedition & Booking',
+                    'read_time' => '7 min read',
+                    'published_date' => 'March 2026',
+                    'author_name' => 'Dr. Rohan Samarasinghe, FGA',
+                    'author_role' => 'Chief Gemological Consultant',
+                    'author_avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+                    'key_takeaways' => [
+                        'Ratnapura (also commonly spelled Rathnapura) is the world capital for Ceylon sapphire mining.',
+                        'A true Sri Lanka gem mine tour includes active underground pit descent and river illam washing.',
+                        'All equipment including harnesses, helmets, boots, and wash baskets are fully provided.',
+                        'Private day tours and custom overnight expeditions start with pickups across Sri Lanka.'
+                    ],
+                    'content_html' => '<p class="lead text-lg md:text-xl font-normal text-foreground/90 leading-relaxed">If you are planning an authentic journey into the gemological heart of South Asia, embarking on a <strong>gem mining tour in Ratnapura (Rathnapura), Sri Lanka</strong> is one of the most thrilling and educational travel experiences in the world.</p><h2>Why Choose a Sri Lanka Gem Mine Tour in Ratnapura?</h2><p>Known across centuries as <em>"Ratna-pura"</em> (The City of Gems), this historic highland valley in the Sabaragamuwa province has supplied the British Crown Jewels, European royalty, and international jewelry houses with natural blue, pink, and yellow corundum for over 2,500 years.</p><p>Unlike commercial industrial open-pit mines found in other countries, <strong>Sri Lankan gem tours</strong> showcase traditional, eco-conscious, hand-dug artisanal mining pits. These timber-reinforced shafts reach deep into subterranean gravel layers known as <em>"Illam"</em> without polluting local waterways or destroying ecosystems.</p><h2>What Happens on an Authentic Gem Mining Tour?</h2><p>A premium <strong>gem mine tour</strong> with Sapphire Trails covers every step from underground extraction to certified laboratory grading:</p><h3>1. Active Pit Shaft Descent</h3><p>After a complete safety orientation with harnesses, hard hats, and illumination gear, guests descend 40 to 60 feet into an active licensed gem pit. You will meet master pit workers, observe how timber scaffolding stabilizes the earth, and see miners excavate Illam gravel by hand.</p><h3>2. Traditional River Gravel Washing (Garilla)</h3><p>Step into natural mountain stream beds alongside local miners. Using conical woven bamboo baskets (<em>Wattiya</em>), you will master the circular centrifugal swirling technique to separate heavy sapphire crystals from river silt and gravel. Any semi-precious stones you find are yours to keep!</p><h3>3. The Ratnapura (Rathnapura) Morning Street Gem Bazaar</h3><p>Between 8:00 AM and 11:30 AM, visit the bustling open-air street trading market where rough and cut sapphires are traded on street corners using time-honored bargaining hand signs and optical loupes.</p><h3>4. Gemological Lab Inspection & Valuation</h3><p>Conclude your expedition in a climate-controlled gemological workshop. Inspect unheated sapphires under gemological microscopes and learn how cut, clarity, and treatment affect international market valuation.</p><h2>How to Plan and Book Your Gem Tours</h2><p>Whether you are a solo traveler, a gem collector, or a couple seeking a romantic proposal package, Sapphire Trails provides all-inclusive private <strong>gem tours</strong> with hotel pickups from Colombo, Kandy, Galle, Bentota, or directly in Ratnapura.</p><div class="my-8 p-6 rounded-2xl bg-primary/[0.08] border border-primary/30 not-prose text-center"><h3 class="text-xl font-headline font-bold text-foreground mb-2">Ready to Experience Sri Lanka\'s Premier Gem Mine Tour?</h3><p class="text-sm text-muted-foreground mb-4 max-w-xl mx-auto">Book your private expedition today with certified gemologists, VIP transport, and complete safety gear.</p><a href="/tours" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold text-xs hover:bg-primary/90 transition-transform hover:scale-105 shadow-md">Explore Gem Mine Tour Packages</a></div>',
+                    'status' => 'published'
+                ],
+                [
+                    'slug' => 'what-to-expect-on-a-gem-mine-tour-sri-lanka',
+                    'title' => 'What to Expect on a Gem Mine Tour in Sri Lanka: Insider Tips & Safety Guide',
+                    'subtitle' => 'From safety gear and timber shaft descent to river gem washing, here is your essential handbook for an authentic gem mine tour.',
+                    'description' => 'Planning a gem mine tour in Sri Lanka? Discover what happens underground, essential safety precautions, what clothes to wear, and how to identify real Ceylon sapphires with Sapphire Trails.',
+                    'image_url' => 'https://content-provider.payshia.com/sapphire-trail/images/img2.webp',
+                    'image_hint' => 'tourist in gem mine tour safety gear',
+                    'category' => 'Tour Preparation',
+                    'read_time' => '6 min read',
+                    'published_date' => 'March 2026',
+                    'author_name' => 'Chaminda Wijesinghe',
+                    'author_role' => 'Lead Expedition Guide & Naturalist',
+                    'author_avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
+                    'key_takeaways' => [
+                        'Every official gem mine tour provides certified safety harnesses, helmets, and LED headlamps.',
+                        'Wear lightweight cotton attire and sturdy closed-toe shoes; safety boots are provided for riverbeds.',
+                        'Semi-precious stones found during hands-on river illam washing are complimentary souvenirs.',
+                        'Expert gemologists accompany you to explain mining geology and street trading rituals in real time.'
+                    ],
+                    'content_html' => '<p class="lead text-lg md:text-xl font-normal text-foreground/90 leading-relaxed">Taking an authentic <strong>gem mine tour in Sri Lanka</strong> is unlike any ordinary sightseeing excursion. It is a thrilling descent into a centuries-old craft where geological fortune and human grit collide. If you are preparing for your first expedition, here is an exhaustive walkthrough of what happens on a professional <strong>gem mine tour</strong>.</p><h2>1. The Safety Briefing & Equipment Fitting</h2><p>Prior to entering any active pit, safety is the paramount priority. On our licensed <strong>gem mine tour</strong>, every traveler is outfitted with CE-certified hard hats, high-lumen headlamps, safety harnesses, and waterproof rubber boots.</p><h2>2. Descending into the Active Timbered Shaft</h2><p>Traditional Sri Lankan gem mining pits rely on eco-friendly rubberwood scaffolding to reinforce vertical walls. Accompanied by veteran mine guides, you step down sturdy ladders into the subterranean world where miners extract gem-bearing <em>Illam</em> gravel by hand.</p><h2>3. The Art of River Illam Washing (Garilla)</h2><p>Using a conical bamboo basket called a <em>Wattiya</em>, you will submerge the gravel into natural mountain stream waters, swirling it in smooth circular motions until glowing sapphire and garnet crystals settle at the apex.</p><h2>4. Street Trading & Gemological Analysis</h2><p>A complete <strong>gem mine tour</strong> wraps up with a visit to the historic Ratnapura morning street gem market, followed by private microscope grading and certification demonstrations at Grand Silver Ray\'s gemological workshop.</p><div class="my-8 p-6 rounded-2xl bg-primary/[0.08] border border-primary/30 not-prose text-center"><h3 class="text-xl font-headline font-bold text-foreground mb-2">Book Your Authentic Gem Mine Tour Today</h3><p class="text-sm text-muted-foreground mb-4 max-w-xl mx-auto">Join Sapphire Trails for an all-inclusive VIP gem mine tour with luxury private transfers from Colombo, Galle, or Kandy.</p><a href="/booking" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold text-xs hover:bg-primary/90 transition-transform hover:scale-105 shadow-md">Reserve Your Gem Mine Tour</a></div>',
+                    'status' => 'published'
+                ],
+                [
+                    'slug' => 'best-time-for-gem-mine-tour-in-ratnapura',
+                    'title' => 'The Best Time for a Gem Mine Tour in Ratnapura: Weather, Seasons & Itineraries',
+                    'subtitle' => 'A seasonal traveler guide on choosing the perfect month, optimal time of day, and weather conditions for your gem mine tour in Sri Lanka.',
+                    'description' => 'Find out the best time of year to book a gem mine tour in Ratnapura (Rathnapura), Sri Lanka. Learn about monsoons, dry season pit mining, morning street bazaars, and luxury day trip itineraries.',
+                    'image_url' => 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp',
+                    'image_hint' => 'sunny day gem mine tour river washing',
+                    'category' => 'Travel Planning',
+                    'read_time' => '5 min read',
+                    'published_date' => 'March 2026',
+                    'author_name' => 'Dr. Rohan Samarasinghe, FGA',
+                    'author_role' => 'Chief Gemological Consultant',
+                    'author_avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+                    'key_takeaways' => [
+                        'December through April offers optimal sunny weather and minimal rainfall for underground pit access.',
+                        'Morning hours (8:00 AM – 11:30 AM) are critical for catching the bustling street gem bazaar.',
+                        'Active gem mine tours operate year-round with pump systems, though river levels vary with rainfall.',
+                        'Private day trips from Colombo, Bentota, Galle, and Kandy take approximately 2.5 to 3.5 hours each way.'
+                    ],
+                    'content_html' => '<p class="lead text-lg md:text-xl font-normal text-foreground/90 leading-relaxed">Ratnapura—Sri Lanka\'s historic "City of Gems"—is nestled in the verdant Sabaragamuwa river basin beneath Adam\'s Peak. When organizing a <strong>gem mine tour</strong>, timing your visit properly ensures the smoothest underground pit descent, sunny river washing, and the liveliest market trading.</p><h2>Peak Season: December to April (Dry Season)</h2><p>The absolute best window for an outdoor <strong>gem mine tour</strong> is between December and April. Groundwater levels are low, rivers run crystal-clear with gentle currents, and the morning street gem market is packed with hundreds of independent traders.</p><h2>Optimal Time of Day: The Morning Advantage</h2><p>To get the fullest value from a <strong>gem mine tour</strong>, an early start is essential: 08:30 AM pit descent before midday heat, 10:30 AM river illam washing under the sun, and 11:30 AM visiting the bustling open-air street bazaar.</p><div class="my-8 p-6 rounded-2xl bg-primary/[0.08] border border-primary/30 not-prose text-center"><h3 class="text-xl font-headline font-bold text-foreground mb-2">Plan Your Perfect Gem Mine Tour</h3><p class="text-sm text-muted-foreground mb-4 max-w-xl mx-auto">Get personalized advice on the best dates and luxury itinerary for your Sri Lanka gem mining adventure.</p><a href="/tours" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold text-xs hover:bg-primary/90 transition-transform hover:scale-105 shadow-md">Explore Tour Itineraries</a></div>',
+                    'status' => 'published'
+                ],
+                [
+                    'slug' => 'the-ultimate-gem-mining-tour-experience-sri-lanka',
+                    'title' => 'The Ultimate Gem Mining Tour in Sri Lanka: How Artisanal Sapphire Extraction Works',
+                    'subtitle' => 'From descending traditional timbered pits to washing raw illam gravel, discover why an authentic gem mining tour is Sri Lanka’s ultimate hands-on adventure.',
+                    'description' => 'Experience the ultimate gem mining tour in Sri Lanka. Learn how artisanal miners extract raw Ceylon sapphires, participate in traditional illam washing, and explore private VIP gem mining tour itineraries with Sapphire Trails.',
+                    'image_url' => 'https://content-provider.payshia.com/sapphire-trail/images/tour-1-optimized.webp',
+                    'image_hint' => 'authentic gem mining tour pit descent Sri Lanka',
+                    'category' => 'Adventure & Geology',
+                    'read_time' => '6 min read',
+                    'published_date' => 'March 2026',
+                    'author_name' => 'Chaminda Wijesinghe',
+                    'author_role' => 'Lead Expedition Guide & Naturalist',
+                    'author_avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
+                    'key_takeaways' => [
+                        'A true gem mining tour offers rare insider access into licensed, active artisanal mining operations.',
+                        'Artisanal pit mining in Sri Lanka remains zero-emission and eco-friendly without heavy open-cast machinery.',
+                        'Washing freshly hoisted Illam gravel in natural riverbeds lets you keep all discovered semi-precious gems.',
+                        'Sapphire Trails customizes every gem mining tour with luxury private transfers, safety gear, and licensed gemologists.'
+                    ],
+                    'content_html' => '<p class="lead text-lg md:text-xl font-normal text-foreground/90 leading-relaxed">While Sri Lanka is celebrated for palm-fringed beaches and misty tea highlands, booking an authentic <strong>gem mining tour</strong> unlocks a subterranean world few international travelers ever witness. This is your chance to step beyond commercial jewelry shops and experience how raw Ceylon sapphires are actually won from the earth.</p><h2>What Makes a Traditional Gem Mining Tour in Sri Lanka Unique?</h2><p>Across most mining regions in Africa or South America, gemstone extraction is heavily industrialized, relying on open pits and dynamite that leave immense ecological devastation. By contrast, a <strong>gem mining tour</strong> in Sri Lanka reveals a centuries-old artisanal practice protected by national conservation laws.</p><p>Sri Lankan gem mining pits are dug entirely by hand using eco-friendly timber logs and fern leaf lining. This zero-chemical, sustainable extraction method preserves surrounding tea estates, paddy fields, and river basins while sustaining multi-generational mining villages.</p><h2>Key Stages You Experience on a Gem Mining Tour</h2><p>When you reserve a private <strong>gem mining tour</strong> with Sapphire Trails, you are immersed in every vital stage: active pit descent with safety gear, manual winch gravel hoisting, river illam washing, and street trading market inspection.</p><div class="my-8 p-6 rounded-2xl bg-primary/[0.08] border border-primary/30 not-prose text-center"><h3 class="text-xl font-headline font-bold text-foreground mb-2">Book Your Exclusive Gem Mining Tour</h3><p class="text-sm text-muted-foreground mb-4 max-w-xl mx-auto">Experience Sri Lanka\'s finest artisanal sapphire expedition with private luxury transfers, safety gear, and licensed guides.</p><a href="/tours" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold text-xs hover:bg-primary/90 transition-transform hover:scale-105 shadow-md">View Gem Mining Tour Packages</a></div>',
+                    'status' => 'published'
+                ]
+            ];
+
+            $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM `articles` WHERE `slug` = ?");
+            foreach ($pillarArticles as $article) {
+                $stmt->execute([$article['slug']]);
+                if ((int)$stmt->fetchColumn() === 0) {
+                    $this->create($article);
+                }
+            }
+        } catch (\Exception $e) {
+            error_log("Failed to ensure pillar articles exist in database: " . $e->getMessage());
+        }
     }
 
     private function seedInitialArticlesIfEmpty()
