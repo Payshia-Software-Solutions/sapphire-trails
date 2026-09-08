@@ -6,6 +6,7 @@ import { MapPin, Sparkles, Calendar, MessageCircle, Navigation, ChevronRight, Co
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getFullImageUrl } from '@/lib/utils';
+import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 
 interface LocationHeroProps {
   title: string;
@@ -19,6 +20,7 @@ interface LocationHeroProps {
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1546708973-b339540b5162?w=1600&auto=format&fit=crop&q=85';
 
 export function LocationHero({ title, subtitle, imageUrl, imageHint, distance, category }: LocationHeroProps) {
+  const { content } = useSiteContent();
   const resolvedImage = getFullImageUrl(imageUrl) || FALLBACK_IMAGE;
 
   return (
@@ -96,7 +98,7 @@ export function LocationHero({ title, subtitle, imageUrl, imageHint, distance, c
             className="bg-black/40 hover:bg-black/70 border-white/30 text-white hover:text-primary backdrop-blur-md text-sm h-12 px-5"
           >
             <a
-              href={`https://wa.me/94712357700?text=${encodeURIComponent(`Hello Sapphire Trails, I am interested in visiting ${title} in Ratnapura. Can you arrange a private tour?`)}`}
+              href={getWhatsappUrl(content, `Hello Sapphire Trails, I am interested in visiting ${title} in Ratnapura. Can you arrange a private tour?`)}
               target="_blank"
               rel="noreferrer"
             >

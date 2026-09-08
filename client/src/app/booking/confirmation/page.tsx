@@ -28,11 +28,13 @@ import {
   FileText
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 import { API_BASE_URL } from '@/lib/utils';
 import { trackBookingSuccess } from '@/lib/analytics';
 import { type Booking } from '@/lib/bookings-data';
 
 function ConfirmationContent() {
+  const { content } = useSiteContent();
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get('id');
@@ -257,7 +259,7 @@ function ConfirmationContent() {
               </div>
             </div>
             <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs h-8 px-3.5 shrink-0 shadow-xs">
-              <a href="https://wa.me/94712357700" target="_blank" rel="noopener noreferrer">
+              <a href={getWhatsappUrl(content, 'Hello Sapphire Trails, I have a question regarding my confirmed booking.')} target="_blank" rel="noopener noreferrer">
                 Chat on WhatsApp
               </a>
             </Button>

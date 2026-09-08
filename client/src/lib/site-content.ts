@@ -703,7 +703,7 @@ export const defaultSiteContent: SiteContentData = {
       heading: 'Ready to Walk the Storied Trails of Royal Ceylon Sapphires?',
       subtitle: 'Whether you seek a private single-day mining excursion or an all-inclusive VIP multi-day gemological vacation with luxury resort suites, our concierges are ready to craft your bespoke itinerary.',
       primaryButtonText: 'Book Your Private Gem Tour',
-      secondaryButtonText: 'Chat on WhatsApp (+94 71 235 7700)',
+      secondaryButtonText: 'Chat on WhatsApp (+94 76 375 6688)',
     },
     sectionVisibility: {},
     sectionStyles: {},
@@ -918,13 +918,13 @@ export const defaultSiteContent: SiteContentData = {
       subtitle: 'Connect with our gemological expedition specialists to plan your private tour, bespoke gemstone acquisition, or luxury suite reservations in Ratnapura.',
       image: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
     },
-    primaryPhone: '071 235 7700',
-    secondaryPhone: '071 638 1000',
+    primaryPhone: '076 375 6688',
+    secondaryPhone: '',
     primaryEmail: 'info@sapphiretrails.lk',
     physicalAddress: 'Grand Silver Ray, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka',
     openingHoursWeekdays: '08:00 AM – 06:00 PM',
     openingHoursWeekends: '09:00 AM – 04:00 PM',
-    whatsappNumber: '94712357700',
+    whatsappNumber: '94763756688',
     map: {
       badge: 'Visit Sapphire Trails',
       heading: 'Our Headquarters & Tour Lounge',
@@ -954,7 +954,7 @@ export const defaultSiteContent: SiteContentData = {
       },
       {
         question: "How do I make a reservation?",
-        answer: "You can make a reservation through our official website www.sapphiretrails.lk. You can also reserve your spot by contacting our Hotline at 0712357700 or 0716381000, or by sending an email to info@sapphiretrails.com."
+        answer: "You can make a reservation through our official website www.sapphiretrails.lk. You can also reserve your spot by contacting our Hotline at +94 76 375 6688, or by sending an email to info@sapphiretrails.lk."
       },
     ],
     sectionVisibility: {
@@ -1546,5 +1546,29 @@ export async function uploadCmsImage(file: File, folder: string = 'cms'): Promis
     url: data.url,
     filename: data.filename
   };
+}
+
+/**
+ * Contact & WhatsApp helper functions for dynamic CMS configuration
+ */
+export function getContactPhone(content?: SiteContent | null): string {
+  return content?.contact?.primaryPhone || '076 375 6688';
+}
+
+export function getCleanPhone(phone?: string): string {
+  return (phone || '').replace(/\s+/g, '');
+}
+
+export function getWhatsappNumber(content?: SiteContent | null): string {
+  const raw = content?.contact?.whatsappNumber || '94763756688';
+  return raw.replace(/\D/g, '') || '94763756688';
+}
+
+export function getWhatsappUrl(content?: SiteContent | null, message?: string): string {
+  const num = getWhatsappNumber(content);
+  if (message) {
+    return `https://wa.me/${num}?text=${encodeURIComponent(message)}`;
+  }
+  return `https://wa.me/${num}`;
 }
 

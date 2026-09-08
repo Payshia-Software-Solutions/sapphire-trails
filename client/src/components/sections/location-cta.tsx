@@ -3,12 +3,17 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Phone, Calendar, MessageCircle, Sparkles, ShieldCheck } from "lucide-react";
+import { useSiteContent, getContactPhone, getCleanPhone, getWhatsappUrl } from '@/lib/site-content';
 
 interface LocationCtaProps {
   locationTitle?: string;
 }
 
 export function LocationCta({ locationTitle = 'Ratnapura' }: LocationCtaProps) {
+  const { content } = useSiteContent();
+  const primaryPhone = getContactPhone(content);
+  const primaryPhoneTel = `tel:${getCleanPhone(primaryPhone)}`;
+
   return (
     <section id="book-experience" className="w-full py-20 sm:py-28 bg-[#0d0f14] relative overflow-hidden scroll-mt-28">
       {/* Subtle Background Glow */}
@@ -47,7 +52,7 @@ export function LocationCta({ locationTitle = 'Ratnapura' }: LocationCtaProps) {
             className="w-full sm:w-auto bg-black/40 border-white/20 text-white hover:text-primary hover:border-primary/50 h-12 text-sm px-6"
           >
             <a
-              href={`https://wa.me/94712357700?text=${encodeURIComponent(`Hello Sapphire Trails, I would like to book a private day tour to ${locationTitle}.`)}`}
+              href={getWhatsappUrl(content, `Hello Sapphire Trails, I would like to book a private day tour to ${locationTitle}.`)}
               target="_blank"
               rel="noreferrer"
             >
@@ -62,9 +67,9 @@ export function LocationCta({ locationTitle = 'Ratnapura' }: LocationCtaProps) {
             variant="ghost" 
             className="w-full sm:w-auto text-muted-foreground hover:text-white h-12 text-sm"
           >
-            <a href="tel:+94712357700">
+            <a href={primaryPhoneTel}>
               <Phone className="mr-2 h-4 w-4" />
-              +94 71 235 7700
+              {primaryPhone}
             </a>
           </Button>
         </div>

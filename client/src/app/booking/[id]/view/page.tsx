@@ -9,6 +9,7 @@ import { TrustSection } from '@/components/sections/TrustSection';
 import { format, parseISO } from 'date-fns';
 import { type Booking } from '@/lib/bookings-data';
 import { useToast } from '@/hooks/use-toast';
+import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -51,6 +52,7 @@ interface ExtendedBooking extends Booking {
 }
 
 export default function PublicBookingViewPage() {
+  const { content } = useSiteContent();
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
@@ -460,7 +462,7 @@ export default function PublicBookingViewPage() {
                   </div>
 
                   <a
-                    href={`https://wa.me/94712357700?text=Hi%20Sapphire%20Trails,%20I'm%20inquiring%20about%20my%20Booking%20%23ST-BK-${booking.id}`}
+                    href={getWhatsappUrl(content, `Hi Sapphire Trails, I'm inquiring about my Booking #ST-BK-${booking.id}`)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="shrink-0 w-full sm:w-auto"

@@ -17,7 +17,7 @@ export function ContactMap() {
     addressText: 'Grand Silver Ray, Colombo - Batticaloa Hwy, Ratnapura 70070, Sri Lanka',
     directionsUrl: 'https://maps.app.goo.gl/uX3rK6fDpzQZ6mZ46',
   };
-  const whatsappNumber = content.contact?.whatsappNumber || '94712357700';
+  const whatsappNumber = content.contact?.whatsappNumber || '94763756688';
 
   return (
     <section id="our-location" className="w-full py-16 md:py-24 bg-background border-t border-border">

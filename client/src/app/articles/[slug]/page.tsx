@@ -24,6 +24,7 @@ import {
   Award
 } from 'lucide-react';
 import { TrustSection } from '@/components/sections/TrustSection';
+import { ArticleConciergeBox } from '@/components/sections/article-concierge-box';
 import { API_BASE_URL } from '@/lib/utils';
 import { fetchArticles, fetchArticleBySlug } from '@/lib/articles-data';
 
@@ -902,20 +903,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 ) : null}
 
                 {/* 2. 24/7 WhatsApp Concierge Box */}
-                <div className="p-6 rounded-2xl bg-background-alt border border-border/80 space-y-3">
-                  <div className="flex items-center gap-2 text-foreground font-headline font-bold text-sm">
-                    <MessageCircle className="h-4 w-4 text-emerald-500" />
-                    <span>Have Questions for a Gemologist?</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Our luxury concierge team is available 24/7 on WhatsApp to answer inquiries regarding stone authentication or custom itineraries.
-                  </p>
-                  <Button asChild variant="outline" size="sm" className="w-full rounded-full border-primary/40 text-primary hover:bg-primary/10 text-xs h-9 font-semibold">
-                    <a href="https://wa.me/94712357700" target="_blank" rel="noopener noreferrer">
-                      Chat on WhatsApp (+94 71 235 7700)
-                    </a>
-                  </Button>
-                </div>
+                <ArticleConciergeBox />
 
                 {/* 3. More Journal Articles */}
                 {otherArticles.length > 0 && (

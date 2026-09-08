@@ -23,6 +23,7 @@ import {
 
 import { getFullImageUrl } from '@/lib/utils';
 import type { GalleryImage } from '@/lib/packages-data';
+import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 
 interface TourDetailHeroProps {
   title: string;
@@ -47,6 +48,7 @@ export function TourDetailHero({
   bookingLink,
   galleryImages = []
 }: TourDetailHeroProps) {
+  const { content } = useSiteContent();
   const initialImage = getFullImageUrl(imageUrl) || FALLBACK_HERO_IMAGE;
   const [selectedImage, setSelectedImage] = useState<string>(initialImage);
 
@@ -168,7 +170,7 @@ export function TourDetailHero({
                 className="bg-background hover:bg-background-alt border-border text-foreground hover:text-primary w-full sm:w-auto h-11 sm:h-12 text-xs sm:text-sm px-6 rounded-full justify-center"
               >
                 <a
-                  href={`https://wa.me/94712357700?text=${encodeURIComponent(`Hello Sapphire Trails, I would like to inquire about booking the "${title}".`)}`}
+                  href={getWhatsappUrl(content, `Hello Sapphire Trails, I would like to inquire about booking the "${title}".`)}
                   target="_blank"
                   rel="noreferrer"
                 >
