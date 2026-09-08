@@ -77,7 +77,7 @@ export default function RootLayout({
     },
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+94-71-235-7700",
+      "telephone": "+94-76-375-6688",
       "contactType": "Customer Service",
       "areaServed": "LK",
       "availableLanguage": ["en"]

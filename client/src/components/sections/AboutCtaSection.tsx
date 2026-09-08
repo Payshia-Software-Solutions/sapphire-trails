@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Sparkles, MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
-import { useSiteContent } from '@/lib/site-content';
+import { useSiteContent, getWhatsappUrl, getContactPhone } from '@/lib/site-content';
 
 export function AboutCtaSection() {
   const { content } = useSiteContent();
@@ -47,12 +47,12 @@ export function AboutCtaSection() {
             className="w-full sm:w-auto h-12 px-8 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-white font-medium rounded-full text-sm md:text-base gap-2 backdrop-blur-sm"
           >
             <a
-              href="https://wa.me/94712357700?text=Hello%2C%20I%20would%20like%20to%20customize%20a%20private%20gem%20tour%20with%20Sapphire%20Trails."
+              href={getWhatsappUrl(content, 'Hello, I would like to customize a private gem tour with Sapphire Trails.')}
               target="_blank"
               rel="noopener noreferrer"
             >
               <MessageSquare className="h-4 w-4 text-emerald-400" />
-              <span>{cta.secondaryButtonText || 'Chat on WhatsApp (+94 71 235 7700)'}</span>
+              <span>{cta.secondaryButtonText || `Chat on WhatsApp (${getContactPhone(content)})`}</span>
             </a>
           </Button>
         </div>

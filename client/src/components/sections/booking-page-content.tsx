@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { trackInitiateBooking, trackBookingSuccess } from '@/lib/analytics';
 
 import { API_BASE_URL } from '@/lib/utils';
+import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 
 
 function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
@@ -75,6 +76,7 @@ function BookingSummary({
   totalGuests: number;
   totalPrice: number | null;
 }) {
+  const { content } = useSiteContent();
   const { formState: { isSubmitting } } = useFormContext();
   const summaryImg = selectedTour?.heroImage || selectedTour?.imageUrl || 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp';
 
@@ -140,7 +142,7 @@ function BookingSummary({
 
         <div className="text-center text-xs text-muted-foreground">
           <a
-            href="https://wa.me/94712357700"
+            href={getWhatsappUrl(content, 'Hello Sapphire Trails, I need assistance with booking a tour.')}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 hover:text-emerald-500 transition-colors text-muted-foreground"

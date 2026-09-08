@@ -10,12 +10,12 @@ import { ScrollAnimate } from "@/components/shared/scroll-animate";
 import { HelpCircle, Sparkles, MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useSiteContent } from "@/lib/site-content";
+import { useSiteContent, getWhatsappUrl } from "@/lib/site-content";
 
 const faqs = [
   {
     q: "How do I book an authentic Gem Mining Tour in Ratnapura (Rathnapura), Sri Lanka?",
-    a: "You can easily reserve your private Sri Lankan gem mine tour online through our booking portal on sapphiretrails.lk, via WhatsApp at +94 71 235 7700, or by consulting our concierge. We offer all-inclusive day expeditions and multi-day gemological journeys starting from Colombo, Kandy, Galle, or directly in Ratnapura."
+    a: "You can easily reserve your private Sri Lankan gem mine tour online through our booking portal on sapphiretrails.lk, via WhatsApp at +94 76 375 6688, or by consulting our concierge. We offer all-inclusive day expeditions and multi-day gemological journeys starting from Colombo, Kandy, Galle, or directly in Ratnapura."
   },
   {
     q: "What makes a Sri Lankan gem mine tour unique compared to other world destinations?",
@@ -99,7 +99,7 @@ export function FAQSection() {
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <Button asChild variant="outline" size="sm" className="w-full sm:w-auto text-xs h-9 border-primary/40 text-primary hover:bg-primary/10">
-              <a href="https://wa.me/94712357700" target="_blank" rel="noopener noreferrer">
+              <a href={getWhatsappUrl(content, 'Hello Sapphire Trails, I have a question regarding your tours.')} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
                 WhatsApp Us
               </a>

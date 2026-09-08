@@ -12,7 +12,7 @@ import { ProposalFaq } from '@/components/sections/proposal-faq';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Gem, Sparkles, Clock, Truck, Heart, ArrowRight } from 'lucide-react';
-import { useSiteContent, getSectionThemeClass } from '@/lib/site-content';
+import { useSiteContent, getSectionThemeClass, getWhatsappUrl } from '@/lib/site-content';
 
 const defaultPillarIcons = [Gem, Sparkles, Clock, Truck];
 
@@ -67,7 +67,7 @@ export default function CustomProposalPackagePage() {
                       </a>
                     </Button>
                     <Button asChild variant="outline" className="text-primary border-primary hover:bg-primary/10 rounded-full px-6">
-                      <a href="https://wa.me/94712357700" target="_blank" rel="noopener noreferrer">
+                      <a href={getWhatsappUrl(content, 'Hello Sapphire Trails, I am interested in the Custom Proposal Package.')} target="_blank" rel="noopener noreferrer">
                         {prop.overview?.secondaryButtonText || 'WhatsApp Concierge'}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </a>

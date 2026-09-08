@@ -234,7 +234,7 @@ Thank you for reaching out to Sapphire Trails.
 Regarding your inquiry:
 
 
-Please feel free to reply to this email or contact us directly on WhatsApp (+94 71 235 7700) if you have any additional questions.
+Please feel free to reply to this email or contact us directly on WhatsApp (+94 76 375 6688) if you have any additional questions.
 
 Best regards,
 The Sapphire Trails Team`
