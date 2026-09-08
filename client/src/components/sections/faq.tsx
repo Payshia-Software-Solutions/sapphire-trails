@@ -28,7 +28,7 @@ const faqData = [
     },
     {
         question: "How do I make a reservation?",
-        answer: "You can reserve your tour directly on our official website at sapphiretrails.lk, contact our concierge hotline at +94 71 235 7700 or +94 71 638 1000, or message us via WhatsApp for instant confirmation."
+        answer: "You can reserve your tour directly on our official website at sapphiretrails.lk, contact our concierge hotline at +94 76 375 6688, or message us via WhatsApp for instant confirmation."
     },
 ]
 

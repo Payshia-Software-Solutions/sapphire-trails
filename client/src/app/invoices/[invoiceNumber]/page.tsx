@@ -38,8 +38,10 @@ import {
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/utils';
 import { trackContactClick } from '@/lib/analytics';
+import { useSiteContent, getWhatsappUrl, getContactPhone } from '@/lib/site-content';
 
 export default function DigitalInvoicePage() {
+  const { content } = useSiteContent();
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
@@ -201,7 +203,7 @@ export default function DigitalInvoicePage() {
             {/* WhatsApp Concierge */}
             <Button asChild variant="outline" size="sm" className="h-8 px-2.5 text-xs text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10">
               <a
-                href={`https://wa.me/94712357700?text=${encodeURIComponent(`Hello Sapphire Trails, I have an inquiry regarding Invoice #${invoice.invoice_number} (${invoice.customer_name}).`)}`}
+                href={getWhatsappUrl(content, `Hello Sapphire Trails, I have an inquiry regarding Invoice #${invoice.invoice_number} (${invoice.customer_name}).`)}
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => trackContactClick({ channel: 'whatsapp', source: `invoice_${invoice.invoice_number}` })}
@@ -250,7 +252,7 @@ export default function DigitalInvoicePage() {
               <div className="text-xs text-muted-foreground mt-3 space-y-0.5 leading-relaxed print:text-gray-600">
                 <p>Grand Silver Ray Complex, Colombo - Batticaloa Hwy</p>
                 <p>Ratnapura, Sabaragamuwa Province, Sri Lanka</p>
-                <p>Direct: +94 71 235 7700 &bull; reservations@sapphiretrails.lk</p>
+                <p>Direct: {getContactPhone(content)} &bull; {content?.contact?.primaryEmail || 'reservations@sapphiretrails.lk'}</p>
               </div>
             </div>
 

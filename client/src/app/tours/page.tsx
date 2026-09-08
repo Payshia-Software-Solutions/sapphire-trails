@@ -10,7 +10,7 @@ import { TrustSection } from '@/components/sections/TrustSection';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Gem, Clock, ArrowRight, Truck, MessageSquare } from 'lucide-react';
-import { useSiteContent, getSectionThemeClass } from '@/lib/site-content';
+import { useSiteContent, getSectionThemeClass, getWhatsappUrl } from '@/lib/site-content';
 
 const faqStructuredData = {
   "@context": "https://schema.org",
@@ -90,7 +90,7 @@ export default function ToursPage() {
                       </Link>
                     </Button>
                     <Button asChild variant="outline" size="lg" className="border-primary/50 text-primary hover:bg-primary/10 font-semibold text-xs h-12 rounded-full px-8">
-                      <a href="https://wa.me/94712357700?text=Hello%2C%20I%20am%20interested%20in%20the%20Custom%20Proposal%20Package." target="_blank" rel="noopener noreferrer">
+                      <a href={getWhatsappUrl(content, 'Hello, I am interested in the Custom Proposal Package.')} target="_blank" rel="noopener noreferrer">
                         <MessageSquare className="mr-1.5 h-4 w-4 text-emerald-500" />
                         {proposalCallout.secondaryButtonText || 'WhatsApp Concierge'}
                       </a>

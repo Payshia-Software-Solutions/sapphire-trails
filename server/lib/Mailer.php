@@ -7,12 +7,56 @@ class Mailer
     private $pdo;
     private $mailModel;
     private $settings;
+    private $contactDetails = null;
 
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
         $this->mailModel = new Mail($pdo);
         $this->settings = $this->mailModel->getSettings();
+    }
+
+    /**
+     * Get active contact details from site_content table
+     */
+    private function getContactDetails()
+    {
+        if ($this->contactDetails !== null) {
+            return $this->contactDetails;
+        }
+
+        $default = [
+            'whatsapp' => '94763756688',
+            'phone' => '+94 76 375 6688',
+            'email' => 'info@sapphiretrails.lk'
+        ];
+
+        try {
+            $stmt = $this->pdo->prepare("SELECT content FROM site_content WHERE section_key = 'contact'");
+            $stmt->execute();
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if ($row && !empty($row['content'])) {
+                $data = json_decode($row['content'], true);
+                if (is_array($data)) {
+                    $rawWa = $data['whatsappNumber'] ?? '94763756688';
+                    $cleanWa = preg_replace('/\D/', '', $rawWa) ?: '94763756688';
+                    $phone = !empty($data['primaryPhone']) ? $data['primaryPhone'] : '+94 76 375 6688';
+                    $email = !empty($data['primaryEmail']) ? $data['primaryEmail'] : 'info@sapphiretrails.lk';
+
+                    $this->contactDetails = [
+                        'whatsapp' => $cleanWa,
+                        'phone' => $phone,
+                        'email' => $email
+                    ];
+                    return $this->contactDetails;
+                }
+            }
+        } catch (\Exception $e) {
+            // fallback
+        }
+
+        $this->contactDetails = $default;
+        return $this->contactDetails;
     }
 
     /**
@@ -368,6 +412,10 @@ class Mailer
     {
         $displayImg = $this->resolveFullImageUrl($tourImage);
         $formattedPrice = number_format((float)$totalPrice, 2);
+        $contact = $this->getContactDetails();
+        $waNum = $contact['whatsapp'];
+        $phoneStr = $contact['phone'];
+        $emailStr = $contact['email'];
 
         return "
         <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
@@ -544,7 +592,7 @@ class Mailer
                       <a href=\"http://localhost:3000/profile\" style=\"display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #aa8232 100%); color: #0b0d14; font-weight: 700; font-size: 13px; text-decoration: none; padding: 13px 26px; border-radius: 8px; letter-spacing: 0.03em; margin: 4px; box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);\">
                         View in My Profile Portal &rarr;
                       </a>
-                      <a href=\"https://wa.me/94712357700?text=" . urlencode("Hello Sapphire Trails Concierge, I am inquiring about my booking #ST-BK-{$bookingId} ({$name}).") . "\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 8px; margin: 4px;\">
+                      <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails Concierge, I am inquiring about my booking #ST-BK-{$bookingId} ({$name}).") . "\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 8px; margin: 4px;\">
                         💬 WhatsApp Concierge (24/7)
                       </a>
                     </td>
@@ -560,7 +608,7 @@ class Mailer
                   Sapphire Trails Luxury Tour Concierge &bull; Grand Silver Ray Complex, Ratnapura, Sri Lanka
                 </p>
                 <p style=\"margin: 4px 0 0 0; font-size: 11px; color: #475569;\">
-                  Direct: +94 71 235 7700 &bull; reservations@sapphiretrails.lk &bull; www.sapphiretrails.lk
+                  Direct: {$phoneStr} &bull; {$emailStr} &bull; www.sapphiretrails.lk
                 </p>
                 <p style=\"margin: 8px 0 0 0; font-size: 10px; color: #334155;\">
                   &copy; " . date('Y') . " Sapphire Trails (Pvt) Ltd. All rights reserved.
@@ -576,6 +624,9 @@ class Mailer
     {
         $displayImg = $this->resolveFullImageUrl($tourImage);
         $formattedPrice = number_format((float)$totalPrice, 2);
+        $contact = $this->getContactDetails();
+        $phoneStr = $contact['phone'];
+        $emailStr = $contact['email'];
         
         $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
         if (substr($cleanPhone, 0, 1) === '0') {
@@ -774,7 +825,7 @@ class Mailer
                   Sapphire Trails Luxury Tour Concierge &bull; Grand Silver Ray Complex, Ratnapura, Sri Lanka
                 </p>
                 <p style=\"margin: 4px 0 0 0; font-size: 11px; color: #475569;\">
-                  Direct: +94 71 235 7700 &bull; reservations@sapphiretrails.lk &bull; www.sapphiretrails.lk
+                  Direct: {$phoneStr} &bull; {$emailStr} &bull; www.sapphiretrails.lk
                 </p>
                 <p style=\"margin: 8px 0 0 0; font-size: 10px; color: #334155;\">
                   &copy; " . date('Y') . " Sapphire Trails (Pvt) Ltd. All rights reserved.
@@ -788,6 +839,9 @@ class Mailer
 
     private function renderCustomerContactTemplate($name, $subject)
     {
+        $contact = $this->getContactDetails();
+        $waNum = $contact['whatsapp'];
+
         return "
         <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
           <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 600px; margin: 0 auto; background-color: #111622; border: 1px solid #232d40; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);\">
@@ -805,7 +859,7 @@ class Mailer
                   Dear <strong style=\"color: #ffffff;\">{$name}</strong>, thank you for contacting Sapphire Trails. We have received your inquiry regarding <strong style=\"color: #d4af37;\">{$subject}</strong>. One of our destination specialists will get back to you within 24 hours.
                 </p>
                 <div style=\"margin: 20px 0;\">
-                  <a href=\"https://wa.me/94712357700\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 22px; border-radius: 8px;\">
+                  <a href=\"https://wa.me/{$waNum}\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 22px; border-radius: 8px;\">
                     💬 WhatsApp Concierge (24/7)
                   </a>
                 </div>
@@ -874,6 +928,9 @@ class Mailer
 
     private function renderCustomerProposalTemplate($name, $tourInterest)
     {
+        $contact = $this->getContactDetails();
+        $waNum = $contact['whatsapp'];
+
         return "
         <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
           <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 600px; margin: 0 auto; background-color: #111622; border: 1px solid #232d40; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);\">
@@ -888,7 +945,7 @@ class Mailer
                 <p style=\"color: #94a3b8; font-size: 14px; line-height: 1.6; max-width: 460px; margin: 0 auto 24px auto;\">
                   Dear <strong style=\"color: #ffffff;\">{$name}</strong>, thank you for your bespoke tour inquiry for <strong style=\"color: #d4af37;\">{$tourInterest}</strong>. Our luxury travel curators are crafting a customized itinerary for you and will be in touch shortly.
                 </p>
-                <a href=\"https://wa.me/94712357700\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 22px; border-radius: 8px;\">
+                <a href=\"https://wa.me/{$waNum}\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 22px; border-radius: 8px;\">
                   💬 WhatsApp Concierge (24/7)
                 </a>
               </td>
@@ -1225,6 +1282,11 @@ class Mailer
         $invoiceNumber = $booking['invoice_number'] ?? null;
         $invoiceUrl    = $invoiceNumber ? "https://sapphiretrails.lk/invoices/{$invoiceNumber}" : "https://sapphiretrails.lk";
 
+        $contact = $this->getContactDetails();
+        $waNum = $contact['whatsapp'];
+        $phoneStr = $contact['phone'];
+        $emailStr = $contact['email'];
+
         $html = "
         <div style=\"background-color: #090b0e; font-family: 'Montserrat', Helvetica, Arial, sans-serif; padding: 40px 15px; color: #f8fafc;\">
           <div style=\"max-width: 600px; margin: 0 auto; background-color: #12151d; border: 1px solid #c7995440; border-radius: 16px; padding: 36px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);\">
@@ -1291,7 +1353,7 @@ class Mailer
                 View Digital Invoice &amp; Payment Details &rarr;
               </a>
               " : "") . "
-              <a href=\"https://wa.me/94712357700?text=" . urlencode("Hello Sapphire Trails, I am inquiring about my confirmed booking #ST-BK-{$bookingId} ({$guestName}).") . "\" style=\"display: inline-block; background-color: #1e293b; color: #34d399; border: 1px solid #05966950; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 8px; margin: 4px;\">
+              <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails, I am inquiring about my confirmed booking #ST-BK-{$bookingId} ({$guestName}).") . "\" style=\"display: inline-block; background-color: #1e293b; color: #34d399; border: 1px solid #05966950; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 8px; margin: 4px;\">
                 💬 WhatsApp Concierge (24/7)
               </a>
             </div>
@@ -1299,7 +1361,7 @@ class Mailer
             <!-- Footer -->
             <div style=\"border-top: 1px solid #232733; padding-top: 18px; font-size: 11px; color: #64748b; text-align: center; line-height: 1.6;\">
               <p style=\"margin: 0;\">Grand Silver Ray Complex, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka</p>
-              <p style=\"margin: 4px 0 0 0;\">Direct: +94 71 235 7700 &bull; reservations@sapphiretrails.lk</p>
+              <p style=\"margin: 4px 0 0 0;\">Direct: {$phoneStr} &bull; reservations@sapphiretrails.lk</p>
               <p style=\"margin: 8px 0 0 0;\">&copy; " . date('Y') . " Sapphire Trails (Pvt) Ltd. All rights reserved.</p>
             </div>
 
@@ -1325,6 +1387,11 @@ class Mailer
             return ['success' => false, 'error' => 'Recipient email address is missing'];
         }
 
+        $contactDetails = $this->getContactDetails();
+        $waNum = $contactDetails['whatsapp'];
+        $phoneStr = $contactDetails['phone'];
+        $emailStr = $contactDetails['email'];
+
         $formattedReply = nl2br(htmlspecialchars($replyMessage));
         $formattedOriginal = nl2br(htmlspecialchars($originalMessage));
 
@@ -1349,7 +1416,7 @@ class Mailer
             <!-- Quick Contact & WhatsApp -->
             <div style=\"background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.25); border-radius: 10px; padding: 18px; margin: 26px 0; text-align: center;\">
               <p style=\"font-size: 12px; color: #e2e8f0; margin: 0 0 10px 0; font-weight: 500;\">Have additional questions or need immediate bespoke arrangements?</p>
-              <a href=\"https://wa.me/94712357700?text=" . urlencode("Hello Sapphire Trails, I am following up on inquiry #{$inquiryId} ({$guestName}).") . "\" style=\"display: inline-block; background-color: #059669; color: #ffffff; font-weight: 600; font-size: 12px; text-decoration: none; padding: 9px 20px; border-radius: 6px;\">
+              <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails, I am following up on inquiry #{$inquiryId} ({$guestName}).") . "\" style=\"display: inline-block; background-color: #059669; color: #ffffff; font-weight: 600; font-size: 12px; text-decoration: none; padding: 9px 20px; border-radius: 6px;\">
                 💬 Chat with our Concierge on WhatsApp
               </a>
             </div>
@@ -1367,7 +1434,7 @@ class Mailer
               <p style=\"margin: 0; font-weight: 600; color: #94a3b8;\">Best regards,</p>
               <p style=\"margin: 2px 0 12px 0; font-weight: 700; color: #d4af37;\">The Sapphire Trails Concierge &amp; Gemology Team</p>
               <p style=\"margin: 0; font-size: 11px;\">Grand Silver Ray Complex, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka</p>
-              <p style=\"margin: 2px 0 0 0; font-size: 11px;\">Tel: +94 71 235 7700 &bull; reservations@sapphiretrails.lk &bull; www.sapphiretrails.lk</p>
+              <p style=\"margin: 2px 0 0 0; font-size: 11px;\">Tel: {$phoneStr} &bull; {$emailStr} &bull; www.sapphiretrails.lk</p>
             </div>
 
           </div>

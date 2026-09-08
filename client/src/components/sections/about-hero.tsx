@@ -6,7 +6,7 @@ import { ChevronRight, Sparkles, MessageSquare, Compass, ShieldCheck } from 'luc
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
-import { useSiteContent } from '@/lib/site-content';
+import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 
 interface AboutHeroSectionProps {
   breadcrumbs?: { label: string; href: string }[];
@@ -16,8 +16,8 @@ export function AboutHeroSection({
   breadcrumbs = [{ label: 'About Us', href: '/about' }] 
 }: AboutHeroSectionProps) {
   const pathname = usePathname();
-  const { content: siteContent } = useSiteContent();
-  const aboutHero = siteContent.about.hero;
+  const { content } = useSiteContent();
+  const aboutHero = content.about.hero;
 
   return (
     <section className="relative w-full py-12 md:py-16 lg:py-20 overflow-hidden bg-slate-950 text-white border-b border-border/40">
@@ -97,7 +97,7 @@ export function AboutHeroSection({
               className="h-10 px-5 border-white/20 bg-white/5 hover:bg-white/15 text-white font-medium rounded-full text-xs gap-1.5 backdrop-blur-sm"
             >
               <a
-                href="https://wa.me/94712357700?text=Hello%2C%20I%20would%20like%20to%20know%20more%20about%20Sapphire%20Trails."
+                href={getWhatsappUrl(content, 'Hello, I would like to know more about Sapphire Trails.')}
                 target="_blank"
                 rel="noopener noreferrer"
               >

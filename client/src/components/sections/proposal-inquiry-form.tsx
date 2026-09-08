@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { useSiteContent, getContactPhone, getCleanPhone, getWhatsappUrl } from '@/lib/site-content';
 import { 
   LoaderCircle, 
   MessageCircle, 
@@ -53,9 +54,14 @@ const proposalInquirySchema = z.object({
 type ProposalInquiryFormValues = z.infer<typeof proposalInquirySchema>;
 
 export function ProposalInquiryForm() {
+  const { content } = useSiteContent();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const primaryPhone = getContactPhone(content);
+  const primaryPhoneTel = `tel:${getCleanPhone(primaryPhone)}`;
+  const primaryEmail = content?.contact?.primaryEmail || 'info@sapphiretrails.lk';
 
   const form = useForm<ProposalInquiryFormValues>({
     resolver: zodResolver(proposalInquirySchema),
@@ -131,10 +137,10 @@ ${data.message}
   };
 
   const generateWhatsAppUrl = () => {
-    const text = encodeURIComponent(
+    return getWhatsappUrl(
+      content,
       "Hello Sapphire Trails, I am interested in inquiring about the Custom Proposal Package (Gem Tour, Gem Selection, 5-Day Custom Ring Designing & Delivery). Could you please share more details?"
     );
-    return `https://wa.me/94712357700?text=${text}`;
   };
 
   return (
@@ -181,8 +187,8 @@ ${data.message}
                 <Phone className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-foreground">Direct Concierge Assistance</p>
-                  <a href="tel:+94712357700" className="hover:text-primary transition-colors block">Primary: 071 235 7700</a>
-                  <a href="mailto:info@sapphiretrails.lk" className="hover:text-primary transition-colors block">Email: info@sapphiretrails.lk</a>
+                  <a href={primaryPhoneTel} className="hover:text-primary transition-colors block">Primary: {primaryPhone}</a>
+                  <a href={`mailto:${primaryEmail}`} className="hover:text-primary transition-colors block">Email: {primaryEmail}</a>
                 </div>
               </div>
             </div>
@@ -192,7 +198,7 @@ ${data.message}
               <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
                 <a href={generateWhatsAppUrl()} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="mr-2 h-4 w-4" />
-                  Chat on WhatsApp (+94 71 235 7700)
+                  Chat on WhatsApp ({primaryPhone})
                 </a>
               </Button>
             </div>

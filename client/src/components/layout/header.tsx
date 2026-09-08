@@ -26,6 +26,7 @@ import {
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
+import { useSiteContent, getContactPhone, getCleanPhone, getWhatsappUrl } from '@/lib/site-content';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,6 +63,12 @@ export function Header() {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
+  const { content } = useSiteContent();
+
+  const primaryPhone = getContactPhone(content);
+  const primaryPhoneTel = `tel:${getCleanPhone(primaryPhone)}`;
+  const primaryEmail = content?.contact?.primaryEmail || 'info@sapphiretrails.lk';
+  const whatsappUrl = getWhatsappUrl(content);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -100,13 +107,13 @@ export function Header() {
       )}>
         <div className="container mx-auto max-w-screen-2xl flex items-center justify-between px-4 md:px-6">
           <div className="flex items-center gap-4">
-            <a href="mailto:info@sapphiretrails.lk" className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
+            <a href={`mailto:${primaryEmail}`} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
               <Mail className="h-3 w-3 text-primary" />
-              <span>info@sapphiretrails.lk</span>
+              <span>{primaryEmail}</span>
             </a>
-            <a href="tel:+94712357700" className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
+            <a href={primaryPhoneTel} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
               <Phone className="h-3 w-3 text-primary" />
-              <span>+94 71 235 7700</span>
+              <span>{primaryPhone}</span>
             </a>
           </div>
           <div className="hidden sm:block text-primary/75 font-serif tracking-[0.15em] uppercase text-[10px]">
@@ -309,14 +316,14 @@ export function Header() {
                 <div className="pt-2 px-1">
                   <div className="grid grid-cols-2 gap-2">
                     <a 
-                      href="tel:+94712357700" 
+                      href={primaryPhoneTel} 
                       className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-muted/40 hover:bg-primary/10 text-[11px] text-muted-foreground hover:text-primary transition-colors border border-border"
                     >
                       <Phone className="h-3.5 w-3.5 text-primary" />
                       <span>Call Us</span>
                     </a>
                     <a 
-                      href="https://wa.me/94712357700" 
+                      href={whatsappUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-muted/40 hover:bg-primary/10 text-[11px] text-muted-foreground hover:text-primary transition-colors border border-border"
