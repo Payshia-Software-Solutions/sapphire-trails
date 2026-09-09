@@ -95,7 +95,7 @@ export function HeroSection() {
             </Link>
           </Button>
 
-          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/40 bg-black/40 hover:bg-white/15 text-white font-medium px-7 h-11 sm:h-12 rounded-full backdrop-blur-md">
+          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border border-white/50 bg-black/75 hover:bg-white hover:text-black text-white font-medium px-7 h-11 sm:h-12 rounded-full transition-colors">
             <Link href="#tours">
               <Compass className="mr-2 h-4 w-4 text-primary" />
               {ctaSecondary}

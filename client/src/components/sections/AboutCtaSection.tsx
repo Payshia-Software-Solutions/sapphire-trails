@@ -44,7 +44,7 @@ export function AboutCtaSection() {
             asChild
             variant="outline"
             size="lg"
-            className="w-full sm:w-auto h-12 px-8 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-white font-medium rounded-full text-sm md:text-base gap-2 backdrop-blur-sm"
+            className="w-full sm:w-auto h-12 px-8 border border-emerald-500/50 bg-emerald-950/80 hover:bg-emerald-900 text-white font-medium rounded-full text-sm md:text-base gap-2 transition-colors"
           >
             <a
               href={getWhatsappUrl(content, 'Hello, I would like to customize a private gem tour with Sapphire Trails.')}

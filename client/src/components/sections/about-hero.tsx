@@ -94,7 +94,7 @@ export function AboutHeroSection({
               asChild
               variant="outline"
               size="sm"
-              className="h-10 px-5 border-white/20 bg-white/5 hover:bg-white/15 text-white font-medium rounded-full text-xs gap-1.5 backdrop-blur-sm"
+              className="h-10 px-5 border border-white/40 bg-black/75 hover:bg-white hover:text-black text-white font-medium rounded-full text-xs gap-1.5 transition-colors"
             >
               <a
                 href={getWhatsappUrl(content, 'Hello, I would like to know more about Sapphire Trails.')}
