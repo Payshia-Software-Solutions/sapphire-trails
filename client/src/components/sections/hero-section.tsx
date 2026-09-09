@@ -9,8 +9,7 @@ import { cn } from '@/lib/utils';
 import { 
   CalendarCheck, 
   ChevronDown, 
-  Compass, 
-  Sparkles 
+  Compass 
 } from 'lucide-react';
 import { useSiteContent } from '@/lib/site-content';
 
@@ -58,8 +57,7 @@ export function HeroSection() {
       <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white space-y-5 sm:space-y-6 max-w-4xl mx-auto my-auto px-2">
         
         {/* Subtle Brand Tag */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/60 border border-primary/50 backdrop-blur-md text-[11px] sm:text-xs tracking-widest uppercase text-primary animate-in fade-in-0 duration-700 shadow-lg">
-          <Sparkles className="h-3 w-3 text-primary" />
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-black/70 border border-white/20 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-primary font-medium">
           <span>{tagline}</span>
         </div>
 
