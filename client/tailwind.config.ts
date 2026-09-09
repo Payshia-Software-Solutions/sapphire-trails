@@ -10,10 +10,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['var(--font-poppins)', 'sans-serif'],
-        headline: ['var(--font-montserrat)', 'sans-serif'],
+        body: ['var(--font-montserrat)', 'sans-serif'],
+        headline: ['var(--font-cinzel)', 'serif'],
         serif: ['var(--font-cinzel)', 'serif'],
+        sans: ['var(--font-montserrat)', 'sans-serif'],
         code: ['monospace'],
+      },
+      letterSpacing: {
+        luxury: '0.25em',
+        'luxury-wide': '0.35em',
       },
       colors: {
         background: 'hsl(var(--background))',

@@ -8,31 +8,31 @@ html {
 
 @layer base {
   :root {
-    /* Warm Ivory & Sand Theme (Premium Luxury Boutique) */
-    --background: 35 25% 98%;      /* Smooth Ivory */
-    --background-alt: 35 20% 95%;  /* Sand Beige */
-    --foreground: 30 15% 15%;      /* Deep Espresso Brown instead of pure black */
+    /* Pure Silk White & Royal Sapphire Theme (PDF Editorial Luxury) */
+    --background: 210 20% 99%;      /* Crisp Silk White */
+    --background-alt: 215 25% 96%;  /* Cool Slate Tint */
+    --foreground: 222 47% 12%;      /* Deep Charcoal Slate for high readability */
     --card: 0 0% 100%;
-    --card-foreground: 30 15% 15%;
+    --card-foreground: 222 47% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 30 15% 15%;
-    --primary: 39 60% 35%;         /* Rich Antique Gold/Bronze */
-    --primary-foreground: 35 25% 98%;
-    --secondary: 35 15% 90%;
-    --secondary-foreground: 30 15% 15%;
-    --muted: 35 10% 92%;
-    --muted-foreground: 30 10% 45%;
-    --accent: 39 60% 35%;
-    --accent-foreground: 30 15% 15%;
+    --popover-foreground: 222 47% 12%;
+    --primary: 218 85% 45%;         /* Royal Ceylon Sapphire Blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 92%;
+    --secondary-foreground: 222 47% 12%;
+    --muted: 210 30% 95%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 38 75% 55%;           /* Subtle Champagne Gold */
+    --accent-foreground: 222 47% 12%;
     --destructive: 0 80% 40%;
-    --destructive-foreground: 35 25% 98%;
-    --border: 35 15% 85%;
-    --input: 35 15% 85%;
-    --ring: 39 60% 35%;
-    --radius: 0.75rem;             /* More rounded friendly corners */
-    --chart-1: 220 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 25% 88%;
+    --input: 214 25% 88%;
+    --ring: 218 85% 45%;
+    --radius: 0.5rem;               /* Refined luxury architectural corners */
+    --chart-1: 218 85% 45%;
     --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
+    --chart-3: 38 75% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --color-pending: hsl(var(--chart-3));
@@ -41,27 +41,27 @@ html {
   }
 
   .dark {
-    /* Warm Obsidian & Antique Gold Theme */
-    --background: 30 12% 5.5%;       /* Warm Obsidian base */
-    --background-alt: 30 10% 8.5%;   /* Slightly lighter sidebar/header bg */
-    --foreground: 35 15% 90%;        /* Soft Champagne Cream */
-    --card: 30 8% 12%;               /* Distinct card surface */
-    --card-foreground: 35 15% 90%;
-    --popover: 30 8% 12%;
-    --popover-foreground: 35 15% 90%;
-    --primary: 39 58% 74%;           /* Bright Gold */
-    --primary-foreground: 30 12% 5.5%;
-    --secondary: 30 8% 15%;
-    --secondary-foreground: 35 15% 90%;
-    --muted: 30 8% 14%;
-    --muted-foreground: 30 5% 65%;
-    --accent: 39 58% 74%;
-    --accent-foreground: 30 12% 5.5%;
+    /* Midnight Sapphire Slate & Royal Blue Theme (Exact match for PDF presentation #0B1118) */
+    --background: 213 37% 7%;        /* Midnight Sapphire Slate #0B1118 */
+    --background-alt: 215 35% 9.5%;   /* Elevated Navy Surface #0F1722 */
+    --foreground: 210 40% 98%;        /* Ice White text */
+    --card: 215 35% 10%;             /* Distinct card surface */
+    --card-foreground: 210 40% 98%;
+    --popover: 215 35% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;          /* Luminous Royal Sapphire Blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 30% 15%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215 30% 13%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 39 70% 65%;            /* Champagne Gold for Grand Silver Ray accents */
+    --accent-foreground: 213 37% 7%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 35 15% 90%;
-    --border: 30 8% 18%;             /* Lighter border for separation */
-    --input: 30 8% 18%;
-    --ring: 39 58% 74%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 30% 16%;           /* Hairline Slate Navy border */
+    --input: 215 30% 16%;
+    --ring: 217 91% 60%;
   }
 }
 
