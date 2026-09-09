@@ -51,7 +51,7 @@ export function TestimonialsSection() {
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
             {reviewsHeader.heading || 'Loved by Travelers Worldwide'}
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
             {reviewsHeader.subtitle}
           </p>
 

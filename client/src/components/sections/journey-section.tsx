@@ -45,7 +45,7 @@ export function JourneySection() {
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
             {journey.heading || 'The 4-Step Gem Mine Tour Journey'}
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
             {journey.subtitle || 'Unlike standard tourist stops, Sapphire Trails takes you deep into the authentic lifecycle of Ceylon Sapphires.'}
           </p>
         </ScrollAnimate>

@@ -73,11 +73,11 @@ export function SubscriptionSection() {
             </div>
 
             {/* Headings */}
-            <div className="relative z-10 space-y-3 max-w-3xl">
+            <div className="relative z-10 space-y-3 max-w-4xl lg:max-w-5xl">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground leading-tight">
                 {subData.heading || "The 2026 Ratnapura Gem Buyer's & Traveler's Guide"}
               </h2>
-              <p className="mx-auto max-w-2xl text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
+              <p className="mx-auto max-w-3xl md:max-w-4xl text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed px-4">
                 {subData.subheadline}
               </p>
             </div>

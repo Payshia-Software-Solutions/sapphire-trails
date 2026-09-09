@@ -32,7 +32,7 @@ export function DiscoverSection() {
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
             {discover.heading || 'Discover Our Gem Mine Tours'}
           </h2>
-          <p className="mt-4 text-muted-foreground text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-4 text-muted-foreground text-sm sm:text-base leading-relaxed max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
             {discover.description}
           </p>
         </ScrollAnimate>

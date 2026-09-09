@@ -122,7 +122,7 @@ export function ArticlesSection() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
               {articlesHeader.heading || 'Stories from the Mines'}
             </h2>
-            <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
               {articlesHeader.subtitle}
             </p>
           </div>
