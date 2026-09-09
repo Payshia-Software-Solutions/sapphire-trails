@@ -48,7 +48,7 @@ export function TestimonialsSection() {
             <Award className="h-3.5 w-3.5" />
             {reviewsHeader.tagline || 'Verified Traveler Experiences'}
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold tracking-tight text-primary">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground">
             {reviewsHeader.heading || 'Loved by Travelers Worldwide'}
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground">

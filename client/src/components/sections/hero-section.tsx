@@ -74,7 +74,7 @@ export function HeroSection() {
         </div>
 
         {/* Main Headline (2 Separate Structured Lines) */}
-        <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-headline font-bold tracking-tight text-white max-w-5xl leading-tight drop-shadow-[0_2px_15px_rgba(0,0,0,0.85)]">
+        <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-normal tracking-wide text-white max-w-5xl leading-tight drop-shadow-[0_2px_15px_rgba(0,0,0,0.85)]">
           <span className="block">{headlineLine1}</span>
           <span className="block text-primary/95 mt-1 sm:mt-2 text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide">
             {headlineLine2}

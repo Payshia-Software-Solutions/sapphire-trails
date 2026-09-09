@@ -145,7 +145,7 @@ export function ToursSection() {
             <Gem className="h-3.5 w-3.5" />
             {toursHeader.tagline || 'Curated Expeditions'}
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold tracking-tight text-primary">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground">
             {toursHeader.heading || 'Exclusive Gem Mining Packages'}
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground">

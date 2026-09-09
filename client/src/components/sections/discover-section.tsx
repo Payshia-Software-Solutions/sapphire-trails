@@ -29,7 +29,7 @@ export function DiscoverSection() {
     <section id="about" className="w-full bg-background-alt py-12 md:py-24 lg:py-32">
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <ScrollAnimate className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl font-headline font-bold tracking-tight text-primary sm:text-4xl">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground">
             {discover.heading || 'Discover Our Gem Mine Tours'}
           </h2>
           <p className="mt-4 text-muted-foreground text-base leading-relaxed">

@@ -61,7 +61,7 @@ export function FAQSection() {
             <HelpCircle className="h-3.5 w-3.5" />
             {faqHeader.tagline || 'Traveler Inquiries'}
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold tracking-tight text-primary">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground">
             {faqHeader.heading || 'Frequently Asked Questions'}
           </h2>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">

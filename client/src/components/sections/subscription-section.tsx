@@ -65,20 +65,16 @@ export function SubscriptionSection() {
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <ScrollAnimate>
           {/* Self-contained Luxury Banner Box (Seamless in both Light and Dark themes) */}
-          <div className="relative rounded-3xl overflow-hidden border border-primary/30 bg-card p-8 sm:p-12 md:p-16 shadow-xl text-foreground text-center flex flex-col items-center justify-center">
-            
-            {/* Subtle Ambient Radial Gold Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/[0.06] blur-3xl rounded-full pointer-events-none" />
-
+          <div className="relative rounded-3xl overflow-hidden border border-border/80 bg-card p-8 sm:p-12 md:p-16 shadow-lg text-foreground text-center flex flex-col items-center justify-center">
             {/* Badge */}
-            <div className="relative z-10 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/15 border border-primary/40 text-xs font-semibold uppercase tracking-wider text-primary mb-4">
+            <div className="relative z-10 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/15 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary mb-4">
               <BookOpen className="h-3.5 w-3.5" />
               {subData.tagline || 'Complimentary Insider Publication'}
             </div>
 
             {/* Headings */}
             <div className="relative z-10 space-y-3 max-w-3xl">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-headline font-bold tracking-tight text-foreground leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground leading-tight">
                 {subData.heading || "The 2026 Ratnapura Gem Buyer's & Traveler's Guide"}
               </h2>
               <p className="mx-auto max-w-2xl text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
