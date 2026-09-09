@@ -54,9 +54,6 @@ export function HeroSection() {
         <source src={videoUrl} type="video/webm" />
       </video>
 
-      {/* Lighter Cinematic Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/70 z-10 pointer-events-none" />
-
       {/* Main Hero Center Content */}
       <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white space-y-5 sm:space-y-6 max-w-4xl mx-auto my-auto px-2">
         
