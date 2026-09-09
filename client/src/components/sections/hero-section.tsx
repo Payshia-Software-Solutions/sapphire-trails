@@ -93,7 +93,7 @@ export function HeroSection() {
 
         {/* Dual Call to Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 w-full max-w-xs sm:max-w-none">
-          <Button asChild size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 h-11 sm:h-12 rounded-full shadow-xl shadow-primary/25 transition-transform hover:scale-105">
+          <Button asChild size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-8 h-11 sm:h-12 rounded-full shadow-md transition-colors">
             <Link href="/booking">
               <CalendarCheck className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               {ctaPrimary}

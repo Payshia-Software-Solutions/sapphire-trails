@@ -78,7 +78,7 @@ export function StatsSection() {
   const statsList = content.homepage.stats || [];
 
   return (
-    <section className="w-full py-16 md:py-20 bg-primary/[0.04] border-y border-primary/20">
+    <section className="w-full py-16 md:py-20 bg-card/60 border-y border-border/70">
         <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {statsList.map((stat, index) => (

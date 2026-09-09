@@ -8,28 +8,28 @@ html {
 
 @layer base {
   :root {
-    /* Pure Silk White & Royal Sapphire Theme (PDF Editorial Luxury) */
+    /* Pure Silk White & Editorial Luxury Palette */
     --background: 210 20% 99%;      /* Crisp Silk White */
-    --background-alt: 215 25% 96%;  /* Cool Slate Tint */
-    --foreground: 222 47% 12%;      /* Deep Charcoal Slate for high readability */
+    --background-alt: 215 25% 96%;  /* Clean Slate White */
+    --foreground: 222 47% 11%;      /* Deep Obsidian Charcoal */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 12%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 12%;
-    --primary: 218 85% 45%;         /* Royal Ceylon Sapphire Blue */
+    --popover-foreground: 222 47% 11%;
+    --primary: 38 55% 32%;          /* Refined Warm Bronze Gold (Human luxury tone, not neon) */
     --primary-foreground: 0 0% 100%;
-    --secondary: 214 32% 92%;
-    --secondary-foreground: 222 47% 12%;
-    --muted: 210 30% 95%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 38 75% 55%;           /* Subtle Champagne Gold */
-    --accent-foreground: 222 47% 12%;
+    --secondary: 214 30% 93%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 16% 45%;
+    --accent: 218 85% 45%;          /* Royal Ceylon Sapphire Blue accent */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 80% 40%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 25% 88%;
-    --input: 214 25% 88%;
-    --ring: 218 85% 45%;
-    --radius: 0.5rem;               /* Refined luxury architectural corners */
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 38 55% 32%;
+    --radius: 0.5rem;
     --chart-1: 218 85% 45%;
     --chart-2: 160 60% 45%;
     --chart-3: 38 75% 55%;
@@ -41,27 +41,27 @@ html {
   }
 
   .dark {
-    /* Midnight Sapphire Slate & Royal Blue Theme (Exact match for PDF presentation #0B1118) */
-    --background: 213 37% 7%;        /* Midnight Sapphire Slate #0B1118 */
-    --background-alt: 215 35% 9.5%;   /* Elevated Navy Surface #0F1722 */
-    --foreground: 210 40% 98%;        /* Ice White text */
-    --card: 215 35% 10%;             /* Distinct card surface */
-    --card-foreground: 210 40% 98%;
-    --popover: 215 35% 10%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;          /* Luminous Royal Sapphire Blue */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 215 30% 15%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 215 30% 13%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 39 70% 65%;            /* Champagne Gold for Grand Silver Ray accents */
-    --accent-foreground: 213 37% 7%;
+    /* Midnight Sapphire Slate (#0B1118) & Warm Champagne Gold / Crisp White (Quiet Luxury) */
+    --background: 213 37% 7%;        /* Midnight Sapphire Slate #0B1118 (Exact PDF match) */
+    --background-alt: 215 32% 10%;   /* Solid Flat Matte Navy Surface #0F1622 */
+    --foreground: 210 25% 96%;       /* Crisp Clean White text */
+    --card: 215 32% 10%;             /* Flat Matte Card Surface (No fake gradients) */
+    --card-foreground: 210 25% 96%;
+    --popover: 215 32% 10%;
+    --popover-foreground: 210 25% 96%;
+    --primary: 39 48% 72%;           /* Warm Champagne Gold (#DEC49B) - Elegant jewelry gold, NO blue text! */
+    --primary-foreground: 213 37% 7%;
+    --secondary: 215 28% 14%;
+    --secondary-foreground: 210 25% 96%;
+    --muted: 215 28% 13%;
+    --muted-foreground: 215 15% 62%;
+    --accent: 217 85% 58%;           /* Royal Ceylon Sapphire Blue accent */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 215 30% 16%;           /* Hairline Slate Navy border */
-    --input: 215 30% 16%;
-    --ring: 217 91% 60%;
+    --destructive-foreground: 210 25% 96%;
+    --border: 215 25% 16%;           /* Razor-thin Hairline Slate border */
+    --input: 215 25% 16%;
+    --ring: 39 48% 72%;
   }
 }
 
@@ -72,6 +72,19 @@ html {
   body {
     @apply bg-background text-foreground transition-colors duration-300;
   }
+
+  /* Quiet Luxury: Neutralize AI neon glow shadows into natural subtle shadows */
+  [class*="shadow-primary"] {
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45) !important;
+  }
+}
+
+/* Authentic Ceylon Sapphire Blue utility for intentional accents */
+.text-sapphire {
+  color: hsl(217 85% 58%);
+}
+.bg-sapphire {
+  background-color: hsl(218 85% 45%);
 }
 
 .parallax-bg {

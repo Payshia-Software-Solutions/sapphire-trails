@@ -25,7 +25,7 @@ import { useSiteContent } from '@/lib/site-content';
 
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
-  <Card className="bg-card border border-border/70 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.01] hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 rounded-2xl overflow-hidden group cursor-pointer">
+  <Card className="bg-card border border-border/80 flex flex-col w-full transition-colors duration-300 hover:border-primary/40 rounded-xl overflow-hidden group cursor-pointer shadow-sm">
     {/* Clickable Card Header & Image */}
     <Link href={`/tours/${tour.slug}`} className="block relative h-64 sm:h-72 w-full overflow-hidden">
       <Image
@@ -38,7 +38,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       
       {/* Duration Badge */}
-      <div className="absolute top-3 left-3 bg-black/60 border border-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white flex items-center gap-1.5 z-10">
+      <div className="absolute top-3 left-3 bg-black/80 border border-white/15 px-3 py-1 rounded-full text-xs font-medium text-white flex items-center gap-1.5 z-10">
         <Clock className="h-3 w-3 text-primary" />
         <span>{tour.duration || 'Full Day Expedition'}</span>
       </div>
@@ -46,14 +46,14 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       {/* Pricing Header */}
       <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between text-white z-10">
         <div>
-          <span className="text-2xl sm:text-3xl font-bold font-serif text-primary drop-shadow">
+          <span className="text-2xl sm:text-3xl font-bold font-serif text-white">
             {tour.price}
           </span>
           <span className="text-xs text-white/80 ml-1.5 uppercase font-medium">
             {tour.priceSuffix || '/ Person'}
           </span>
         </div>
-        <Badge className="bg-primary/90 text-black font-semibold text-[10px] uppercase tracking-widest">
+        <Badge className="bg-black/80 text-white/90 border border-white/20 font-medium text-[10px] uppercase tracking-wider">
           VIP Inclusive
         </Badge>
       </div>

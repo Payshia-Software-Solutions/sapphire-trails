@@ -286,7 +286,7 @@ export function Header() {
 
                 {/* Quick Booking CTA Banner */}
                 <div className="pt-3 pb-1">
-                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-background border border-primary/25 p-4">
+                  <div className="relative overflow-hidden rounded-xl bg-card border border-border/80 p-4">
                     <div className="absolute -right-4 -bottom-4 opacity-10 text-primary pointer-events-none">
                       <Gem className="w-24 h-24" />
                     </div>
