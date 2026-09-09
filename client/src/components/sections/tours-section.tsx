@@ -140,15 +140,15 @@ export function ToursSection() {
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         {/* Section Title */}
-        <ScrollAnimate className="text-center max-w-3xl mx-auto space-y-3 mb-14 md:mb-18">
+        <ScrollAnimate className="text-center max-w-4xl lg:max-w-5xl mx-auto space-y-3 mb-14 md:mb-18">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary">
             <Gem className="h-3.5 w-3.5" />
             {toursHeader.tagline || 'Curated Expeditions'}
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
             {toursHeader.heading || 'Exclusive Gem Mining Packages'}
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
             {toursHeader.subtitle}
           </p>
         </ScrollAnimate>

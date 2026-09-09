@@ -53,7 +53,7 @@ export function FAQSection() {
 
   return (
     <section className="w-full bg-background-alt py-16 md:py-28 relative">
-      <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+      <div className="container mx-auto px-4 md:px-6 max-w-5xl">
         
         {/* Header */}
         <ScrollAnimate className="text-center space-y-3 mb-12 md:mb-16">
@@ -61,7 +61,7 @@ export function FAQSection() {
             <HelpCircle className="h-3.5 w-3.5" />
             {faqHeader.tagline || 'Traveler Inquiries'}
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
             {faqHeader.heading || 'Frequently Asked Questions'}
           </h2>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
