@@ -73,9 +73,9 @@ html {
     @apply bg-background text-foreground transition-colors duration-300;
   }
 
-  /* Quiet Luxury: Neutralize AI neon glow shadows into natural subtle shadows */
+  /* Quiet Luxury: Eliminate artificial neon glow and murky floating shadows */
   [class*="shadow-primary"] {
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45) !important;
+    box-shadow: none !important;
   }
 }
 

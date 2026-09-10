@@ -205,13 +205,12 @@ export function ToursSection() {
               </p>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
-                <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs rounded-full px-7 h-11">
+                <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs rounded-full px-7 h-11 shadow-sm transition-colors">
                   <Link href="/custom-proposal-package">
-                    <Sparkles className="mr-1.5 h-4 w-4" />
                     {content.tours.proposalCallout?.primaryButtonText || 'Explore Proposal Package'}
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 text-xs rounded-full px-6 h-11">
+                <Button asChild variant="outline" size="lg" className="border border-white/50 bg-transparent hover:bg-white hover:text-black text-white font-medium text-xs rounded-full px-6 h-11 transition-colors">
                   <Link href="/contact">
                     {content.tours.proposalCallout?.secondaryButtonText || 'Inquire with Concierge'}
                   </Link>

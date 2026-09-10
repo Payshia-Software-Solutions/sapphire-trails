@@ -46,7 +46,7 @@ const mockArticles = [
 ];
 
 const ArticleCard = ({ article }: { article: typeof mockArticles[0] }) => (
-  <Card className="bg-card border border-border/80 flex flex-col w-full transform transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 rounded-2xl overflow-hidden group">
+  <Card className="bg-card border border-border/80 flex flex-col w-full transition-colors duration-300 hover:border-primary/50 rounded-2xl overflow-hidden group shadow-none">
     {/* Article Thumbnail */}
     <Link href={`/articles/${article.slug}`} className="block relative h-60 w-full overflow-hidden">
       <Image

@@ -66,8 +66,7 @@ export default function ToursPage() {
                 <div className="absolute right-0 top-0 translate-x-1/4 -translate-y-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
                 <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
                   <div className="space-y-4 max-w-3xl">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs uppercase tracking-widest font-serif">
-                      <Sparkles className="h-3.5 w-3.5" />
+                    <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs uppercase tracking-widest font-serif">
                       <span>{proposalCallout.badge || 'Special Experience'}</span>
                     </div>
                     <h2 className="text-2xl sm:text-3xl lg:text-4xl font-headline font-bold text-foreground leading-tight">
@@ -89,7 +88,7 @@ export default function ToursPage() {
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
-                    <Button asChild variant="outline" size="lg" className="border-primary/50 text-primary hover:bg-primary/10 font-semibold text-xs h-12 rounded-full px-8">
+                    <Button asChild variant="outline" size="lg" className="border border-border/80 hover:border-primary/50 text-foreground hover:bg-primary/10 font-semibold text-xs h-12 rounded-full px-8 bg-transparent transition-colors">
                       <a href={getWhatsappUrl(content, 'Hello, I am interested in the Custom Proposal Package.')} target="_blank" rel="noopener noreferrer">
                         <MessageSquare className="mr-1.5 h-4 w-4 text-emerald-500" />
                         {proposalCallout.secondaryButtonText || 'WhatsApp Concierge'}

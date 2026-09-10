@@ -75,7 +75,7 @@ export function TestimonialsSection() {
             <div className="flex -ml-4 sm:-ml-6">
               {displayReviews.map((item) => (
                 <div key={item.id} className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-4 sm:pl-6">
-                  <Card className="bg-card border border-border/70 rounded-2xl h-full flex flex-col justify-between p-6 sm:p-7 shadow-sm transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5">
+                  <Card className="bg-card border border-border/80 rounded-2xl h-full flex flex-col justify-between p-6 sm:p-7 shadow-none transition-colors duration-300 hover:border-primary/50">
                     <CardContent className="p-0 flex flex-col justify-between h-full space-y-5">
                       
                       {/* Top Row: Stars + Source Badge + Quote */}
