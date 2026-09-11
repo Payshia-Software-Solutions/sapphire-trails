@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { 
@@ -70,6 +70,8 @@ export function Header() {
   const primaryEmail = content?.contact?.primaryEmail || 'info@sapphiretrails.lk';
   const whatsappUrl = getWhatsappUrl(content);
 
+  const headerRef = useRef<HTMLElement>(null);
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -82,6 +84,18 @@ export function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        const height = headerRef.current.getBoundingClientRect().height;
+        document.documentElement.style.setProperty('--header-height', `${height}px`);
+      }
+    };
+    updateHeaderHeight();
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => window.removeEventListener('resize', updateHeaderHeight);
+  }, [showTopBar]);
 
   const handleLogout = () => {
     logout();
@@ -99,7 +113,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
+    <header ref={headerRef} className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
       {/* Top Bar */}
       <div className={cn(
         "w-full bg-background-alt/40 text-xs text-muted-foreground border-b border-border py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",

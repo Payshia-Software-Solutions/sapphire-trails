@@ -16,7 +16,6 @@ import {
   Users, 
   ShieldCheck, 
   Gem, 
-  Sparkles, 
   MessageSquare,
   CheckCircle2,
   Filter
@@ -84,13 +83,13 @@ export function AllToursGrid() {
             <span className="text-xs font-semibold uppercase tracking-widest text-primary font-serif">
               Available Itineraries
             </span>
-            <h2 className="text-2xl sm:text-3xl font-headline font-bold text-foreground">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">
               Select Your Gemological Journey
             </h2>
           </div>
 
           {/* Category Filter Pills */}
-          <div className="flex items-center bg-card p-1 rounded-full border shadow-xs gap-1">
+          <div className="flex items-center bg-card p-1 rounded-full border border-border/80 gap-1">
             <Button
               variant={activeCategory === 'all' ? 'default' : 'ghost'}
               size="sm"
@@ -134,7 +133,7 @@ export function AllToursGrid() {
               return (
                 <Card
                   key={tour.id}
-                  className="bg-card border border-border/80 flex flex-col w-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:border-primary/50 transition-all duration-300 group cursor-pointer"
+                  className="bg-card border border-border/80 flex flex-col w-full rounded-2xl overflow-hidden hover:border-primary/50 transition-colors group cursor-pointer"
                 >
                   {/* Tour Image with Badges - Clickable Link */}
                   <Link href={`/tours/${tour.slug}`} className="block relative aspect-[16/10] w-full overflow-hidden">
@@ -148,14 +147,14 @@ export function AllToursGrid() {
                     
                     {/* Top Badges */}
                     <div className="absolute top-3 left-3 flex flex-wrap gap-2 z-10">
-                      <Badge className="bg-slate-950/80 backdrop-blur-md text-primary font-semibold text-[11px] border border-primary/30 px-2.5 py-0.5">
+                      <Badge className="bg-slate-950/85 text-primary font-semibold text-[11px] border border-primary/30 px-2.5 py-0.5">
                         <Clock className="h-3 w-3 mr-1" />
                         {duration}
                       </Badge>
                     </div>
 
                     <div className="absolute top-3 right-3 z-10">
-                      <Badge variant="outline" className="bg-slate-950/80 backdrop-blur-md text-white border-white/20 text-[10px] uppercase font-bold tracking-wider">
+                      <Badge variant="outline" className="bg-slate-950/85 text-white border-white/20 text-[10px] uppercase font-bold tracking-wider">
                         100% Private
                       </Badge>
                     </div>
@@ -168,10 +167,10 @@ export function AllToursGrid() {
                   <CardContent className="p-6 flex flex-col flex-grow justify-between space-y-4">
                     <div className="space-y-3">
                       {/* Price Header */}
-                      <div className="flex items-baseline justify-between border-b pb-3">
-                        <span className="text-xl font-bold font-headline text-primary">
+                      <div className="flex items-baseline justify-between border-b border-border/70 pb-3">
+                        <span className="text-xl font-serif font-normal text-primary tracking-wide">
                           {price}{' '}
-                          <span className="text-xs font-normal text-muted-foreground">
+                          <span className="text-xs font-normal text-muted-foreground font-body">
                             {tour.priceSuffix || '/ person'}
                           </span>
                         </span>
@@ -183,7 +182,7 @@ export function AllToursGrid() {
 
                       {/* Title - Clickable Link */}
                       <Link href={`/tours/${tour.slug}`} className="block">
-                        <h3 className="text-xl font-bold font-headline text-foreground group-hover:text-primary transition-colors leading-snug">
+                        <h3 className="text-lg font-serif font-medium text-foreground group-hover:text-primary transition-colors leading-snug">
                           {tour.homepageTitle}
                         </h3>
                       </Link>

@@ -9,7 +9,7 @@ import { ToursGuaranteesSection } from '@/components/sections/ToursGuaranteesSec
 import { TrustSection } from '@/components/sections/TrustSection';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Gem, Clock, ArrowRight, Truck, MessageSquare } from 'lucide-react';
+import { Gem, Clock, ArrowRight, Truck, MessageSquare } from 'lucide-react';
 import { useSiteContent, getSectionThemeClass, getWhatsappUrl } from '@/lib/site-content';
 
 const faqStructuredData = {
@@ -62,14 +62,13 @@ export default function ToursPage() {
         {vis.proposalCallout !== false && (
           <div className={getSectionThemeClass(sty.proposalCallout, 'w-full bg-background pt-10 pb-4')}>
             <div className="container mx-auto px-4 md:px-6 max-w-screen-2xl">
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card via-background-alt to-card border border-primary/40 p-8 md:p-10 shadow-xl shadow-primary/5">
-                <div className="absolute right-0 top-0 translate-x-1/4 -translate-y-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative overflow-hidden rounded-2xl bg-card border border-border/80 p-8 md:p-10">
                 <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
                   <div className="space-y-4 max-w-3xl">
-                    <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs uppercase tracking-widest font-serif">
+                    <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs uppercase tracking-widest font-serif">
                       <span>{proposalCallout.badge || 'Special Experience'}</span>
                     </div>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-headline font-bold text-foreground leading-tight">
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground leading-tight">
                       {proposalCallout.title}
                     </h2>
                     <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-light">
@@ -82,7 +81,7 @@ export default function ToursPage() {
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full sm:w-auto shrink-0">
-                    <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs h-12 rounded-full px-8 shadow-md">
+                    <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs h-12 rounded-full px-8 shadow-sm">
                       <Link href="/custom-proposal-package">
                         {proposalCallout.primaryButtonText || 'Explore Proposal Package'}
                         <ArrowRight className="ml-2 h-4 w-4" />

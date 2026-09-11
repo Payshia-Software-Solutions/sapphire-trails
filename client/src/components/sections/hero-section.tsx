@@ -28,7 +28,13 @@ export function HeroSection() {
   const posterImg = heroContent.posterImageUrl || 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp';
 
   return (
-    <section className="relative min-h-[calc(100vh-116px)] h-auto lg:h-[calc(100vh-116px)] w-full flex flex-col items-center justify-center overflow-hidden bg-black px-4 pb-12 sm:pb-14">
+    <section 
+      style={{
+        height: 'calc(100svh - var(--header-height, 109px))',
+        minHeight: 'calc(100svh - var(--header-height, 109px))'
+      }}
+      className="relative w-full flex flex-col items-center justify-center overflow-hidden bg-black px-4 py-6"
+    >
       {/* Static poster image */}
       <Image
         src={posterImg}
@@ -107,11 +113,11 @@ export function HeroSection() {
       {/* Scroll Down Indicator */}
       <Link
         href="#journey"
-        className="absolute bottom-4 sm:bottom-6 z-20 animate-bounce flex flex-col items-center text-white/70 hover:text-white transition-colors"
+        className="absolute bottom-2.5 sm:bottom-4 z-20 animate-bounce flex flex-col items-center text-white/70 hover:text-white transition-colors"
         aria-label="Scroll to next section"
       >
-        <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 mb-1 hidden sm:block">Explore Journey</span>
-        <ChevronDown className="h-5 w-5 text-primary" />
+        <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 mb-0.5 hidden sm:block">Explore Journey</span>
+        <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
       </Link>
     </section>
   );
