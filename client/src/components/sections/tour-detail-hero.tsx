@@ -13,7 +13,6 @@ import {
   Shield, 
   MessageCircle, 
   Calendar, 
-  Sparkles, 
   Gem, 
   Compass,
   CheckCircle2,
@@ -63,11 +62,6 @@ export function TourDetailHero({
 
   return (
     <section id="overview" className="relative w-full py-8 sm:py-12 lg:py-20 bg-background border-b border-border/80 overflow-hidden">
-      
-      {/* Subtle Background Ambience */}
-      <div className="absolute top-0 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-0" />
-      <div className="absolute bottom-0 right-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-0" />
-
       <div className="container relative z-10 mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Navigation - Unified site-wide */}
@@ -87,8 +81,8 @@ export function TourDetailHero({
             
             {/* Top Badges */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs uppercase tracking-widest font-semibold gap-1.5 shadow-sm">
-                <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary" />
+              <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs uppercase tracking-widest font-semibold gap-1.5 shadow-xs">
+                <Gem className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary" />
                 <span>Exclusive Private Excursion</span>
               </Badge>
 
@@ -101,29 +95,29 @@ export function TourDetailHero({
             </div>
 
             {/* Tour Title */}
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground leading-[1.2] sm:leading-[1.15] tracking-tight">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-normal text-foreground leading-[1.2] sm:leading-[1.15] tracking-wide">
               {title}
             </h1>
 
             {/* Feature Pills */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1">
-              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-background-alt px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-foreground shadow-sm">
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-background-alt px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-foreground shadow-xs">
                 <Clock className="h-3.5 w-3.5 text-primary" />
                 <span>{duration || 'Full Day'}</span>
               </div>
 
-              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-background-alt px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-foreground shadow-sm">
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-background-alt px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-foreground shadow-xs">
                 <Shield className="h-3.5 w-3.5 text-primary" />
                 <span>Safety Certified</span>
               </div>
 
-              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-background-alt px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-foreground shadow-sm">
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-background-alt px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-foreground shadow-xs">
                 <Users className="h-3.5 w-3.5 text-primary" />
                 <span>Master Gemologist Guided</span>
               </div>
 
               {price && (
-                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold text-primary shadow-sm">
+                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold text-primary shadow-xs">
                   <span>{price}</span>
                   <span className="text-[10px] sm:text-[11px] text-muted-foreground font-normal">{priceSuffix || 'per person'}</span>
                 </div>
@@ -155,7 +149,7 @@ export function TourDetailHero({
               <Button
                 asChild
                 size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold w-full sm:w-auto px-8 h-11 sm:h-12 text-xs sm:text-sm shadow-xl shadow-primary/20 rounded-full justify-center"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold w-full sm:w-auto px-8 h-11 sm:h-12 text-xs sm:text-sm shadow-sm rounded-full justify-center"
               >
                 <Link href={bookingLink}>
                   <Calendar className="mr-2 h-4 w-4" />

@@ -27,7 +27,7 @@ function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
     if (!selectedTour) return null;
 
     return (
-        <Card className="overflow-hidden relative shadow-lg">
+        <Card className="overflow-hidden relative rounded-2xl border border-border/80 shadow-none">
             <Image
                 src="https://content-provider.payshia.com/sapphire-trail/images/img4.webp"
                 alt={selectedTour.tourPageTitle}
@@ -36,10 +36,10 @@ function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
                 className="w-full object-cover aspect-[2/1]"
                 data-ai-hint="tourists gems"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent" />
             <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-between text-white">
                 <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold font-headline">{selectedTour.tourPageTitle}</h2>
+                    <h2 className="text-xl sm:text-2xl font-serif font-normal text-white">{selectedTour.tourPageTitle}</h2>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm mt-2 opacity-90">
                         <div className="flex items-center gap-1.5"><Clock size={16} /> {selectedTour.duration}</div>
                         <div className="flex items-center gap-1.5"><DollarSign size={16} /> {selectedTour.price} {selectedTour.priceSuffix}</div>
@@ -47,15 +47,15 @@ function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
                     <div className="flex flex-col items-center">
-                        <div className="p-3 rounded-full bg-white/10 backdrop-blur-sm mb-1"><Gem size={20} /></div>
+                        <div className="p-3 rounded-full bg-white/15 mb-1"><Gem size={20} /></div>
                         <p className="text-xs font-semibold">Gem Discovery</p>
                     </div>
                      <div className="flex flex-col items-center">
-                        <div className="p-3 rounded-full bg-white/10 backdrop-blur-sm mb-1"><Users size={20} /></div>
+                        <div className="p-3 rounded-full bg-white/15 mb-1"><Users size={20} /></div>
                         <p className="text-xs font-semibold">Expert Guides</p>
                     </div>
                      <div className="flex flex-col items-center">
-                        <div className="p-3 rounded-full bg-white/10 backdrop-blur-sm mb-1"><Shield size={20} /></div>
+                        <div className="p-3 rounded-full bg-white/15 mb-1"><Shield size={20} /></div>
                         <p className="text-xs font-semibold">Underground Adventure</p>
                     </div>
                 </div>
@@ -375,13 +375,13 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
             <div className="lg:col-span-2 space-y-6">
               {tourSlug && selectedTour ? (
                 <div className="mb-2">
-                  <h1 className="text-3xl font-headline font-bold text-foreground">Book Your Tour</h1>
-                  <p className="text-muted-foreground mt-1">Reserve your spot for the <span className="font-semibold text-primary">{selectedTour.tourPageTitle}</span></p>
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">Book Your Tour</h1>
+                  <p className="text-muted-foreground mt-1 font-light text-sm sm:text-base">Reserve your spot for the <span className="font-medium text-primary">{selectedTour.tourPageTitle}</span></p>
                 </div>
               ) : (
                 <div className="mb-2">
-                  <h1 className="text-2xl sm:text-3xl font-headline font-bold text-foreground">Book Your Private Expedition</h1>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">Book Your Private Expedition</h1>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-light">
                     Select your preferred tour package below and customize your journey with Sapphire Trails.
                   </p>
                 </div>

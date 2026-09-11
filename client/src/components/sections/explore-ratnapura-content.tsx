@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, ArrowRight, Sparkles, Compass } from "lucide-react";
+import { MapPin, ArrowRight, Compass } from "lucide-react";
 import { locationsData as staticLocationsData, mapServerLocationToClient } from "@/lib/locations-data";
 import type { Location } from '@/lib/locations-data';
 import { API_BASE_URL, getFullImageUrl } from '@/lib/utils';
@@ -18,7 +18,7 @@ const LocationCard = ({ location }: { location: Location }) => {
 
   return (
     <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
-      <Card className="bg-card hover:bg-card/80 border-border/80 hover:border-primary/50 transition-all duration-300 flex flex-col h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-xl group">
+      <Card className="bg-card hover:bg-card/80 border border-border/80 hover:border-primary/50 transition-colors flex flex-col h-full rounded-2xl overflow-hidden group">
         
         {/* Card Thumbnail Box */}
         <div className="relative aspect-[16/10] overflow-hidden bg-black/40">
@@ -26,16 +26,16 @@ const LocationCard = ({ location }: { location: Location }) => {
             src={resolvedImage}
             alt={location.title}
             onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE; }}
-            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
           
-          <Badge className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-primary border-primary/30 text-[11px] font-semibold uppercase tracking-wider">
+          <Badge className="absolute top-3 left-3 bg-slate-950/85 text-primary border-primary/30 text-[11px] font-semibold uppercase tracking-wider">
             {location.category === 'agriculture' ? 'Gem Mining' : location.category === 'cultural' ? 'Cultural' : 'Nature'}
           </Badge>
 
           {location.distance && (
-            <Badge variant="outline" className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md text-white border-white/20 text-[10px]">
+            <Badge variant="outline" className="absolute bottom-3 left-3 bg-slate-950/85 text-white border-white/20 text-[10px]">
               <MapPin className="h-3 w-3 mr-1 text-primary" />
               {location.distance}
             </Badge>
@@ -45,7 +45,7 @@ const LocationCard = ({ location }: { location: Location }) => {
         {/* Card Text Content */}
         <CardContent className="p-5 flex flex-col flex-grow justify-between text-left space-y-3">
           <div>
-            <h3 className="text-xl font-bold font-serif text-foreground group-hover:text-primary transition-colors leading-snug">
+            <h3 className="text-lg sm:text-xl font-serif font-medium text-foreground group-hover:text-primary transition-colors leading-snug">
               {location.title}
             </h3>
             <p className="text-xs text-muted-foreground mt-2 line-clamp-3 leading-relaxed">
@@ -118,7 +118,7 @@ export function ExploreRatnapuraContent() {
             <Compass className="h-3.5 w-3.5" />
             <span>{catalogHeader.badge}</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-bold font-serif text-foreground tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">
             {catalogHeader.heading}
           </h2>
           <p className="text-base text-muted-foreground mt-3 leading-relaxed">

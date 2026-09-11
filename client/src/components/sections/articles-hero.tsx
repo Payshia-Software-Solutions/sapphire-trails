@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight, Sparkles, BookOpen, Clock, Award, Gem } from 'lucide-react';
+import { ChevronRight, BookOpen, Clock, Award, Gem } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 import { useSiteContent } from '@/lib/site-content';
@@ -31,7 +31,7 @@ export function ArticlesHeroSection({
         />
 
         {/* Soft Multi-layered Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-slate-950/75 to-slate-950/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/85" />
       </div>
 
       <div className="container relative z-10 mx-auto px-4 md:px-6">
@@ -54,17 +54,17 @@ export function ArticlesHeroSection({
 
         <div className="max-w-3xl space-y-4">
           {/* Brand Tag */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-primary backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-primary">
             <BookOpen className="h-3.5 w-3.5 text-primary" />
             <span>{articlesHero.tagline}</span>
           </div>
 
-          {/* Main Title */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-headline font-bold tracking-tight text-white leading-tight">
+          {/* Main Title - Luxury Serif */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-normal tracking-wide text-white leading-tight">
             {articlesHero.title.includes(' ') ? (
               <>
                 <span>{articlesHero.title.split(' ')[0]}</span>{' '}
-                <span className="text-primary font-serif font-normal">{articlesHero.title.substring(articlesHero.title.indexOf(' ') + 1)}</span>
+                <span className="text-primary italic">{articlesHero.title.substring(articlesHero.title.indexOf(' ') + 1)}</span>
               </>
             ) : (
               articlesHero.title
