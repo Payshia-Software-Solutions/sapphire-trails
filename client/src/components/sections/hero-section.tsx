@@ -28,7 +28,7 @@ export function HeroSection() {
   const posterImg = heroContent.posterImageUrl || 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp';
 
   return (
-    <section className="relative h-[calc(100vh-5rem)] min-h-[560px] w-full flex items-center justify-center overflow-hidden bg-black px-4">
+    <section className="relative min-h-[calc(100vh-116px)] h-auto lg:h-[calc(100vh-116px)] w-full flex flex-col items-center justify-center overflow-hidden bg-black px-4 pb-12 sm:pb-14">
       {/* Static poster image */}
       <Image
         src={posterImg}
@@ -54,7 +54,7 @@ export function HeroSection() {
       </video>
 
       {/* Main Hero Center Content */}
-      <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white space-y-5 sm:space-y-6 max-w-4xl mx-auto my-auto px-2">
+      <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white space-y-4 sm:space-y-5 max-w-4xl mx-auto px-2">
         
         {/* Subtle Brand Tag */}
         <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-black/70 border border-white/20 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-primary font-medium">
@@ -62,12 +62,12 @@ export function HeroSection() {
         </div>
 
         {/* Official Emblem Logo */}
-        <div className="relative w-28 sm:w-36 md:w-44 h-auto flex items-center justify-center">
+        <div className="relative w-20 sm:w-24 md:w-28 h-auto flex items-center justify-center">
           <Image
             src="/img/logo4.png"
             alt="Sapphire Trails Logo"
-            width={180}
-            height={180}
+            width={120}
+            height={120}
             className="h-auto w-full object-contain drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]"
             priority
           />
@@ -87,7 +87,7 @@ export function HeroSection() {
         </p>
 
         {/* Dual Call to Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 w-full max-w-xs sm:max-w-none">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1 sm:pt-2 w-full max-w-xs sm:max-w-none">
           <Button asChild size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-8 h-11 sm:h-12 rounded-full shadow-md transition-colors">
             <Link href="/booking">
               <CalendarCheck className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
@@ -107,11 +107,11 @@ export function HeroSection() {
       {/* Scroll Down Indicator */}
       <Link
         href="#journey"
-        className="absolute bottom-6 sm:bottom-8 z-20 animate-bounce flex flex-col items-center text-white/70 hover:text-white transition-colors"
+        className="absolute bottom-4 sm:bottom-6 z-20 animate-bounce flex flex-col items-center text-white/70 hover:text-white transition-colors"
         aria-label="Scroll to next section"
       >
-        <span className="text-[10px] uppercase tracking-widest text-white/60 mb-1 hidden sm:block">Explore Journey</span>
-        <ChevronDown className="h-6 w-6 text-primary" />
+        <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 mb-1 hidden sm:block">Explore Journey</span>
+        <ChevronDown className="h-5 w-5 text-primary" />
       </Link>
     </section>
   );
