@@ -75,7 +75,8 @@ import {
   Sun,
   Moon,
   Megaphone,
-  Bell
+  Bell,
+  X
 } from 'lucide-react';
 
 
