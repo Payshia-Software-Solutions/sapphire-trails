@@ -112,202 +112,174 @@ export function FeaturedBannerModal() {
   }
 
   // ---------------------------------------------------------------------------
-  // 2. MODAL & BOTTOM TOAST TEMPLATES
+  // 2. MODAL & BOTTOM TOAST TEMPLATES (QUIET LUXURY 5-STAR DESIGN)
   // ---------------------------------------------------------------------------
   return (
     <div 
       className={cn(
         "fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6 transition-all duration-300",
-        displayType === 'bottom_toast' ? "items-end justify-end pointer-events-none p-4 sm:p-6" : "bg-black/70 backdrop-blur-sm"
+        displayType === 'bottom_toast' 
+          ? "items-end justify-end pointer-events-none p-4 sm:p-6" 
+          : "bg-black/80 backdrop-blur-md animate-in fade-in-50 duration-300"
       )}
+      onClick={(e) => {
+        // Click backdrop to dismiss
+        if (e.target === e.currentTarget && displayType === 'modal') {
+          handleClose();
+        }
+      }}
     >
       <div 
         className={cn(
-          "relative w-full max-w-lg sm:max-w-xl md:max-w-2xl overflow-hidden rounded-2xl sm:rounded-3xl transition-all duration-300 shadow-2xl animate-in zoom-in-95 fade-in-50",
+          "relative w-full max-w-xl md:max-w-2xl overflow-hidden rounded-2xl sm:rounded-3xl transition-all duration-300 shadow-[0_25px_70px_rgba(0,0,0,0.85)] animate-in zoom-in-95 fade-in-50",
           displayType === 'bottom_toast' && "pointer-events-auto max-w-md",
           
-          // Template 1: Luxury Gold
-          template === 'luxury_gold' && "bg-[#0B1118] text-white border-2 border-[#DEC49B]/40 shadow-[0_20px_60px_rgba(0,0,0,0.8)]",
+          // Template 1: Luxury Gold (Signature Velvet Midnight Slate)
+          template === 'luxury_gold' && "bg-[#0c1117] text-white border border-[#DEC49B]/35",
           
-          // Template 2: Sapphire Blue
-          template === 'sapphire_blue' && "bg-gradient-to-br from-[#0c1e3d] via-[#09152b] to-[#050b14] text-white border border-blue-400/30 shadow-[0_20px_60px_rgba(10,30,70,0.6)]",
+          // Template 2: Sapphire Blue (Deep Royal Gem)
+          template === 'sapphire_blue' && "bg-[#09152b] text-white border border-blue-400/30",
           
-          // Template 3: Minimal Editorial
-          template === 'minimal_editorial' && "bg-background text-foreground border border-border shadow-[0_20px_50px_rgba(0,0,0,0.25)]",
+          // Template 3: Minimal Editorial (Warm Silk Ivory)
+          template === 'minimal_editorial' && "bg-[#FDFBF7] text-[#1a1a1a] border border-[#E4DEC8]",
           
           // Template 4: Image Spotlight
-          template === 'image_spotlight' && "bg-card text-foreground border border-border/80 shadow-[0_25px_60px_rgba(0,0,0,0.5)]"
+          template === 'image_spotlight' && "bg-[#0f1722] text-white border border-border/80"
         )}
       >
-        {/* Top Close Button */}
+        {/* Subtle Decorative Gold Accent Strip */}
+        <div className={cn(
+          "h-1 w-full bg-gradient-to-r",
+          template === 'luxury_gold' && "from-transparent via-[#DEC49B] to-transparent",
+          template === 'sapphire_blue' && "from-transparent via-blue-400 to-transparent",
+          template === 'minimal_editorial' && "from-transparent via-primary/60 to-transparent",
+          template === 'image_spotlight' && "from-transparent via-amber-400 to-transparent"
+        )} />
+
+        {/* Top Micro Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-3.5 right-3.5 z-30 p-1.5 rounded-full bg-black/50 text-white/80 hover:text-white hover:bg-black/80 backdrop-blur-md transition-colors"
+          className={cn(
+            "absolute top-3.5 right-3.5 z-30 h-8 w-8 rounded-full flex items-center justify-center transition-all",
+            template === 'minimal_editorial' 
+              ? "bg-black/5 hover:bg-black/10 text-neutral-600 hover:text-black" 
+              : "bg-white/10 hover:bg-white/20 text-white/70 hover:text-white"
+          )}
           aria-label="Close dialog"
         >
           <X className="h-4 w-4" />
         </button>
 
-        {/* ----------------- TEMPLATE 4: IMAGE SPOTLIGHT (SPLIT) ----------------- */}
-        {template === 'image_spotlight' ? (
-          <div className="grid sm:grid-cols-12 items-stretch">
-            {/* Image Col */}
-            {banner.image && (
-              <div className="relative h-48 sm:h-auto sm:col-span-5 w-full min-h-[200px]">
-                <Image
-                  src={banner.image}
-                  alt={banner.title}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-transparent to-card/90 sm:to-card" />
-              </div>
-            )}
-            
-            {/* Content Col */}
-            <div className={cn("p-6 sm:p-8 flex flex-col justify-between space-y-4", banner.image ? "sm:col-span-7" : "sm:col-span-12")}>
-              <div className="space-y-2.5">
-                {banner.badgeText && (
-                  <Badge className="bg-primary/10 text-primary border border-primary/20 text-[10px] font-semibold tracking-widest uppercase">
-                    {banner.badgeText}
-                  </Badge>
-                )}
-                <h3 className="text-xl sm:text-2xl font-serif font-normal text-foreground leading-snug">
-                  {banner.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-light">
-                  {banner.subtitle}
-                </p>
-              </div>
-
-              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-                {banner.primaryButtonText && banner.primaryButtonLink && (
-                  <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-full h-10 px-6 shadow-sm">
-                    <Link href={banner.primaryButtonLink} onClick={handleClose}>
-                      <span>{banner.primaryButtonText}</span>
-                      <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-                    </Link>
-                  </Button>
-                )}
-                {banner.secondaryButtonText && banner.secondaryButtonLink && (
-                  <Button asChild variant="outline" className="text-xs rounded-full h-10 border-border">
-                    <Link 
-                      href={banner.secondaryButtonLink} 
-                      target={banner.secondaryButtonLink.startsWith('http') ? '_blank' : '_self'}
-                      onClick={handleClose}
-                    >
-                      {banner.secondaryButtonText}
-                    </Link>
-                  </Button>
-                )}
-              </div>
+        {/* Card Inner Grid: Clean Split Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-12 items-stretch">
+          
+          {/* Left Column: Authentic Clean Photo Frame (No white washout gradient) */}
+          {banner.image && (
+            <div className="sm:col-span-5 relative min-h-[220px] sm:min-h-full w-full overflow-hidden bg-black/40">
+              <Image
+                src={banner.image}
+                alt={banner.title}
+                fill
+                className="object-cover object-center transition-transform duration-700 hover:scale-105"
+              />
+              {/* Subtle edge vignette that stays deep/clean */}
+              <div className={cn(
+                "absolute inset-0 pointer-events-none",
+                template === 'minimal_editorial' 
+                  ? "sm:bg-gradient-to-r sm:from-transparent sm:to-[#FDFBF7]/40 bg-gradient-to-t from-[#FDFBF7] to-transparent sm:from-transparent" 
+                  : "sm:bg-gradient-to-r sm:from-transparent sm:to-[#0c1117]/60 bg-gradient-to-t from-[#0c1117] to-transparent sm:from-transparent"
+              )} />
             </div>
-          </div>
-        ) : (
-          /* ----------------- TEMPLATES 1, 2 & 3 ----------------- */
-          <div>
-            {/* Optional Banner Image Header */}
-            {banner.image && (
-              <div className="relative h-44 sm:h-52 w-full overflow-hidden">
-                <Image
-                  src={banner.image}
-                  alt={banner.title}
-                  fill
-                  className="object-cover"
-                />
-                <div className={cn(
-                  "absolute inset-0",
-                  template === 'luxury_gold' && "bg-gradient-to-t from-[#0B1118] via-[#0B1118]/40 to-transparent",
-                  template === 'sapphire_blue' && "bg-gradient-to-t from-[#09152b] via-[#09152b]/40 to-transparent",
-                  template === 'minimal_editorial' && "bg-gradient-to-t from-background via-background/30 to-transparent"
-                )} />
+          )}
 
-                {/* Floating Tag over Image */}
-                {banner.badgeText && (
-                  <div className="absolute bottom-4 left-6 z-10">
-                    <span className={cn(
-                      "px-3 py-1 rounded-full text-[10px] font-semibold tracking-widest uppercase border backdrop-blur-md",
-                      template === 'luxury_gold' && "bg-black/70 text-[#DEC49B] border-[#DEC49B]/30",
-                      template === 'sapphire_blue' && "bg-blue-950/70 text-blue-200 border-blue-400/30",
-                      template === 'minimal_editorial' && "bg-background/90 text-primary border-primary/20"
-                    )}>
-                      {banner.badgeText}
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Content Body */}
-            <div className="p-6 sm:p-8 space-y-5">
-              {!banner.image && banner.badgeText && (
-                <span className="inline-block px-3 py-0.5 rounded-full text-[10px] font-semibold tracking-widest uppercase bg-primary/10 text-primary border border-primary/20">
-                  {banner.badgeText}
-                </span>
+          {/* Right Column: Refined Typography & Action Controls */}
+          <div className={cn(
+            "p-6 sm:p-7 flex flex-col justify-between space-y-5",
+            banner.image ? "sm:col-span-7" : "sm:col-span-12"
+          )}>
+            
+            <div className="space-y-3">
+              {/* Badge */}
+              {banner.badgeText && (
+                <div className="inline-flex items-center gap-1.5">
+                  <span className={cn(
+                    "px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-[0.15em] uppercase",
+                    template === 'luxury_gold' && "bg-[#DEC49B]/15 text-[#DEC49B] border border-[#DEC49B]/30",
+                    template === 'sapphire_blue' && "bg-blue-500/15 text-blue-300 border border-blue-400/30",
+                    template === 'minimal_editorial' && "bg-primary/10 text-primary border border-primary/20",
+                    template === 'image_spotlight' && "bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                  )}>
+                    {banner.badgeText}
+                  </span>
+                </div>
               )}
 
-              <div className="space-y-2 text-center sm:text-left">
-                <h3 className={cn(
-                  "text-xl sm:text-2xl md:text-3xl font-serif font-normal leading-tight",
-                  template === 'luxury_gold' && "text-[#DEC49B]",
-                  template === 'sapphire_blue' && "text-white",
-                  template === 'minimal_editorial' && "text-foreground"
-                )}>
-                  {banner.title}
-                </h3>
-                <p className={cn(
-                  "text-xs sm:text-sm leading-relaxed max-w-xl",
-                  template === 'luxury_gold' && "text-white/80 font-light",
-                  template === 'sapphire_blue' && "text-blue-100/80 font-light",
-                  template === 'minimal_editorial' && "text-muted-foreground font-light"
-                )}>
-                  {banner.subtitle}
-                </p>
-              </div>
+              {/* Title */}
+              <h3 className={cn(
+                "text-lg sm:text-xl font-serif font-normal leading-snug tracking-wide",
+                template === 'luxury_gold' && "text-white",
+                template === 'sapphire_blue' && "text-white",
+                template === 'minimal_editorial' && "text-[#1a1a1a]",
+                template === 'image_spotlight' && "text-white"
+              )}>
+                {banner.title}
+              </h3>
 
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-3">
-                {banner.primaryButtonText && banner.primaryButtonLink && (
-                  <Button 
-                    asChild 
-                    className={cn(
-                      "w-full sm:w-auto h-11 px-7 rounded-full text-xs font-semibold shadow-md transition-all",
-                      template === 'luxury_gold' && "bg-[#DEC49B] hover:bg-[#c9af85] text-[#0B1118]",
-                      template === 'sapphire_blue' && "bg-primary hover:bg-primary/90 text-primary-foreground",
-                      template === 'minimal_editorial' && "bg-primary hover:bg-primary/90 text-primary-foreground"
-                    )}
-                  >
-                    <Link href={banner.primaryButtonLink} onClick={handleClose}>
-                      <span>{banner.primaryButtonText}</span>
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                )}
-
-                {banner.secondaryButtonText && banner.secondaryButtonLink && (
-                  <Button 
-                    asChild 
-                    variant="outline" 
-                    className={cn(
-                      "w-full sm:w-auto h-11 px-6 rounded-full text-xs transition-colors",
-                      template === 'luxury_gold' && "border-white/20 text-white hover:bg-white/10",
-                      template === 'sapphire_blue' && "border-blue-300/30 text-white hover:bg-blue-400/10",
-                      template === 'minimal_editorial' && "border-border text-foreground hover:bg-muted"
-                    )}
-                  >
-                    <Link 
-                      href={banner.secondaryButtonLink} 
-                      target={banner.secondaryButtonLink.startsWith('http') ? '_blank' : '_self'}
-                      onClick={handleClose}
-                    >
-                      {banner.secondaryButtonText}
-                    </Link>
-                  </Button>
-                )}
-              </div>
+              {/* Subtitle */}
+              <p className={cn(
+                "text-xs leading-relaxed font-light",
+                template === 'minimal_editorial' ? "text-neutral-600" : "text-white/70"
+              )}>
+                {banner.subtitle}
+              </p>
             </div>
+
+            {/* Action Buttons: Responsive & Flex-Wrap (Never Cut Off) */}
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+              {banner.primaryButtonText && banner.primaryButtonLink && (
+                <Button 
+                  asChild 
+                  className={cn(
+                    "h-10 px-5 rounded-full text-xs font-semibold shadow-md transition-all shrink-0",
+                    template === 'luxury_gold' && "bg-[#DEC49B] hover:bg-[#cbb085] text-[#0B1118]",
+                    template === 'sapphire_blue' && "bg-primary hover:bg-primary/90 text-primary-foreground",
+                    template === 'minimal_editorial' && "bg-primary hover:bg-primary/90 text-primary-foreground",
+                    template === 'image_spotlight' && "bg-primary hover:bg-primary/90 text-primary-foreground"
+                  )}
+                >
+                  <Link href={banner.primaryButtonLink} onClick={handleClose}>
+                    <span>{banner.primaryButtonText}</span>
+                    <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                  </Link>
+                </Button>
+              )}
+
+              {banner.secondaryButtonText && banner.secondaryButtonLink && (
+                <Button 
+                  asChild 
+                  variant="outline" 
+                  className={cn(
+                    "h-10 px-4 rounded-full text-xs transition-colors shrink-0",
+                    template === 'minimal_editorial' 
+                      ? "border-neutral-300 text-neutral-800 hover:bg-neutral-100" 
+                      : "border-white/20 text-white/90 hover:text-white hover:bg-white/10"
+                  )}
+                >
+                  <Link 
+                    href={banner.secondaryButtonLink} 
+                    target={banner.secondaryButtonLink.startsWith('http') ? '_blank' : '_self'}
+                    onClick={handleClose}
+                  >
+                    {banner.secondaryButtonText}
+                  </Link>
+                </Button>
+              )}
+            </div>
+
           </div>
-        )}
+
+        </div>
+
       </div>
     </div>
   );

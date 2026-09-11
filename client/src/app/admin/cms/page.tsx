@@ -7668,56 +7668,62 @@ export default function MasterCmsPage() {
 
                     return (
                       <div className={`w-full rounded-2xl overflow-hidden border shadow-xl transition-all ${
-                        tpl === 'luxury_gold' ? 'bg-[#0B1118] text-white border-[#DEC49B]/40' :
-                        tpl === 'sapphire_blue' ? 'bg-gradient-to-br from-[#0c1e3d] to-[#050b14] text-white border-blue-400/30' :
-                        tpl === 'minimal_editorial' ? 'bg-background text-foreground border-border' :
-                        'bg-card text-foreground border-border'
+                        tpl === 'luxury_gold' ? 'bg-[#0c1117] text-white border-[#DEC49B]/40' :
+                        tpl === 'sapphire_blue' ? 'bg-[#09152b] text-white border-blue-400/30' :
+                        tpl === 'minimal_editorial' ? 'bg-[#FDFBF7] text-[#1a1a1a] border-[#E4DEC8]' :
+                        'bg-[#0f1722] text-white border-border'
                       }`}>
-                        {currentBanner.image && (
-                          <div className="relative h-32 w-full overflow-hidden">
-                            <img
-                              src={currentBanner.image}
-                              alt="Preview"
-                              className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                            {currentBanner.badgeText && (
-                              <span className="absolute bottom-2 left-3 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-primary text-primary-foreground">
-                                {currentBanner.badgeText}
-                              </span>
-                            )}
-                          </div>
-                        )}
-
-                        <div className="p-4 space-y-3">
-                          {!currentBanner.image && currentBanner.badgeText && (
-                            <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-primary/20 text-primary">
-                              {currentBanner.badgeText}
-                            </span>
+                        {/* Gold accent top strip */}
+                        <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#DEC49B] to-transparent" />
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-12 items-stretch">
+                          {currentBanner.image && (
+                            <div className="sm:col-span-5 relative h-32 sm:h-auto min-h-[120px] w-full overflow-hidden bg-black/40">
+                              <img
+                                src={currentBanner.image}
+                                alt="Preview"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
                           )}
 
-                          <div className="space-y-1">
-                            <h4 className={`text-base font-serif font-bold leading-tight ${
-                              tpl === 'luxury_gold' ? 'text-[#DEC49B]' :
-                              tpl === 'sapphire_blue' ? 'text-blue-200' :
-                              'text-foreground'
-                            }`}>
-                              {currentBanner.title}
-                            </h4>
-                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed font-light">
-                              {currentBanner.subtitle}
-                            </p>
-                          </div>
+                          <div className={`p-4 space-y-2.5 flex flex-col justify-between ${currentBanner.image ? 'sm:col-span-7' : 'sm:col-span-12'}`}>
+                            <div className="space-y-1.5">
+                              {currentBanner.badgeText && (
+                                <span className={`inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                                  tpl === 'minimal_editorial' ? 'bg-primary/10 text-primary' : 'bg-[#DEC49B]/15 text-[#DEC49B] border border-[#DEC49B]/30'
+                                }`}>
+                                  {currentBanner.badgeText}
+                                </span>
+                              )}
 
-                          <div className="pt-2 flex items-center gap-2">
-                            <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary text-primary-foreground shadow-xs">
-                              {currentBanner.primaryButtonText}
-                            </span>
-                            {currentBanner.secondaryButtonText && (
-                              <span className="px-3 py-1.5 rounded-full text-xs border border-border text-muted-foreground">
-                                {currentBanner.secondaryButtonText}
+                              <h4 className={`text-sm font-serif font-bold leading-tight ${
+                                tpl === 'minimal_editorial' ? 'text-[#1a1a1a]' : 'text-white'
+                              }`}>
+                                {currentBanner.title}
+                              </h4>
+                              
+                              <p className={`text-[11px] line-clamp-2 leading-relaxed font-light ${
+                                tpl === 'minimal_editorial' ? 'text-neutral-600' : 'text-white/70'
+                              }`}>
+                                {currentBanner.subtitle}
+                              </p>
+                            </div>
+
+                            <div className="pt-1 flex flex-wrap items-center gap-2">
+                              <span className={`px-3 py-1 rounded-full text-[10px] font-semibold shadow-xs ${
+                                tpl === 'luxury_gold' ? 'bg-[#DEC49B] text-[#0c1117]' : 'bg-primary text-primary-foreground'
+                              }`}>
+                                {currentBanner.primaryButtonText}
                               </span>
-                            )}
+                              {currentBanner.secondaryButtonText && (
+                                <span className={`px-2.5 py-1 rounded-full text-[10px] border ${
+                                  tpl === 'minimal_editorial' ? 'border-neutral-300 text-neutral-700' : 'border-white/20 text-white/80'
+                                }`}>
+                                  {currentBanner.secondaryButtonText}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
