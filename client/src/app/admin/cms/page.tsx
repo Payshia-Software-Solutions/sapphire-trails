@@ -744,6 +744,14 @@ export default function MasterCmsPage() {
 
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab) {
+        setActiveTab(tab);
+      }
+    }
+
     async function loadData() {
       setIsLoading(true);
       try {

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, CalendarCheck, CalendarDays, FileText, Settings, Package, Users, LogOut, type LucideIcon, MessageSquare, Mail, Receipt, Activity, BookOpen, Star, Send } from 'lucide-react';
+import { LayoutGrid, CalendarCheck, CalendarDays, FileText, Settings, Package, Users, LogOut, type LucideIcon, MessageSquare, Mail, Receipt, Activity, BookOpen, Star, Send, Megaphone } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -22,9 +22,9 @@ export const navLinks: NavLink[] = [
   { href: '/admin/subscribers', label: 'Newsletter & Leads', icon: Send },
   { href: '/admin/mail-settings', label: 'Mail & Logs', icon: Mail },
   { href: '/admin/analytics', label: 'Analytics & Pixels', icon: Activity },
+  { href: '/admin/promo-banner', label: 'Promo Banner', icon: Megaphone },
   { href: '/admin/cms', label: 'Master CMS', icon: FileText },
   { href: '/admin/manage-articles', label: 'Manage Articles', icon: BookOpen },
-
   { href: '/admin/manage-reviews', label: 'Manage Reviews', icon: Star },
   { href: '/admin/manage-content', label: 'Manage Locations', icon: Settings },
   { href: '/admin/manage-packages', label: 'Manage Packages', icon: Package },
