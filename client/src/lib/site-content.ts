@@ -3,10 +3,30 @@ import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
 import { triggerRevalidation } from '@/lib/revalidate';
 
+export type BannerTemplate = 'luxury_gold' | 'sapphire_blue' | 'minimal_editorial' | 'image_spotlight';
+export type BannerDisplayType = 'modal' | 'top_bar' | 'bottom_toast';
+
+export interface FeaturedBannerConfig {
+  enabled: boolean;
+  type: BannerDisplayType;
+  template: BannerTemplate;
+  title: string;
+  subtitle: string;
+  badgeText: string;
+  image: string;
+  primaryButtonText: string;
+  primaryButtonLink: string;
+  secondaryButtonText?: string;
+  secondaryButtonLink?: string;
+  showOncePerSession?: boolean;
+  delaySeconds?: number;
+}
+
 export interface SiteContentData {
   // Global Site Settings
   settings?: {
     defaultTheme?: 'light' | 'dark';
+    banner?: FeaturedBannerConfig;
     [key: string]: any;
   };
 
@@ -400,9 +420,26 @@ export function getSectionThemeClass(themeId?: string, defaultClass: string = ''
   return found ? `${found.bgClass} ${defaultClass}` : defaultClass;
 }
 
+export const defaultFeaturedBanner: FeaturedBannerConfig = {
+  enabled: false,
+  type: 'modal',
+  template: 'luxury_gold',
+  title: 'Custom Proposal & Engagement Ring Expedition',
+  subtitle: 'Descend into private gem pits, uncover your raw sapphire, and have it handcrafted into an heirloom ring in Ratnapura.',
+  badgeText: 'EXCLUSIVE 2026 LUXURY OFFER',
+  image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp',
+  primaryButtonText: 'Explore Proposal Package',
+  primaryButtonLink: '/custom-proposal-package',
+  secondaryButtonText: 'WhatsApp Concierge',
+  secondaryButtonLink: 'https://wa.me/94763756688',
+  showOncePerSession: true,
+  delaySeconds: 2,
+};
+
 export const defaultSiteContent: SiteContentData = {
   settings: {
     defaultTheme: 'light',
+    banner: defaultFeaturedBanner,
   },
 
   homepage: {
@@ -1200,6 +1237,10 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
           settings: {
             ...defaultSiteContent.settings,
             ...(data.settings || {}),
+            banner: {
+              ...defaultSiteContent.settings?.banner,
+              ...(data.settings?.banner || {}),
+            },
           },
           homepage: { 
             ...defaultSiteContent.homepage, 
@@ -1279,6 +1320,10 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
           settings: {
             ...defaultSiteContent.settings,
             ...(parsed.settings || {}),
+            banner: {
+              ...defaultSiteContent.settings?.banner,
+              ...(parsed.settings?.banner || {}),
+            },
           },
           homepage: {
             ...defaultSiteContent.homepage,
@@ -1393,6 +1438,14 @@ export function useSiteContent() {
           return {
             ...defaultSiteContent,
             ...parsed,
+            settings: {
+              ...defaultSiteContent.settings,
+              ...(parsed.settings || {}),
+              banner: {
+                ...defaultSiteContent.settings?.banner,
+                ...(parsed.settings?.banner || {}),
+              },
+            },
             homepage: {
               ...defaultSiteContent.homepage,
               ...(parsed.homepage || {}),
@@ -1474,6 +1527,14 @@ export function useSiteContent() {
             setContent({
               ...defaultSiteContent,
               ...parsed,
+              settings: {
+                ...defaultSiteContent.settings,
+                ...(parsed.settings || {}),
+                banner: {
+                  ...defaultSiteContent.settings?.banner,
+                  ...(parsed.settings?.banner || {}),
+                },
+              },
               homepage: {
                 ...defaultSiteContent.homepage,
                 ...(parsed.homepage || {}),

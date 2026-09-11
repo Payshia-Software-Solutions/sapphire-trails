@@ -14,6 +14,10 @@ import {
   saveSiteContent, 
   defaultSiteContent, 
   type SiteContentData,
+  defaultFeaturedBanner,
+  type FeaturedBannerConfig,
+  type BannerTemplate,
+  type BannerDisplayType,
   SECTION_COLOR_THEMES,
   getSectionThemeClass,
   mergeProposalContent,
@@ -69,7 +73,9 @@ import {
   Trash2,
   Settings,
   Sun,
-  Moon
+  Moon,
+  Megaphone,
+  Bell
 } from 'lucide-react';
 
 
@@ -197,6 +203,7 @@ export default function MasterCmsPage() {
   const contactHeroFileRef = useRef<HTMLInputElement | null>(null);
   const footerBrandLogoRef = useRef<HTMLInputElement | null>(null);
   const footerPartnerLogoRef = useRef<HTMLInputElement | null>(null);
+  const bannerImageFileRef = useRef<HTMLInputElement | null>(null);
 
 
 
@@ -251,6 +258,43 @@ export default function MasterCmsPage() {
       });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleUpdateBanner = (fields: Partial<FeaturedBannerConfig>) => {
+    const currentBanner = content.settings?.banner || defaultFeaturedBanner;
+    setContent((prev) => ({
+      ...prev,
+      settings: {
+        ...(prev.settings || {}),
+        banner: {
+          ...currentBanner,
+          ...fields,
+        },
+      },
+    }));
+  };
+
+  const handleBannerImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    toast({
+      title: 'Uploading to CDN...',
+      description: `Uploading ${file.name} to FTP /cms/banner folder...`,
+    });
+    try {
+      const res = await uploadCmsImage(file, 'cms/banner');
+      handleUpdateBanner({ image: res.url });
+      toast({
+        title: 'Banner Image Uploaded!',
+        description: `Permanent CDN URL: ${res.url}`,
+      });
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: err.message || 'Failed to upload to FTP server.',
+      });
     }
   };
 
@@ -1147,7 +1191,7 @@ export default function MasterCmsPage() {
       {/* 1. Page Selection Tabs (Fixed at the Top) */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-5">
         <div className="bg-card p-1 rounded-2xl border border-border/80 shadow-xs w-full">
-          <TabsList className="bg-transparent h-auto p-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-1 w-full">
+          <TabsList className="bg-transparent h-auto p-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-1 w-full">
             <TabsTrigger value="homepage" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Home className="h-3.5 w-3.5" /> Homepage
             </TabsTrigger>
@@ -1171,6 +1215,9 @@ export default function MasterCmsPage() {
             </TabsTrigger>
             <TabsTrigger value="footer" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Share2 className="h-3.5 w-3.5" /> Footer
+            </TabsTrigger>
+            <TabsTrigger value="banner" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
+              <Megaphone className="h-3.5 w-3.5" /> Promo Banner
             </TabsTrigger>
             <TabsTrigger value="settings" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Settings className="h-3.5 w-3.5" /> Site Settings
@@ -7254,6 +7301,443 @@ export default function MasterCmsPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* ========================================================================= */}
+        {/* 10. FEATURED PROMO BANNER & MODAL STUDIO */}
+        {/* ========================================================================= */}
+        <TabsContent value="banner" className="w-full space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* Left Column: Banner Configuration Form (7 cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              
+              {/* Card 1: Master Status & Display Mode */}
+              <Card className="rounded-2xl border-border/80 shadow-xs">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider">
+                        <Megaphone className="h-3 w-3" />
+                        <span>Visitor Announcement</span>
+                      </div>
+                      <CardTitle className="text-lg font-bold font-headline">
+                        Featured Promotional Banner &amp; Pop-up
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Engage visitors the moment they land on the website with high-converting special offers or announcements.
+                      </CardDescription>
+                    </div>
+
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={(content.settings?.banner?.enabled ?? defaultFeaturedBanner.enabled) ? "default" : "outline"}
+                      onClick={() => handleUpdateBanner({ 
+                        enabled: !(content.settings?.banner?.enabled ?? defaultFeaturedBanner.enabled) 
+                      })}
+                      className={`h-8 px-4 rounded-full text-xs font-semibold gap-1.5 transition-all ${
+                        (content.settings?.banner?.enabled ?? defaultFeaturedBanner.enabled)
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
+                          : 'border-rose-500/50 text-rose-500 hover:bg-rose-500/10'
+                      }`}
+                    >
+                      {(content.settings?.banner?.enabled ?? defaultFeaturedBanner.enabled) ? (
+                        <>
+                          <Eye className="h-3.5 w-3.5" />
+                          <span>Active (Visible on Site)</span>
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="h-3.5 w-3.5" />
+                          <span>Disabled (Hidden)</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-5 pt-0">
+                  {/* Display Mode Selector */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold text-foreground">Display Presentation Style</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { id: 'modal', label: 'Center Pop-up Modal', desc: 'Prominent luxury focus backdrop' },
+                        { id: 'top_bar', label: 'Top Announcement Bar', desc: 'Sleek top alert ribbon' },
+                        { id: 'bottom_toast', label: 'Bottom Corner Toast', desc: 'Subtle floating badge' },
+                      ].map((mode) => {
+                        const currentType = content.settings?.banner?.type || defaultFeaturedBanner.type;
+                        const isSelected = currentType === mode.id;
+                        return (
+                          <div
+                            key={mode.id}
+                            onClick={() => handleUpdateBanner({ type: mode.id as BannerDisplayType })}
+                            className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                              isSelected
+                                ? 'border-primary bg-primary/5 shadow-2xs'
+                                : 'border-border/70 hover:border-border bg-card'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-foreground">{mode.label}</span>
+                              {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{mode.desc}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Timing & Dismissal Behavior */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border/60">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-foreground">Display Delay (Seconds)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="30"
+                        step="0.5"
+                        value={content.settings?.banner?.delaySeconds ?? defaultFeaturedBanner.delaySeconds}
+                        onChange={(e) => handleUpdateBanner({ delaySeconds: parseFloat(e.target.value) || 0 })}
+                        className="h-9 text-xs rounded-xl"
+                      />
+                      <p className="text-[10px] text-muted-foreground">Delay after visitor enters before opening.</p>
+                    </div>
+
+                    <div className="flex flex-col justify-end space-y-2">
+                      <Label className="text-xs font-semibold text-foreground">Session Memory</Label>
+                      <label className="flex items-center gap-2 cursor-pointer p-2 rounded-xl bg-muted/30 border border-border/60 hover:bg-muted/50">
+                        <input
+                          type="checkbox"
+                          checked={content.settings?.banner?.showOncePerSession ?? defaultFeaturedBanner.showOncePerSession}
+                          onChange={(e) => handleUpdateBanner({ showOncePerSession: e.target.checked })}
+                          className="h-4 w-4 rounded text-primary focus:ring-primary"
+                        />
+                        <span className="text-xs font-medium text-foreground">Show once per session</span>
+                      </label>
+                      <p className="text-[10px] text-muted-foreground">Once closed, won't pop up again on page refresh.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Card 2: Template Selection */}
+              <Card className="rounded-2xl border-border/80 shadow-xs">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base font-bold font-headline flex items-center gap-2">
+                        <Palette className="h-4 w-4 text-primary" />
+                        <span>Curated Banner Templates</span>
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Pick a tailored luxury visual aesthetic for your campaign.
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      { 
+                        id: 'luxury_gold', 
+                        title: '1. Luxury Gold (Signature)', 
+                        subtitle: 'Midnight slate background with warm gold borders & dual buttons',
+                        color: 'border-[#DEC49B] bg-[#0B1118] text-white',
+                        accent: 'bg-[#DEC49B] text-[#0B1118]'
+                      },
+                      { 
+                        id: 'sapphire_blue', 
+                        title: '2. Sapphire Royal Blue', 
+                        subtitle: 'Deep Ceylon sapphire radiant gradient with sapphire badges',
+                        color: 'border-blue-500 bg-gradient-to-br from-[#0c1e3d] to-[#050b14] text-white',
+                        accent: 'bg-primary text-white'
+                      },
+                      { 
+                        id: 'minimal_editorial', 
+                        title: '3. Minimal Editorial', 
+                        subtitle: 'Understated quiet luxury serif typography on clean background',
+                        color: 'border-border bg-card text-foreground',
+                        accent: 'bg-foreground text-background'
+                      },
+                      { 
+                        id: 'image_spotlight', 
+                        title: '4. Split Image Spotlight', 
+                        subtitle: 'Side-by-side photo banner ideal for new tours & ring packages',
+                        color: 'border-amber-500/50 bg-card text-foreground',
+                        accent: 'bg-primary text-primary-foreground'
+                      },
+                    ].map((tpl) => {
+                      const currentTemplate = content.settings?.banner?.template || defaultFeaturedBanner.template;
+                      const isSelected = currentTemplate === tpl.id;
+                      return (
+                        <div
+                          key={tpl.id}
+                          onClick={() => handleUpdateBanner({ template: tpl.id as BannerTemplate })}
+                          className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex flex-col justify-between gap-3 ${
+                            isSelected
+                              ? 'border-primary ring-2 ring-primary/20 shadow-sm'
+                              : 'border-border/70 hover:border-border bg-card'
+                          }`}
+                        >
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-xs font-bold text-foreground">{tpl.title}</h4>
+                              {isSelected && <CheckCircle2 className="h-4 w-4 text-primary" />}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground leading-relaxed">{tpl.subtitle}</p>
+                          </div>
+
+                          {/* Mini Visual Palette Swatch */}
+                          <div className={`p-2.5 rounded-xl border text-[9px] ${tpl.color} flex items-center justify-between`}>
+                            <span className="font-serif">PREVIEW</span>
+                            <span className={`px-2 py-0.5 rounded-full font-bold ${tpl.accent}`}>ACTION</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Card 3: Banner Content & Links */}
+              <Card className="rounded-2xl border-border/80 shadow-xs">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-bold font-headline flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span>Banner Copy &amp; Action Buttons</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Badge & Title */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Badge Tag</Label>
+                      <Input
+                        value={content.settings?.banner?.badgeText ?? defaultFeaturedBanner.badgeText}
+                        onChange={(e) => handleUpdateBanner({ badgeText: e.target.value })}
+                        placeholder="EXCLUSIVE 2026 OFFER"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                    <div className="sm:col-span-2 space-y-1.5">
+                      <Label className="text-xs font-semibold">Headline Title</Label>
+                      <Input
+                        value={content.settings?.banner?.title ?? defaultFeaturedBanner.title}
+                        onChange={(e) => handleUpdateBanner({ title: e.target.value })}
+                        placeholder="Custom Proposal & Engagement Ring Expedition"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Subtitle */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Subtitle Description</Label>
+                    <Textarea
+                      value={content.settings?.banner?.subtitle ?? defaultFeaturedBanner.subtitle}
+                      onChange={(e) => handleUpdateBanner({ subtitle: e.target.value })}
+                      rows={2}
+                      placeholder="Descend into private gem pits, uncover your raw sapphire..."
+                      className="text-xs rounded-xl resize-none"
+                    />
+                  </div>
+
+                  {/* Banner Image URL / Upload */}
+                  <div className="space-y-2 pt-2 border-t border-border/60">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-semibold">Featured Banner Image</Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => bannerImageFileRef.current?.click()}
+                        className="h-7 text-xs text-primary gap-1 px-2"
+                      >
+                        <Upload className="h-3 w-3" />
+                        <span>Upload Photo to CDN</span>
+                      </Button>
+                      <input
+                        ref={bannerImageFileRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBannerImageChange}
+                        className="hidden"
+                      />
+                    </div>
+                    <Input
+                      value={content.settings?.banner?.image ?? defaultFeaturedBanner.image}
+                      onChange={(e) => handleUpdateBanner({ image: e.target.value })}
+                      placeholder="https://content-provider.payshia.com/..."
+                      className="h-9 text-xs rounded-xl font-mono"
+                    />
+                  </div>
+
+                  {/* Primary Button */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border/60">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Primary Button Text</Label>
+                      <Input
+                        value={content.settings?.banner?.primaryButtonText ?? defaultFeaturedBanner.primaryButtonText}
+                        onChange={(e) => handleUpdateBanner({ primaryButtonText: e.target.value })}
+                        placeholder="Explore Package"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Primary Button Target Link</Label>
+                      <Input
+                        value={content.settings?.banner?.primaryButtonLink ?? defaultFeaturedBanner.primaryButtonLink}
+                        onChange={(e) => handleUpdateBanner({ primaryButtonLink: e.target.value })}
+                        placeholder="/custom-proposal-package or /booking"
+                        className="h-9 text-xs rounded-xl font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Secondary Button */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Secondary Button Text (Optional)</Label>
+                      <Input
+                        value={content.settings?.banner?.secondaryButtonText ?? defaultFeaturedBanner.secondaryButtonText}
+                        onChange={(e) => handleUpdateBanner({ secondaryButtonText: e.target.value })}
+                        placeholder="WhatsApp Concierge"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Secondary Button Link</Label>
+                      <Input
+                        value={content.settings?.banner?.secondaryButtonLink ?? defaultFeaturedBanner.secondaryButtonLink}
+                        onChange={(e) => handleUpdateBanner({ secondaryButtonLink: e.target.value })}
+                        placeholder="https://wa.me/94763756688"
+                        className="h-9 text-xs rounded-xl font-mono"
+                      />
+                    </div>
+                  </div>
+
+                </CardContent>
+              </Card>
+
+            </div>
+
+            {/* Right Column: Interactive Live Preview Studio (5 cols) */}
+            <div className="lg:col-span-5 sticky top-6 space-y-4">
+              <Card className="rounded-2xl border-border/80 shadow-xs overflow-hidden">
+                <CardHeader className="pb-3 bg-muted/30 border-b border-border/60">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Monitor className="h-4 w-4 text-primary" />
+                      <span className="text-xs font-bold text-foreground">Interactive Live Preview</span>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] uppercase font-mono">
+                      {content.settings?.banner?.template || defaultFeaturedBanner.template}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="p-4 bg-black/40 flex flex-col items-center justify-center min-h-[380px]">
+                  {/* Visual Render of Current Banner */}
+                  {(() => {
+                    const currentBanner = content.settings?.banner || defaultFeaturedBanner;
+                    const tpl = currentBanner.template || 'luxury_gold';
+                    
+                    if (currentBanner.type === 'top_bar') {
+                      return (
+                        <div className="w-full bg-slate-950 text-white border border-primary/40 rounded-xl p-3 text-xs flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                            <span className="px-2 py-0.5 rounded bg-primary text-primary-foreground font-bold text-[9px]">
+                              {currentBanner.badgeText || 'ANNOUNCEMENT'}
+                            </span>
+                            <X className="h-3 w-3 text-white/60" />
+                          </div>
+                          <p className="font-serif font-bold text-sm text-primary">{currentBanner.title}</p>
+                          <p className="text-[11px] text-white/80">{currentBanner.subtitle}</p>
+                          <div className="pt-1">
+                            <span className="inline-block bg-primary text-primary-foreground font-semibold px-3 py-1 rounded-full text-[10px]">
+                              {currentBanner.primaryButtonText}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className={`w-full rounded-2xl overflow-hidden border shadow-xl transition-all ${
+                        tpl === 'luxury_gold' ? 'bg-[#0B1118] text-white border-[#DEC49B]/40' :
+                        tpl === 'sapphire_blue' ? 'bg-gradient-to-br from-[#0c1e3d] to-[#050b14] text-white border-blue-400/30' :
+                        tpl === 'minimal_editorial' ? 'bg-background text-foreground border-border' :
+                        'bg-card text-foreground border-border'
+                      }`}>
+                        {currentBanner.image && (
+                          <div className="relative h-32 w-full overflow-hidden">
+                            <img
+                              src={currentBanner.image}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                            {currentBanner.badgeText && (
+                              <span className="absolute bottom-2 left-3 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-primary text-primary-foreground">
+                                {currentBanner.badgeText}
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="p-4 space-y-3">
+                          {!currentBanner.image && currentBanner.badgeText && (
+                            <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-primary/20 text-primary">
+                              {currentBanner.badgeText}
+                            </span>
+                          )}
+
+                          <div className="space-y-1">
+                            <h4 className={`text-base font-serif font-bold leading-tight ${
+                              tpl === 'luxury_gold' ? 'text-[#DEC49B]' :
+                              tpl === 'sapphire_blue' ? 'text-blue-200' :
+                              'text-foreground'
+                            }`}>
+                              {currentBanner.title}
+                            </h4>
+                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed font-light">
+                              {currentBanner.subtitle}
+                            </p>
+                          </div>
+
+                          <div className="pt-2 flex items-center gap-2">
+                            <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary text-primary-foreground shadow-xs">
+                              {currentBanner.primaryButtonText}
+                            </span>
+                            {currentBanner.secondaryButtonText && (
+                              <span className="px-3 py-1.5 rounded-full text-xs border border-border text-muted-foreground">
+                                {currentBanner.secondaryButtonText}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+
+              {/* Instant Publishing Info Note */}
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/80 flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
+                <div className="text-xs space-y-1">
+                  <p className="font-semibold text-foreground">Immediate Effect</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Once you click <strong>&quot;Save All Changes&quot;</strong>, this banner will be stored directly in the <code>site_content</code> MySQL database and will automatically appear for all visitors on their next visit.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </TabsContent>
 
       </Tabs>
