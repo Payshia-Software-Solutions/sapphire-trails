@@ -16,13 +16,11 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
 
     // This effect handles the visibility of the preloader.
     useEffect(() => {
-        // On initial load, always show preloader.
-        // On subsequent navigations, the click handler below will set isLoading.
         if (isInitialLoad.current) {
             setIsLoading(true);
         }
         
-        const delay = isInitialLoad.current ? 300 : 100;
+        const delay = isInitialLoad.current ? 650 : 350;
         
         const timer = setTimeout(() => {
             setIsFadingOut(true);
@@ -32,11 +30,10 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
                 if (isInitialLoad.current) {
                     isInitialLoad.current = false;
                 }
-                // Scroll to top after animation is fully complete
                 if (scrollableElement) {
                     scrollableElement.scrollTo({ top: 0, behavior: 'instant' });
                 }
-            }, 500); // This duration must match the CSS transition time
+            }, 450);
         }, delay);
         
         return () => clearTimeout(timer);
@@ -46,9 +43,13 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const handleAnchorClick = (event: MouseEvent) => {
             const target = event.target as HTMLElement;
-            const anchor = target.closest('a');
+            const anchor = target.closest('a') as HTMLAnchorElement | null;
 
             if (anchor && anchor.href) {
+                const hrefAttr = anchor.getAttribute('href') || '';
+                // Ignore hash/anchor links on the same page (#tours, #inquiry, etc.)
+                if (hrefAttr.startsWith('#')) return;
+
                 const targetUrl = new URL(anchor.href, window.location.origin);
                 const isExternal = targetUrl.origin !== window.location.origin;
                 const isSamePageNav = targetUrl.pathname === pathname && targetUrl.search === window.location.search;
@@ -56,6 +57,7 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
 
                 if (!isExternal && !isSamePageNav && !opensInNewTab) {
                     setIsLoading(true);
+                    setIsFadingOut(false);
                 }
             }
         };
@@ -68,11 +70,19 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <>
+            {/* Top Navigation Progress Indicator */}
+            {isLoading && !isAdminPage && (
+                <div className="fixed top-0 left-0 right-0 h-[2.5px] z-[110] overflow-hidden bg-primary/20">
+                    <div className="h-full w-full bg-gradient-to-r from-primary via-amber-300 to-primary animate-pulse" />
+                </div>
+            )}
+
+            {/* Full-screen Luxury Emblem Preloader */}
             {isLoading && !isAdminPage && (
                 <div
                     className={cn(
-                        'fixed inset-0 z-[100] flex items-center justify-center bg-background transition-opacity duration-500',
-                        isFadingOut ? 'opacity-0' : 'opacity-100'
+                        'fixed inset-0 z-[100] flex items-center justify-center bg-background transition-opacity duration-400',
+                        isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
                     )}
                 >
                     <PreLoader />
