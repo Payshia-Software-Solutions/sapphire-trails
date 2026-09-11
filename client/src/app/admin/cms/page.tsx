@@ -2285,7 +2285,7 @@ export default function MasterCmsPage() {
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-headline font-bold text-white leading-tight">
                               {hero.headlineLine1}
                             </h2>
-                            <p className="text-primary/95 text-sm sm:text-base md:text-lg font-serif tracking-wider uppercase font-normal">
+                            <p className="text-primary/90 text-xs sm:text-sm md:text-base font-serif tracking-[0.15em] uppercase font-normal">
                               {hero.headlineLine2}
                             </p>
                           </div>
