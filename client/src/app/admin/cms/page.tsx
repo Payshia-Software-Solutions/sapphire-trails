@@ -7444,30 +7444,30 @@ export default function MasterCmsPage() {
                     {[
                       { 
                         id: 'luxury_gold', 
-                        title: '1. Luxury Gold (Signature)', 
-                        subtitle: 'Midnight slate background with warm gold borders & dual buttons',
-                        color: 'border-[#DEC49B] bg-[#0B1118] text-white',
-                        accent: 'bg-[#DEC49B] text-[#0B1118]'
+                        title: '1. Royal Atelier (Signature Gold)', 
+                        subtitle: 'Cinematic onyx slate, gilded micro-borders, and gold typography',
+                        color: 'border-[#D4AF37] bg-[#0B0F15] text-white',
+                        accent: 'bg-[#D4AF37] text-[#0B0F15]'
                       },
                       { 
                         id: 'sapphire_blue', 
-                        title: '2. Sapphire Royal Blue', 
-                        subtitle: 'Deep Ceylon sapphire radiant gradient with sapphire badges',
-                        color: 'border-blue-500 bg-gradient-to-br from-[#0c1e3d] to-[#050b14] text-white',
-                        accent: 'bg-primary text-white'
+                        title: '2. Ceylon Sapphire Vault', 
+                        subtitle: 'Midnight royal blue depth with celestial sapphire glow & white text',
+                        color: 'border-sky-500 bg-gradient-to-br from-[#081426] to-[#02050A] text-white',
+                        accent: 'bg-sky-500 text-white'
                       },
                       { 
                         id: 'minimal_editorial', 
-                        title: '3. Minimal Editorial', 
-                        subtitle: 'Understated quiet luxury serif typography on clean background',
-                        color: 'border-border bg-card text-foreground',
-                        accent: 'bg-foreground text-background'
+                        title: '3. Haute Editorial (Warm Silk)', 
+                        subtitle: 'Prestigious Swiss horlogerie finish on silk ivory with dark serifs',
+                        color: 'border-[#E2DDD3] bg-[#FBF9F5] text-[#14181E]',
+                        accent: 'bg-[#14181E] text-white'
                       },
                       { 
                         id: 'image_spotlight', 
-                        title: '4. Split Image Spotlight', 
-                        subtitle: 'Side-by-side photo banner ideal for new tours & ring packages',
-                        color: 'border-amber-500/50 bg-card text-foreground',
+                        title: '4. Expedition Full-Bleed Hero', 
+                        subtitle: 'Full-bleed immersive photography with cinematic bottom narrative',
+                        color: 'border-white/30 bg-[#090D12] text-white',
                         accent: 'bg-primary text-primary-foreground'
                       },
                     ].map((tpl) => {

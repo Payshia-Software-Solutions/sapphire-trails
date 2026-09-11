@@ -112,18 +112,17 @@ export function FeaturedBannerModal() {
   }
 
   // ---------------------------------------------------------------------------
-  // 2. MODAL & BOTTOM TOAST TEMPLATES (QUIET LUXURY 5-STAR DESIGN)
+  // 2. WORLD-CLASS LUXURY PRESENTATION TEMPLATES
   // ---------------------------------------------------------------------------
   return (
     <div 
       className={cn(
-        "fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6 transition-all duration-300",
+        "fixed inset-0 z-[130] flex items-center justify-center p-4 sm:p-6 md:p-8 transition-all duration-500",
         displayType === 'bottom_toast' 
           ? "items-end justify-end pointer-events-none p-4 sm:p-6" 
-          : "bg-black/80 backdrop-blur-md animate-in fade-in-50 duration-300"
+          : "bg-black/85 backdrop-blur-md animate-in fade-in-50 duration-300"
       )}
       onClick={(e) => {
-        // Click backdrop to dismiss
         if (e.target === e.currentTarget && displayType === 'modal') {
           handleClose();
         }
@@ -131,154 +130,225 @@ export function FeaturedBannerModal() {
     >
       <div 
         className={cn(
-          "relative w-full max-w-xl md:max-w-2xl overflow-hidden rounded-2xl sm:rounded-3xl transition-all duration-300 shadow-[0_25px_70px_rgba(0,0,0,0.85)] animate-in zoom-in-95 fade-in-50",
+          "relative w-full overflow-hidden transition-all duration-500 animate-in zoom-in-95 fade-in-50",
           displayType === 'bottom_toast' && "pointer-events-auto max-w-md",
-          
-          // Template 1: Luxury Gold (Signature Velvet Midnight Slate)
-          template === 'luxury_gold' && "bg-[#0c1117] text-white border border-[#DEC49B]/35",
-          
-          // Template 2: Sapphire Blue (Deep Royal Gem)
-          template === 'sapphire_blue' && "bg-[#09152b] text-white border border-blue-400/30",
-          
-          // Template 3: Minimal Editorial (Warm Silk Ivory)
-          template === 'minimal_editorial' && "bg-[#FDFBF7] text-[#1a1a1a] border border-[#E4DEC8]",
-          
-          // Template 4: Image Spotlight
-          template === 'image_spotlight' && "bg-[#0f1722] text-white border border-border/80"
+
+          // =========================================================================
+          // TEMPLATE 1: LUXURY GOLD — "ROYAL ATELIER" (World-Class Heritage Jewelry)
+          // Wide cinematic luxury card with gilded micro-border, deep onyx background & gold serifs
+          // =========================================================================
+          template === 'luxury_gold' && "max-w-2xl lg:max-w-3xl rounded-2xl bg-[#0B0F15] text-white border border-[#D4AF37]/35 shadow-[0_30px_90px_rgba(0,0,0,0.95)] ring-1 ring-[#D4AF37]/20",
+
+          // =========================================================================
+          // TEMPLATE 2: SAPPHIRE ROYAL BLUE — "CEYLON SAPPHIRE VAULT"
+          // Majestic midnight sapphire depth, subtle crystal glow, and diamond accents
+          // =========================================================================
+          template === 'sapphire_blue' && "max-w-2xl lg:max-w-3xl rounded-2xl bg-gradient-to-br from-[#081426] via-[#050C17] to-[#02050A] text-white border border-sky-400/30 shadow-[0_30px_90px_rgba(4,18,45,0.8)] ring-1 ring-sky-400/20",
+
+          // =========================================================================
+          // TEMPLATE 3: MINIMAL EDITORIAL — "HAUTE HORLOGERIE / VOGUE EDITORIAL"
+          // Crisp, warm Japanese silk/ivory finish, razor-thin framing, pure editorial serif
+          // =========================================================================
+          template === 'minimal_editorial' && "max-w-2xl lg:max-w-3xl rounded-2xl bg-[#FBF9F5] text-[#14181E] border border-[#E2DDD3] shadow-[0_30px_80px_rgba(0,0,0,0.35)] ring-1 ring-black/5",
+
+          // =========================================================================
+          // TEMPLATE 4: IMAGE SPOTLIGHT — "EXPEDITION FULL-BLEED HERO"
+          // Full-bleed high-impact luxury travel modal with immersive photography backdrop
+          // =========================================================================
+          template === 'image_spotlight' && "max-w-xl md:max-w-2xl rounded-2xl bg-[#090D12] text-white border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.95)]"
         )}
       >
-        {/* Subtle Decorative Gold Accent Strip */}
+        {/* Subtle Hairline Trim */}
         <div className={cn(
-          "h-1 w-full bg-gradient-to-r",
-          template === 'luxury_gold' && "from-transparent via-[#DEC49B] to-transparent",
-          template === 'sapphire_blue' && "from-transparent via-blue-400 to-transparent",
-          template === 'minimal_editorial' && "from-transparent via-primary/60 to-transparent",
-          template === 'image_spotlight' && "from-transparent via-amber-400 to-transparent"
+          "h-[2px] w-full",
+          template === 'luxury_gold' && "bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent",
+          template === 'sapphire_blue' && "bg-gradient-to-r from-transparent via-sky-400 to-transparent",
+          template === 'minimal_editorial' && "bg-gradient-to-r from-transparent via-amber-700/40 to-transparent",
+          template === 'image_spotlight' && "bg-gradient-to-r from-transparent via-white/40 to-transparent"
         )} />
 
-        {/* Top Micro Close Button */}
+        {/* Sophisticated Micro Close Button */}
         <button
           onClick={handleClose}
           className={cn(
-            "absolute top-3.5 right-3.5 z-30 h-8 w-8 rounded-full flex items-center justify-center transition-all",
+            "group absolute top-4 right-4 z-30 h-8 w-8 rounded-full flex items-center justify-center transition-all duration-200",
             template === 'minimal_editorial' 
-              ? "bg-black/5 hover:bg-black/10 text-neutral-600 hover:text-black" 
+              ? "bg-black/5 hover:bg-black/10 text-neutral-500 hover:text-black" 
               : "bg-white/10 hover:bg-white/20 text-white/70 hover:text-white"
           )}
           aria-label="Close dialog"
         >
-          <X className="h-4 w-4" />
+          <X className="h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
         </button>
 
-        {/* Card Inner Grid: Clean Split Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-12 items-stretch">
-          
-          {/* Left Column: Authentic Clean Photo Frame (No white washout gradient) */}
-          {banner.image && (
-            <div className="sm:col-span-5 relative min-h-[220px] sm:min-h-full w-full overflow-hidden bg-black/40">
-              <Image
-                src={banner.image}
-                alt={banner.title}
-                fill
-                className="object-cover object-center transition-transform duration-700 hover:scale-105"
-              />
-              {/* Subtle edge vignette that stays deep/clean */}
-              <div className={cn(
-                "absolute inset-0 pointer-events-none",
-                template === 'minimal_editorial' 
-                  ? "sm:bg-gradient-to-r sm:from-transparent sm:to-[#FDFBF7]/40 bg-gradient-to-t from-[#FDFBF7] to-transparent sm:from-transparent" 
-                  : "sm:bg-gradient-to-r sm:from-transparent sm:to-[#0c1117]/60 bg-gradient-to-t from-[#0c1117] to-transparent sm:from-transparent"
-              )} />
-            </div>
-          )}
+        {/* ===================================================================== */}
+        {/* TEMPLATE 4: FULL-BLEED IMMERSIVE EXPEDITION HERO                      */}
+        {/* ===================================================================== */}
+        {template === 'image_spotlight' ? (
+          <div className="relative min-h-[440px] flex flex-col justify-end p-7 sm:p-10 overflow-hidden">
+            {banner.image && (
+              <div className="absolute inset-0 z-0">
+                <Image
+                  src={banner.image}
+                  alt={banner.title}
+                  fill
+                  priority
+                  className="object-cover object-center brightness-75 scale-100 hover:scale-105 transition-transform duration-1000"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20" />
+              </div>
+            )}
 
-          {/* Right Column: Refined Typography & Action Controls */}
-          <div className={cn(
-            "p-6 sm:p-7 flex flex-col justify-between space-y-5",
-            banner.image ? "sm:col-span-7" : "sm:col-span-12"
-          )}>
-            
-            <div className="space-y-3">
-              {/* Badge */}
+            <div className="relative z-10 space-y-4 max-w-xl">
               {banner.badgeText && (
-                <div className="inline-flex items-center gap-1.5">
-                  <span className={cn(
-                    "px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-[0.15em] uppercase",
-                    template === 'luxury_gold' && "bg-[#DEC49B]/15 text-[#DEC49B] border border-[#DEC49B]/30",
-                    template === 'sapphire_blue' && "bg-blue-500/15 text-blue-300 border border-blue-400/30",
-                    template === 'minimal_editorial' && "bg-primary/10 text-primary border border-primary/20",
-                    template === 'image_spotlight' && "bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                  )}>
-                    {banner.badgeText}
-                  </span>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 border border-white/20 backdrop-blur-md text-[10px] font-semibold tracking-[0.2em] uppercase text-primary">
+                  <Sparkles className="h-3 w-3 text-primary" />
+                  <span>{banner.badgeText}</span>
                 </div>
               )}
 
-              {/* Title */}
-              <h3 className={cn(
-                "text-lg sm:text-xl font-serif font-normal leading-snug tracking-wide",
-                template === 'luxury_gold' && "text-white",
-                template === 'sapphire_blue' && "text-white",
-                template === 'minimal_editorial' && "text-[#1a1a1a]",
-                template === 'image_spotlight' && "text-white"
-              )}>
+              <h3 className="text-2xl sm:text-3xl font-serif font-normal text-white leading-tight tracking-wide drop-shadow-md">
                 {banner.title}
               </h3>
 
-              {/* Subtitle */}
-              <p className={cn(
-                "text-xs leading-relaxed font-light",
-                template === 'minimal_editorial' ? "text-neutral-600" : "text-white/70"
-              )}>
+              <p className="text-xs sm:text-sm text-white/85 leading-relaxed font-light max-w-lg drop-shadow-sm">
                 {banner.subtitle}
               </p>
+
+              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                {banner.primaryButtonText && banner.primaryButtonLink && (
+                  <Button asChild className="h-11 px-7 rounded-full text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg tracking-wide">
+                    <Link href={banner.primaryButtonLink} onClick={handleClose}>
+                      <span>{banner.primaryButtonText}</span>
+                      <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                )}
+                {banner.secondaryButtonText && banner.secondaryButtonLink && (
+                  <Button asChild variant="outline" className="h-11 px-6 rounded-full text-xs border-white/30 bg-black/40 hover:bg-white hover:text-black text-white backdrop-blur-md transition-colors">
+                    <Link 
+                      href={banner.secondaryButtonLink} 
+                      target={banner.secondaryButtonLink.startsWith('http') ? '_blank' : '_self'}
+                      onClick={handleClose}
+                    >
+                      {banner.secondaryButtonText}
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </div>
+          </div>
+        ) : (
+          /* ===================================================================== */
+          /* TEMPLATES 1, 2 & 3: WORLD-CLASS LUXURY HORIZONTAL CARD               */
+          /* ===================================================================== */
+          <div className="grid grid-cols-1 md:grid-cols-12 items-stretch min-h-[380px]">
+            
+            {/* Left Col: Flawless Photo Frame */}
+            {banner.image && (
+              <div className="md:col-span-5 relative min-h-[220px] md:min-h-full w-full overflow-hidden bg-black/40">
+                <Image
+                  src={banner.image}
+                  alt={banner.title}
+                  fill
+                  priority
+                  className="object-cover object-center transition-transform duration-700 hover:scale-105"
+                />
+                {/* Subtle Luxury Matte Vignette (never washed-out white) */}
+                <div className={cn(
+                  "absolute inset-0 pointer-events-none",
+                  template === 'luxury_gold' && "bg-gradient-to-t md:bg-gradient-to-r from-transparent via-[#0B0F15]/10 to-[#0B0F15]",
+                  template === 'sapphire_blue' && "bg-gradient-to-t md:bg-gradient-to-r from-transparent via-[#050C17]/10 to-[#050C17]",
+                  template === 'minimal_editorial' && "bg-gradient-to-t md:bg-gradient-to-r from-transparent via-[#FBF9F5]/10 to-[#FBF9F5]"
+                )} />
+              </div>
+            )}
 
-            {/* Action Buttons: Responsive & Flex-Wrap (Never Cut Off) */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-              {banner.primaryButtonText && banner.primaryButtonLink && (
-                <Button 
-                  asChild 
-                  className={cn(
-                    "h-10 px-5 rounded-full text-xs font-semibold shadow-md transition-all shrink-0",
-                    template === 'luxury_gold' && "bg-[#DEC49B] hover:bg-[#cbb085] text-[#0B1118]",
-                    template === 'sapphire_blue' && "bg-primary hover:bg-primary/90 text-primary-foreground",
-                    template === 'minimal_editorial' && "bg-primary hover:bg-primary/90 text-primary-foreground",
-                    template === 'image_spotlight' && "bg-primary hover:bg-primary/90 text-primary-foreground"
+            {/* Right Col: Pure High-End Editorial Content */}
+            <div className={cn(
+              "p-7 sm:p-9 flex flex-col justify-between space-y-6",
+              banner.image ? "md:col-span-7" : "md:col-span-12"
+            )}>
+              
+              <div className="space-y-4">
+                {/* Brand Tagline & Badge */}
+                <div className="flex items-center gap-2">
+                  {banner.badgeText && (
+                    <span className={cn(
+                      "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-[0.2em] uppercase",
+                      template === 'luxury_gold' && "bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30",
+                      template === 'sapphire_blue' && "bg-sky-500/10 text-sky-300 border border-sky-400/30",
+                      template === 'minimal_editorial' && "bg-[#14181E]/5 text-[#14181E] border border-[#14181E]/15 font-serif"
+                    )}>
+                      {banner.badgeText}
+                    </span>
                   )}
-                >
-                  <Link href={banner.primaryButtonLink} onClick={handleClose}>
-                    <span>{banner.primaryButtonText}</span>
-                    <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-                  </Link>
-                </Button>
-              )}
+                </div>
 
-              {banner.secondaryButtonText && banner.secondaryButtonLink && (
-                <Button 
-                  asChild 
-                  variant="outline" 
-                  className={cn(
-                    "h-10 px-4 rounded-full text-xs transition-colors shrink-0",
-                    template === 'minimal_editorial' 
-                      ? "border-neutral-300 text-neutral-800 hover:bg-neutral-100" 
-                      : "border-white/20 text-white/90 hover:text-white hover:bg-white/10"
-                  )}
-                >
-                  <Link 
-                    href={banner.secondaryButtonLink} 
-                    target={banner.secondaryButtonLink.startsWith('http') ? '_blank' : '_self'}
-                    onClick={handleClose}
+                {/* Main Headline */}
+                <h3 className={cn(
+                  "text-xl sm:text-2xl lg:text-[26px] font-serif font-normal leading-[1.3] tracking-wide",
+                  template === 'luxury_gold' && "text-white",
+                  template === 'sapphire_blue' && "text-white",
+                  template === 'minimal_editorial' && "text-[#14181E]"
+                )}>
+                  {banner.title}
+                </h3>
+
+                {/* Subtitle / Excerpt */}
+                <p className={cn(
+                  "text-xs sm:text-sm leading-relaxed font-light",
+                  template === 'minimal_editorial' ? "text-neutral-600" : "text-white/75"
+                )}>
+                  {banner.subtitle}
+                </p>
+              </div>
+
+              {/* Action Buttons: Perfectly Balanced Dual Buttons */}
+              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                {banner.primaryButtonText && banner.primaryButtonLink && (
+                  <Button 
+                    asChild 
+                    className={cn(
+                      "h-11 px-7 rounded-full text-xs font-semibold tracking-wider uppercase shadow-md transition-all",
+                      template === 'luxury_gold' && "bg-[#D4AF37] hover:bg-[#c29e2e] text-[#0B0F15] hover:shadow-[#D4AF37]/20",
+                      template === 'sapphire_blue' && "bg-primary hover:bg-primary/90 text-primary-foreground",
+                      template === 'minimal_editorial' && "bg-[#14181E] hover:bg-black text-white"
+                    )}
                   >
-                    {banner.secondaryButtonText}
-                  </Link>
-                </Button>
-              )}
+                    <Link href={banner.primaryButtonLink} onClick={handleClose}>
+                      <span>{banner.primaryButtonText}</span>
+                      <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                )}
+
+                {banner.secondaryButtonText && banner.secondaryButtonLink && (
+                  <Button 
+                    asChild 
+                    variant="outline" 
+                    className={cn(
+                      "h-11 px-6 rounded-full text-xs tracking-wider uppercase transition-colors",
+                      template === 'luxury_gold' && "border-white/20 text-white hover:bg-white/10",
+                      template === 'sapphire_blue' && "border-sky-400/30 text-sky-200 hover:bg-sky-400/10",
+                      template === 'minimal_editorial' && "border-[#14181E]/20 text-[#14181E] hover:bg-[#14181E]/5"
+                    )}
+                  >
+                    <Link 
+                      href={banner.secondaryButtonLink} 
+                      target={banner.secondaryButtonLink.startsWith('http') ? '_blank' : '_self'}
+                      onClick={handleClose}
+                    >
+                      {banner.secondaryButtonText}
+                    </Link>
+                  </Button>
+                )}
+              </div>
+
             </div>
 
           </div>
-
-        </div>
+        )}
 
       </div>
     </div>
