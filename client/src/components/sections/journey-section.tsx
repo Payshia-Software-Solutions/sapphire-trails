@@ -34,7 +34,7 @@ export function JourneySection() {
   const journey = content.homepage.journey;
 
   return (
-    <section id="journey" className="w-full bg-background py-16 md:py-28 relative overflow-hidden">
+    <section id="journey" className="w-full bg-background-alt py-16 md:py-28 relative overflow-hidden">
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <ScrollAnimate className="max-w-4xl lg:max-w-5xl mx-auto text-center space-y-3 mb-14 md:mb-18">

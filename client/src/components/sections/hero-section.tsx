@@ -112,11 +112,11 @@ export function HeroSection() {
 
       {/* Scroll Down Indicator */}
       <Link
-        href="#journey"
+        href="#tours"
         className="absolute bottom-2.5 sm:bottom-4 z-20 animate-bounce flex flex-col items-center text-white/70 hover:text-white transition-colors"
         aria-label="Scroll to next section"
       >
-        <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 mb-0.5 hidden sm:block">Explore Journey</span>
+        <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 mb-0.5 hidden sm:block">Explore Packages</span>
         <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
       </Link>
     </section>

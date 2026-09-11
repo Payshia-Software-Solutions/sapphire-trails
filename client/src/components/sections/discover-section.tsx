@@ -26,7 +26,7 @@ export function DiscoverSection() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   return (
-    <section id="about" className="w-full bg-background-alt py-12 md:py-24 lg:py-32">
+    <section id="about" className="w-full bg-background py-12 md:py-24 lg:py-32">
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <ScrollAnimate className="max-w-4xl lg:max-w-5xl mx-auto text-center mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
