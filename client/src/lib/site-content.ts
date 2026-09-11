@@ -4,6 +4,12 @@ import { authFetch } from '@/lib/api';
 import { triggerRevalidation } from '@/lib/revalidate';
 
 export interface SiteContentData {
+  // Global Site Settings
+  settings?: {
+    defaultTheme?: 'light' | 'dark';
+    [key: string]: any;
+  };
+
   // 1. Complete Homepage Sections
   homepage: {
     hero: {
@@ -395,6 +401,9 @@ export function getSectionThemeClass(themeId?: string, defaultClass: string = ''
 }
 
 export const defaultSiteContent: SiteContentData = {
+  settings: {
+    defaultTheme: 'light',
+  },
 
   homepage: {
     hero: {
@@ -1188,6 +1197,10 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         const merged: SiteContentData = {
           ...defaultSiteContent,
           ...data,
+          settings: {
+            ...defaultSiteContent.settings,
+            ...(data.settings || {}),
+          },
           homepage: { 
             ...defaultSiteContent.homepage, 
             ...data.homepage,
@@ -1243,6 +1256,9 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         };
         if (typeof window !== 'undefined') {
           localStorage.setItem(SITE_CONTENT_STORAGE_KEY, JSON.stringify(merged));
+          if (merged.settings?.defaultTheme) {
+            localStorage.setItem('site_default_theme', merged.settings.defaultTheme);
+          }
         }
         return merged;
       }
@@ -1260,6 +1276,10 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         return {
           ...defaultSiteContent,
           ...parsed,
+          settings: {
+            ...defaultSiteContent.settings,
+            ...(parsed.settings || {}),
+          },
           homepage: {
             ...defaultSiteContent.homepage,
             ...(parsed.homepage || {}),
@@ -1343,6 +1363,9 @@ export async function saveSiteContent(data: SiteContentData): Promise<{ success:
 
     if (typeof window !== 'undefined') {
       localStorage.setItem(SITE_CONTENT_STORAGE_KEY, JSON.stringify(data));
+      if (data.settings?.defaultTheme) {
+        localStorage.setItem('site_default_theme', data.settings.defaultTheme);
+      }
       window.dispatchEvent(new Event(SITE_CONTENT_CHANGE_EVENT));
       // Revalidate homepage and primary static pages on-demand
       triggerRevalidation(['/', '/about-us', '/contact']);
@@ -1551,7 +1574,7 @@ export async function uploadCmsImage(file: File, folder: string = 'cms'): Promis
 /**
  * Contact & WhatsApp helper functions for dynamic CMS configuration
  */
-export function getContactPhone(content?: SiteContent | null): string {
+export function getContactPhone(content?: SiteContentData | null): string {
   return content?.contact?.primaryPhone || '076 375 6688';
 }
 
@@ -1559,12 +1582,12 @@ export function getCleanPhone(phone?: string): string {
   return (phone || '').replace(/\s+/g, '');
 }
 
-export function getWhatsappNumber(content?: SiteContent | null): string {
+export function getWhatsappNumber(content?: SiteContentData | null): string {
   const raw = content?.contact?.whatsappNumber || '94763756688';
   return raw.replace(/\D/g, '') || '94763756688';
 }
 
-export function getWhatsappUrl(content?: SiteContent | null, message?: string): string {
+export function getWhatsappUrl(content?: SiteContentData | null, message?: string): string {
   const num = getWhatsappNumber(content);
   if (message) {
     return `https://wa.me/${num}?text=${encodeURIComponent(message)}`;

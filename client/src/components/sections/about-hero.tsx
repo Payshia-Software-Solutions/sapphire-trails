@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight, Sparkles, MessageSquare, Compass, ShieldCheck } from 'lucide-react';
+import { ChevronRight, MessageSquare, Compass, ShieldCheck } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
@@ -31,7 +31,7 @@ export function AboutHeroSection({
           className="object-cover object-center opacity-35 brightness-75"
         />
         {/* Soft Multi-layered Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-slate-950/75 to-slate-950/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/85" />
       </div>
 
       <div className="container relative z-10 mx-auto px-4 md:px-6">
@@ -54,17 +54,16 @@ export function AboutHeroSection({
 
         <div className="max-w-3xl space-y-4">
           {/* Subtle Brand Tag */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-primary backdrop-blur-md">
-            <Sparkles className="h-3 w-3 text-primary" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-primary">
             <span>{aboutHero.tagline}</span>
           </div>
 
-          {/* Main Title - Consistent font-headline and font-serif accents */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-headline font-bold tracking-tight text-white leading-tight">
+          {/* Main Title - Luxury Serif Typography */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-normal tracking-wide text-white leading-tight">
             {aboutHero.title.includes(' ') ? (
               <>
                 <span>{aboutHero.title.split(' ')[0]}</span>{' '}
-                <span className="text-primary font-serif font-normal">{aboutHero.title.substring(aboutHero.title.indexOf(' ') + 1)}</span>
+                <span className="text-primary italic">{aboutHero.title.substring(aboutHero.title.indexOf(' ') + 1)}</span>
               </>
             ) : (
               aboutHero.title

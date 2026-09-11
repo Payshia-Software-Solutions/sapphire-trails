@@ -66,7 +66,10 @@ import {
   PackageSearch,
   Mail,
   Plus,
-  Trash2
+  Trash2,
+  Settings,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 
@@ -199,6 +202,57 @@ export default function MasterCmsPage() {
 
 
 
+
+  const handleSetDefaultTheme = (newTheme: 'light' | 'dark') => {
+    setContent((prev) => ({
+      ...prev,
+      settings: {
+        ...(prev.settings || {}),
+        defaultTheme: newTheme,
+      },
+    }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('site_default_theme', newTheme);
+    }
+  };
+
+  const handleSaveThemeOnly = async (targetTheme: 'light' | 'dark') => {
+    setIsSaving(true);
+    try {
+      const updated = {
+        ...content,
+        settings: {
+          ...(content.settings || {}),
+          defaultTheme: targetTheme,
+        },
+      };
+      setContent(updated);
+      const res = await saveSiteContent(updated);
+      if (res.success) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('site_default_theme', targetTheme);
+        }
+        toast({
+          title: "Default Theme Saved",
+          description: `Website default theme is now set to ${targetTheme === 'light' ? 'Light Mode (Quiet Luxury Silk)' : 'Dark Mode (Midnight Sapphire)'}.`,
+        });
+      } else {
+        toast({
+          title: "Save Failed",
+          description: res.message,
+          variant: "destructive",
+        });
+      }
+    } catch (e: any) {
+      toast({
+        title: "Error",
+        description: e.message || "Failed to update default theme",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleToggleHomeVisibility = (key: string, active: boolean) => {
     setContent((prev) => ({
@@ -1033,7 +1087,7 @@ export default function MasterCmsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-card border border-border/80 shadow-xs w-full">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold uppercase tracking-wider">
-            <Sparkles className="h-3 w-3" />
+            <Gem className="h-3 w-3" />
             <span>Master Content Management System</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-headline text-foreground">
@@ -1045,6 +1099,24 @@ export default function MasterCmsPage() {
         </div>
 
         <div className="flex items-center gap-2.5 shrink-0">
+          <div 
+            onClick={() => setActiveTab('settings')}
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border/80 bg-muted/30 cursor-pointer hover:border-primary/50 transition-colors text-xs"
+            title="Click to configure Default Website Theme in Site Settings"
+          >
+            {content.settings?.defaultTheme === 'dark' ? (
+              <>
+                <Moon className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-muted-foreground font-medium">Default: <strong className="text-foreground">Dark</strong></span>
+              </>
+            ) : (
+              <>
+                <Sun className="h-3.5 w-3.5 text-amber-500" />
+                <span className="text-muted-foreground font-medium">Default: <strong className="text-foreground">Light</strong></span>
+              </>
+            )}
+          </div>
+
           <Button
             type="button"
             variant="outline"
@@ -1075,7 +1147,7 @@ export default function MasterCmsPage() {
       {/* 1. Page Selection Tabs (Fixed at the Top) */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-5">
         <div className="bg-card p-1 rounded-2xl border border-border/80 shadow-xs w-full">
-          <TabsList className="bg-transparent h-auto p-0 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1 w-full">
+          <TabsList className="bg-transparent h-auto p-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-1 w-full">
             <TabsTrigger value="homepage" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Home className="h-3.5 w-3.5" /> Homepage
             </TabsTrigger>
@@ -1099,6 +1171,9 @@ export default function MasterCmsPage() {
             </TabsTrigger>
             <TabsTrigger value="footer" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Share2 className="h-3.5 w-3.5" /> Footer
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
+              <Settings className="h-3.5 w-3.5" /> Site Settings
             </TabsTrigger>
           </TabsList>
         </div>
@@ -7010,6 +7085,175 @@ export default function MasterCmsPage() {
 
           </div>
 
+        </TabsContent>
+
+        {/* ========================================================================= */}
+        {/* 9. SITE SETTINGS & DEFAULT THEME TAB */}
+        {/* ========================================================================= */}
+        <TabsContent value="settings" className="w-full space-y-6">
+          <Card className="border border-border/80 bg-card rounded-2xl shadow-xs overflow-hidden">
+            <CardHeader className="border-b border-border/60 bg-muted/20 p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold uppercase tracking-wider">
+                    <Settings className="h-3 w-3" />
+                    <span>Global Website Settings</span>
+                  </div>
+                  <CardTitle className="text-xl font-bold font-headline text-foreground">
+                    Visitor Experience &amp; Default Theme
+                  </CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground">
+                    Control the default appearance seen by new visitors across the entire Sapphire Trails platform.
+                  </CardDescription>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => handleSaveThemeOnly(content.settings?.defaultTheme === 'dark' ? 'dark' : 'light')}
+                    disabled={isSaving}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs h-9 px-5 gap-1.5 shadow-sm"
+                  >
+                    {isSaving ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                    <span>Save Theme Setting</span>
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-6 space-y-8">
+              {/* Default Theme Selector */}
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Palette className="h-4 w-4 text-primary" />
+                    Default Website Theme (First-Time Visitors)
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Choose which visual mode new visitors will see automatically. Visitors can still use the sun/moon switch in the header navigation to toggle their personal preference at any time.
+                  </p>
+                </div>
+
+                {/* Theme Options Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+                  
+                  {/* Option 1: Light Theme */}
+                  <div 
+                    onClick={() => handleSetDefaultTheme('light')}
+                    className={`relative cursor-pointer rounded-2xl border-2 p-5 transition-all duration-200 flex flex-col justify-between gap-4 ${
+                      (content.settings?.defaultTheme !== 'dark')
+                        ? 'border-primary bg-primary/5 shadow-sm'
+                        : 'border-border/70 bg-card hover:border-border hover:bg-muted/30'
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                            <Sun className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-foreground">Light Mode</h4>
+                            <span className="text-[11px] text-muted-foreground">Quiet Luxury Silk White</span>
+                          </div>
+                        </div>
+
+                        {(content.settings?.defaultTheme !== 'dark') ? (
+                          <Badge className="bg-primary text-primary-foreground text-[10px] font-semibold gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> Active Default
+                          </Badge>
+                        ) : (
+                          <span className="text-[11px] font-medium text-muted-foreground hover:text-foreground">Click to select</span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Features crisp silk white backgrounds, warm champagne gold accents, deep slate typography, and high-readability luxury editorial layouts.
+                      </p>
+                    </div>
+
+                    {/* Mini Visual Preview Swatch */}
+                    <div className="rounded-xl border border-border/80 bg-[#FAF8F5] p-3 space-y-2 shadow-2xs">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-serif font-bold text-[#0B1118]">SAPPHIRE TRAILS</span>
+                        <div className="h-1.5 w-6 rounded-full bg-[#DEC49B]" />
+                      </div>
+                      <div className="h-4 rounded-md bg-white border border-[#E4DEC8] flex items-center px-2">
+                        <span className="text-[9px] text-[#5E6C7E]">High-contrast editorial readability</span>
+                      </div>
+                      <div className="flex gap-1.5">
+                        <div className="h-2.5 w-12 rounded bg-[#0B1118]" />
+                        <div className="h-2.5 w-8 rounded bg-[#DEC49B]" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Option 2: Dark Theme */}
+                  <div 
+                    onClick={() => handleSetDefaultTheme('dark')}
+                    className={`relative cursor-pointer rounded-2xl border-2 p-5 transition-all duration-200 flex flex-col justify-between gap-4 ${
+                      content.settings?.defaultTheme === 'dark'
+                        ? 'border-primary bg-primary/5 shadow-sm'
+                        : 'border-border/70 bg-card hover:border-border hover:bg-muted/30'
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                            <Moon className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-foreground">Dark Mode</h4>
+                            <span className="text-[11px] text-muted-foreground">Midnight Sapphire Slate</span>
+                          </div>
+                        </div>
+
+                        {content.settings?.defaultTheme === 'dark' ? (
+                          <Badge className="bg-primary text-primary-foreground text-[10px] font-semibold gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> Active Default
+                          </Badge>
+                        ) : (
+                          <span className="text-[11px] font-medium text-muted-foreground hover:text-foreground">Click to select</span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Features deep midnight sapphire slate backgrounds, rich gold accents, crisp white text, and a moodier atmospheric evening aesthetic.
+                      </p>
+                    </div>
+
+                    {/* Mini Visual Preview Swatch */}
+                    <div className="rounded-xl border border-white/10 bg-[#0B1118] p-3 space-y-2 shadow-2xs">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-serif font-bold text-white">SAPPHIRE TRAILS</span>
+                        <div className="h-1.5 w-6 rounded-full bg-[#DEC49B]" />
+                      </div>
+                      <div className="h-4 rounded-md bg-[#131C26] border border-white/10 flex items-center px-2">
+                        <span className="text-[9px] text-slate-300">Atmospheric evening gem aesthetic</span>
+                      </div>
+                      <div className="flex gap-1.5">
+                        <div className="h-2.5 w-12 rounded bg-white" />
+                        <div className="h-2.5 w-8 rounded bg-[#DEC49B]" />
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Status Note Alert */}
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/80 flex items-start gap-3">
+                <ShieldCheck className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
+                <div className="text-xs space-y-1">
+                  <p className="font-semibold text-foreground">Immediate Effect &amp; Fallback</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Saving this setting stores the default preference in the central CMS database. When visitors open the site for the first time or clear their cache, the site automatically renders in this chosen theme with zero layout shifts or visual flicker.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
       </Tabs>
