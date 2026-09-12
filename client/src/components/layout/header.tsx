@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { 
+  Home,
   Menu, 
   User, 
   LogOut, 
@@ -39,6 +40,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/theme-context';
 
 const navLinks = [
+  { href: '/', label: 'Home', icon: Home, badge: null },
   { href: '/about', label: 'About', icon: Sparkles, badge: null },
   { href: '/tours', label: 'Tours', icon: Compass, badge: 'Popular' },
   { href: '/custom-proposal-package', label: 'Proposal Package', icon: Gem, badge: 'Exclusive' },
@@ -142,7 +144,7 @@ export function Header() {
         </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-serif uppercase tracking-widest">
+        <nav className="hidden md:flex items-center space-x-3.5 lg:space-x-5 xl:space-x-6 text-[13px] xl:text-sm font-serif uppercase tracking-wider xl:tracking-widest">
           {navLinks.map((link) => {
             const isActive = isLinkActive(pathname, link.href);
             return (
