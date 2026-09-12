@@ -132,17 +132,17 @@ export function WhatsAppButton() {
             "border border-border/80 bg-card text-foreground backdrop-blur-xl",
             "flex flex-col transition-all duration-300 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5"
           )}
-          style={{ maxHeight: 'min(580px, 82vh)' }}
+          style={{ maxHeight: 'min(620px, 85vh)' }}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#0d2818] via-[#1b4332] to-[#2d6a4f] text-white p-4 sm:p-5 flex items-center justify-between relative shadow-md">
-            <div className="flex items-center gap-3">
+          <div className="bg-gradient-to-r from-[#0d2818] via-[#1b4332] to-[#2d6a4f] text-white p-3.5 sm:p-4 flex items-center justify-between relative shadow-md">
+            <div className="flex items-center gap-2.5">
               {/* Concierge Avatar with Active Dot */}
               <div className="relative">
-                <div className="h-11 w-11 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-primary font-serif font-bold text-sm shadow-inner">
-                  <Gem className="h-5 w-5 text-emerald-300" />
+                <div className="h-10 w-10 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-primary font-serif font-bold text-sm shadow-inner">
+                  <Gem className="h-4 w-4 text-emerald-300" />
                 </div>
-                <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-400 border-2 border-[#1b4332] animate-pulse" />
+                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-400 border-2 border-[#1b4332] animate-pulse" />
               </div>
 
               <div>
@@ -152,7 +152,7 @@ export function WhatsAppButton() {
                   </h4>
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-300" />
                 </div>
-                <p className="text-[11px] text-emerald-100/80 font-light flex items-center gap-1 mt-0.5">
+                <p className="text-[10px] text-emerald-100/80 font-light flex items-center gap-1 mt-0.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block" />
                   Direct WhatsApp Dispatch &bull; Online
                 </p>
@@ -162,18 +162,18 @@ export function WhatsAppButton() {
             {/* Close Button */}
             <button
               onClick={() => setIsOpen(false)}
-              className="h-8 w-8 rounded-full bg-black/20 hover:bg-black/30 text-white/80 hover:text-white flex items-center justify-center transition-colors"
+              className="h-7 w-7 rounded-full bg-black/20 hover:bg-black/30 text-white/80 hover:text-white flex items-center justify-center transition-colors"
               aria-label="Close chat"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
             </button>
           </div>
 
-          {/* Chat Messages Body */}
-          <div className="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1 bg-muted/20 text-xs">
+          {/* Chat Messages Body (Scrollbar hidden for luxury app feel) */}
+          <div className="p-3.5 sm:p-4 space-y-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex-1 bg-muted/20 text-xs">
             {/* Timestamp */}
             <div className="text-center">
-              <span className="inline-block px-2.5 py-1 rounded-full bg-muted/60 text-muted-foreground text-[10px] font-mono">
+              <span className="inline-block px-2.5 py-0.5 rounded-full bg-muted/60 text-muted-foreground text-[10px] font-mono">
                 {currentTime || 'Today'}
               </span>
             </div>
