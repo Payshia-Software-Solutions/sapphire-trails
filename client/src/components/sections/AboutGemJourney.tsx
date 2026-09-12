@@ -49,7 +49,6 @@ export function AboutGemJourney() {
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 25vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
                   <span className="absolute top-3 left-3 bg-black/80 border border-primary/40 px-2.5 py-1 rounded-md text-xs font-mono font-bold text-primary">
                     STAGE {step.step || `0${idx + 1}`}
                   </span>
