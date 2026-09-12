@@ -137,25 +137,25 @@ export function FeaturedBannerModal() {
           // TEMPLATE 1: LUXURY GOLD — "ROYAL ATELIER" (World-Class Heritage Jewelry)
           // Wide cinematic luxury card with gilded micro-border, deep onyx background & gold serifs
           // =========================================================================
-          template === 'luxury_gold' && "max-w-2xl lg:max-w-3xl rounded-2xl bg-[#0B0F15] text-white border border-[#D4AF37]/35 shadow-[0_30px_90px_rgba(0,0,0,0.95)] ring-1 ring-[#D4AF37]/20",
+          template === 'luxury_gold' && "max-w-3xl lg:max-w-4xl rounded-2xl bg-[#0B0F15] text-white border border-[#D4AF37]/35 shadow-[0_30px_90px_rgba(0,0,0,0.95)] ring-1 ring-[#D4AF37]/20",
 
           // =========================================================================
           // TEMPLATE 2: SAPPHIRE ROYAL BLUE — "CEYLON SAPPHIRE VAULT"
           // Majestic midnight sapphire depth, subtle crystal glow, and diamond accents
           // =========================================================================
-          template === 'sapphire_blue' && "max-w-2xl lg:max-w-3xl rounded-2xl bg-gradient-to-br from-[#081426] via-[#050C17] to-[#02050A] text-white border border-sky-400/30 shadow-[0_30px_90px_rgba(4,18,45,0.8)] ring-1 ring-sky-400/20",
+          template === 'sapphire_blue' && "max-w-3xl lg:max-w-4xl rounded-2xl bg-gradient-to-br from-[#081426] via-[#050C17] to-[#02050A] text-white border border-sky-400/30 shadow-[0_30px_90px_rgba(4,18,45,0.8)] ring-1 ring-sky-400/20",
 
           // =========================================================================
           // TEMPLATE 3: MINIMAL EDITORIAL — "HAUTE HORLOGERIE / VOGUE EDITORIAL"
           // Crisp, warm Japanese silk/ivory finish, razor-thin framing, pure editorial serif
           // =========================================================================
-          template === 'minimal_editorial' && "max-w-2xl lg:max-w-3xl rounded-2xl bg-[#FBF9F5] text-[#14181E] border border-[#E2DDD3] shadow-[0_30px_80px_rgba(0,0,0,0.35)] ring-1 ring-black/5",
+          template === 'minimal_editorial' && "max-w-3xl lg:max-w-4xl rounded-2xl bg-[#FBF9F5] text-[#14181E] border border-[#E2DDD3] shadow-[0_30px_80px_rgba(0,0,0,0.35)] ring-1 ring-black/5",
 
           // =========================================================================
           // TEMPLATE 4: IMAGE SPOTLIGHT — "EXPEDITION FULL-BLEED HERO"
           // Full-bleed high-impact luxury travel modal with immersive photography backdrop
           // =========================================================================
-          template === 'image_spotlight' && "max-w-xl md:max-w-2xl rounded-2xl bg-[#090D12] text-white border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.95)]"
+          template === 'image_spotlight' && "max-w-2xl lg:max-w-3xl rounded-2xl bg-[#090D12] text-white border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.95)]"
         )}
       >
         {/* Subtle Hairline Trim */}
@@ -244,9 +244,9 @@ export function FeaturedBannerModal() {
           /* ===================================================================== */
           <div className="grid grid-cols-1 md:grid-cols-12 items-stretch min-h-[380px]">
             
-            {/* Left Col: Flawless Photo Frame */}
+            {/* Left Col: Flawless Crisp Photo Frame (100% sharp, no foggy wash) */}
             {banner.image && (
-              <div className="md:col-span-5 relative min-h-[220px] md:min-h-full w-full overflow-hidden bg-black/40">
+              <div className="md:col-span-5 relative min-h-[220px] md:min-h-full w-full overflow-hidden bg-black/5 border-b md:border-b-0 md:border-r border-border/40">
                 <Image
                   src={banner.image}
                   alt={banner.title}
@@ -254,23 +254,16 @@ export function FeaturedBannerModal() {
                   priority
                   className="object-cover object-center transition-transform duration-700 hover:scale-105"
                 />
-                {/* Subtle Luxury Matte Vignette (never washed-out white) */}
-                <div className={cn(
-                  "absolute inset-0 pointer-events-none",
-                  template === 'luxury_gold' && "bg-gradient-to-t md:bg-gradient-to-r from-transparent via-[#0B0F15]/10 to-[#0B0F15]",
-                  template === 'sapphire_blue' && "bg-gradient-to-t md:bg-gradient-to-r from-transparent via-[#050C17]/10 to-[#050C17]",
-                  template === 'minimal_editorial' && "bg-gradient-to-t md:bg-gradient-to-r from-transparent via-[#FBF9F5]/10 to-[#FBF9F5]"
-                )} />
               </div>
             )}
 
             {/* Right Col: Pure High-End Editorial Content */}
             <div className={cn(
-              "p-7 sm:p-9 flex flex-col justify-between space-y-6",
+              "p-6 sm:p-8 lg:p-9 flex flex-col justify-between space-y-6",
               banner.image ? "md:col-span-7" : "md:col-span-12"
             )}>
               
-              <div className="space-y-4">
+              <div className="space-y-3.5">
                 {/* Brand Tagline & Badge */}
                 <div className="flex items-center gap-2">
                   {banner.badgeText && (
@@ -287,7 +280,7 @@ export function FeaturedBannerModal() {
 
                 {/* Main Headline */}
                 <h3 className={cn(
-                  "text-xl sm:text-2xl lg:text-[26px] font-serif font-normal leading-[1.3] tracking-wide",
+                  "text-xl sm:text-2xl lg:text-[25px] font-serif font-normal leading-[1.25] tracking-wide",
                   template === 'luxury_gold' && "text-white",
                   template === 'sapphire_blue' && "text-white",
                   template === 'minimal_editorial' && "text-[#14181E]"
@@ -304,13 +297,13 @@ export function FeaturedBannerModal() {
                 </p>
               </div>
 
-              {/* Action Buttons: Perfectly Balanced Dual Buttons */}
-              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              {/* Action Buttons: Responsive Wrap with Zero Overflow Clipping */}
+              <div className="pt-2 flex flex-wrap items-center gap-2.5 sm:gap-3">
                 {banner.primaryButtonText && banner.primaryButtonLink && (
                   <Button 
                     asChild 
                     className={cn(
-                      "h-11 px-7 rounded-full text-xs font-semibold tracking-wider uppercase shadow-md transition-all",
+                      "h-10 sm:h-11 px-5 sm:px-6 rounded-full text-xs font-semibold tracking-wider uppercase shadow-md transition-all shrink-0",
                       template === 'luxury_gold' && "bg-[#D4AF37] hover:bg-[#c29e2e] text-[#0B0F15] hover:shadow-[#D4AF37]/20",
                       template === 'sapphire_blue' && "bg-primary hover:bg-primary/90 text-primary-foreground",
                       template === 'minimal_editorial' && "bg-[#14181E] hover:bg-black text-white"
@@ -328,7 +321,7 @@ export function FeaturedBannerModal() {
                     asChild 
                     variant="outline" 
                     className={cn(
-                      "h-11 px-6 rounded-full text-xs tracking-wider uppercase transition-colors",
+                      "h-10 sm:h-11 px-4 sm:px-5 rounded-full text-xs tracking-wider uppercase transition-colors shrink-0",
                       template === 'luxury_gold' && "border-white/20 text-white hover:bg-white/10",
                       template === 'sapphire_blue' && "border-sky-400/30 text-sky-200 hover:bg-sky-400/10",
                       template === 'minimal_editorial' && "border-[#14181E]/20 text-[#14181E] hover:bg-[#14181E]/5"
