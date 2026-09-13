@@ -3,8 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { useState } from 'react';
-import { ScrollAnimate } from '../shared/scroll-animate';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { 
   CalendarCheck, 
@@ -16,7 +15,16 @@ import { useSiteContent } from '@/lib/site-content';
 export function HeroSection() {
   const { content: siteContent } = useSiteContent();
   const heroContent = siteContent.homepage.hero;
+  const [isVideoMounted, setIsVideoMounted] = useState(false);
   const [isVideoVisible, setIsVideoVisible] = useState(false);
+
+  useEffect(() => {
+    // Defer loading heavy background video until initial LCP and FCP paint complete
+    const timer = setTimeout(() => {
+      setIsVideoMounted(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const tagline = heroContent.tagline || 'THE OFFICIAL SRI LANKA GEM MINE TOUR • RATNAPURA';
   const headlineLine1 = heroContent.headlineLine1 || 'Sri Lanka Gem Mine Tour';
@@ -35,7 +43,7 @@ export function HeroSection() {
       }}
       className="relative w-full flex flex-col items-center justify-center overflow-hidden bg-black px-4 py-6"
     >
-      {/* Static poster image */}
+      {/* Static poster image - High Priority LCP */}
       <Image
         src={posterImg}
         alt="A dark, moody gem mine interior"
@@ -45,23 +53,26 @@ export function HeroSection() {
         priority
       />
 
-      {/* Video fades in on top */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        onCanPlay={() => setIsVideoVisible(true)}
-        className={cn(
-          "absolute z-10 w-auto min-w-full min-h-full max-w-none object-cover transition-opacity duration-1000",
-          isVideoVisible ? "opacity-100" : "opacity-0"
-        )}
-      >
-        <source src={videoUrl} type="video/webm" />
-      </video>
+      {/* Video fades in on top after LCP content is established */}
+      {isVideoMounted && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          onCanPlay={() => setIsVideoVisible(true)}
+          className={cn(
+            "absolute z-10 w-auto min-w-full min-h-full max-w-none object-cover transition-opacity duration-1000",
+            isVideoVisible ? "opacity-100" : "opacity-0"
+          )}
+        >
+          <source src={videoUrl} type="video/webm" />
+        </video>
+      )}
 
-      {/* Main Hero Center Content */}
-      <ScrollAnimate className="relative z-20 flex flex-col items-center justify-center text-center text-white space-y-4 sm:space-y-5 max-w-4xl mx-auto px-2">
+      {/* Main Hero Center Content - Rendered immediately with zero opacity delay for instant FCP/LCP */}
+      <div className="relative z-20 flex flex-col items-center justify-center text-center text-white space-y-4 sm:space-y-5 max-w-4xl mx-auto px-2">
         
         {/* Subtle Brand Tag */}
         <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-black/70 border border-white/20 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-primary font-medium">
@@ -109,7 +120,7 @@ export function HeroSection() {
             </Link>
           </Button>
         </div>
-      </ScrollAnimate>
+      </div>
 
       {/* Scroll Down Indicator */}
       <Link
