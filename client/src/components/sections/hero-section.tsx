@@ -40,6 +40,7 @@ export function HeroSection() {
         src={posterImg}
         alt="A dark, moody gem mine interior"
         fill
+        sizes="100vw"
         className="absolute z-0 object-cover"
         priority
       />

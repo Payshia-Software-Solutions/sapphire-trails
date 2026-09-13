@@ -70,6 +70,8 @@ export function LocationGallery({ images }: LocationGalleryProps) {
                 <img
                   src={resolvedSrc}
                   alt={image.alt || 'Destination Photo'}
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE; }}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />

@@ -1,15 +1,34 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-// import { Cinzel, Montserrat, Poppins } from 'next/font/google';
+import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { LayoutProvider } from '@/components/layout-provider';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 
+const cinzel = Cinzel({
+  subsets: ['latin'],
+  variable: '--font-cinzel',
+  display: 'swap',
+});
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  variable: '--font-montserrat',
+  display: 'swap',
+});
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  variable: '--font-poppins',
+  display: 'swap',
+  weight: ['300', '400', '500', '600'],
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://sapphiretrails.lk'),
   alternates: {
-    canonical: '/',
+    canonical: './',
   },
   title: {
     template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
@@ -173,7 +192,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="light" suppressHydrationWarning>
+    <html lang="en" className={cn("light", cinzel.variable, montserrat.variable, poppins.variable)} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -216,19 +235,9 @@ export default function RootLayout({
             `,
           }}
         />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&family=Montserrat:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <style dangerouslySetInnerHTML={{ __html: `
-          :root {
-            --font-cinzel: 'Cinzel', serif;
-            --font-poppins: 'Poppins', sans-serif;
-            --font-montserrat: 'Montserrat', sans-serif;
-          }
-        `}} />
+        {/* Preconnect to content-provider CDN for fast LCP image delivery */}
+        <link rel="preconnect" href="https://content-provider.payshia.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://content-provider.payshia.com" />
       </head>
       <body className={cn(
         "font-body antialiased bg-background text-foreground"

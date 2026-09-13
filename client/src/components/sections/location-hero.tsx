@@ -30,6 +30,8 @@ export function LocationHero({ title, subtitle, imageUrl, imageHint, distance, c
         <img
           src={resolvedImage}
           alt={`Scenic view of ${title}`}
+          fetchPriority="high"
+          decoding="async"
           onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE; }}
           className="w-full h-full object-cover object-center transform scale-105 animate-fade-in"
         />

@@ -51,6 +51,7 @@ const LocationCard = ({ location }: { location: Location }) => {
             src={resolvedImage}
             alt={location.title}
             loading="lazy"
+            decoding="async"
             onLoad={() => setImageLoaded(true)}
             onError={(e) => { 
               (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE; 

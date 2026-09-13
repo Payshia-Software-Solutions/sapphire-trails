@@ -8,7 +8,14 @@ import { type AnalyticsConfig, trackPageView } from '@/lib/analytics';
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
-  const [config, setConfig] = useState<AnalyticsConfig | null>(null);
+  const [config, setConfig] = useState<AnalyticsConfig>({
+    google_analytics_id: 'G-TX702Y4CLS',
+    meta_pixel_id: '',
+    is_ga_enabled: true,
+    is_pixel_enabled: false,
+    exclude_admin_traffic: true,
+    enable_ecommerce_events: true,
+  });
   const [isPixelInitialized, setIsPixelInitialized] = useState(false);
   const prevPathRef = useRef<string>('');
 
