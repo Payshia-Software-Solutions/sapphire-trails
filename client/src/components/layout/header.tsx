@@ -258,26 +258,18 @@ export function Header() {
                         href={link.href} 
                         onClick={() => setIsMenuOpen(false)}
                         className={cn(
-                          "group flex items-center justify-between py-3 px-2 rounded-md transition-all duration-200 border-b border-border/15",
+                          "group flex items-center justify-between py-3 px-3 transition-all duration-200 border-b border-border/15",
                           isActive 
-                            ? "text-primary font-medium" 
-                            : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary font-medium border-l-2 border-l-primary bg-primary/[0.04]" 
+                            : "text-muted-foreground hover:text-foreground border-l-2 border-l-transparent hover:border-l-primary/30 hover:bg-muted/20"
                         )}
                       >
-                        <div className="flex items-center gap-3">
-                          <span className={cn(
-                            "w-1 h-1 rounded-full transition-all duration-300",
-                            isActive 
-                              ? "bg-primary scale-125" 
-                              : "bg-transparent scale-0 group-hover:bg-primary/50 group-hover:scale-75"
-                          )} />
-                          <span className="font-serif text-[15px] tracking-[0.14em] uppercase">
-                            {link.label}
-                          </span>
-                        </div>
+                        <span className="font-serif text-[14px] sm:text-[15px] tracking-[0.14em] uppercase">
+                          {link.label}
+                        </span>
 
                         {link.badge && (
-                          <span className="text-[9px] font-sans tracking-[0.2em] uppercase text-primary/70">
+                          <span className="shrink-0 ml-3 text-[9px] font-sans font-medium tracking-wider uppercase px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/25 shadow-sm">
                             {link.badge}
                           </span>
                         )}
