@@ -323,6 +323,9 @@ export default function AddPackagePage() {
     }));
     formData.append('experience_gallery_meta', JSON.stringify(galleryMeta));
 
+    formData.append('homepage_image_url', '');
+    formData.append('hero_image_url', '');
+
     galleryImageFiles.forEach((file) => {
       if (file) {
         formData.append(`experience_gallery_images[]`, file);
@@ -336,7 +339,14 @@ export default function AddPackagePage() {
         body: formData,
       });
 
-      const responseData = await response.json();
+      const rawText = await response.text();
+      let responseData: any = null;
+      try {
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        responseData = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(rawText);
+      } catch (e) {
+        console.error('Failed to parse response JSON:', rawText);
+      }
 
       if (!response.ok) {
         throw new Error(responseData?.error || 'Failed to create tour package.');
@@ -350,12 +360,12 @@ export default function AddPackagePage() {
       triggerRevalidation(['/tours', '/']);
       router.push('/admin/manage-packages');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save package:', error);
       toast({
         variant: 'destructive',
-        title: 'Connection Error',
-        description: 'Could not connect to the server. Please try again later.',
+        title: 'Save Failed',
+        description: error?.message || 'Could not save tour package. Please try again later.',
       });
     } finally {
       setIsSubmitting(false);

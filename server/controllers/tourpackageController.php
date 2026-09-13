@@ -123,6 +123,7 @@ class TourPackageController
             $data['experience_gallery'] = [];
 
             $data['homepage_image_url'] = 'default_home.jpg';
+            $data['hero_image_url'] = 'default_hero.jpg';
             $data['meta_title'] = $data['meta_title'] ?? $data['metaTitle'] ?? null;
             $data['meta_description'] = $data['meta_description'] ?? $data['metaDescription'] ?? null;
             $data['meta_keywords'] = $data['meta_keywords'] ?? $data['metaKeywords'] ?? null;
@@ -165,7 +166,7 @@ class TourPackageController
                     }
                 }
 
-                $this->model->updateImagePaths($packageId, $data['homepage_image_url'], $data['hero_image_url']);
+                $this->model->updateImagePaths($packageId, $data['homepage_image_url'], $data['hero_image_url'] ?? 'default_hero.jpg');
 
                 $galleryImages = $_FILES['experience_gallery_images'] ?? null;
                 $galleryMeta = json_decode($data['experience_gallery_meta'] ?? '[]', true);
