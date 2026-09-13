@@ -193,7 +193,7 @@ export const packageFormSchema = z.object({
   heroImageHint: z.string().min(2, "Hero image hint is required."),
   tourPageDescription: z.string().min(10, "A description for the tour page is required."),
   
-  tourHighlights: z.array(tourHighlightSchema).length(3, "You must provide exactly 3 tour highlights."),
+  tourHighlights: z.array(tourHighlightSchema).min(1, "At least one tour highlight is required.").max(6, "Maximum 6 tour highlights allowed."),
   
   inclusions: z.array(z.object({ text: z.string().min(3, 'Inclusion text is required.') })).min(1, "At least one inclusion is required."),
 
