@@ -23,7 +23,6 @@ import {
   Package, 
   Utensils, 
   Shield,
-  Sparkles,
   CheckCircle2
 } from "lucide-react";
 import type { TourHighlight } from "@/lib/packages-data";
@@ -36,7 +35,7 @@ interface TourDetailHighlightsProps {
 const iconMap: { [key: string]: LucideIcon } = {
   Gem, Users, Mountain, Star, Coffee, BedDouble, Leaf, Bird, Home, Clock,
   CalendarDays, Ticket, AlertTriangle, Waves, Landmark, Camera, Tent,
-  Thermometer, MapPin, Award, Package, Utensils, Shield, Sparkles
+  Thermometer, MapPin, Award, Package, Utensils, Shield
 };
 
 export function TourDetailHighlights({ description, highlights }: TourDetailHighlightsProps) {
@@ -47,16 +46,16 @@ export function TourDetailHighlights({ description, highlights }: TourDetailHigh
         {/* Section Header & Editorial Narrative */}
         <div className="max-w-3xl mb-12 sm:mb-16 space-y-4">
           <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary bg-primary/10 border border-primary/20 px-3.5 py-1 rounded-full">
-            <Sparkles className="h-3.5 w-3.5" />
+            <Gem className="h-3.5 w-3.5" />
             <span>The Sapphire Trails Experience</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-foreground tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">
             Key Experience Highlights
           </h2>
 
           {description && (
-            <div className="text-muted-foreground text-base sm:text-lg leading-relaxed whitespace-pre-line pt-2">
+            <div className="text-muted-foreground text-base sm:text-lg leading-relaxed whitespace-pre-line pt-2 font-light">
               {description}
             </div>
           )}
@@ -70,15 +69,15 @@ export function TourDetailHighlights({ description, highlights }: TourDetailHigh
               return (
                 <div
                   key={index}
-                  className="group relative p-6 rounded-2xl bg-background-alt border border-border/80 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 flex flex-col justify-between"
+                  className="group relative p-6 rounded-2xl bg-background-alt border border-border/80 hover:border-primary/50 transition-colors flex flex-col justify-between"
                 >
                   <div className="space-y-4">
-                    <div className="h-12 w-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-sm">
+                    <div className="h-12 w-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-xs">
                       <Icon className="h-6 w-6" />
                     </div>
                     
                     <div>
-                      <h3 className="font-serif font-bold text-foreground text-lg mb-1.5 group-hover:text-primary transition-colors">
+                      <h3 className="font-serif font-medium text-foreground text-base sm:text-lg mb-1.5 group-hover:text-primary transition-colors">
                         {highlight.title}
                       </h3>
                       <p className="text-muted-foreground text-sm leading-relaxed">

@@ -20,11 +20,9 @@ export function OurStory() {
               {story.tagline || 'Our Heritage & Origins'}
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold text-foreground tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground leading-tight">
               {story.heading}
             </h2>
-
-            <div className="w-20 h-1 bg-primary rounded-full" />
 
             <div className="space-y-4 text-muted-foreground text-sm sm:text-base leading-relaxed font-light">
               <p>{story.paragraph1}</p>
@@ -39,19 +37,19 @@ export function OurStory() {
 
             {/* Heritage Timeline Badges */}
             <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 rounded-xl bg-card border shadow-xs space-y-1">
+              <div className="p-4 rounded-xl bg-card border border-border/70 space-y-1">
                 <span className="text-xs font-bold text-primary font-mono">{story.badge1.year}</span>
                 <h4 className="font-semibold text-sm text-foreground">{story.badge1.title}</h4>
                 <p className="text-[11px] text-muted-foreground">{story.badge1.desc}</p>
               </div>
 
-              <div className="p-4 rounded-xl bg-card border shadow-xs space-y-1">
+              <div className="p-4 rounded-xl bg-card border border-border/70 space-y-1">
                 <span className="text-xs font-bold text-primary font-mono">{story.badge2.year}</span>
                 <h4 className="font-semibold text-sm text-foreground">{story.badge2.title}</h4>
                 <p className="text-[11px] text-muted-foreground">{story.badge2.desc}</p>
               </div>
 
-              <div className="p-4 rounded-xl bg-card border shadow-xs space-y-1">
+              <div className="p-4 rounded-xl bg-card border border-border/70 space-y-1">
                 <span className="text-xs font-bold text-primary font-mono">{story.badge3.year}</span>
                 <h4 className="font-semibold text-sm text-foreground">{story.badge3.title}</h4>
                 <p className="text-[11px] text-muted-foreground">{story.badge3.desc}</p>
@@ -65,7 +63,7 @@ export function OurStory() {
             <div className="relative mx-auto max-w-md lg:max-w-none space-y-4">
               
               {/* 1. Main Featured Top Image */}
-              <div className="relative h-[320px] sm:h-[380px] rounded-3xl overflow-hidden shadow-2xl border border-border/80 group">
+              <div className="relative h-[320px] sm:h-[380px] rounded-3xl overflow-hidden border border-border/80 group">
                 <Image
                   src={story.image || 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp'}
                   alt="Washing Ceylon Sapphire Gravel in Ratnapura"
@@ -75,7 +73,7 @@ export function OurStory() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 
-                <div className="absolute bottom-5 left-5 right-5 p-4 rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white space-y-1">
+                <div className="absolute bottom-5 left-5 right-5 p-4 rounded-2xl bg-black/80 border border-white/20 text-white space-y-1">
                   <span className="text-[10px] uppercase font-mono tracking-widest text-primary font-bold">
                     Mine-To-Market Integrity
                   </span>
@@ -87,7 +85,7 @@ export function OurStory() {
 
               {/* 2. Two Smaller Supporting Sub-Images Underneath */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-md border border-border/70 group bg-slate-900">
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border/70 group bg-slate-900">
                   <Image
                     src={story.image2 || 'https://content-provider.payshia.com/sapphire-trail/images/tour-2-optimized.webp'}
                     alt="Artisan Gem Mining Heritage"
@@ -98,7 +96,7 @@ export function OurStory() {
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
                 </div>
 
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-md border border-border/70 group bg-slate-900">
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border/70 group bg-slate-900">
                   <Image
                     src={story.image3 || 'https://content-provider.payshia.com/sapphire-trail/images/tour-6-optimized.webp'}
                     alt="Precision Gem Crafting & Selection"

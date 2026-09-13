@@ -15,13 +15,13 @@ export function AboutTrustStrip() {
           <p className="text-xs font-semibold uppercase tracking-widest text-primary font-serif">
             Recognized &amp; Certified
           </p>
-          <h3 className="text-xl sm:text-2xl font-bold font-headline text-foreground mt-1">
+          <h3 className="text-xl sm:text-2xl font-serif font-normal tracking-wide text-foreground mt-1">
             {trust.heading || 'Government Compliance & International Standards'}
           </h3>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
-          <div className="p-4 rounded-xl bg-card border flex flex-col items-center text-center space-y-2 shadow-2xs">
+          <div className="p-4 rounded-xl bg-card border border-border/70 flex flex-col items-center text-center space-y-2">
             <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
               <ShieldCheck className="h-5 w-5" />
             </div>
@@ -31,7 +31,7 @@ export function AboutTrustStrip() {
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-card border flex flex-col items-center text-center space-y-2 shadow-2xs">
+          <div className="p-4 rounded-xl bg-card border border-border/70 flex flex-col items-center text-center space-y-2">
             <div className="h-10 w-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
               <Building2 className="h-5 w-5" />
             </div>
@@ -41,7 +41,7 @@ export function AboutTrustStrip() {
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-card border flex flex-col items-center text-center space-y-2 shadow-2xs">
+          <div className="p-4 rounded-xl bg-card border border-border/70 flex flex-col items-center text-center space-y-2">
             <div className="h-10 w-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center">
               <FileCheck2 className="h-5 w-5" />
             </div>
@@ -51,7 +51,7 @@ export function AboutTrustStrip() {
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-card border flex flex-col items-center text-center space-y-2 shadow-2xs">
+          <div className="p-4 rounded-xl bg-card border border-border/70 flex flex-col items-center text-center space-y-2">
             <div className="h-10 w-10 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center">
               <Award className="h-5 w-5" />
             </div>

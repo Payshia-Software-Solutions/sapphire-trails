@@ -1,4 +1,4 @@
-import { CheckCircle2, Info, ShieldCheck, Sparkles, Shirt, Camera, AlertCircle } from "lucide-react";
+import { CheckCircle2, Info, ShieldCheck, Gem, Shirt, Camera, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface TourDetailInclusionsProps {
@@ -38,18 +38,18 @@ export function TourDetailInclusions({ inclusions }: TourDetailInclusionsProps) 
           <ShieldCheck className="h-3.5 w-3.5" />
           <span>Complete Clarity</span>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-foreground tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-serif font-normal tracking-wide text-foreground">
           Inclusions &amp; Guidelines
         </h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-1 font-light">
           Everything included in your private tour, with no hidden fees.
         </p>
       </div>
 
       {/* Inclusions List */}
-      <div className="p-6 rounded-2xl bg-background border border-border/80 space-y-4 shadow-sm">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-          <Sparkles className="h-4 w-4" />
+      <div className="p-6 rounded-2xl bg-background border border-border/80 space-y-4 shadow-xs">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-primary flex items-center gap-2 font-serif">
+          <Gem className="h-4 w-4" />
           What&apos;s Included In Your Private Tour
         </h3>
 

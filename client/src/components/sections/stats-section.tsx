@@ -63,12 +63,14 @@ const StatCounter = ({ stat }: { stat: Stat }) => {
 
     const Icon = stat.icon;
     return (
-        <div ref={ref} className="flex flex-col items-center gap-2">
-            <Icon className="h-10 w-10 text-primary" />
-            <p className="text-4xl font-bold font-headline text-foreground">
+        <div ref={ref} className="flex flex-col items-center gap-1 sm:gap-1.5 md:gap-2 px-1 sm:px-2">
+            <Icon className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-primary shrink-0" />
+            <p className="text-2xl sm:text-3xl md:text-4xl font-bold font-headline text-foreground tracking-tight">
                 {count.toLocaleString()}{suffix}
             </p>
-            <p className="text-sm text-muted-foreground px-2">{stat.label}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-[160px] mx-auto leading-snug">
+                {stat.label}
+            </p>
         </div>
     );
 };
@@ -78,9 +80,9 @@ export function StatsSection() {
   const statsList = content.homepage.stats || [];
 
   return (
-    <section className="w-full py-16 md:py-20 bg-primary/[0.04] border-y border-primary/20">
+    <section className="w-full py-8 sm:py-12 md:py-16 lg:py-20 bg-card/60 border-y border-border/70">
         <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-4 sm:gap-6 md:gap-8 text-center">
             {statsList.map((stat, index) => (
                 <StatCounter 
                   key={index} 

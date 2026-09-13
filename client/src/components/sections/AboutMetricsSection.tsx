@@ -18,13 +18,13 @@ export function AboutMetricsSection() {
             return (
               <div
                 key={index}
-                className="flex items-start gap-4 p-5 rounded-2xl bg-background border border-border/60 shadow-xs hover:border-primary/40 hover:shadow-md transition-all group"
+                className="flex items-start gap-4 p-5 rounded-2xl bg-background border border-border/60 hover:border-primary/50 transition-colors group"
               >
-                <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <Icon className="h-6 w-6" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-2xl sm:text-3xl font-headline font-bold text-foreground tracking-tight">
+                  <p className="text-2xl sm:text-3xl font-serif font-normal text-foreground tracking-wide">
                     {metric.value}
                   </p>
                   <p className="text-xs font-semibold text-primary uppercase tracking-wider">

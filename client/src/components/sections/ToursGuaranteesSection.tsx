@@ -20,10 +20,9 @@ export function ToursGuaranteesSection() {
           <span className="text-xs font-semibold uppercase tracking-widest text-primary font-serif">
             {header.tagline}
           </span>
-          <h2 className="text-2xl sm:text-3xl font-headline font-bold text-foreground">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">
             {header.heading}
           </h2>
-          <div className="w-16 h-1 bg-primary rounded-full mx-auto mt-2" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -32,12 +31,12 @@ export function ToursGuaranteesSection() {
             return (
               <div
                 key={index}
-                className="flex flex-col p-6 rounded-2xl bg-card border border-border/80 shadow-xs hover:border-primary/40 hover:shadow-md transition-all group"
+                className="flex flex-col p-6 rounded-2xl bg-card border border-border/80 hover:border-primary/40 transition-all group"
               >
                 <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-base font-bold font-headline text-foreground mb-1.5">
+                <h3 className="text-base font-serif font-medium text-foreground mb-1.5">
                   {item.title}
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed font-light">

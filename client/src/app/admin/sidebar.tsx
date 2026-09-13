@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, CalendarCheck, FileText, Settings, Package, Users, LogOut, type LucideIcon } from 'lucide-react';
+import { LayoutGrid, CalendarCheck, FileText, Settings, Package, Users, LogOut, type LucideIcon, Megaphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface NavLink {
@@ -15,6 +15,7 @@ export interface NavLink {
 export const navLinks: NavLink[] = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutGrid },
   { href: '/admin/booking-requests', label: 'Booking Requests', icon: CalendarCheck },
+  { href: '/admin/promo-banner', label: 'Promo Banner', icon: Megaphone },
   { href: '/admin/cms', label: 'CMS', icon: FileText },
   { href: '/admin/manage-content', label: 'Manage Content', icon: Settings },
   { href: '/admin/manage-packages', label: 'Manage Packages', icon: Package },

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Sparkles, Calendar, MessageCircle, Navigation, ChevronRight, Compass, ShieldCheck } from 'lucide-react';
+import { MapPin, Calendar, MessageCircle, Navigation, ChevronRight, Compass, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getFullImageUrl } from '@/lib/utils';
@@ -54,12 +54,12 @@ export function LocationHero({ title, subtitle, imageUrl, imageHint, distance, c
         
         {/* Badges */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
-          <Badge className="bg-primary/20 hover:bg-primary/30 text-primary border-primary/40 px-3 py-1 text-xs uppercase tracking-widest font-semibold backdrop-blur-md">
-            <Sparkles className="h-3 w-3 mr-1.5" />
+          <Badge className="bg-primary/20 hover:bg-primary/30 text-primary border-primary/40 px-3 py-1 text-xs uppercase tracking-widest font-semibold">
+            <Compass className="h-3 w-3 mr-1.5" />
             {category === 'agriculture' ? 'Gem Mining & Heritage' : category === 'cultural' ? 'Cultural Landmark' : 'Natural Wonder'}
           </Badge>
           {distance && (
-            <Badge variant="outline" className="bg-black/50 text-foreground border-white/20 px-3 py-1 text-xs backdrop-blur-md">
+            <Badge variant="outline" className="bg-slate-950/85 text-white border-white/20 px-3 py-1 text-xs">
               <MapPin className="h-3 w-3 mr-1.5 text-primary" />
               {distance}
             </Badge>
@@ -67,13 +67,13 @@ export function LocationHero({ title, subtitle, imageUrl, imageHint, distance, c
         </div>
 
         {/* Title */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white font-serif drop-shadow-lg leading-tight mb-4">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-normal tracking-wide text-white font-serif drop-shadow-lg leading-tight mb-4">
           {title}
         </h1>
 
         {/* Subtitle / Tagline */}
         {subtitle && (
-          <p className="text-lg sm:text-2xl text-amber-100/90 font-serif italic tracking-wide max-w-2xl drop-shadow mb-8 leading-relaxed">
+          <p className="text-base sm:text-xl text-amber-100/90 font-serif italic tracking-wide max-w-2xl drop-shadow mb-8 leading-relaxed">
             &ldquo;{subtitle}&rdquo;
           </p>
         )}
@@ -83,7 +83,7 @@ export function LocationHero({ title, subtitle, imageUrl, imageHint, distance, c
           <Button
             asChild
             size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 shadow-xl shadow-primary/25 text-sm h-12"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 shadow-sm text-xs sm:text-sm h-11 sm:h-12 rounded-full"
           >
             <Link href="/booking">
               <Calendar className="mr-2 h-4 w-4" />

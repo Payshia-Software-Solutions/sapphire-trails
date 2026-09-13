@@ -43,15 +43,15 @@ export function TestimonialsSection() {
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <ScrollAnimate className="max-w-3xl mx-auto text-center space-y-3 mb-14 md:mb-18">
+        <ScrollAnimate className="max-w-4xl lg:max-w-5xl mx-auto text-center space-y-3 mb-14 md:mb-18">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-semibold uppercase tracking-wider text-amber-500">
             <Award className="h-3.5 w-3.5" />
             {reviewsHeader.tagline || 'Verified Traveler Experiences'}
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold tracking-tight text-primary">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
             {reviewsHeader.heading || 'Loved by Travelers Worldwide'}
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
             {reviewsHeader.subtitle}
           </p>
 
@@ -75,7 +75,7 @@ export function TestimonialsSection() {
             <div className="flex -ml-4 sm:-ml-6">
               {displayReviews.map((item) => (
                 <div key={item.id} className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-4 sm:pl-6">
-                  <Card className="bg-card border border-border/70 rounded-2xl h-full flex flex-col justify-between p-6 sm:p-7 shadow-sm transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5">
+                  <Card className="bg-card border border-border/80 rounded-2xl h-full flex flex-col justify-between p-6 sm:p-7 shadow-none transition-colors duration-300 hover:border-primary/50">
                     <CardContent className="p-0 flex flex-col justify-between h-full space-y-5">
                       
                       {/* Top Row: Stars + Source Badge + Quote */}
