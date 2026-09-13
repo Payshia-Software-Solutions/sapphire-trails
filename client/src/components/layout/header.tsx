@@ -122,13 +122,13 @@ export function Header() {
         showTopBar ? "max-h-[40px] opacity-100" : "max-h-0 opacity-0 py-0 border-b-transparent"
       )}>
         <div className="container mx-auto max-w-screen-2xl flex items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-3 sm:gap-6">
             <a href={`mailto:${primaryEmail}`} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
-              <Mail className="h-3 w-3 text-primary" />
+              <Mail className="h-3 w-3 text-primary shrink-0" />
               <span>{primaryEmail}</span>
             </a>
-            <a href={primaryPhoneTel} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
-              <Phone className="h-3 w-3 text-primary" />
+            <a href={primaryPhoneTel} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs shrink-0">
+              <Phone className="h-3 w-3 text-primary shrink-0" />
               <span>{primaryPhone}</span>
             </a>
           </div>
