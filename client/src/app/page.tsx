@@ -38,24 +38,24 @@ export default function Home() {
           </div>
         )}
 
-        {/* 3. Signature 4-Step Expedition Journey */}
+        {/* 3. Curated Tour Packages & Proposal Spotlight */}
+        {vis.tours !== false && (
+          <div className={getSectionThemeClass(sty.tours)}>
+            <ToursSection />
+          </div>
+        )}
+
+        {/* 4. Signature 4-Step Expedition Journey */}
         {vis.journey !== false && (
           <div className={getSectionThemeClass(sty.journey)}>
             <JourneySection />
           </div>
         )}
 
-        {/* 4. Authentic Photo Mosaic Gallery */}
+        {/* 5. Authentic Photo Mosaic Gallery */}
         {vis.discover !== false && (
           <div className={getSectionThemeClass(sty.discover)}>
             <DiscoverSection />
-          </div>
-        )}
-
-        {/* 5. Curated Tour Packages & Proposal Spotlight */}
-        {vis.tours !== false && (
-          <div className={getSectionThemeClass(sty.tours)}>
-            <ToursSection />
           </div>
         )}
 

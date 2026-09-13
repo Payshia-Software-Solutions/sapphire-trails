@@ -21,14 +21,14 @@ export function AboutCoreValues() {
     <section className="w-full py-16 md:py-24 bg-background relative border-t border-border/40">
       <div className="container mx-auto px-4 md:px-6">
 
-        <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+        <div className="text-center max-w-4xl mx-auto mb-14 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary uppercase tracking-wider">
             {valuesData.tagline || 'Guiding Principles'}
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold text-foreground tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground">
             {valuesData.heading || 'Rooted in Integrity, Safety & Sustainable Heritage'}
           </h2>
-          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-light">
+          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-light max-w-3xl md:max-w-4xl mx-auto">
             {valuesData.subtitle}
           </p>
         </div>
@@ -41,11 +41,11 @@ export function AboutCoreValues() {
 
               <Card
                 key={idx}
-                className="bg-card border border-border/70 hover:border-primary/50 transition-all duration-300 hover:shadow-xl group"
+                className="bg-card border border-border/70 hover:border-primary/50 transition-colors group"
               >
                 <CardContent className="p-6 sm:p-8 space-y-5">
                   <div className="flex items-center justify-between">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+                    <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                       <Icon className="h-6 w-6" />
                     </div>
                     <span className="text-[11px] font-semibold text-primary uppercase tracking-widest px-3 py-1 rounded-full bg-primary/5 border border-primary/20">
@@ -54,7 +54,7 @@ export function AboutCoreValues() {
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-xl font-headline font-bold text-foreground">
+                    <h3 className="text-lg font-serif font-medium text-foreground">
                       {val.title}
                     </h3>
                     <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed font-light">

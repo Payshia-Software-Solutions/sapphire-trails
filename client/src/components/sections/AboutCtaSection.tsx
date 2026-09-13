@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Sparkles, MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
+import { MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
 import { useSiteContent, getWhatsappUrl, getContactPhone } from '@/lib/site-content';
 
 export function AboutCtaSection() {
@@ -10,21 +10,20 @@ export function AboutCtaSection() {
   const cta = content.about.cta;
 
   return (
-    <section className="w-full py-16 md:py-24 bg-slate-950 text-white relative overflow-hidden">
-      {/* Background Glows */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-slate-950 to-slate-950 pointer-events-none" />
+    <section className="w-full py-16 md:py-24 bg-slate-950 text-white relative overflow-hidden border-t border-border/40">
+      {/* Background Subtle Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/95 to-slate-950 pointer-events-none" />
       
       <div className="container relative z-10 mx-auto px-4 md:px-6 text-center max-w-4xl">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/15 border border-primary/30 text-xs font-semibold text-primary mb-6">
-          <Sparkles className="h-3.5 w-3.5" />
           <span>{cta.tagline || 'Curate Your Once-in-a-Lifetime Adventure'}</span>
         </div>
 
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold tracking-tight text-white mb-6 leading-tight">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-white mb-6 leading-tight">
           {cta.heading}
         </h2>
 
-        <p className="mx-auto max-w-2xl text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed font-light mb-10">
+        <p className="mx-auto max-w-3xl md:max-w-4xl text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed font-light mb-10">
           {cta.subtitle}
         </p>
 
@@ -32,7 +31,7 @@ export function AboutCtaSection() {
           <Button 
             asChild 
             size="lg"
-            className="w-full sm:w-auto h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full shadow-lg gap-2 text-sm md:text-base group"
+            className="w-full sm:w-auto h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full shadow-sm gap-2 text-sm md:text-base group"
           >
             <Link href="/booking">
               <span>{cta.primaryButtonText || 'Book Your Private Gem Tour'}</span>
@@ -44,7 +43,7 @@ export function AboutCtaSection() {
             asChild
             variant="outline"
             size="lg"
-            className="w-full sm:w-auto h-12 px-8 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-white font-medium rounded-full text-sm md:text-base gap-2 backdrop-blur-sm"
+            className="w-full sm:w-auto h-12 px-8 border border-emerald-500/50 bg-emerald-950/80 hover:bg-emerald-900 text-white font-medium rounded-full text-sm md:text-base gap-2 transition-colors"
           >
             <a
               href={getWhatsappUrl(content, 'Hello, I would like to customize a private gem tour with Sapphire Trails.')}

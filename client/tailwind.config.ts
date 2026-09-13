@@ -10,10 +10,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['var(--font-poppins)', 'sans-serif'],
+        body: ['var(--font-montserrat)', 'sans-serif'],
         headline: ['var(--font-montserrat)', 'sans-serif'],
         serif: ['var(--font-cinzel)', 'serif'],
+        sans: ['var(--font-montserrat)', 'sans-serif'],
         code: ['monospace'],
+      },
+      letterSpacing: {
+        luxury: '0.25em',
+        'luxury-wide': '0.35em',
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -83,11 +88,11 @@ export default {
         'gem-pulse': {
           '0%, 100%': {
             transform: 'scale(1)',
-            filter: 'brightness(1) drop-shadow(0 0 5px hsl(var(--primary) / 0.5))',
+            filter: 'brightness(1)',
           },
           '50%': {
-            transform: 'scale(1.05)',
-            filter: 'brightness(1.3) drop-shadow(0 0 15px hsl(var(--primary) / 0.7))',
+            transform: 'scale(1.03)',
+            filter: 'brightness(1.1)',
           },
         },
         'top-loading-bar': {

@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { ScrollProvider, useScroll } from "@/contexts/scroll-context";
 import { ThemeProvider } from "@/contexts/theme-context";
+import { FeaturedBannerModal } from '@/components/shared/feature-banner-modal';
 
 function BodyEffectManager() {
   const { setScrollableElement } = useScroll();
@@ -39,6 +40,7 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
           <PreloaderProvider>
               {children}
           </PreloaderProvider>
+          <FeaturedBannerModal />
           <WhatsAppButton />
           <Toaster />
         </ScrollProvider>

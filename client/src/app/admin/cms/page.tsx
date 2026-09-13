@@ -14,6 +14,10 @@ import {
   saveSiteContent, 
   defaultSiteContent, 
   type SiteContentData,
+  defaultFeaturedBanner,
+  type FeaturedBannerConfig,
+  type BannerTemplate,
+  type BannerDisplayType,
   SECTION_COLOR_THEMES,
   getSectionThemeClass,
   mergeProposalContent,
@@ -66,7 +70,13 @@ import {
   PackageSearch,
   Mail,
   Plus,
-  Trash2
+  Trash2,
+  Settings,
+  Sun,
+  Moon,
+  Megaphone,
+  Bell,
+  X
 } from 'lucide-react';
 
 
@@ -194,11 +204,100 @@ export default function MasterCmsPage() {
   const contactHeroFileRef = useRef<HTMLInputElement | null>(null);
   const footerBrandLogoRef = useRef<HTMLInputElement | null>(null);
   const footerPartnerLogoRef = useRef<HTMLInputElement | null>(null);
+  const bannerImageFileRef = useRef<HTMLInputElement | null>(null);
 
 
 
 
 
+
+  const handleSetDefaultTheme = (newTheme: 'light' | 'dark') => {
+    setContent((prev) => ({
+      ...prev,
+      settings: {
+        ...(prev.settings || {}),
+        defaultTheme: newTheme,
+      },
+    }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('site_default_theme', newTheme);
+    }
+  };
+
+  const handleSaveThemeOnly = async (targetTheme: 'light' | 'dark') => {
+    setIsSaving(true);
+    try {
+      const updated = {
+        ...content,
+        settings: {
+          ...(content.settings || {}),
+          defaultTheme: targetTheme,
+        },
+      };
+      setContent(updated);
+      const res = await saveSiteContent(updated);
+      if (res.success) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('site_default_theme', targetTheme);
+        }
+        toast({
+          title: "Default Theme Saved",
+          description: `Website default theme is now set to ${targetTheme === 'light' ? 'Light Mode (Quiet Luxury Silk)' : 'Dark Mode (Midnight Sapphire)'}.`,
+        });
+      } else {
+        toast({
+          title: "Save Failed",
+          description: res.message,
+          variant: "destructive",
+        });
+      }
+    } catch (e: any) {
+      toast({
+        title: "Error",
+        description: e.message || "Failed to update default theme",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdateBanner = (fields: Partial<FeaturedBannerConfig>) => {
+    const currentBanner = content.settings?.banner || defaultFeaturedBanner;
+    setContent((prev) => ({
+      ...prev,
+      settings: {
+        ...(prev.settings || {}),
+        banner: {
+          ...currentBanner,
+          ...fields,
+        },
+      },
+    }));
+  };
+
+  const handleBannerImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    toast({
+      title: 'Uploading to CDN...',
+      description: `Uploading ${file.name} to FTP /cms/banner folder...`,
+    });
+    try {
+      const res = await uploadCmsImage(file, 'cms/banner');
+      handleUpdateBanner({ image: res.url });
+      toast({
+        title: 'Banner Image Uploaded!',
+        description: `Permanent CDN URL: ${res.url}`,
+      });
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: err.message || 'Failed to upload to FTP server.',
+      });
+    }
+  };
 
   const handleToggleHomeVisibility = (key: string, active: boolean) => {
     setContent((prev) => ({
@@ -645,6 +744,14 @@ export default function MasterCmsPage() {
 
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab) {
+        setActiveTab(tab);
+      }
+    }
+
     async function loadData() {
       setIsLoading(true);
       try {
@@ -1033,7 +1140,7 @@ export default function MasterCmsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-card border border-border/80 shadow-xs w-full">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold uppercase tracking-wider">
-            <Sparkles className="h-3 w-3" />
+            <Gem className="h-3 w-3" />
             <span>Master Content Management System</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-headline text-foreground">
@@ -1045,6 +1152,24 @@ export default function MasterCmsPage() {
         </div>
 
         <div className="flex items-center gap-2.5 shrink-0">
+          <div 
+            onClick={() => setActiveTab('settings')}
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border/80 bg-muted/30 cursor-pointer hover:border-primary/50 transition-colors text-xs"
+            title="Click to configure Default Website Theme in Site Settings"
+          >
+            {content.settings?.defaultTheme === 'dark' ? (
+              <>
+                <Moon className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-muted-foreground font-medium">Default: <strong className="text-foreground">Dark</strong></span>
+              </>
+            ) : (
+              <>
+                <Sun className="h-3.5 w-3.5 text-amber-500" />
+                <span className="text-muted-foreground font-medium">Default: <strong className="text-foreground">Light</strong></span>
+              </>
+            )}
+          </div>
+
           <Button
             type="button"
             variant="outline"
@@ -1075,7 +1200,7 @@ export default function MasterCmsPage() {
       {/* 1. Page Selection Tabs (Fixed at the Top) */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-5">
         <div className="bg-card p-1 rounded-2xl border border-border/80 shadow-xs w-full">
-          <TabsList className="bg-transparent h-auto p-0 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1 w-full">
+          <TabsList className="bg-transparent h-auto p-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-1 w-full">
             <TabsTrigger value="homepage" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Home className="h-3.5 w-3.5" /> Homepage
             </TabsTrigger>
@@ -1099,6 +1224,12 @@ export default function MasterCmsPage() {
             </TabsTrigger>
             <TabsTrigger value="footer" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Share2 className="h-3.5 w-3.5" /> Footer
+            </TabsTrigger>
+            <TabsTrigger value="banner" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
+              <Megaphone className="h-3.5 w-3.5" /> Promo Banner
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
+              <Settings className="h-3.5 w-3.5" /> Site Settings
             </TabsTrigger>
           </TabsList>
         </div>
@@ -2210,7 +2341,7 @@ export default function MasterCmsPage() {
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-headline font-bold text-white leading-tight">
                               {hero.headlineLine1}
                             </h2>
-                            <p className="text-primary/95 text-sm sm:text-base md:text-lg font-serif tracking-wider uppercase font-normal">
+                            <p className="text-primary/90 text-xs sm:text-sm md:text-base font-serif tracking-[0.15em] uppercase font-normal">
                               {hero.headlineLine2}
                             </p>
                           </div>
@@ -4091,6 +4222,15 @@ export default function MasterCmsPage() {
                         rows={3}
                         value={content.tours.proposalCallout?.description || ''}
                         onChange={(e) => setContent({ ...content, tours: { ...content.tours, proposalCallout: { ...content.tours.proposalCallout, description: e.target.value } } })}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label className="text-xs font-semibold">Spotlight Banner Image URL</Label>
+                      <Input
+                        value={content.tours.proposalCallout?.image || ''}
+                        placeholder="https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp"
+                        onChange={(e) => setContent({ ...content, tours: { ...content.tours, proposalCallout: { ...content.tours.proposalCallout, image: e.target.value } } })}
                       />
                     </div>
 
@@ -6986,7 +7126,7 @@ export default function MasterCmsPage() {
                     {/* Col 4: Partner & Socials */}
                     <div className="space-y-1.5 sm:text-right">
                       <div className="w-10 h-6 relative sm:ml-auto">
-                        <Image src={content.footer.partnerLogo || '/img/logo2.png'} alt="Partner" fill className="object-contain" />
+                        <Image src={content.footer.partnerLogo || '/img/logo2.png'} alt="Partner" fill className="object-contain brightness-0 opacity-80 dark:brightness-100 dark:opacity-90 transition-all" />
                       </div>
                       <p className="text-[8px] text-muted-foreground">
                         {content.footer.partnerTagline || 'Hospitality Partner for Luxury Gem Tours.'}
@@ -7010,6 +7150,618 @@ export default function MasterCmsPage() {
 
           </div>
 
+        </TabsContent>
+
+        {/* ========================================================================= */}
+        {/* 9. SITE SETTINGS & DEFAULT THEME TAB */}
+        {/* ========================================================================= */}
+        <TabsContent value="settings" className="w-full space-y-6">
+          <Card className="border border-border/80 bg-card rounded-2xl shadow-xs overflow-hidden">
+            <CardHeader className="border-b border-border/60 bg-muted/20 p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold uppercase tracking-wider">
+                    <Settings className="h-3 w-3" />
+                    <span>Global Website Settings</span>
+                  </div>
+                  <CardTitle className="text-xl font-bold font-headline text-foreground">
+                    Visitor Experience &amp; Default Theme
+                  </CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground">
+                    Control the default appearance seen by new visitors across the entire Sapphire Trails platform.
+                  </CardDescription>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => handleSaveThemeOnly(content.settings?.defaultTheme === 'dark' ? 'dark' : 'light')}
+                    disabled={isSaving}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs h-9 px-5 gap-1.5 shadow-sm"
+                  >
+                    {isSaving ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                    <span>Save Theme Setting</span>
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-6 space-y-8">
+              {/* Default Theme Selector */}
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Palette className="h-4 w-4 text-primary" />
+                    Default Website Theme (First-Time Visitors)
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Choose which visual mode new visitors will see automatically. Visitors can still use the sun/moon switch in the header navigation to toggle their personal preference at any time.
+                  </p>
+                </div>
+
+                {/* Theme Options Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+                  
+                  {/* Option 1: Light Theme */}
+                  <div 
+                    onClick={() => handleSetDefaultTheme('light')}
+                    className={`relative cursor-pointer rounded-2xl border-2 p-5 transition-all duration-200 flex flex-col justify-between gap-4 ${
+                      (content.settings?.defaultTheme !== 'dark')
+                        ? 'border-primary bg-primary/5 shadow-sm'
+                        : 'border-border/70 bg-card hover:border-border hover:bg-muted/30'
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                            <Sun className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-foreground">Light Mode</h4>
+                            <span className="text-[11px] text-muted-foreground">Quiet Luxury Silk White</span>
+                          </div>
+                        </div>
+
+                        {(content.settings?.defaultTheme !== 'dark') ? (
+                          <Badge className="bg-primary text-primary-foreground text-[10px] font-semibold gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> Active Default
+                          </Badge>
+                        ) : (
+                          <span className="text-[11px] font-medium text-muted-foreground hover:text-foreground">Click to select</span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Features crisp silk white backgrounds, warm champagne gold accents, deep slate typography, and high-readability luxury editorial layouts.
+                      </p>
+                    </div>
+
+                    {/* Mini Visual Preview Swatch */}
+                    <div className="rounded-xl border border-border/80 bg-[#FAF8F5] p-3 space-y-2 shadow-2xs">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-serif font-bold text-[#0B1118]">SAPPHIRE TRAILS</span>
+                        <div className="h-1.5 w-6 rounded-full bg-[#DEC49B]" />
+                      </div>
+                      <div className="h-4 rounded-md bg-white border border-[#E4DEC8] flex items-center px-2">
+                        <span className="text-[9px] text-[#5E6C7E]">High-contrast editorial readability</span>
+                      </div>
+                      <div className="flex gap-1.5">
+                        <div className="h-2.5 w-12 rounded bg-[#0B1118]" />
+                        <div className="h-2.5 w-8 rounded bg-[#DEC49B]" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Option 2: Dark Theme */}
+                  <div 
+                    onClick={() => handleSetDefaultTheme('dark')}
+                    className={`relative cursor-pointer rounded-2xl border-2 p-5 transition-all duration-200 flex flex-col justify-between gap-4 ${
+                      content.settings?.defaultTheme === 'dark'
+                        ? 'border-primary bg-primary/5 shadow-sm'
+                        : 'border-border/70 bg-card hover:border-border hover:bg-muted/30'
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                            <Moon className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-foreground">Dark Mode</h4>
+                            <span className="text-[11px] text-muted-foreground">Midnight Sapphire Slate</span>
+                          </div>
+                        </div>
+
+                        {content.settings?.defaultTheme === 'dark' ? (
+                          <Badge className="bg-primary text-primary-foreground text-[10px] font-semibold gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> Active Default
+                          </Badge>
+                        ) : (
+                          <span className="text-[11px] font-medium text-muted-foreground hover:text-foreground">Click to select</span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Features deep midnight sapphire slate backgrounds, rich gold accents, crisp white text, and a moodier atmospheric evening aesthetic.
+                      </p>
+                    </div>
+
+                    {/* Mini Visual Preview Swatch */}
+                    <div className="rounded-xl border border-white/10 bg-[#0B1118] p-3 space-y-2 shadow-2xs">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-serif font-bold text-white">SAPPHIRE TRAILS</span>
+                        <div className="h-1.5 w-6 rounded-full bg-[#DEC49B]" />
+                      </div>
+                      <div className="h-4 rounded-md bg-[#131C26] border border-white/10 flex items-center px-2">
+                        <span className="text-[9px] text-slate-300">Atmospheric evening gem aesthetic</span>
+                      </div>
+                      <div className="flex gap-1.5">
+                        <div className="h-2.5 w-12 rounded bg-white" />
+                        <div className="h-2.5 w-8 rounded bg-[#DEC49B]" />
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Status Note Alert */}
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/80 flex items-start gap-3">
+                <ShieldCheck className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
+                <div className="text-xs space-y-1">
+                  <p className="font-semibold text-foreground">Immediate Effect &amp; Fallback</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Saving this setting stores the default preference in the central CMS database. When visitors open the site for the first time or clear their cache, the site automatically renders in this chosen theme with zero layout shifts or visual flicker.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ========================================================================= */}
+        {/* 10. FEATURED PROMO BANNER & MODAL STUDIO */}
+        {/* ========================================================================= */}
+        <TabsContent value="banner" className="w-full space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* Left Column: Banner Configuration Form (7 cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              
+              {/* Card 1: Master Status & Display Mode */}
+              <Card className="rounded-2xl border-border/80 shadow-xs">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider">
+                        <Megaphone className="h-3 w-3" />
+                        <span>Visitor Announcement</span>
+                      </div>
+                      <CardTitle className="text-lg font-bold font-headline">
+                        Featured Promotional Banner &amp; Pop-up
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Engage visitors the moment they land on the website with high-converting special offers or announcements.
+                      </CardDescription>
+                    </div>
+
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={(content.settings?.banner?.enabled ?? defaultFeaturedBanner.enabled) ? "default" : "outline"}
+                      onClick={() => handleUpdateBanner({ 
+                        enabled: !(content.settings?.banner?.enabled ?? defaultFeaturedBanner.enabled) 
+                      })}
+                      className={`h-8 px-4 rounded-full text-xs font-semibold gap-1.5 transition-all ${
+                        (content.settings?.banner?.enabled ?? defaultFeaturedBanner.enabled)
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
+                          : 'border-rose-500/50 text-rose-500 hover:bg-rose-500/10'
+                      }`}
+                    >
+                      {(content.settings?.banner?.enabled ?? defaultFeaturedBanner.enabled) ? (
+                        <>
+                          <Eye className="h-3.5 w-3.5" />
+                          <span>Active (Visible on Site)</span>
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="h-3.5 w-3.5" />
+                          <span>Disabled (Hidden)</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-5 pt-0">
+                  {/* Display Mode Selector */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold text-foreground">Display Presentation Style</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { id: 'modal', label: 'Center Pop-up Modal', desc: 'Prominent luxury focus backdrop' },
+                        { id: 'top_bar', label: 'Top Announcement Bar', desc: 'Sleek top alert ribbon' },
+                        { id: 'bottom_toast', label: 'Bottom Corner Toast', desc: 'Subtle floating badge' },
+                      ].map((mode) => {
+                        const currentType = content.settings?.banner?.type || defaultFeaturedBanner.type;
+                        const isSelected = currentType === mode.id;
+                        return (
+                          <div
+                            key={mode.id}
+                            onClick={() => handleUpdateBanner({ type: mode.id as BannerDisplayType })}
+                            className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                              isSelected
+                                ? 'border-primary bg-primary/5 shadow-2xs'
+                                : 'border-border/70 hover:border-border bg-card'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-foreground">{mode.label}</span>
+                              {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{mode.desc}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Timing & Dismissal Behavior */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border/60">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-foreground">Display Delay (Seconds)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="30"
+                        step="0.5"
+                        value={content.settings?.banner?.delaySeconds ?? defaultFeaturedBanner.delaySeconds}
+                        onChange={(e) => handleUpdateBanner({ delaySeconds: parseFloat(e.target.value) || 0 })}
+                        className="h-9 text-xs rounded-xl"
+                      />
+                      <p className="text-[10px] text-muted-foreground">Delay after visitor enters before opening.</p>
+                    </div>
+
+                    <div className="flex flex-col justify-end space-y-2">
+                      <Label className="text-xs font-semibold text-foreground">Session Memory</Label>
+                      <label className="flex items-center gap-2 cursor-pointer p-2 rounded-xl bg-muted/30 border border-border/60 hover:bg-muted/50">
+                        <input
+                          type="checkbox"
+                          checked={content.settings?.banner?.showOncePerSession ?? defaultFeaturedBanner.showOncePerSession}
+                          onChange={(e) => handleUpdateBanner({ showOncePerSession: e.target.checked })}
+                          className="h-4 w-4 rounded text-primary focus:ring-primary"
+                        />
+                        <span className="text-xs font-medium text-foreground">Show once per session</span>
+                      </label>
+                      <p className="text-[10px] text-muted-foreground">Once closed, won't pop up again on page refresh.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Card 2: Template Selection */}
+              <Card className="rounded-2xl border-border/80 shadow-xs">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base font-bold font-headline flex items-center gap-2">
+                        <Palette className="h-4 w-4 text-primary" />
+                        <span>Curated Banner Templates</span>
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Pick a tailored luxury visual aesthetic for your campaign.
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      { 
+                        id: 'luxury_gold', 
+                        title: '1. Royal Atelier (Signature Gold)', 
+                        subtitle: 'Cinematic onyx slate, gilded micro-borders, and gold typography',
+                        color: 'border-[#D4AF37] bg-[#0B0F15] text-white',
+                        accent: 'bg-[#D4AF37] text-[#0B0F15]'
+                      },
+                      { 
+                        id: 'sapphire_blue', 
+                        title: '2. Ceylon Sapphire Vault', 
+                        subtitle: 'Midnight royal blue depth with celestial sapphire glow & white text',
+                        color: 'border-sky-500 bg-gradient-to-br from-[#081426] to-[#02050A] text-white',
+                        accent: 'bg-sky-500 text-white'
+                      },
+                      { 
+                        id: 'minimal_editorial', 
+                        title: '3. Haute Editorial (Warm Silk)', 
+                        subtitle: 'Prestigious Swiss horlogerie finish on silk ivory with dark serifs',
+                        color: 'border-[#E2DDD3] bg-[#FBF9F5] text-[#14181E]',
+                        accent: 'bg-[#14181E] text-white'
+                      },
+                      { 
+                        id: 'image_spotlight', 
+                        title: '4. Expedition Full-Bleed Hero', 
+                        subtitle: 'Full-bleed immersive photography with cinematic bottom narrative',
+                        color: 'border-white/30 bg-[#090D12] text-white',
+                        accent: 'bg-primary text-primary-foreground'
+                      },
+                    ].map((tpl) => {
+                      const currentTemplate = content.settings?.banner?.template || defaultFeaturedBanner.template;
+                      const isSelected = currentTemplate === tpl.id;
+                      return (
+                        <div
+                          key={tpl.id}
+                          onClick={() => handleUpdateBanner({ template: tpl.id as BannerTemplate })}
+                          className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex flex-col justify-between gap-3 ${
+                            isSelected
+                              ? 'border-primary ring-2 ring-primary/20 shadow-sm'
+                              : 'border-border/70 hover:border-border bg-card'
+                          }`}
+                        >
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-xs font-bold text-foreground">{tpl.title}</h4>
+                              {isSelected && <CheckCircle2 className="h-4 w-4 text-primary" />}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground leading-relaxed">{tpl.subtitle}</p>
+                          </div>
+
+                          {/* Mini Visual Palette Swatch */}
+                          <div className={`p-2.5 rounded-xl border text-[9px] ${tpl.color} flex items-center justify-between`}>
+                            <span className="font-serif">PREVIEW</span>
+                            <span className={`px-2 py-0.5 rounded-full font-bold ${tpl.accent}`}>ACTION</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Card 3: Banner Content & Links */}
+              <Card className="rounded-2xl border-border/80 shadow-xs">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-bold font-headline flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span>Banner Copy &amp; Action Buttons</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Badge & Title */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Badge Tag</Label>
+                      <Input
+                        value={content.settings?.banner?.badgeText ?? defaultFeaturedBanner.badgeText}
+                        onChange={(e) => handleUpdateBanner({ badgeText: e.target.value })}
+                        placeholder="EXCLUSIVE 2026 OFFER"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                    <div className="sm:col-span-2 space-y-1.5">
+                      <Label className="text-xs font-semibold">Headline Title</Label>
+                      <Input
+                        value={content.settings?.banner?.title ?? defaultFeaturedBanner.title}
+                        onChange={(e) => handleUpdateBanner({ title: e.target.value })}
+                        placeholder="Custom Proposal & Engagement Ring Expedition"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Subtitle */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Subtitle Description</Label>
+                    <Textarea
+                      value={content.settings?.banner?.subtitle ?? defaultFeaturedBanner.subtitle}
+                      onChange={(e) => handleUpdateBanner({ subtitle: e.target.value })}
+                      rows={2}
+                      placeholder="Descend into private gem pits, uncover your raw sapphire..."
+                      className="text-xs rounded-xl resize-none"
+                    />
+                  </div>
+
+                  {/* Banner Image URL / Upload */}
+                  <div className="space-y-2 pt-2 border-t border-border/60">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-semibold">Featured Banner Image</Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => bannerImageFileRef.current?.click()}
+                        className="h-7 text-xs text-primary gap-1 px-2"
+                      >
+                        <Upload className="h-3 w-3" />
+                        <span>Upload Photo to CDN</span>
+                      </Button>
+                      <input
+                        ref={bannerImageFileRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBannerImageChange}
+                        className="hidden"
+                      />
+                    </div>
+                    <Input
+                      value={content.settings?.banner?.image ?? defaultFeaturedBanner.image}
+                      onChange={(e) => handleUpdateBanner({ image: e.target.value })}
+                      placeholder="https://content-provider.payshia.com/..."
+                      className="h-9 text-xs rounded-xl font-mono"
+                    />
+                  </div>
+
+                  {/* Primary Button */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border/60">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Primary Button Text</Label>
+                      <Input
+                        value={content.settings?.banner?.primaryButtonText ?? defaultFeaturedBanner.primaryButtonText}
+                        onChange={(e) => handleUpdateBanner({ primaryButtonText: e.target.value })}
+                        placeholder="Explore Package"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Primary Button Target Link</Label>
+                      <Input
+                        value={content.settings?.banner?.primaryButtonLink ?? defaultFeaturedBanner.primaryButtonLink}
+                        onChange={(e) => handleUpdateBanner({ primaryButtonLink: e.target.value })}
+                        placeholder="/custom-proposal-package or /booking"
+                        className="h-9 text-xs rounded-xl font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Secondary Button */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Secondary Button Text (Optional)</Label>
+                      <Input
+                        value={content.settings?.banner?.secondaryButtonText ?? defaultFeaturedBanner.secondaryButtonText}
+                        onChange={(e) => handleUpdateBanner({ secondaryButtonText: e.target.value })}
+                        placeholder="WhatsApp Concierge"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold">Secondary Button Link</Label>
+                      <Input
+                        value={content.settings?.banner?.secondaryButtonLink ?? defaultFeaturedBanner.secondaryButtonLink}
+                        onChange={(e) => handleUpdateBanner({ secondaryButtonLink: e.target.value })}
+                        placeholder="https://wa.me/94763756688"
+                        className="h-9 text-xs rounded-xl font-mono"
+                      />
+                    </div>
+                  </div>
+
+                </CardContent>
+              </Card>
+
+            </div>
+
+            {/* Right Column: Interactive Live Preview Studio (5 cols) */}
+            <div className="lg:col-span-5 sticky top-6 space-y-4">
+              <Card className="rounded-2xl border-border/80 shadow-xs overflow-hidden">
+                <CardHeader className="pb-3 bg-muted/30 border-b border-border/60">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Monitor className="h-4 w-4 text-primary" />
+                      <span className="text-xs font-bold text-foreground">Interactive Live Preview</span>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] uppercase font-mono">
+                      {content.settings?.banner?.template || defaultFeaturedBanner.template}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="p-4 bg-black/40 flex flex-col items-center justify-center min-h-[380px]">
+                  {/* Visual Render of Current Banner */}
+                  {(() => {
+                    const currentBanner = content.settings?.banner || defaultFeaturedBanner;
+                    const tpl = currentBanner.template || 'luxury_gold';
+                    
+                    if (currentBanner.type === 'top_bar') {
+                      return (
+                        <div className="w-full bg-slate-950 text-white border border-primary/40 rounded-xl p-3 text-xs flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                            <span className="px-2 py-0.5 rounded bg-primary text-primary-foreground font-bold text-[9px]">
+                              {currentBanner.badgeText || 'ANNOUNCEMENT'}
+                            </span>
+                            <X className="h-3 w-3 text-white/60" />
+                          </div>
+                          <p className="font-serif font-bold text-sm text-primary">{currentBanner.title}</p>
+                          <p className="text-[11px] text-white/80">{currentBanner.subtitle}</p>
+                          <div className="pt-1">
+                            <span className="inline-block bg-primary text-primary-foreground font-semibold px-3 py-1 rounded-full text-[10px]">
+                              {currentBanner.primaryButtonText}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className={`w-full rounded-2xl overflow-hidden border shadow-xl transition-all ${
+                        tpl === 'luxury_gold' ? 'bg-[#0c1117] text-white border-[#DEC49B]/40' :
+                        tpl === 'sapphire_blue' ? 'bg-[#09152b] text-white border-blue-400/30' :
+                        tpl === 'minimal_editorial' ? 'bg-[#FDFBF7] text-[#1a1a1a] border-[#E4DEC8]' :
+                        'bg-[#0f1722] text-white border-border'
+                      }`}>
+                        {/* Gold accent top strip */}
+                        <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#DEC49B] to-transparent" />
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-12 items-stretch">
+                          {currentBanner.image && (
+                            <div className="sm:col-span-5 relative h-32 sm:h-auto min-h-[120px] w-full overflow-hidden bg-black/40">
+                              <img
+                                src={currentBanner.image}
+                                alt="Preview"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+
+                          <div className={`p-4 space-y-2.5 flex flex-col justify-between ${currentBanner.image ? 'sm:col-span-7' : 'sm:col-span-12'}`}>
+                            <div className="space-y-1.5">
+                              {currentBanner.badgeText && (
+                                <span className={`inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                                  tpl === 'minimal_editorial' ? 'bg-primary/10 text-primary' : 'bg-[#DEC49B]/15 text-[#DEC49B] border border-[#DEC49B]/30'
+                                }`}>
+                                  {currentBanner.badgeText}
+                                </span>
+                              )}
+
+                              <h4 className={`text-sm font-serif font-bold leading-tight ${
+                                tpl === 'minimal_editorial' ? 'text-[#1a1a1a]' : 'text-white'
+                              }`}>
+                                {currentBanner.title}
+                              </h4>
+                              
+                              <p className={`text-[11px] line-clamp-2 leading-relaxed font-light ${
+                                tpl === 'minimal_editorial' ? 'text-neutral-600' : 'text-white/70'
+                              }`}>
+                                {currentBanner.subtitle}
+                              </p>
+                            </div>
+
+                            <div className="pt-1 flex flex-wrap items-center gap-2">
+                              <span className={`px-3 py-1 rounded-full text-[10px] font-semibold shadow-xs ${
+                                tpl === 'luxury_gold' ? 'bg-[#DEC49B] text-[#0c1117]' : 'bg-primary text-primary-foreground'
+                              }`}>
+                                {currentBanner.primaryButtonText}
+                              </span>
+                              {currentBanner.secondaryButtonText && (
+                                <span className={`px-2.5 py-1 rounded-full text-[10px] border ${
+                                  tpl === 'minimal_editorial' ? 'border-neutral-300 text-neutral-700' : 'border-white/20 text-white/80'
+                                }`}>
+                                  {currentBanner.secondaryButtonText}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+
+              {/* Instant Publishing Info Note */}
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/80 flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
+                <div className="text-xs space-y-1">
+                  <p className="font-semibold text-foreground">Immediate Effect</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Once you click <strong>&quot;Save All Changes&quot;</strong>, this banner will be stored directly in the <code>site_content</code> MySQL database and will automatically appear for all visitors on their next visit.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </TabsContent>
 
       </Tabs>

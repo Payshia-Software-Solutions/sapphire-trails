@@ -11,7 +11,6 @@ import {
   BookOpen, 
   Clock, 
   CalendarDays, 
-  Sparkles, 
   Search, 
   Filter, 
   Gem,
@@ -77,7 +76,7 @@ export function ArticlesList() {
             <span className="text-xs font-semibold uppercase tracking-widest text-primary font-serif">
               {listHeader.tagline}
             </span>
-            <h2 className="text-2xl sm:text-3xl font-headline font-bold text-foreground">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">
               {listHeader.heading}
             </h2>
           </div>
@@ -129,7 +128,7 @@ export function ArticlesList() {
         {/* 1. Featured Spotlight Article (when viewing all) */}
         {featuredArticle && (
           <div className="mb-12">
-            <Card className="bg-card border border-border/80 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:border-primary/50 transition-all duration-300 group cursor-pointer">
+            <Card className="bg-card border border-border/80 rounded-2xl overflow-hidden hover:border-primary/50 transition-colors group cursor-pointer">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
                 {/* Featured Thumbnail */}
                 <Link href={`/articles/${featuredArticle.slug}`} className="block lg:col-span-7 relative min-h-[280px] sm:min-h-[360px] w-full overflow-hidden">
@@ -143,7 +142,7 @@ export function ArticlesList() {
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent lg:hidden" />
                   
                   <div className="absolute top-4 left-4 z-10">
-                    <Badge className="bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider px-3 py-1 shadow-md">
+                    <Badge className="bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider px-3 py-1 shadow-xs">
                       Featured Spotlight
                     </Badge>
                   </div>
@@ -164,7 +163,7 @@ export function ArticlesList() {
                     </div>
 
                     <Link href={`/articles/${featuredArticle.slug}`} className="block">
-                      <h3 className="text-2xl sm:text-3xl font-headline font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
+                      <h3 className="text-xl sm:text-2xl font-serif font-normal text-foreground group-hover:text-primary transition-colors leading-tight">
                         {featuredArticle.title}
                       </h3>
                     </Link>
@@ -201,7 +200,7 @@ export function ArticlesList() {
             {remainingArticles.map((article) => (
               <Card
                 key={article.slug}
-                className="bg-card border border-border/80 flex flex-col w-full rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-primary/50 transition-all duration-300 group cursor-pointer"
+                className="bg-card border border-border/80 flex flex-col w-full rounded-2xl overflow-hidden hover:border-primary/50 transition-colors group cursor-pointer"
               >
                 {/* Article Thumbnail - Clickable */}
                 <Link href={`/articles/${article.slug}`} className="block relative aspect-[16/10] w-full overflow-hidden">
@@ -215,7 +214,7 @@ export function ArticlesList() {
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                   
                   {/* Category Pill */}
-                  <div className="absolute top-3 left-3 bg-slate-950/85 border border-primary/30 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-bold text-primary uppercase tracking-wider z-10">
+                  <div className="absolute top-3 left-3 bg-slate-950/85 border border-primary/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-primary uppercase tracking-wider z-10">
                     {article.category}
                   </div>
 
@@ -236,7 +235,7 @@ export function ArticlesList() {
                 <CardContent className="p-6 flex flex-col flex-grow justify-between space-y-4">
                   <div className="space-y-2.5">
                     <Link href={`/articles/${article.slug}`} className="block">
-                      <h3 className="text-lg sm:text-xl font-headline font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2">
+                      <h3 className="text-base sm:text-lg font-serif font-medium text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2">
                         {article.title}
                       </h3>
                     </Link>

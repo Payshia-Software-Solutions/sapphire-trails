@@ -84,8 +84,8 @@ export function ContactSection() {
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
             <div className="space-y-8">
                 <div>
-                    <h2 className="text-3xl font-headline font-bold text-primary">Contact Sapphire Trails – Book Your Gem Mine Tour</h2>
-                    <p className="mt-2 text-muted-foreground">Ready to explore the City of Gems? Contact our team in Ratnapura to plan your exclusive gem mine tour or inquire about our luxury tour packages. We are located at the Grand Silver Ray, conveniently accessible from the Colombo-Batticaloa Highway.</p>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">Contact Sapphire Trails – Book Your Gem Mine Tour</h2>
+                    <p className="mt-3 text-muted-foreground font-light text-sm sm:text-base leading-relaxed">Ready to explore the City of Gems? Contact our team in Ratnapura to plan your exclusive gem mine tour or inquire about our luxury tour packages. We are located at the Grand Silver Ray, conveniently accessible from the Colombo-Batticaloa Highway.</p>
                 </div>
                 <div className="space-y-4 text-muted-foreground">
                     <div className="flex items-start gap-4">
@@ -169,9 +169,9 @@ export function ContactSection() {
                         <Button onClick={() => setIsSubmitted(false)} variant="link" className="mt-4">Send another message</Button>
                     </div>
                 ) : (
-                    <Card>
+                    <Card className="bg-card border border-border/80 rounded-2xl shadow-none">
                         <CardHeader>
-                            <CardTitle>Send Us a Message</CardTitle>
+                            <CardTitle className="text-xl sm:text-2xl font-serif font-normal text-foreground">Send Us a Message</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Form {...form}>
