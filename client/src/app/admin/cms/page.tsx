@@ -7126,7 +7126,7 @@ export default function MasterCmsPage() {
                     {/* Col 4: Partner & Socials */}
                     <div className="space-y-1.5 sm:text-right">
                       <div className="w-10 h-6 relative sm:ml-auto">
-                        <Image src={content.footer.partnerLogo || '/img/logo2.png'} alt="Partner" fill className="object-contain" />
+                        <Image src={content.footer.partnerLogo || '/img/logo2.png'} alt="Partner" fill className="object-contain brightness-0 opacity-80 dark:brightness-100 dark:opacity-90 transition-all" />
                       </div>
                       <p className="text-[8px] text-muted-foreground">
                         {content.footer.partnerTagline || 'Hospitality Partner for Luxury Gem Tours.'}

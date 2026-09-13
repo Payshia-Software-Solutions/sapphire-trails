@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Facebook, Instagram, Youtube, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import { useSiteContent } from '@/lib/site-content';
+import { cn } from '@/lib/utils';
 
 const defaultTourLinks = [
   { href: '/custom-proposal-package', label: 'Custom Proposal & Ring Package' },
@@ -98,7 +99,12 @@ export function Footer() {
                      src={footer.partnerLogo || '/img/logo2.png'} 
                      alt="Grand Silver Ray Logo" 
                      fill 
-                     className="object-contain" 
+                     className={cn(
+                       "object-contain transition-all duration-300",
+                       (!footer.partnerLogo || footer.partnerLogo.includes('logo2'))
+                         ? "brightness-0 opacity-80 hover:opacity-100 dark:brightness-100 dark:opacity-90"
+                         : ""
+                     )} 
                    />
                  </div>
                  <p className="text-xs text-muted-foreground mt-2 text-center md:text-right max-w-[200px]">
