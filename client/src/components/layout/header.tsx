@@ -20,9 +20,7 @@ import {
   Gem, 
   MapPin, 
   BookOpen, 
-  ChevronRight, 
-  MessageSquare,
-  ArrowRight
+  MessageSquare
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -217,150 +215,120 @@ export function Header() {
             
             <SheetContent 
               side="right" 
-              className="w-[88vw] max-w-sm sm:max-w-md bg-background/95 backdrop-blur-xl border-l border-primary/20 p-0 flex flex-col justify-between shadow-2xl"
+              className="w-[85vw] max-w-sm bg-background/98 backdrop-blur-2xl border-l border-border/40 p-0 flex flex-col justify-between shadow-2xl"
             >
               {/* Drawer Top / Header */}
-              <div className="p-6 pb-4 border-b border-border/60">
+              <div className="px-6 py-6 border-b border-border/30">
                 <SheetHeader className="text-left space-y-0">
                   <SheetTitle className="sr-only">Sapphire Trails Navigation</SheetTitle>
                 </SheetHeader>
                 
-                <div className="flex items-center gap-3">
-                  <div className="relative p-1 rounded-xl bg-primary/10 border border-primary/25 shadow-inner">
-                    <Image 
-                      src="/img/logo4.png"
-                      alt="Sapphire Trails"
-                      width={44}
-                      height={44}
-                      className="object-contain"
-                    />
-                  </div>
+                <Link 
+                  href="/" 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 group transition-opacity hover:opacity-85 pr-8"
+                >
+                  <Image 
+                    src="/img/logo4.png"
+                    alt="Sapphire Trails"
+                    width={34}
+                    height={34}
+                    className="object-contain"
+                  />
                   <div>
-                    <div className="font-serif text-base font-bold tracking-[0.18em] text-primary">
+                    <span className="block font-serif text-sm tracking-[0.22em] uppercase text-primary font-medium">
                       SAPPHIRE TRAILS
-                    </div>
-                    <div className="text-[10px] font-serif uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 mt-0.5">
-                      <span>Luxury Gem Tours</span>
-                      <span className="inline-block w-1 h-1 rounded-full bg-primary/60" />
-                      <span>Ratnapura</span>
-                    </div>
+                    </span>
+                    <span className="block text-[9px] font-serif tracking-[0.2em] uppercase text-muted-foreground/70 mt-0.5">
+                      Luxury Gem Tours
+                    </span>
                   </div>
-                </div>
+                </Link>
               </div>
 
               {/* Scrollable Navigation Links Area */}
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1.5">
-                <div className="px-2 py-1 text-[10px] font-serif uppercase tracking-[0.2em] text-muted-foreground/70">
-                  Navigation
-                </div>
-                
+              <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col justify-between">
                 <nav className="flex flex-col space-y-1">
                   {navLinks.map((link) => {
-                    const Icon = link.icon;
                     const isActive = isLinkActive(pathname, link.href);
                     
                     return (
-
                       <Link 
                         key={link.href} 
                         href={link.href} 
                         onClick={() => setIsMenuOpen(false)}
                         className={cn(
-                          "group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-serif uppercase tracking-wider transition-all duration-200",
+                          "group flex items-center justify-between py-3 px-2 rounded-md transition-all duration-200 border-b border-border/15",
                           isActive 
-                            ? "bg-primary/15 text-primary font-semibold border border-primary/30 shadow-sm" 
-                            : "text-foreground/80 hover:text-primary hover:bg-primary/5"
+                            ? "text-primary font-medium" 
+                            : "text-muted-foreground hover:text-foreground"
                         )}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={cn(
-                            "p-2 rounded-lg transition-colors",
+                          <span className={cn(
+                            "w-1 h-1 rounded-full transition-all duration-300",
                             isActive 
-                              ? "bg-primary text-primary-foreground shadow-sm" 
-                              : "bg-muted/80 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
-                          )}>
-                            <Icon className="h-4 w-4" />
-                          </div>
-                          <span>{link.label}</span>
+                              ? "bg-primary scale-125" 
+                              : "bg-transparent scale-0 group-hover:bg-primary/50 group-hover:scale-75"
+                          )} />
+                          <span className="font-serif text-[15px] tracking-[0.14em] uppercase">
+                            {link.label}
+                          </span>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          {link.badge && (
-                            <span className="text-[9px] font-sans font-medium px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 uppercase tracking-widest">
-                              {link.badge}
-                            </span>
-                          )}
-                          <ChevronRight className={cn(
-                            "h-4 w-4 transition-transform duration-200",
-                            isActive ? "text-primary translate-x-0.5" : "text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5"
-                          )} />
-                        </div>
+                        {link.badge && (
+                          <span className="text-[9px] font-sans tracking-[0.2em] uppercase text-primary/70">
+                            {link.badge}
+                          </span>
+                        )}
                       </Link>
                     );
                   })}
                 </nav>
 
-                {/* Quick Booking CTA Banner */}
-                <div className="pt-3 pb-1">
-                  <div className="relative overflow-hidden rounded-xl bg-card border border-border/80 p-4">
-                    <div className="absolute -right-4 -bottom-4 opacity-10 text-primary pointer-events-none">
-                      <Gem className="w-24 h-24" />
-                    </div>
-                    <div className="relative z-10">
-                      <p className="text-xs font-serif uppercase tracking-wider text-primary font-semibold">
-                        Exclusive Mining Tours
-                      </p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5 mb-3 leading-relaxed">
-                        Book customized private gem tours & romantic proposal packages.
-                      </p>
-                      <Button 
-                        asChild 
-                        size="sm" 
-                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-serif uppercase tracking-widest text-[11px] h-8 rounded-lg shadow-sm"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <Link href="/tours" className="flex items-center justify-center gap-1.5">
-                          <span>Explore Tours</span>
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Direct Contacts */}
-                <div className="pt-2 px-1">
-                  <div className="grid grid-cols-2 gap-2">
+                {/* Quiet Concierge Touchpoint */}
+                <div className="mt-8 pt-6 border-t border-border/30">
+                  <p className="text-[9px] font-serif uppercase tracking-[0.25em] text-muted-foreground/60 mb-3">
+                    Private Concierge
+                  </p>
+                  <div className="space-y-2 text-xs text-muted-foreground">
                     <a 
                       href={primaryPhoneTel} 
-                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-muted/40 hover:bg-primary/10 text-[11px] text-muted-foreground hover:text-primary transition-colors border border-border"
+                      className="flex items-center gap-2.5 hover:text-primary transition-colors py-0.5"
                     >
-                      <Phone className="h-3.5 w-3.5 text-primary" />
-                      <span>Call Us</span>
+                      <Phone className="h-3.5 w-3.5 text-primary/70" />
+                      <span className="tracking-wider">{primaryPhone}</span>
                     </a>
+                    {whatsappUrl && (
+                      <a 
+                        href={whatsappUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="flex items-center gap-2.5 hover:text-primary transition-colors py-0.5"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5 text-primary/70" />
+                        <span className="tracking-wider">WhatsApp Concierge</span>
+                      </a>
+                    )}
                     <a 
-                      href={whatsappUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-muted/40 hover:bg-primary/10 text-[11px] text-muted-foreground hover:text-primary transition-colors border border-border"
+                      href={`mailto:${primaryEmail}`} 
+                      className="flex items-center gap-2.5 hover:text-primary transition-colors py-0.5"
                     >
-                      <MessageSquare className="h-3.5 w-3.5 text-primary" />
-                      <span>WhatsApp</span>
+                      <Mail className="h-3.5 w-3.5 text-primary/70" />
+                      <span className="tracking-wider">{primaryEmail}</span>
                     </a>
                   </div>
                 </div>
               </div>
 
               {/* Bottom Sticky Action & Theme Drawer Footer */}
-              <div className="p-4 border-t border-border/60 bg-background-alt/30 flex flex-col gap-3">
+              <div className="p-6 border-t border-border/30 bg-background-alt/10 flex flex-col gap-4">
                 {/* Theme Toggle Button */}
-                <div className="flex items-center justify-between px-2">
-                  <span className="text-xs text-muted-foreground font-serif tracking-wider uppercase">Appearance</span>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-serif uppercase tracking-[0.2em] text-muted-foreground/60">Appearance</span>
+                  <button 
                     onClick={toggleTheme} 
-                    className="h-8 px-3 rounded-full text-xs font-serif uppercase tracking-wider text-primary border-primary/30 hover:bg-primary/10 flex items-center gap-1.5"
+                    className="flex items-center gap-2 text-xs font-serif uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
                   >
                     {theme === 'dark' ? (
                       <>
@@ -373,70 +341,60 @@ export function Header() {
                         <span>Dark Mode</span>
                       </>
                     )}
-                  </Button>
+                  </button>
                 </div>
 
                 {/* User Profile / Admin or Auth Login */}
                 {user ? (
-                  <div className="space-y-2 pt-1">
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-card border border-border">
-                      <div className="flex items-center gap-2.5 overflow-hidden">
-                        <div className="h-8 w-8 rounded-full bg-primary/15 text-primary flex items-center justify-center flex-shrink-0 font-serif font-bold text-xs border border-primary/30">
-                          {user.email ? user.email.charAt(0).toUpperCase() : 'U'}
-                        </div>
-                        <div className="overflow-hidden">
-                          <p className="text-xs font-medium truncate">{user.email}</p>
-                          <p className="text-[10px] text-primary font-serif uppercase tracking-wider">
-                            {user.type === 'admin' ? 'Administrator' : 'Client Account'}
-                          </p>
-                        </div>
+                  <div className="space-y-3 pt-3 border-t border-border/20">
+                    <div className="flex items-center justify-between">
+                      <div className="overflow-hidden">
+                        <p className="text-xs font-medium truncate text-foreground">{user.email}</p>
+                        <p className="text-[9px] font-serif uppercase tracking-widest text-primary/80 mt-0.5">
+                          {user.type === 'admin' ? 'Administrator' : 'Client Account'}
+                        </p>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <button 
                         onClick={handleLogout} 
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg flex-shrink-0"
+                        className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
                         title="Log Out"
                       >
                         <LogOut className="h-4 w-4" />
-                      </Button>
+                      </button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="flex items-center gap-2">
                       {user.type === 'admin' && (
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="w-full text-xs font-serif uppercase tracking-wider border-primary/30 hover:bg-primary/10 text-primary h-8"
+                          className="flex-1 text-[10px] font-serif uppercase tracking-widest border-border/60 hover:border-primary/40 hover:text-primary h-8 rounded-md"
                           onClick={handleAdminClick}
                         >
-                          <Shield className="mr-1.5 h-3.5 w-3.5" />
+                          <Shield className="mr-1.5 h-3 w-3" />
                           Admin
                         </Button>
                       )}
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className={cn(
-                          "text-xs font-serif uppercase tracking-wider border-primary/30 hover:bg-primary/10 text-primary h-8",
-                          user.type === 'admin' ? "w-full" : "col-span-2 w-full"
-                        )}
+                        className="flex-1 text-[10px] font-serif uppercase tracking-widest border-border/60 hover:border-primary/40 hover:text-primary h-8 rounded-md"
                         onClick={handleProfileClick}
                       >
-                        <User className="mr-1.5 h-3.5 w-3.5" />
-                        My Profile
+                        <User className="mr-1.5 h-3 w-3" />
+                        Profile
                       </Button>
                     </div>
                   </div>
                 ) : (
                   <Button 
                     asChild 
-                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-serif uppercase tracking-widest text-xs h-9 rounded-xl shadow-sm"
+                    variant="outline"
+                    className="w-full border-primary/30 hover:border-primary text-primary hover:bg-primary/5 font-serif uppercase tracking-[0.2em] text-[10px] h-9 rounded-md transition-all"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <Link href="/auth" className="flex items-center justify-center gap-2">
-                      <User className="h-4 w-4" />
-                      <span>Sign In / Register</span>
+                    <Link href="/auth">
+                      Sign In / Register
                     </Link>
                   </Button>
                 )}
