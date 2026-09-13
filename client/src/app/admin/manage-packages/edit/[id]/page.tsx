@@ -327,8 +327,13 @@ export default function EditPackageStudioPage() {
       });
 
       if (!response.ok) {
-        const errJson = await response.json();
-        throw new Error(errJson.message || 'Failed to update tour package');
+        const rawText = await response.text();
+        let errJson: any = {};
+        try {
+          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+          errJson = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(rawText);
+        } catch (_) {}
+        throw new Error(errJson.message || errJson.error || 'Failed to update tour package');
       }
 
       toast({

@@ -195,13 +195,36 @@ export default function AddPackagePage() {
 
   const handleNext = async () => {
     const fields = steps[currentStep - 1].fields;
-    const isValid = await form.trigger(fields, { shouldFocus: true });
+    const isValid = await form.trigger(fields as any, { shouldFocus: true });
     
     if (!isValid) {
+        const errorList: string[] = [];
+        fields.forEach((fieldKey) => {
+          const error = (form.formState.errors as any)[fieldKey];
+          if (!error) return;
+          if (typeof error.message === 'string' && error.message) {
+            errorList.push(error.message);
+          } else if (error.root?.message) {
+            errorList.push(error.root.message);
+          } else if (Array.isArray(error)) {
+            error.forEach((itemErr, idx) => {
+              if (!itemErr) return;
+              Object.entries(itemErr).forEach(([subKey, subVal]: [string, any]) => {
+                if (subVal?.message) {
+                  const label = fieldKey === 'tourHighlights' ? 'Highlight' : fieldKey === 'inclusions' ? 'Inclusion' : fieldKey === 'itinerary' ? 'Itinerary Item' : 'Gallery Image';
+                  errorList.push(`${label} #${idx + 1} (${subKey}): ${subVal.message}`);
+                }
+              });
+            });
+          }
+        });
+
         toast({
             variant: "destructive",
-            title: "Validation Error",
-            description: "Please fill out all required fields before proceeding.",
+            title: `Step ${currentStep} Validation Error`,
+            description: errorList.length > 0 
+              ? errorList.slice(0, 3).join('. ')
+              : "Please check all required fields in this step before proceeding.",
         });
         return;
     }
@@ -300,6 +323,9 @@ export default function AddPackagePage() {
     }));
     formData.append('experience_gallery_meta', JSON.stringify(galleryMeta));
 
+    formData.append('homepage_image_url', '');
+    formData.append('hero_image_url', '');
+
     galleryImageFiles.forEach((file) => {
       if (file) {
         formData.append(`experience_gallery_images[]`, file);
@@ -313,7 +339,14 @@ export default function AddPackagePage() {
         body: formData,
       });
 
-      const responseData = await response.json();
+      const rawText = await response.text();
+      let responseData: any = null;
+      try {
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        responseData = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(rawText);
+      } catch (e) {
+        console.error('Failed to parse response JSON:', rawText);
+      }
 
       if (!response.ok) {
         throw new Error(responseData?.error || 'Failed to create tour package.');
@@ -327,12 +360,12 @@ export default function AddPackagePage() {
       triggerRevalidation(['/tours', '/']);
       router.push('/admin/manage-packages');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save package:', error);
       toast({
         variant: 'destructive',
-        title: 'Connection Error',
-        description: 'Could not connect to the server. Please try again later.',
+        title: 'Save Failed',
+        description: error?.message || 'Could not save tour package. Please try again later.',
       });
     } finally {
       setIsSubmitting(false);
@@ -453,8 +486,20 @@ export default function AddPackagePage() {
             <div className={cn(currentStep === 3 ? 'block' : 'hidden')}>
                 <Card>
                     <CardHeader>
-                    <CardTitle>Tour Highlights</CardTitle>
-                    <CardDescription>The main highlights shown on the tour page.</CardDescription>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <CardTitle>Tour Highlights</CardTitle>
+                          <CardDescription>The main highlights shown on the tour page (1 to 6 highlights).</CardDescription>
+                        </div>
+                        <span className="text-xs font-mono text-muted-foreground bg-muted/60 px-2 py-1 rounded">
+                          {highlightFields.length} {highlightFields.length === 1 ? 'highlight' : 'highlights'}
+                        </span>
+                      </div>
+                      {((form.formState.errors.tourHighlights as any)?.message || (form.formState.errors.tourHighlights as any)?.root?.message) && (
+                        <p className="text-xs font-medium text-destructive mt-1">
+                          {(form.formState.errors.tourHighlights as any)?.message || (form.formState.errors.tourHighlights as any)?.root?.message}
+                        </p>
+                      )}
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -510,8 +555,20 @@ export default function AddPackagePage() {
                 </Card>
                 <Card className="mt-8">
                     <CardHeader>
-                    <CardTitle>Inclusions</CardTitle>
-                    <CardDescription>List everything that is included in this package.</CardDescription>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <CardTitle>Inclusions</CardTitle>
+                          <CardDescription>List everything that is included in this package.</CardDescription>
+                        </div>
+                        <span className="text-xs font-mono text-muted-foreground bg-muted/60 px-2 py-1 rounded">
+                          {inclusionFields.length} {inclusionFields.length === 1 ? 'inclusion' : 'inclusions'}
+                        </span>
+                      </div>
+                      {((form.formState.errors.inclusions as any)?.message || (form.formState.errors.inclusions as any)?.root?.message) && (
+                        <p className="text-xs font-medium text-destructive mt-1">
+                          {(form.formState.errors.inclusions as any)?.message || (form.formState.errors.inclusions as any)?.root?.message}
+                        </p>
+                      )}
                     </CardHeader>
                     <CardContent className="space-y-4">
                     {inclusionFields.map((item, index) => (
@@ -538,8 +595,20 @@ export default function AddPackagePage() {
              <div className={cn(currentStep === 4 ? 'block' : 'hidden')}>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Daily Itinerary</CardTitle>
-                        <CardDescription>Add the schedule of activities for the tour.</CardDescription>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <CardTitle>Daily Itinerary</CardTitle>
+                          <CardDescription>Add the schedule of activities for the tour.</CardDescription>
+                        </div>
+                        <span className="text-xs font-mono text-muted-foreground bg-muted/60 px-2 py-1 rounded">
+                          {itineraryFields.length} {itineraryFields.length === 1 ? 'item' : 'items'}
+                        </span>
+                      </div>
+                      {((form.formState.errors.itinerary as any)?.message || (form.formState.errors.itinerary as any)?.root?.message) && (
+                        <p className="text-xs font-medium text-destructive mt-1">
+                          {(form.formState.errors.itinerary as any)?.message || (form.formState.errors.itinerary as any)?.root?.message}
+                        </p>
+                      )}
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {itineraryFields.map((item, index) => (
@@ -565,8 +634,20 @@ export default function AddPackagePage() {
               <div className={cn(currentStep === 5 ? 'block' : 'hidden')}>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Experience Gallery</CardTitle>
-                        <CardDescription>Upload up to 8 images for the tour detail page gallery.</CardDescription>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <CardTitle>Experience Gallery</CardTitle>
+                          <CardDescription>Upload up to 8 images for the tour detail page gallery.</CardDescription>
+                        </div>
+                        <span className="text-xs font-mono text-muted-foreground bg-muted/60 px-2 py-1 rounded">
+                          {galleryFields.length} {galleryFields.length === 1 ? 'image' : 'images'}
+                        </span>
+                      </div>
+                      {((form.formState.errors.experienceGallery as any)?.message || (form.formState.errors.experienceGallery as any)?.root?.message) && (
+                        <p className="text-xs font-medium text-destructive mt-1">
+                          {(form.formState.errors.experienceGallery as any)?.message || (form.formState.errors.experienceGallery as any)?.root?.message}
+                        </p>
+                      )}
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {galleryFields.map((item, index) => (
