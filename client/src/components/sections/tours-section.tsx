@@ -25,9 +25,9 @@ import { useSiteContent } from '@/lib/site-content';
 
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
-  <Card className="bg-card border border-border/80 flex flex-col w-full transition-colors duration-300 hover:border-primary/40 rounded-xl overflow-hidden group cursor-pointer shadow-sm">
+  <Card className="bg-card border border-border/80 flex flex-col w-full h-full transition-colors duration-300 hover:border-primary/40 rounded-xl overflow-hidden group cursor-pointer shadow-sm">
     {/* Clickable Card Header & Image */}
-    <Link href={`/tours/${tour.slug}`} className="block relative h-64 sm:h-72 w-full overflow-hidden">
+    <Link href={`/tours/${tour.slug}`} className="block relative h-60 sm:h-72 w-full overflow-hidden shrink-0">
       <Image
         src={tour.imageUrl}
         alt={tour.imageAlt || tour.homepageTitle}
@@ -60,12 +60,12 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
     </Link>
 
     {/* Content */}
-    <CardContent className="p-6 sm:p-7 flex flex-col flex-grow justify-between space-y-5">
-      <Link href={`/tours/${tour.slug}`} className="block space-y-3">
-        <h3 className="text-xl sm:text-2xl font-headline font-bold text-foreground group-hover:text-primary transition-colors">
+    <CardContent className="p-5 sm:p-7 flex flex-col flex-grow justify-between space-y-4">
+      <Link href={`/tours/${tour.slug}`} className="block space-y-2">
+        <h3 className="text-lg sm:text-2xl font-headline font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-[3.25rem] sm:min-h-[4rem] flex items-start">
           {tour.homepageTitle}
         </h3>
-        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed min-h-[3.6rem] sm:min-h-[4rem]">
           {tour.homepageDescription}
         </p>
       </Link>
@@ -91,7 +91,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       </div>
 
       {/* Dual CTA Buttons */}
-      <div className="flex items-center gap-3 pt-2">
+      <div className="flex items-center gap-2.5 sm:gap-3 pt-2">
         <Button asChild className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs h-10 rounded-full shadow-md">
           <Link href={`/tours/${tour.slug}/book`}>
             <CalendarCheck className="mr-1.5 h-3.5 w-3.5" />
@@ -99,7 +99,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
           </Link>
         </Button>
 
-        <Button asChild variant="outline" className="border-border text-foreground hover:bg-primary/10 hover:text-primary text-xs h-10 px-5 rounded-full">
+        <Button asChild variant="outline" className="border-border text-foreground hover:bg-primary/10 hover:text-primary text-xs h-10 px-4 sm:px-5 rounded-full">
           <Link href={`/tours/${tour.slug}`}>
             Details
             <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -157,7 +157,7 @@ export function ToursSection() {
         {/* Tour Cards Grid */}
         <ScrollAnimate>
           {/* Desktop View */}
-          <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
             {tours.map((tour, index) => (
               <TourCard key={index} tour={tour} />
             ))}
@@ -166,9 +166,9 @@ export function ToursSection() {
           {/* Mobile View Slider */}
           <div className="md:hidden relative">
             <div className="overflow-hidden -ml-4" ref={emblaRef}>
-              <div className="flex">
+              <div className="flex items-stretch">
                 {tours.map((tour, index) => (
-                  <div className="relative flex-[0_0_88%] min-w-0 pl-4" key={index}>
+                  <div className="relative flex-[0_0_86%] sm:flex-[0_0_88%] min-w-0 pl-4 flex flex-col" key={index}>
                     <TourCard tour={tour} />
                   </div>
                 ))}
