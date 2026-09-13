@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { MapPin, Crown, Sparkles, Gem, ArrowUpRight } from 'lucide-react';
+import { MapPin, Crown, Gem, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useSiteContent } from '@/lib/site-content';
 
@@ -17,7 +17,7 @@ export function WhyRatnapuraSection() {
           
           {/* Visual Showcase (5 cols) */}
           <div className="lg:col-span-5 relative space-y-4">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl shadow-xl border border-border/80 group">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border/80 group">
               <Image
                 src={why.image || 'https://content-provider.payshia.com/sapphire-trail/images/tour-11-optimized.webp'}
                 alt="Panoramic view of Ratnapura gem valley"
@@ -29,14 +29,14 @@ export function WhyRatnapuraSection() {
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/20 border border-primary/40 text-[10px] font-bold text-primary mb-1">
                     <MapPin className="h-3 w-3" /> Sabaragamuwa Province, Sri Lanka
                   </div>
-                  <h4 className="text-xl font-bold text-white font-headline">Ratnapura Valley</h4>
+                  <h4 className="text-xl font-normal text-white font-serif">Ratnapura Valley</h4>
                   <p className="text-xs text-slate-300">The world&apos;s oldest active sapphire producing epicenter</p>
                 </div>
               </div>
             </div>
 
             {/* Quick Fact Box */}
-            <div className="p-4 rounded-xl bg-card border shadow-sm flex items-center gap-4">
+            <div className="p-4 rounded-xl bg-card border border-border/70 flex items-center gap-4">
               <div className="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
                 <Crown className="h-5 w-5" />
               </div>
@@ -50,15 +50,13 @@ export function WhyRatnapuraSection() {
           {/* Lore & Story (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary uppercase tracking-wider">
-              <Sparkles className="h-3.5 w-3.5" />
+              <Crown className="h-3.5 w-3.5" />
               {why.tagline || "The World's Gem Capital"}
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold text-foreground tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground leading-tight">
               {why.heading}
             </h2>
-
-            <div className="w-20 h-1 bg-primary rounded-full" />
 
             <div className="space-y-4 text-muted-foreground text-sm sm:text-base leading-relaxed font-light">
               <p>{why.paragraph1}</p>

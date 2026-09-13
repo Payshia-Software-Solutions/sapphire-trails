@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Compass, Gem, Sparkles, Hammer, Truck } from 'lucide-react';
+import { Compass, Gem, Award, Hammer, Truck } from 'lucide-react';
 import { useSiteContent } from '@/lib/site-content';
 
-const defaultTimelineIcons = [Compass, Gem, Sparkles, Hammer, Truck];
+const defaultTimelineIcons = [Compass, Gem, Award, Hammer, Truck];
 
 export function ProposalJourneyTimeline() {
   const { content } = useSiteContent();
@@ -15,15 +15,14 @@ export function ProposalJourneyTimeline() {
     <section className="w-full py-12 md:py-24 bg-background">
       <div className="container mx-auto px-4 md:px-6">
         
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h2 className="text-3xl font-headline font-bold text-primary">
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+          <span className="text-xs font-semibold uppercase tracking-widest text-primary font-serif">
+            {timeline?.tagline || 'The 5-Stage Journey'}
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">
             {timeline?.heading || 'From Mine To Ring In 5 Days'}
           </h2>
-          <h3 className="font-serif text-lg tracking-[0.2em] text-primary/80 uppercase">
-            {timeline?.tagline || 'The 5-Stage Journey'}
-          </h3>
-          <div className="w-24 h-px bg-primary mx-auto"></div>
-          <p className="text-muted-foreground leading-relaxed mt-4">
+          <p className="text-muted-foreground leading-relaxed mt-2 font-light text-sm sm:text-base">
             {timeline?.subtitle || 'A seamless romantic experience where you source your dream gemstone together at the origin and have it custom-crafted by master jewelers in 5 working days.'}
           </p>
         </div>
@@ -48,14 +47,14 @@ export function ProposalJourneyTimeline() {
 
                 {/* Content Card */}
                 <div className={`flex-1 pb-8 ${isLast ? 'pb-0' : ''}`}>
-                  <div className="p-6 rounded-lg bg-card border border-border/80 shadow-sm hover:border-primary/40 transition-colors">
+                  <div className="p-6 rounded-2xl bg-card border border-border/80 hover:border-primary/40 transition-colors">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 rounded-md bg-primary/10 text-primary">
+                      <div className="p-2 rounded-lg bg-primary/10 text-primary">
                         <Icon className="h-5 w-5" />
                       </div>
-                      <h3 className="font-headline font-bold text-foreground text-lg">{item.title}</h3>
+                      <h3 className="font-serif font-medium text-foreground text-base sm:text-lg">{item.title}</h3>
                     </div>
-                    <p className="text-muted-foreground text-sm leading-relaxed mt-2">{item.description}</p>
+                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed font-light mt-2">{item.description}</p>
                   </div>
                 </div>
               </div>

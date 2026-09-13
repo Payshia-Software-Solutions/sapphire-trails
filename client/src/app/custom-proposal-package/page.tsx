@@ -50,23 +50,22 @@ export default function CustomProposalPackagePage() {
             <div className="container mx-auto px-4 md:px-6">
               <div className="grid md:grid-cols-2 gap-12 lg:gap-24 items-center">
                 <div className="space-y-4 text-left">
-                  <h2 className="text-3xl font-headline font-bold text-primary">{prop.overview?.heading}</h2>
-                  <h3 className="font-serif text-2xl tracking-[0.2em] text-primary/80">{prop.overview?.tagline}</h3>
-                  <div className="w-24 h-px bg-primary"></div>
-                  <p className="text-muted-foreground leading-relaxed mt-4">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">{prop.overview?.heading}</h2>
+                  <h3 className="font-serif text-lg sm:text-xl tracking-[0.15em] uppercase text-primary/90">{prop.overview?.tagline}</h3>
+                  <p className="text-muted-foreground leading-relaxed mt-4 font-light text-sm sm:text-base">
                     {prop.overview?.paragraph1}
                   </p>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed font-light text-sm sm:text-base">
                     {prop.overview?.paragraph2}
                   </p>
                   <div className="flex flex-wrap gap-4 pt-4">
-                    <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
+                    <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6 h-11 text-xs font-semibold shadow-sm">
                       <a href="#inquiry">
                         <Heart className="mr-2 h-4 w-4" />
                         {prop.overview?.primaryButtonText || 'Inquire For Custom Quote'}
                       </a>
                     </Button>
-                    <Button asChild variant="outline" className="text-primary border-primary hover:bg-primary/10 rounded-full px-6">
+                    <Button asChild variant="outline" className="border border-border/80 hover:border-primary/50 text-foreground hover:bg-primary/10 rounded-full px-6 h-11 text-xs font-semibold bg-transparent transition-colors">
                       <a href={getWhatsappUrl(content, 'Hello Sapphire Trails, I am interested in the Custom Proposal Package.')} target="_blank" rel="noopener noreferrer">
                         {prop.overview?.secondaryButtonText || 'WhatsApp Concierge'}
                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -76,7 +75,7 @@ export default function CustomProposalPackagePage() {
                 </div>
 
                 <div>
-                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg shadow-lg">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border/80">
                     <Image
                       src={prop.overview?.image || "https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp"}
                       alt="Custom sapphire selection and jewelry craftsmanship"
@@ -97,17 +96,17 @@ export default function CustomProposalPackagePage() {
           <section className={`w-full py-12 md:py-24 lg:py-32 ${getSectionThemeClass(sty.pillars, 'bg-background-alt')}`}>
             <div className="container mx-auto px-4 md:px-6">
               <div className="text-center max-w-3xl mx-auto mb-12">
-                <h2 className="text-3xl font-headline font-bold text-primary">{prop.pillars?.heading}</h2>
-                <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">{prop.pillars?.heading}</h2>
+                <p className="mt-4 text-muted-foreground font-light text-sm sm:text-base">
                   {prop.pillars?.subtitle}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {prop.pillars?.items?.map((item, index) => {
                   const Icon = defaultPillarIcons[index % defaultPillarIcons.length];
                   return (
-                    <Card key={index} className="bg-card border-border/50 flex flex-col w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-xl overflow-hidden">
+                    <Card key={index} className="bg-card border border-border/80 flex flex-col w-full rounded-2xl overflow-hidden hover:border-primary/40 transition-colors">
                       <div className="relative aspect-[3/2] w-full">
                         <Image
                           src={item.image}
@@ -118,12 +117,12 @@ export default function CustomProposalPackagePage() {
                       </div>
                       <CardContent className="p-6 flex flex-col flex-grow">
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="p-2 rounded-md bg-primary/10 text-primary">
+                          <div className="p-2 rounded-lg bg-primary/10 text-primary">
                             <Icon className="h-5 w-5" />
                           </div>
-                          <h3 className="text-lg font-headline font-bold text-primary">{item.title}</h3>
+                          <h3 className="text-base font-serif font-medium text-foreground">{item.title}</h3>
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed flex-grow">
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-light flex-grow">
                           {item.description}
                         </p>
                       </CardContent>

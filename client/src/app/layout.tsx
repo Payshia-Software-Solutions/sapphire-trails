@@ -173,7 +173,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className="light" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -181,7 +181,26 @@ export default function RootLayout({
               (function() {
                 try {
                   var stored = localStorage.getItem('theme');
-                  var theme = stored ? stored : 'dark';
+                  var theme = stored;
+                  if (!theme) {
+                    var siteDefault = localStorage.getItem('site_default_theme');
+                    if (siteDefault === 'dark' || siteDefault === 'light') {
+                      theme = siteDefault;
+                    } else {
+                      try {
+                        var cached = localStorage.getItem('sapphire_site_content_cache');
+                        if (cached) {
+                          var parsed = JSON.parse(cached);
+                          if (parsed && parsed.settings && (parsed.settings.defaultTheme === 'dark' || parsed.settings.defaultTheme === 'light')) {
+                            theme = parsed.settings.defaultTheme;
+                          }
+                        }
+                      } catch (err) {}
+                    }
+                  }
+                  if (!theme) {
+                    theme = 'light';
+                  }
                   if (theme === 'dark') {
                     document.documentElement.classList.add('dark');
                     document.documentElement.classList.remove('light');
@@ -190,7 +209,8 @@ export default function RootLayout({
                     document.documentElement.classList.add('light');
                   }
                 } catch (e) {
-                  document.documentElement.classList.add('dark');
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.classList.add('light');
                 }
               })();
             `,

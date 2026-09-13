@@ -530,7 +530,7 @@ export function LocationNearby({
                   size="sm"
                   variant="outline"
                   onClick={resetToAllBounds}
-                  className="h-8 text-xs bg-black/80 backdrop-blur-md border-white/20 text-white hover:bg-primary hover:text-primary-foreground gap-1.5 shadow"
+                  className="h-8 text-xs bg-black/90 border border-white/20 text-white hover:bg-primary hover:text-primary-foreground gap-1.5 shadow transition-colors"
                 >
                   <Maximize2 className="h-3.5 w-3.5" />
                   Fit All Pins

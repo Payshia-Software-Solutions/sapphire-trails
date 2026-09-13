@@ -3,7 +3,33 @@ import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
 import { triggerRevalidation } from '@/lib/revalidate';
 
+export type BannerTemplate = 'luxury_gold' | 'sapphire_blue' | 'minimal_editorial' | 'image_spotlight';
+export type BannerDisplayType = 'modal' | 'top_bar' | 'bottom_toast';
+
+export interface FeaturedBannerConfig {
+  enabled: boolean;
+  type: BannerDisplayType;
+  template: BannerTemplate;
+  title: string;
+  subtitle: string;
+  badgeText: string;
+  image: string;
+  primaryButtonText: string;
+  primaryButtonLink: string;
+  secondaryButtonText?: string;
+  secondaryButtonLink?: string;
+  showOncePerSession?: boolean;
+  delaySeconds?: number;
+}
+
 export interface SiteContentData {
+  // Global Site Settings
+  settings?: {
+    defaultTheme?: 'light' | 'dark';
+    banner?: FeaturedBannerConfig;
+    [key: string]: any;
+  };
+
   // 1. Complete Homepage Sections
   homepage: {
     hero: {
@@ -196,6 +222,7 @@ export interface SiteContentData {
       badge: string;
       title: string;
       description: string;
+      image?: string;
       primaryButtonText?: string;
       secondaryButtonText?: string;
     };
@@ -394,7 +421,27 @@ export function getSectionThemeClass(themeId?: string, defaultClass: string = ''
   return found ? `${found.bgClass} ${defaultClass}` : defaultClass;
 }
 
+export const defaultFeaturedBanner: FeaturedBannerConfig = {
+  enabled: false,
+  type: 'modal',
+  template: 'luxury_gold',
+  title: 'Custom Proposal & Engagement Ring Expedition',
+  subtitle: 'Descend into private gem pits, uncover your raw sapphire, and have it handcrafted into an heirloom ring in Ratnapura.',
+  badgeText: 'EXCLUSIVE 2026 LUXURY OFFER',
+  image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp',
+  primaryButtonText: 'Explore Proposal Package',
+  primaryButtonLink: '/custom-proposal-package',
+  secondaryButtonText: 'WhatsApp Concierge',
+  secondaryButtonLink: 'https://wa.me/94763756688',
+  showOncePerSession: true,
+  delaySeconds: 2,
+};
+
 export const defaultSiteContent: SiteContentData = {
+  settings: {
+    defaultTheme: 'light',
+    banner: defaultFeaturedBanner,
+  },
 
   homepage: {
     hero: {
@@ -722,6 +769,7 @@ export const defaultSiteContent: SiteContentData = {
       badge: 'Special Experience',
       title: 'Custom Proposal Package & Bespoke 5-Day Ring Crafting',
       description: 'Looking for the ultimate romantic proposal? Embark on an exclusive Ratnapura gem mine tour, pick your certified natural sapphire with master gemologists, and receive your custom-designed 3D CAD engagement ring in just 5 working days with insured delivery.',
+      image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp',
       primaryButtonText: 'Explore Proposal Package',
       secondaryButtonText: 'WhatsApp Concierge',
     },
@@ -1188,6 +1236,14 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         const merged: SiteContentData = {
           ...defaultSiteContent,
           ...data,
+          settings: {
+            ...defaultSiteContent.settings,
+            ...(data.settings || {}),
+            banner: {
+              ...defaultSiteContent.settings?.banner,
+              ...(data.settings?.banner || {}),
+            },
+          },
           homepage: { 
             ...defaultSiteContent.homepage, 
             ...data.homepage,
@@ -1243,6 +1299,9 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         };
         if (typeof window !== 'undefined') {
           localStorage.setItem(SITE_CONTENT_STORAGE_KEY, JSON.stringify(merged));
+          if (merged.settings?.defaultTheme) {
+            localStorage.setItem('site_default_theme', merged.settings.defaultTheme);
+          }
         }
         return merged;
       }
@@ -1260,6 +1319,14 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         return {
           ...defaultSiteContent,
           ...parsed,
+          settings: {
+            ...defaultSiteContent.settings,
+            ...(parsed.settings || {}),
+            banner: {
+              ...defaultSiteContent.settings?.banner,
+              ...(parsed.settings?.banner || {}),
+            },
+          },
           homepage: {
             ...defaultSiteContent.homepage,
             ...(parsed.homepage || {}),
@@ -1343,6 +1410,9 @@ export async function saveSiteContent(data: SiteContentData): Promise<{ success:
 
     if (typeof window !== 'undefined') {
       localStorage.setItem(SITE_CONTENT_STORAGE_KEY, JSON.stringify(data));
+      if (data.settings?.defaultTheme) {
+        localStorage.setItem('site_default_theme', data.settings.defaultTheme);
+      }
       window.dispatchEvent(new Event(SITE_CONTENT_CHANGE_EVENT));
       // Revalidate homepage and primary static pages on-demand
       triggerRevalidation(['/', '/about-us', '/contact']);
@@ -1370,6 +1440,14 @@ export function useSiteContent() {
           return {
             ...defaultSiteContent,
             ...parsed,
+            settings: {
+              ...defaultSiteContent.settings,
+              ...(parsed.settings || {}),
+              banner: {
+                ...defaultSiteContent.settings?.banner,
+                ...(parsed.settings?.banner || {}),
+              },
+            },
             homepage: {
               ...defaultSiteContent.homepage,
               ...(parsed.homepage || {}),
@@ -1451,6 +1529,14 @@ export function useSiteContent() {
             setContent({
               ...defaultSiteContent,
               ...parsed,
+              settings: {
+                ...defaultSiteContent.settings,
+                ...(parsed.settings || {}),
+                banner: {
+                  ...defaultSiteContent.settings?.banner,
+                  ...(parsed.settings?.banner || {}),
+                },
+              },
               homepage: {
                 ...defaultSiteContent.homepage,
                 ...(parsed.homepage || {}),
@@ -1551,7 +1637,7 @@ export async function uploadCmsImage(file: File, folder: string = 'cms'): Promis
 /**
  * Contact & WhatsApp helper functions for dynamic CMS configuration
  */
-export function getContactPhone(content?: SiteContent | null): string {
+export function getContactPhone(content?: SiteContentData | null): string {
   return content?.contact?.primaryPhone || '076 375 6688';
 }
 
@@ -1559,12 +1645,12 @@ export function getCleanPhone(phone?: string): string {
   return (phone || '').replace(/\s+/g, '');
 }
 
-export function getWhatsappNumber(content?: SiteContent | null): string {
+export function getWhatsappNumber(content?: SiteContentData | null): string {
   const raw = content?.contact?.whatsappNumber || '94763756688';
   return raw.replace(/\D/g, '') || '94763756688';
 }
 
-export function getWhatsappUrl(content?: SiteContent | null, message?: string): string {
+export function getWhatsappUrl(content?: SiteContentData | null, message?: string): string {
   const num = getWhatsappNumber(content);
   if (message) {
     return `https://wa.me/${num}?text=${encodeURIComponent(message)}`;
