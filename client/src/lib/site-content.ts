@@ -222,6 +222,7 @@ export interface SiteContentData {
       badge: string;
       title: string;
       description: string;
+      image?: string;
       primaryButtonText?: string;
       secondaryButtonText?: string;
     };
@@ -768,6 +769,7 @@ export const defaultSiteContent: SiteContentData = {
       badge: 'Special Experience',
       title: 'Custom Proposal Package & Bespoke 5-Day Ring Crafting',
       description: 'Looking for the ultimate romantic proposal? Embark on an exclusive Ratnapura gem mine tour, pick your certified natural sapphire with master gemologists, and receive your custom-designed 3D CAD engagement ring in just 5 working days with insured delivery.',
+      image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp',
       primaryButtonText: 'Explore Proposal Package',
       secondaryButtonText: 'WhatsApp Concierge',
     },

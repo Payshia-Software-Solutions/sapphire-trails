@@ -4225,6 +4225,15 @@ export default function MasterCmsPage() {
                       />
                     </div>
 
+                    <div className="space-y-1">
+                      <Label className="text-xs font-semibold">Spotlight Banner Image URL</Label>
+                      <Input
+                        value={content.tours.proposalCallout?.image || ''}
+                        placeholder="https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp"
+                        onChange={(e) => setContent({ ...content, tours: { ...content.tours, proposalCallout: { ...content.tours.proposalCallout, image: e.target.value } } })}
+                      />
+                    </div>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <Label className="text-xs font-semibold">Primary Button Text</Label>

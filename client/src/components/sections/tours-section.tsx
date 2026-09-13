@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
 import { API_BASE_URL } from '@/lib/utils';
-import { useSiteContent } from '@/lib/site-content';
+import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
@@ -180,14 +180,14 @@ export function ToursSection() {
         {/* Spotlight Banner: Custom Proposal & Engagement Ring Tour */}
         <ScrollAnimate className="mt-14 md:mt-20">
           <div className="relative rounded-3xl overflow-hidden border border-primary/40 bg-gradient-to-r from-black via-zinc-950 to-neutral-900 p-8 sm:p-12 shadow-2xl">
-            <div className="absolute right-0 top-0 bottom-0 w-full lg:w-1/2 opacity-25 lg:opacity-50">
+            <div className="absolute right-0 top-0 bottom-0 w-full lg:w-1/2 opacity-30 lg:opacity-60">
               <Image
-                src="https://content-provider.payshia.com/sapphire-trail/images/img4.webp"
-                alt="Couple inspecting a glowing sapphire"
+                src={content.tours.proposalCallout?.image || "https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp"}
+                alt="Custom Engagement Ring & Sapphire Craftsmanship"
                 fill
-                className="object-cover"
+                className="object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent" />
             </div>
 
             <div className="relative z-10 max-w-2xl space-y-5 text-white">
@@ -211,9 +211,13 @@ export function ToursSection() {
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="border border-white/50 bg-transparent hover:bg-white hover:text-black text-white font-medium text-xs rounded-full px-6 h-11 transition-colors">
-                  <Link href="/contact">
-                    {content.tours.proposalCallout?.secondaryButtonText || 'Inquire with Concierge'}
-                  </Link>
+                  <a 
+                    href={getWhatsappUrl(content, 'Hello Sapphire Trails, I am interested in the Custom Proposal Package & Bespoke Ring Crafting.')} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    {content.tours.proposalCallout?.secondaryButtonText || 'WhatsApp Concierge'}
+                  </a>
                 </Button>
               </div>
             </div>
