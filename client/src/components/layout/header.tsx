@@ -215,10 +215,10 @@ export function Header() {
             
             <SheetContent 
               side="right" 
-              className="w-[85vw] max-w-sm bg-background/98 backdrop-blur-2xl border-l border-border/40 p-0 flex flex-col justify-between shadow-2xl"
+              className="w-[85vw] max-w-sm bg-background text-foreground border-l border-border p-0 flex flex-col justify-between shadow-2xl z-50"
             >
               {/* Drawer Top / Header */}
-              <div className="px-6 py-6 border-b border-border/30">
+              <div className="px-6 py-6 border-b border-border">
                 <SheetHeader className="text-left space-y-0">
                   <SheetTitle className="sr-only">Sapphire Trails Navigation</SheetTitle>
                 </SheetHeader>
@@ -239,7 +239,7 @@ export function Header() {
                     <span className="block font-serif text-sm tracking-[0.22em] uppercase text-primary font-medium">
                       SAPPHIRE TRAILS
                     </span>
-                    <span className="block text-[9px] font-serif tracking-[0.2em] uppercase text-muted-foreground/70 mt-0.5">
+                    <span className="block text-[9px] font-serif tracking-[0.2em] uppercase text-muted-foreground mt-0.5">
                       Luxury Gem Tours
                     </span>
                   </div>
@@ -258,10 +258,10 @@ export function Header() {
                         href={link.href} 
                         onClick={() => setIsMenuOpen(false)}
                         className={cn(
-                          "group flex items-center justify-between py-3 px-3 transition-all duration-200 border-b border-border/15",
+                          "group flex items-center justify-between py-3 px-3 transition-all duration-200 border-b border-border/40",
                           isActive 
-                            ? "text-primary font-medium border-l-2 border-l-primary bg-primary/[0.04]" 
-                            : "text-muted-foreground hover:text-foreground border-l-2 border-l-transparent hover:border-l-primary/30 hover:bg-muted/20"
+                            ? "text-primary font-medium border-l-2 border-l-primary bg-primary/10" 
+                            : "text-foreground/80 hover:text-primary hover:bg-muted/40 border-l-2 border-l-transparent"
                         )}
                       >
                         <span className="font-serif text-[14px] sm:text-[15px] tracking-[0.14em] uppercase">
@@ -269,7 +269,7 @@ export function Header() {
                         </span>
 
                         {link.badge && (
-                          <span className="shrink-0 ml-3 text-[9px] font-sans font-medium tracking-wider uppercase px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/25 shadow-sm">
+                          <span className="shrink-0 ml-3 text-[9px] font-sans font-medium tracking-wider uppercase px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/25 shadow-sm">
                             {link.badge}
                           </span>
                         )}
@@ -279,16 +279,16 @@ export function Header() {
                 </nav>
 
                 {/* Quiet Concierge Touchpoint */}
-                <div className="mt-8 pt-6 border-t border-border/30">
-                  <p className="text-[9px] font-serif uppercase tracking-[0.25em] text-muted-foreground/60 mb-3">
+                <div className="mt-8 pt-6 border-t border-border">
+                  <p className="text-[10px] font-serif uppercase tracking-[0.2em] text-muted-foreground mb-3 font-semibold">
                     Private Concierge
                   </p>
-                  <div className="space-y-2 text-xs text-muted-foreground">
+                  <div className="space-y-2 text-xs">
                     <a 
                       href={primaryPhoneTel} 
-                      className="flex items-center gap-2.5 hover:text-primary transition-colors py-0.5"
+                      className="flex items-center gap-2.5 text-foreground/80 hover:text-primary transition-colors py-0.5"
                     >
-                      <Phone className="h-3.5 w-3.5 text-primary/70" />
+                      <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
                       <span className="tracking-wider">{primaryPhone}</span>
                     </a>
                     {whatsappUrl && (
@@ -296,17 +296,17 @@ export function Header() {
                         href={whatsappUrl} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="flex items-center gap-2.5 hover:text-primary transition-colors py-0.5"
+                        className="flex items-center gap-2.5 text-foreground/80 hover:text-primary transition-colors py-0.5"
                       >
-                        <MessageSquare className="h-3.5 w-3.5 text-primary/70" />
+                        <MessageSquare className="h-3.5 w-3.5 text-primary shrink-0" />
                         <span className="tracking-wider">WhatsApp Concierge</span>
                       </a>
                     )}
                     <a 
                       href={`mailto:${primaryEmail}`} 
-                      className="flex items-center gap-2.5 hover:text-primary transition-colors py-0.5"
+                      className="flex items-center gap-2.5 text-foreground/80 hover:text-primary transition-colors py-0.5"
                     >
-                      <Mail className="h-3.5 w-3.5 text-primary/70" />
+                      <Mail className="h-3.5 w-3.5 text-primary shrink-0" />
                       <span className="tracking-wider">{primaryEmail}</span>
                     </a>
                   </div>
@@ -314,13 +314,13 @@ export function Header() {
               </div>
 
               {/* Bottom Sticky Action & Theme Drawer Footer */}
-              <div className="p-6 border-t border-border/30 bg-background-alt/10 flex flex-col gap-4">
+              <div className="p-6 border-t border-border bg-background-alt/60 flex flex-col gap-4">
                 {/* Theme Toggle Button */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-serif uppercase tracking-[0.2em] text-muted-foreground/60">Appearance</span>
+                  <span className="text-[10px] font-serif uppercase tracking-[0.2em] text-muted-foreground font-semibold">Appearance</span>
                   <button 
                     onClick={toggleTheme} 
-                    className="flex items-center gap-2 text-xs font-serif uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+                    className="flex items-center gap-2 text-xs font-serif uppercase tracking-wider text-foreground/80 hover:text-primary transition-colors"
                   >
                     {theme === 'dark' ? (
                       <>
@@ -338,11 +338,11 @@ export function Header() {
 
                 {/* User Profile / Admin or Auth Login */}
                 {user ? (
-                  <div className="space-y-3 pt-3 border-t border-border/20">
+                  <div className="space-y-3 pt-3 border-t border-border/50">
                     <div className="flex items-center justify-between">
                       <div className="overflow-hidden">
-                        <p className="text-xs font-medium truncate text-foreground">{user.email}</p>
-                        <p className="text-[9px] font-serif uppercase tracking-widest text-primary/80 mt-0.5">
+                        <p className="text-xs font-semibold truncate text-foreground">{user.email}</p>
+                        <p className="text-[10px] font-serif uppercase tracking-widest text-primary font-medium mt-0.5">
                           {user.type === 'admin' ? 'Administrator' : 'Client Account'}
                         </p>
                       </div>
@@ -360,20 +360,20 @@ export function Header() {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="flex-1 text-[10px] font-serif uppercase tracking-widest border-border/60 hover:border-primary/40 hover:text-primary h-8 rounded-md"
+                          className="flex-1 text-[10px] font-serif uppercase tracking-widest border-border hover:border-primary text-foreground hover:text-primary h-8 rounded-md bg-background"
                           onClick={handleAdminClick}
                         >
-                          <Shield className="mr-1.5 h-3 w-3" />
+                          <Shield className="mr-1.5 h-3 w-3 text-primary" />
                           Admin
                         </Button>
                       )}
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="flex-1 text-[10px] font-serif uppercase tracking-widest border-border/60 hover:border-primary/40 hover:text-primary h-8 rounded-md"
+                        className="flex-1 text-[10px] font-serif uppercase tracking-widest border-border hover:border-primary text-foreground hover:text-primary h-8 rounded-md bg-background"
                         onClick={handleProfileClick}
                       >
-                        <User className="mr-1.5 h-3 w-3" />
+                        <User className="mr-1.5 h-3 w-3 text-primary" />
                         Profile
                       </Button>
                     </div>
@@ -382,7 +382,7 @@ export function Header() {
                   <Button 
                     asChild 
                     variant="outline"
-                    className="w-full border-primary/30 hover:border-primary text-primary hover:bg-primary/5 font-serif uppercase tracking-[0.2em] text-[10px] h-9 rounded-md transition-all"
+                    className="w-full border-primary/40 hover:border-primary text-primary hover:bg-primary/10 font-serif uppercase tracking-[0.2em] text-[10px] h-9 rounded-md transition-all bg-background"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Link href="/auth">
