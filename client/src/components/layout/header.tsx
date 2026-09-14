@@ -137,8 +137,18 @@ export function Header() {
       </div>
 
       <div className="container mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-4 md:px-6">
-        <Link href="/" className="flex items-center gap-2.5" onClick={() => setIsMenuOpen(false)}>
-          <span className="font-brand font-serif text-lg md:text-2xl tracking-[0.18em] text-primary font-semibold">SAPPHIRE TRAILS</span>
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group py-1" onClick={() => setIsMenuOpen(false)}>
+          <Image
+            src="/img/logo4.png"
+            alt="Sapphire Trails Logo"
+            width={48}
+            height={48}
+            className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+            priority
+          />
+          <span className="font-brand font-serif text-lg md:text-2xl tracking-[0.18em] text-primary font-semibold">
+            SAPPHIRE TRAILS
+          </span>
         </Link>
         
         {/* Desktop Navigation */}
