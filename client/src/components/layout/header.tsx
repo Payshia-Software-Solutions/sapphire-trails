@@ -90,12 +90,26 @@ export function Header() {
     const updateHeaderHeight = () => {
       if (headerRef.current) {
         const height = headerRef.current.getBoundingClientRect().height;
-        document.documentElement.style.setProperty('--header-height', `${height}px`);
+        if (height > 0) {
+          document.documentElement.style.setProperty('--header-height', `${Math.round(height)}px`);
+        }
       }
     };
     updateHeaderHeight();
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && headerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        updateHeaderHeight();
+      });
+      resizeObserver.observe(headerRef.current);
+    }
+
     window.addEventListener('resize', updateHeaderHeight);
-    return () => window.removeEventListener('resize', updateHeaderHeight);
+    return () => {
+      window.removeEventListener('resize', updateHeaderHeight);
+      if (resizeObserver) resizeObserver.disconnect();
+    };
   }, [showTopBar, topbar.enabled]);
 
   const handleLogout = () => {

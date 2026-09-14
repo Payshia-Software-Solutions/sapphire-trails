@@ -147,23 +147,25 @@ export function HeroSection() {
   return (
     <section 
       style={{
-        minHeight: 'calc(100svh - var(--header-height, 109px))'
+        height: 'calc(100svh - var(--header-height, 115px))',
+        minHeight: 'calc(100svh - var(--header-height, 115px))',
+        maxHeight: 'calc(100svh - var(--header-height, 115px))',
       }}
-      className="relative w-full flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-4 pt-4 sm:pt-6 pb-4 sm:pb-6 transition-colors duration-300"
+      className="relative w-full flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-4 pt-2 sm:pt-4 pb-2 sm:pb-3 transition-colors duration-300"
     >
       {/* Studio Radial Ambient Glow behind the Ceylon Sapphire */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center" aria-hidden="true">
         <div className="w-[500px] sm:w-[750px] md:w-[900px] h-[500px] sm:h-[750px] md:h-[900px] rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.06)_0%,rgba(218,165,32,0.04)_40%,transparent_70%)] blur-3xl" />
       </div>
 
-      {/* Center Stage: Sapphire Gem on Top with SAPPHIRE TRAILS Unified Headline */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-4 sm:space-y-5 max-w-5xl mx-auto px-4 w-full my-auto">
+      {/* Center Stage: Proportioned Sapphire Gem on Top with SAPPHIRE TRAILS Unified Headline */}
+      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-2.5 sm:space-y-3.5 max-w-4xl mx-auto px-4 w-full my-auto">
         
-        {/* 1. Ceylon Sapphire Gem Visual on Top */}
+        {/* 1. Ceylon Sapphire Gem Visual on Top - Calibrated height to prevent viewport overflow */}
         <div className="relative group cursor-pointer transition-transform duration-500 hover:scale-105 flex justify-center items-center">
           {/* Soft contact shadow beneath the ring */}
           <div 
-            className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-3 sm:h-4 bg-primary/25 dark:bg-black/80 rounded-full blur-md" 
+            className="absolute -bottom-2 sm:-bottom-2.5 left-1/2 -translate-x-1/2 w-3/4 h-2.5 sm:h-3.5 bg-primary/25 dark:bg-black/80 rounded-full blur-md" 
             aria-hidden="true" 
           />
           
@@ -172,37 +174,37 @@ export function HeroSection() {
             alt="Authentic Ceylon Blue Sapphire Gemstone Ring - Ratnapura Sri Lanka"
             width={264}
             height={206}
-            sizes="(max-width: 640px) 140px, (max-width: 768px) 190px, (max-width: 1024px) 230px, 264px"
-            className="relative z-10 w-28 sm:w-36 md:w-44 lg:w-52 h-auto object-contain drop-shadow-[0_14px_28px_rgba(26,54,93,0.18)] dark:drop-shadow-[0_18px_36px_rgba(0,0,0,0.85)]"
+            sizes="(max-width: 640px) 110px, (max-width: 768px) 130px, 160px"
+            className="relative z-10 w-24 sm:w-28 md:w-32 lg:w-36 max-h-[16vh] h-auto object-contain drop-shadow-[0_10px_20px_rgba(26,54,93,0.16)] dark:drop-shadow-[0_15px_30px_rgba(0,0,0,0.85)]"
             priority
             fetchPriority="high"
           />
         </div>
 
         {/* 2. Unified Brand Headline: SAPPHIRE TRAILS */}
-        <h1 className="font-brand text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-[0.2em] sm:tracking-[0.25em] md:tracking-[0.3em] text-foreground font-light select-none uppercase">
+        <h1 className="font-brand text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-[0.18em] sm:tracking-[0.22em] md:tracking-[0.25em] text-foreground font-light select-none uppercase">
           SAPPHIRE TRAILS
         </h1>
 
         {/* 3. Subtle Brand Tagline Badge */}
-        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[#0B1E38] dark:text-blue-200 font-medium font-sans shadow-2xs">
+        <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[#0B1E38] dark:text-blue-200 font-medium font-sans shadow-2xs">
           <span>{tagline}</span>
         </div>
 
         {/* 4. Elegant Editorial Subheadline */}
-        <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-2xl mx-auto font-sans font-normal leading-relaxed">
+        <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto font-sans font-normal leading-relaxed line-clamp-2 sm:line-clamp-none">
           {subheadline}
         </p>
 
         {/* 5. Quiet Luxury Call-To-Action (CTA) Group in Signature Navy Blue */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 w-full max-w-xs sm:max-w-none font-sans">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-1 w-full max-w-xs sm:max-w-none font-sans">
           <Button 
             asChild 
             size="lg" 
-            className="w-full sm:w-auto bg-[#0B1E38] hover:bg-[#071527] text-white font-medium px-8 h-11 sm:h-12 rounded-full shadow-md transition-all border border-[#0B1E38]"
+            className="w-full sm:w-auto bg-[#0B1E38] hover:bg-[#071527] text-white font-medium px-7 h-10 sm:h-11 rounded-full shadow-md transition-all border border-[#0B1E38] text-xs sm:text-sm"
           >
             <Link href="/booking">
-              <CalendarCheck className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" />
+              <CalendarCheck className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
               {ctaPrimary}
             </Link>
           </Button>
@@ -211,10 +213,10 @@ export function HeroSection() {
             asChild 
             variant="outline" 
             size="lg" 
-            className="w-full sm:w-auto border border-[#0B1E38]/30 hover:border-[#0B1E38] bg-white/80 dark:bg-card/80 hover:bg-[#0B1E38]/5 text-[#0B1E38] dark:text-white dark:border-white/20 font-medium px-7 h-11 sm:h-12 rounded-full transition-all"
+            className="w-full sm:w-auto border border-[#0B1E38]/30 hover:border-[#0B1E38] bg-white/80 dark:bg-card/80 hover:bg-[#0B1E38]/5 text-[#0B1E38] dark:text-white dark:border-white/20 font-medium px-6 h-10 sm:h-11 rounded-full transition-all text-xs sm:text-sm"
           >
             <Link href="#tours">
-              <Compass className="mr-2 h-4 w-4 text-[#0B1E38] dark:text-blue-300" />
+              <Compass className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#0B1E38] dark:text-blue-300" />
               {ctaSecondary}
             </Link>
           </Button>
@@ -226,10 +228,10 @@ export function HeroSection() {
               variant="ghost"
               size="lg"
               onClick={() => setIsVideoModalOpen(true)}
-              className="w-full sm:w-auto text-xs sm:text-sm text-muted-foreground hover:text-[#0B1E38] dark:hover:text-white gap-2 h-11 sm:h-12 rounded-full transition-colors group"
+              className="w-full sm:w-auto text-xs sm:text-sm text-muted-foreground hover:text-[#0B1E38] dark:hover:text-white gap-2 h-10 sm:h-11 rounded-full transition-colors group"
             >
-              <div className="h-7 w-7 rounded-full bg-[#0B1E38]/10 dark:bg-white/10 flex items-center justify-center text-[#0B1E38] dark:text-white group-hover:scale-110 transition-transform">
-                <Play className="h-3.5 w-3.5 fill-[#0B1E38] dark:fill-white" />
+              <div className="h-6 w-6 rounded-full bg-[#0B1E38]/10 dark:bg-white/10 flex items-center justify-center text-[#0B1E38] dark:text-white group-hover:scale-110 transition-transform">
+                <Play className="h-3 w-3 fill-[#0B1E38] dark:fill-white" />
               </div>
               <span className="font-medium">Watch Film</span>
             </Button>
@@ -238,7 +240,7 @@ export function HeroSection() {
       </div>
 
       {/* Editorial Bottom / Corner Meta Strip (Directly from Reference Visual) */}
-      <div className="w-full max-w-screen-2xl mx-auto pt-4 px-4 sm:px-8 flex items-center justify-between text-[9px] sm:text-[11px] text-muted-foreground/70 font-sans tracking-widest uppercase select-none">
+      <div className="w-full max-w-screen-2xl mx-auto pt-1 pb-1 sm:pb-2 px-4 sm:px-8 flex items-center justify-between text-[9px] sm:text-[10px] text-muted-foreground/70 font-sans tracking-widest uppercase select-none">
         <div className="hover:text-foreground transition-colors font-medium">
           {cornerLeft}
         </div>
