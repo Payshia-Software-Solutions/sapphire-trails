@@ -62,14 +62,14 @@ export function ExploreRatnapuraSection() {
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <ScrollAnimate className="flex flex-col items-center text-center space-y-8">
           <div className="space-y-3 max-w-4xl lg:max-w-5xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary font-sans">
               <MapPin className="h-3.5 w-3.5" />
               {exploreHeader.tagline || 'Regional Wonders'}
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-foreground">
               {exploreHeader.heading || 'Explore Ratnapura'}
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4 font-sans">
               {exploreHeader.subtitle}
             </p>
           </div>

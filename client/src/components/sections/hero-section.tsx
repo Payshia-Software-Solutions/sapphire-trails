@@ -91,29 +91,29 @@ export function HeroSection() {
           />
         </div>
 
-        {/* Main Headline (2 Separate Structured Lines) */}
-        <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-normal tracking-wide text-white max-w-5xl leading-tight drop-shadow-[0_2px_15px_rgba(0,0,0,0.85)]">
+        {/* Main Headline */}
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-sans font-bold tracking-tight text-white max-w-4xl leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
           <span className="block">{headlineLine1}</span>
-          <span className="block text-primary/90 mt-2 sm:mt-3 text-base sm:text-lg md:text-2xl lg:text-3xl font-serif font-normal tracking-[0.15em] sm:tracking-[0.2em] uppercase">
+          <span className="block text-primary mt-2 sm:mt-3 text-sm sm:text-base md:text-xl lg:text-2xl font-sans font-medium tracking-wider uppercase">
             {headlineLine2}
           </span>
         </h1>
 
         {/* Subheadline */}
-        <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/90 max-w-2xl font-body font-light leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+        <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/90 max-w-2xl font-sans font-normal leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
           {subheadline}
         </p>
 
         {/* Dual Call to Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1 sm:pt-2 w-full max-w-xs sm:max-w-none">
-          <Button asChild size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-8 h-11 sm:h-12 rounded-full shadow-md transition-colors">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 sm:pt-3 w-full max-w-xs sm:max-w-none font-sans">
+          <Button asChild size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 h-11 sm:h-12 rounded-full shadow-md transition-all">
             <Link href="/booking">
               <CalendarCheck className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               {ctaPrimary}
             </Link>
           </Button>
 
-          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border border-white/50 bg-black/75 hover:bg-white hover:text-black text-white font-medium px-7 h-11 sm:h-12 rounded-full transition-colors">
+          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border border-white/40 bg-black/60 hover:bg-white hover:text-black text-white font-medium px-7 h-11 sm:h-12 rounded-full transition-all">
             <Link href="#tours">
               <Compass className="mr-2 h-4 w-4 text-primary" />
               {ctaSecondary}
@@ -125,10 +125,10 @@ export function HeroSection() {
       {/* Scroll Down Indicator */}
       <Link
         href="#tours"
-        className="absolute bottom-2.5 sm:bottom-4 z-20 animate-bounce flex flex-col items-center text-white/70 hover:text-white transition-colors"
+        className="absolute bottom-2.5 sm:bottom-4 z-20 animate-bounce flex flex-col items-center text-white/70 hover:text-white transition-colors font-sans"
         aria-label="Scroll to next section"
       >
-        <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 mb-0.5 hidden sm:block">Explore Packages</span>
+        <span className="text-[10px] uppercase tracking-wider text-white/60 mb-0.5 hidden sm:block font-sans">Explore Packages</span>
         <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
       </Link>
     </section>

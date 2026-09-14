@@ -65,16 +65,16 @@ export default function ToursPage() {
               <div className="relative overflow-hidden rounded-2xl bg-card border border-border/80 p-8 md:p-10">
                 <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
                   <div className="space-y-4 max-w-3xl">
-                    <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs uppercase tracking-widest font-serif">
+                    <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs uppercase tracking-wider font-sans font-medium">
                       <span>{proposalCallout.badge || 'Special Experience'}</span>
                     </div>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground leading-tight">
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-sans font-bold tracking-tight text-foreground leading-tight">
                       {proposalCallout.title}
                     </h2>
-                    <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-light">
+                    <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-sans font-normal">
                       {proposalCallout.description}
                     </p>
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-serif uppercase tracking-wider text-primary pt-1">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-sans uppercase tracking-wider text-primary pt-1 font-medium">
                       <span className="flex items-center gap-1.5"><Gem className="h-4 w-4" /> Mine Sourcing</span>
                       <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> 5-Day Atelier Crafting</span>
                       <span className="flex items-center gap-1.5"><Truck className="h-4 w-4" /> Insured Delivery</span>

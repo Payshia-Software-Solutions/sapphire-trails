@@ -71,13 +71,17 @@ html {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
+    @apply font-sans bg-background text-foreground transition-colors duration-300;
   }
 
   /* Quiet Luxury: Eliminate artificial neon glow and murky floating shadows */
   [class*="shadow-primary"] {
     box-shadow: none !important;
   }
+}
+
+.font-brand {
+  font-family: var(--font-cinzel), serif;
 }
 
 /* Authentic Ceylon Sapphire Blue utility for intentional accents */

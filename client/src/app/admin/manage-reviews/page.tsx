@@ -296,7 +296,7 @@ export default function ManageReviewsPage() {
   };
 
   const handleToggleStatus = (rev: ReviewItem) => {
-    const nextStatus = rev.status === 'published' ? 'hidden' : 'published';
+    const nextStatus: 'published' | 'hidden' = rev.status === 'published' ? 'hidden' : 'published';
     const nextReviews = reviews.map(r => r.id === rev.id ? { ...r, status: nextStatus } : r);
     setReviews(nextReviews);
     saveStoredReviews(nextReviews);

@@ -142,7 +142,7 @@ export default function SubscribersPage() {
   };
 
   const handleToggleStatus = (sub: SubscriberItem) => {
-    const nextStatus = sub.status === 'active' ? 'unsubscribed' : 'active';
+    const nextStatus: 'active' | 'unsubscribed' = sub.status === 'active' ? 'unsubscribed' : 'active';
     const updated = subscribers.map(s => s.id === sub.id ? { ...s, status: nextStatus } : s);
     setSubscribers(updated);
     saveStoredSubscribers(updated);

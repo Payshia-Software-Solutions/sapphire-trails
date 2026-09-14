@@ -48,10 +48,10 @@ export function TestimonialsSection() {
             <Award className="h-3.5 w-3.5" />
             {reviewsHeader.tagline || 'Verified Traveler Experiences'}
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-foreground">
             {reviewsHeader.heading || 'Loved by Travelers Worldwide'}
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4 font-sans">
             {reviewsHeader.subtitle}
           </p>
 
@@ -128,7 +128,7 @@ export function TestimonialsSection() {
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-foreground truncate">{item.name}</p>
                           <p className="text-[11px] text-muted-foreground truncate">{item.location}</p>
-                          <p className="text-[10px] text-primary/90 font-medium font-serif mt-0.5 truncate">{item.tour}</p>
+                          <p className="text-[10px] text-primary font-medium font-sans mt-0.5 truncate">{item.tour}</p>
                         </div>
                       </div>
 

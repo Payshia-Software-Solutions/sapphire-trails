@@ -57,14 +57,14 @@ export function FAQSection() {
         
         {/* Header */}
         <ScrollAnimate className="text-center space-y-3 mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary font-sans">
             <HelpCircle className="h-3.5 w-3.5" />
             {faqHeader.tagline || 'Traveler Inquiries'}
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-foreground">
             {faqHeader.heading || 'Frequently Asked Questions'}
           </h2>
-          <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4 font-sans">
             {faqHeader.subtitle}
           </p>
         </ScrollAnimate>

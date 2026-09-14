@@ -58,12 +58,12 @@ export function AboutHeroSection({
             <span>{aboutHero.tagline}</span>
           </div>
 
-          {/* Main Title - Luxury Serif Typography */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-normal tracking-wide text-white leading-tight">
+          {/* Main Title */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-sans font-bold tracking-tight text-white leading-tight">
             {aboutHero.title.includes(' ') ? (
               <>
                 <span>{aboutHero.title.split(' ')[0]}</span>{' '}
-                <span className="text-primary italic">{aboutHero.title.substring(aboutHero.title.indexOf(' ') + 1)}</span>
+                <span className="text-primary">{aboutHero.title.substring(aboutHero.title.indexOf(' ') + 1)}</span>
               </>
             ) : (
               aboutHero.title

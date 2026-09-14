@@ -22,13 +22,13 @@ function DynamicFaqSection({ faqs, heading }: { faqs: Array<{ question: string; 
     <section className="w-full py-12 md:py-24 bg-background">
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-center mb-10 text-foreground">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-sans font-bold tracking-tight text-center mb-10 text-foreground">
             {heading || 'Frequently Asked Questions'}
           </h2>
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full font-sans">
             {faqs.map((item, index) => (
               <AccordionItem key={index} value={`item-${index}`} className="border-b border-border/80">
-                <AccordionTrigger className="text-base sm:text-lg font-serif font-medium hover:no-underline text-left text-foreground hover:text-primary transition-colors">{item.question}</AccordionTrigger>
+                <AccordionTrigger className="text-base sm:text-lg font-sans font-semibold hover:no-underline text-left text-foreground hover:text-primary transition-colors">{item.question}</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pt-2">
                   {item.answer}
                 </AccordionContent>

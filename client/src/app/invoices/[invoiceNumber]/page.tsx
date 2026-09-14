@@ -242,7 +242,7 @@ export default function DigitalInvoicePage() {
           <div className="flex flex-row justify-between items-start gap-6 border-b border-border/60 pb-8 relative z-10 print:border-gray-300 w-full">
             <div className="text-left">
               <div className="flex items-center gap-2">
-                <span className="font-serif text-2xl sm:text-3xl font-bold tracking-[0.15em] text-[#c79954] print:text-black">
+                <span className="font-brand font-serif text-2xl sm:text-3xl font-bold tracking-[0.15em] text-[#c79954] print:text-black">
                   SAPPHIRE TRAILS
                 </span>
               </div>

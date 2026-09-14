@@ -38,14 +38,14 @@ export function JourneySection() {
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <ScrollAnimate className="max-w-4xl lg:max-w-5xl mx-auto text-center space-y-3 mb-14 md:mb-18">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold uppercase tracking-wider text-primary">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold uppercase tracking-wider text-primary font-sans">
             <Footprints className="h-3.5 w-3.5" />
             {journey.tagline || 'The Signature Gem Mine Tour Experience'}
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-foreground">
             {journey.heading || 'The 4-Step Gem Mine Tour Journey'}
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4 font-sans">
             {journey.subtitle || 'Unlike standard tourist stops, Sapphire Trails takes you deep into the authentic lifecycle of Ceylon Sapphires.'}
           </p>
         </ScrollAnimate>
@@ -75,7 +75,7 @@ export function JourneySection() {
                 {/* Content */}
                 <div className="p-5 sm:p-6 flex flex-col flex-grow justify-between space-y-4">
                   <div className="space-y-2">
-                    <p className="text-[11px] uppercase tracking-widest text-primary font-semibold font-serif">
+                    <p className="text-[11px] uppercase tracking-wider text-primary font-semibold font-sans">
                       {step.subtitle}
                     </p>
                     <h3 className="text-base sm:text-lg font-headline font-bold text-foreground group-hover:text-primary transition-colors sm:min-h-[3.25rem] flex items-center">

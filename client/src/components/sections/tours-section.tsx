@@ -44,9 +44,9 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       </div>
 
       {/* Pricing Header */}
-      <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between text-white z-10">
+      <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between text-white z-10 font-sans">
         <div>
-          <span className="text-2xl sm:text-3xl font-bold font-serif text-white">
+          <span className="text-2xl sm:text-3xl font-bold font-sans text-white">
             {tour.price}
           </span>
           <span className="text-xs text-white/80 ml-1.5 uppercase font-medium">
@@ -141,14 +141,14 @@ export function ToursSection() {
         
         {/* Section Title */}
         <ScrollAnimate className="text-center max-w-4xl lg:max-w-5xl mx-auto space-y-3 mb-14 md:mb-18">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary font-sans">
             <Gem className="h-3.5 w-3.5" />
             {toursHeader.tagline || 'Curated Expeditions'}
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-foreground">
             {toursHeader.heading || 'Exclusive Gem Mining Packages'}
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4 font-sans">
             {toursHeader.subtitle}
           </p>
         </ScrollAnimate>

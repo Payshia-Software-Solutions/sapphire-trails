@@ -37,10 +37,10 @@ export function Footer() {
                   className="object-contain" 
                 />
               </div>
-              <h3 className="font-serif text-l tracking-[0.2em] text-primary mt-4">
+              <h3 className="font-brand font-serif text-base tracking-[0.18em] text-primary font-semibold mt-4">
                 {footer.brandHeading || 'SAPPHIRE TRAILS'}
               </h3>
-              <p className="text-sm text-muted-foreground max-w-xs mt-2 leading-relaxed">
+              <p className="text-sm text-muted-foreground max-w-xs mt-2 leading-relaxed font-sans">
                 {footer.aboutText}
               </p>
             </div>
@@ -48,11 +48,11 @@ export function Footer() {
 
           {/* Column 2: Tour Packages & Quick Navigation */}
           {vis.packages !== false && (
-            <div className="flex flex-col items-center md:items-start">
-               <h3 className="font-headline text-lg tracking-widest text-primary mb-4">
+            <div className="flex flex-col items-center md:items-start font-sans">
+               <h3 className="font-sans font-semibold text-xs tracking-wider text-primary mb-4 uppercase">
                  {footer.packagesHeading || 'TOUR PACKAGES'}
                </h3>
-               <div className="flex flex-col space-y-2">
+               <div className="flex flex-col space-y-2 text-sm">
                   {defaultTourLinks.map((link) => (
                       <Link key={link.label} href={link.href} className="text-muted-foreground hover:text-primary transition-colors">
                           {link.label}
@@ -66,8 +66,8 @@ export function Footer() {
           
           {/* Column 3: Contact Details & Hotlines */}
           {vis.contact !== false && (
-            <div className="flex flex-col items-center md:items-start">
-              <h3 className="font-headline text-lg tracking-widest text-primary mb-4">
+            <div className="flex flex-col items-center md:items-start font-sans">
+              <h3 className="font-sans font-semibold text-xs tracking-wider text-primary mb-4 uppercase">
                 {footer.contactHeading || 'CONTACT US'}
               </h3>
               <div className="space-y-2 text-sm text-muted-foreground font-body">

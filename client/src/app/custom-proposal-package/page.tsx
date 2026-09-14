@@ -49,10 +49,10 @@ export default function CustomProposalPackagePage() {
           <section className={`w-full py-12 md:py-24 lg:py-32 ${getSectionThemeClass(sty.overview, 'bg-background')}`}>
             <div className="container mx-auto px-4 md:px-6">
               <div className="grid md:grid-cols-2 gap-12 lg:gap-24 items-center">
-                <div className="space-y-4 text-left">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">{prop.overview?.heading}</h2>
-                  <h3 className="font-serif text-lg sm:text-xl tracking-[0.15em] uppercase text-primary/90">{prop.overview?.tagline}</h3>
-                  <p className="text-muted-foreground leading-relaxed mt-4 font-light text-sm sm:text-base">
+                <div className="space-y-4 text-left font-sans">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-sans font-bold tracking-tight text-foreground">{prop.overview?.heading}</h2>
+                  <h3 className="font-sans text-base sm:text-lg tracking-wider uppercase text-primary font-medium">{prop.overview?.tagline}</h3>
+                  <p className="text-muted-foreground leading-relaxed mt-4 font-sans text-sm sm:text-base">
                     {prop.overview?.paragraph1}
                   </p>
                   <p className="text-muted-foreground leading-relaxed font-light text-sm sm:text-base">
@@ -95,14 +95,14 @@ export default function CustomProposalPackagePage() {
         {vis.pillars !== false && (
           <section className={`w-full py-12 md:py-24 lg:py-32 ${getSectionThemeClass(sty.pillars, 'bg-background-alt')}`}>
             <div className="container mx-auto px-4 md:px-6">
-              <div className="text-center max-w-3xl mx-auto mb-12">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">{prop.pillars?.heading}</h2>
-                <p className="mt-4 text-muted-foreground font-light text-sm sm:text-base">
+              <div className="text-center max-w-3xl mx-auto mb-12 font-sans">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-sans font-bold tracking-tight text-foreground">{prop.pillars?.heading}</h2>
+                <p className="mt-4 text-muted-foreground font-sans text-sm sm:text-base">
                   {prop.pillars?.subtitle}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-sans">
                 {prop.pillars?.items?.map((item, index) => {
                   const Icon = defaultPillarIcons[index % defaultPillarIcons.length];
                   return (
@@ -120,7 +120,7 @@ export default function CustomProposalPackagePage() {
                           <div className="p-2 rounded-lg bg-primary/10 text-primary">
                             <Icon className="h-5 w-5" />
                           </div>
-                          <h3 className="text-base font-serif font-medium text-foreground">{item.title}</h3>
+                          <h3 className="text-base font-sans font-semibold text-foreground">{item.title}</h3>
                         </div>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-light flex-grow">
                           {item.description}

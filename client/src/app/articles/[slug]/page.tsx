@@ -436,7 +436,6 @@ const articlesDatabase: Record<string, {
     category: 'Travel Planning',
     readTime: '5 min read',
     publishedDate: 'March 2026',
-    status: 'published',
     author: {
       name: 'Dr. Rohan Samarasinghe, FGA',
       role: 'Chief Gemological Consultant',

@@ -62,7 +62,7 @@ export function ContactSection() {
 
         setIsSubmitted(true);
         form.reset();
-        trackLeadSubmission('contact_page_form');
+        trackLeadSubmission({ leadType: 'contact_form', category: 'Contact Page Inquiry', name: data.name });
         toast({
             title: 'Message Sent!',
             description: 'Thank you for reaching out. We will get back to you shortly.',
