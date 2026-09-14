@@ -149,52 +149,28 @@ export function HeroSection() {
       style={{
         minHeight: 'calc(100svh - var(--header-height, 109px))'
       }}
-      className="relative w-full flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-4 py-8 sm:py-12 transition-colors duration-300"
+      className="relative w-full flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-4 pt-4 sm:pt-6 pb-4 sm:pb-6 transition-colors duration-300"
     >
       {/* Studio Radial Ambient Glow behind the Ceylon Sapphire */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center" aria-hidden="true">
         <div className="w-[500px] sm:w-[750px] md:w-[900px] h-[500px] sm:h-[750px] md:h-[900px] rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.06)_0%,rgba(218,165,32,0.04)_40%,transparent_70%)] blur-3xl" />
       </div>
 
-      {/* Top Left Corner Brand Mark (Inspired by Reference Visual) */}
-      <div className="absolute top-4 sm:top-6 left-4 sm:left-8 z-20 flex items-center gap-2 sm:gap-2.5 opacity-90 select-none">
-        <div className="relative w-6 sm:w-8 h-6 sm:h-8 flex items-center justify-center">
-          <Image
-            src="/img/logo4.png"
-            alt="Sapphire Trails Emblem"
-            width={32}
-            height={32}
-            className="w-full h-auto object-contain"
-            priority
-          />
-        </div>
-        <div className="flex flex-col">
-          <span className="font-brand text-[10px] sm:text-[11px] tracking-[0.2em] text-foreground font-semibold">
-            SAPPHIRE TRAILS
-          </span>
-          <span className="text-[8px] sm:text-[9px] tracking-wider text-muted-foreground uppercase">
-            Exclusive Expeditions
-          </span>
-        </div>
-      </div>
-
-      {/* Center Stage: Split Editorial Brand & Ceylon Sapphire Ring */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-4 sm:space-y-6 max-w-5xl mx-auto px-2 sm:px-4 w-full my-auto">
+      {/* Center Stage: Symmetrically Balanced Editorial Brand & Ceylon Sapphire Ring */}
+      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-5 sm:space-y-6 max-w-6xl mx-auto px-4 w-full my-auto">
         
-        {/* Subtle Brand Tagline Badge */}
-        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-primary font-medium font-sans shadow-2xs">
-          <span>{tagline}</span>
-        </div>
-
         {/* Flanking Typography: S A P P H I R E  [ 💎 Ceylon Sapphire Ring ]  T R A I L S */}
-        <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 md:gap-6 lg:gap-10 select-none my-1 sm:my-2">
-          {/* Left Wordmark: SAPPHIRE */}
-          <span className="font-brand text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-[0.25em] md:tracking-[0.3em] lg:tracking-[0.35em] text-foreground font-light shrink-0">
-            SAPPHIRE
-          </span>
+        {/* Symmetrical 3-column grid guarantees the gemstone sits at the EXACT 50% center of the screen */}
+        <div className="w-full grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-center justify-items-center select-none my-1 sm:my-2">
+          {/* Left Wordmark: SAPPHIRE - Aligned to right edge of left column */}
+          <div className="w-full flex justify-center sm:justify-end items-center sm:pr-4 md:pr-8 lg:pr-10">
+            <span className="font-brand text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-[0.22em] md:tracking-[0.28em] lg:tracking-[0.32em] text-foreground font-light shrink-0">
+              SAPPHIRE
+            </span>
+          </div>
 
-          {/* Center Focal Gemstone Visual */}
-          <div className="relative my-2 sm:my-0 group cursor-pointer transition-transform duration-500 hover:scale-105 shrink-0">
+          {/* Center Focal Gemstone Visual - Exactly in true 50% midpoint */}
+          <div className="relative my-3 sm:my-0 group cursor-pointer transition-transform duration-500 hover:scale-105 shrink-0 flex justify-center items-center">
             {/* Soft contact shadow beneath the ring */}
             <div 
               className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-3 sm:h-4 bg-primary/25 dark:bg-black/80 rounded-full blur-md" 
@@ -213,10 +189,17 @@ export function HeroSection() {
             />
           </div>
 
-          {/* Right Wordmark: TRAILS */}
-          <span className="font-brand text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-[0.25em] md:tracking-[0.3em] lg:tracking-[0.35em] text-foreground font-light shrink-0">
-            TRAILS
-          </span>
+          {/* Right Wordmark: TRAILS - Aligned to left edge of right column */}
+          <div className="w-full flex justify-center sm:justify-start items-center sm:pl-4 md:pl-8 lg:pl-10">
+            <span className="font-brand text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-[0.22em] md:tracking-[0.28em] lg:tracking-[0.32em] text-foreground font-light shrink-0">
+              TRAILS
+            </span>
+          </div>
+        </div>
+
+        {/* Subtle Brand Tagline Badge - Placed cleanly beneath the ring */}
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-primary font-medium font-sans shadow-2xs">
+          <span>{tagline}</span>
         </div>
 
         {/* Semantic H1 for 100% SEO Power (Crawled by Google without visual clutter) */}
@@ -225,12 +208,12 @@ export function HeroSection() {
         </h1>
 
         {/* Elegant Editorial Subheadline */}
-        <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto font-sans font-normal leading-relaxed">
+        <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-2xl mx-auto font-sans font-normal leading-relaxed -mt-1 sm:-mt-2">
           {subheadline}
         </p>
 
         {/* Quiet Luxury Call-To-Action (CTA) Group */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 sm:pt-4 w-full max-w-xs sm:max-w-none font-sans">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 w-full max-w-xs sm:max-w-none font-sans">
           <Button 
             asChild 
             size="lg" 
@@ -273,7 +256,7 @@ export function HeroSection() {
       </div>
 
       {/* Editorial Bottom / Corner Meta Strip (Directly from Reference Visual) */}
-      <div className="w-full max-w-screen-2xl mx-auto mt-auto pt-6 px-4 sm:px-8 flex items-center justify-between text-[9px] sm:text-[11px] text-muted-foreground/70 font-sans tracking-widest uppercase select-none">
+      <div className="w-full max-w-screen-2xl mx-auto pt-4 px-4 sm:px-8 flex items-center justify-between text-[9px] sm:text-[11px] text-muted-foreground/70 font-sans tracking-widest uppercase select-none">
         <div className="hover:text-foreground transition-colors font-medium">
           {cornerLeft}
         </div>
