@@ -113,10 +113,10 @@ export function Header() {
   }
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
+    <header ref={headerRef} className="sticky top-0 z-50 w-full bg-white dark:bg-background border-b border-border shadow-sm">
       {/* Top Bar */}
       <div className={cn(
-        "w-full bg-background-alt/40 text-xs text-muted-foreground border-b border-border py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",
+        "w-full bg-white dark:bg-background-alt text-xs text-muted-foreground border-b border-border py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",
         showTopBar ? "max-h-[40px] opacity-100" : "max-h-0 opacity-0 py-0 border-b-transparent"
       )}>
         <div className="container mx-auto max-w-screen-2xl flex items-center justify-between px-4 md:px-6">
