@@ -185,7 +185,7 @@ export function HeroSection() {
         </h1>
 
         {/* 3. Subtle Brand Tagline Badge */}
-        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-primary font-medium font-sans shadow-2xs">
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[#0B1E38] dark:text-blue-200 font-medium font-sans shadow-2xs">
           <span>{tagline}</span>
         </div>
 
@@ -194,15 +194,15 @@ export function HeroSection() {
           {subheadline}
         </p>
 
-        {/* 5. Quiet Luxury Call-To-Action (CTA) Group */}
+        {/* 5. Quiet Luxury Call-To-Action (CTA) Group in Signature Navy Blue */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 w-full max-w-xs sm:max-w-none font-sans">
           <Button 
             asChild 
             size="lg" 
-            className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-8 h-11 sm:h-12 rounded-full shadow-sm transition-all"
+            className="w-full sm:w-auto bg-[#0B1E38] hover:bg-[#071527] text-white font-medium px-8 h-11 sm:h-12 rounded-full shadow-md transition-all border border-[#0B1E38]"
           >
             <Link href="/booking">
-              <CalendarCheck className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+              <CalendarCheck className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" />
               {ctaPrimary}
             </Link>
           </Button>
@@ -211,10 +211,10 @@ export function HeroSection() {
             asChild 
             variant="outline" 
             size="lg" 
-            className="w-full sm:w-auto border border-border/90 bg-card/80 hover:bg-muted text-foreground font-medium px-7 h-11 sm:h-12 rounded-full transition-all"
+            className="w-full sm:w-auto border border-[#0B1E38]/30 hover:border-[#0B1E38] bg-white/80 dark:bg-card/80 hover:bg-[#0B1E38]/5 text-[#0B1E38] dark:text-white dark:border-white/20 font-medium px-7 h-11 sm:h-12 rounded-full transition-all"
           >
             <Link href="#tours">
-              <Compass className="mr-2 h-4 w-4 text-primary" />
+              <Compass className="mr-2 h-4 w-4 text-[#0B1E38] dark:text-blue-300" />
               {ctaSecondary}
             </Link>
           </Button>
@@ -226,10 +226,10 @@ export function HeroSection() {
               variant="ghost"
               size="lg"
               onClick={() => setIsVideoModalOpen(true)}
-              className="w-full sm:w-auto text-xs sm:text-sm text-muted-foreground hover:text-primary gap-2 h-11 sm:h-12 rounded-full transition-colors group"
+              className="w-full sm:w-auto text-xs sm:text-sm text-muted-foreground hover:text-[#0B1E38] dark:hover:text-white gap-2 h-11 sm:h-12 rounded-full transition-colors group"
             >
-              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                <Play className="h-3.5 w-3.5 fill-primary" />
+              <div className="h-7 w-7 rounded-full bg-[#0B1E38]/10 dark:bg-white/10 flex items-center justify-center text-[#0B1E38] dark:text-white group-hover:scale-110 transition-transform">
+                <Play className="h-3.5 w-3.5 fill-[#0B1E38] dark:fill-white" />
               </div>
               <span className="font-medium">Watch Film</span>
             </Button>
