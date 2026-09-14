@@ -23,7 +23,10 @@ import {
   SECTION_COLOR_THEMES,
   getSectionThemeClass,
   mergeProposalContent,
-  uploadCmsImage
+  uploadCmsImage,
+  defaultSeoSettings,
+  type SeoSettings,
+  type SeoFaqItem
 } from '@/lib/site-content';
 
 
@@ -78,7 +81,10 @@ import {
   Moon,
   Megaphone,
   Bell,
-  X
+  X,
+  Search,
+  Star,
+  FileText
 } from 'lucide-react';
 
 
@@ -292,6 +298,52 @@ export default function MasterCmsPage() {
     }));
   };
 
+  const handleUpdateSeo = (fields: Partial<SeoSettings>) => {
+    const currentSeo = content.settings?.seo || defaultSeoSettings;
+    setContent((prev) => ({
+      ...prev,
+      settings: {
+        ...(prev.settings || {}),
+        seo: {
+          ...currentSeo,
+          ...fields,
+        },
+      },
+    }));
+  };
+
+  const handleAddFaq = () => {
+    const currentSeo = content.settings?.seo || defaultSeoSettings;
+    const currentFaqs = currentSeo.faqs || defaultSeoSettings.faqs;
+    const updated: SeoFaqItem[] = [
+      ...currentFaqs,
+      {
+        question: "Can tourists visit gem mines in Ratnapura, Sri Lanka?",
+        answer: "Yes. Visitors can tour authentic, licensed gem mines in Ratnapura with safety gear and local guides."
+      }
+    ];
+    handleUpdateSeo({ faqs: updated });
+  };
+
+  const handleUpdateFaq = (index: number, field: 'question' | 'answer', value: string) => {
+    const currentSeo = content.settings?.seo || defaultSeoSettings;
+    const currentFaqs = [...(currentSeo.faqs || defaultSeoSettings.faqs)];
+    if (currentFaqs[index]) {
+      currentFaqs[index] = {
+        ...currentFaqs[index],
+        [field]: value
+      };
+      handleUpdateSeo({ faqs: currentFaqs });
+    }
+  };
+
+  const handleDeleteFaq = (index: number) => {
+    const currentSeo = content.settings?.seo || defaultSeoSettings;
+    const currentFaqs = [...(currentSeo.faqs || defaultSeoSettings.faqs)];
+    currentFaqs.splice(index, 1);
+    handleUpdateSeo({ faqs: currentFaqs });
+  };
+
   const handleBannerImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -311,6 +363,38 @@ export default function MasterCmsPage() {
         variant: 'destructive',
         title: 'Upload Failed',
         description: err.message || 'Failed to upload to FTP server.',
+      });
+    }
+  };
+
+  const handleHeroGemImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    toast({
+      title: 'Uploading Gem Visual...',
+      description: `Uploading ${file.name} to FTP /cms/homepage/hero folder...`,
+    });
+    try {
+      const res = await uploadCmsImage(file, 'cms/homepage/hero');
+      setContent((prev) => ({
+        ...prev,
+        homepage: {
+          ...prev.homepage,
+          hero: {
+            ...prev.homepage.hero,
+            gemImageUrl: res.url,
+          },
+        },
+      }));
+      toast({
+        title: 'Hero Gemstone Visual Uploaded!',
+        description: `Permanent URL: ${res.url}`,
+      });
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: err.message || 'Failed to upload image.',
       });
     }
   };
@@ -1216,7 +1300,7 @@ export default function MasterCmsPage() {
       {/* 1. Page Selection Tabs (Fixed at the Top) */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-5">
         <div className="bg-card p-1 rounded-2xl border border-border/80 shadow-xs w-full">
-          <TabsList className="bg-transparent h-auto p-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-1 w-full">
+          <TabsList className="bg-transparent h-auto p-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-11 gap-1 w-full">
             <TabsTrigger value="homepage" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Home className="h-3.5 w-3.5" /> Homepage
             </TabsTrigger>
@@ -1243,6 +1327,9 @@ export default function MasterCmsPage() {
             </TabsTrigger>
             <TabsTrigger value="banner" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Megaphone className="h-3.5 w-3.5" /> Promo Banner
+            </TabsTrigger>
+            <TabsTrigger value="seo" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
+              <Search className="h-3.5 w-3.5" /> SEO &amp; Schema
             </TabsTrigger>
             <TabsTrigger value="settings" className="rounded-xl py-2 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1.5 justify-center">
               <Settings className="h-3.5 w-3.5" /> Site Settings
@@ -1387,10 +1474,108 @@ export default function MasterCmsPage() {
                       Hero Cinematic Banner
                     </CardTitle>
                     <CardDescription>
-                      Configure top pill badge, 2-line headline typography, sub-headline, and CTA buttons.
+                      Configure visual presentation mode, sapphire centerpiece, headline typography, and CTA buttons.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Visual Presentation Mode */}
+                    <div className="space-y-2 p-3.5 rounded-xl border border-border bg-muted/20">
+                      <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-primary" />
+                        Hero Presentation Mode (Speed &amp; SEO)
+                      </Label>
+                      <p className="text-[11px] text-muted-foreground">
+                        Select the primary hero visual style for website visitors.
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <Button
+                          type="button"
+                          variant={(hero.heroMode !== 'cinematic_video') ? "default" : "outline"}
+                          onClick={() => setContent({
+                            ...content,
+                            homepage: {
+                              ...content.homepage,
+                              hero: { ...content.homepage.hero, heroMode: 'editorial_image' }
+                            }
+                          })}
+                          className={`h-auto py-2.5 px-3 rounded-xl text-xs font-semibold flex flex-col items-start gap-1 text-left ${
+                            hero.heroMode !== 'cinematic_video'
+                              ? 'bg-primary text-primary-foreground shadow-xs'
+                              : 'border-border text-foreground hover:bg-muted'
+                          }`}
+                        >
+                          <span className="font-bold">💎 Minimalist Editorial (Recommended)</span>
+                          <span className="text-[10px] opacity-85 font-normal">Ultra-fast LCP (&lt;0.8s), High SEO rating, clean sapphire centerpiece.</span>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant={hero.heroMode === 'cinematic_video' ? "default" : "outline"}
+                          onClick={() => setContent({
+                            ...content,
+                            homepage: {
+                              ...content.homepage,
+                              hero: { ...content.homepage.hero, heroMode: 'cinematic_video' }
+                            }
+                          })}
+                          className={`h-auto py-2.5 px-3 rounded-xl text-xs font-semibold flex flex-col items-start gap-1 text-left ${
+                            hero.heroMode === 'cinematic_video'
+                              ? 'bg-primary text-primary-foreground shadow-xs'
+                              : 'border-border text-foreground hover:bg-muted'
+                          }`}
+                        >
+                          <span className="font-bold">🎬 Cinematic Video Background</span>
+                          <span className="text-[10px] opacity-85 font-normal">Plays the full 4K gem mining video behind the hero banner.</span>
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Sapphire Gem Visual & Upload */}
+                    <div className="space-y-3 p-3.5 rounded-xl border border-primary/20 bg-primary/5">
+                      <Label className="text-xs font-bold text-primary flex items-center gap-1.5">
+                        <Gem className="h-3.5 w-3.5" />
+                        Center Sapphire Gemstone Visual
+                      </Label>
+                      <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <div className="h-16 w-20 rounded-xl bg-white border border-border flex items-center justify-center p-1 shrink-0 shadow-2xs">
+                          <Image
+                            src={hero.gemImageUrl || '/img/hero-sapphire-gem.png'}
+                            alt="Gem preview"
+                            width={60}
+                            height={48}
+                            className="h-full w-auto object-contain"
+                          />
+                        </div>
+                        <div className="space-y-1.5 flex-1 w-full">
+                          <Input
+                            value={hero.gemImageUrl || '/img/hero-sapphire-gem.png'}
+                            placeholder="/img/hero-sapphire-gem.png"
+                            className="text-xs h-9 bg-background"
+                            onChange={(e) => setContent({
+                              ...content,
+                              homepage: {
+                                ...content.homepage,
+                                hero: { ...content.homepage.hero, gemImageUrl: e.target.value }
+                              }
+                            })}
+                          />
+                          <div className="flex items-center gap-2">
+                            <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                              <Upload className="h-3 w-3" />
+                              Upload New Gemstone (FTP)
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleHeroGemImageChange}
+                              />
+                            </label>
+                            <span className="text-[10px] text-muted-foreground">Transparent PNG / WebP recommended</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold">Top Pill Tagline</Label>
                       <Input
@@ -1481,6 +1666,55 @@ export default function MasterCmsPage() {
                             }
                           })}
                         />
+                      </div>
+                    </div>
+
+                    {/* Editorial Corner Details (Slide Style) */}
+                    <div className="space-y-2 p-3.5 rounded-xl border border-border bg-muted/20">
+                      <Label className="text-xs font-bold text-foreground">Editorial Corner Details (Slide Style)</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-muted-foreground">Bottom Left</Label>
+                          <Input
+                            value={hero.cornerLeftText || 'SAPPHIRE TRAILS • RATNAPURA'}
+                            className="text-xs h-8 bg-background"
+                            onChange={(e) => setContent({
+                              ...content,
+                              homepage: {
+                                ...content.homepage,
+                                hero: { ...content.homepage.hero, cornerLeftText: e.target.value }
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-muted-foreground">Bottom Center</Label>
+                          <Input
+                            value={hero.cornerCenterText || 'SRI LANKA'}
+                            className="text-xs h-8 bg-background"
+                            onChange={(e) => setContent({
+                              ...content,
+                              homepage: {
+                                ...content.homepage,
+                                hero: { ...content.homepage.hero, cornerCenterText: e.target.value }
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-muted-foreground">Bottom Right</Label>
+                          <Input
+                            value={hero.cornerRightText || '01 / PRIVATE EXPEDITIONS'}
+                            className="text-xs h-8 bg-background"
+                            onChange={(e) => setContent({
+                              ...content,
+                              homepage: {
+                                ...content.homepage,
+                                hero: { ...content.homepage.hero, cornerRightText: e.target.value }
+                              }
+                            })}
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -7959,6 +8193,390 @@ export default function MasterCmsPage() {
             </div>
 
           </div>
+        </TabsContent>
+
+        {/* ========================================================================= */}
+        {/* 11. SEO & SEARCH ENGINE DOMINATION STUDIO */}
+        {/* ========================================================================= */}
+        <TabsContent value="seo" className="w-full space-y-6">
+          {(() => {
+            const currentSeo = content.settings?.seo || defaultSeoSettings;
+            const currentFaqs = currentSeo.faqs || defaultSeoSettings.faqs;
+            const titleLen = (currentSeo.metaTitle || '').length;
+            const descLen = (currentSeo.metaDescription || '').length;
+
+            return (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                {/* LEFT 7 COLS: SEO FORM CONFIGURATION */}
+                <div className="lg:col-span-7 space-y-6">
+
+                  {/* Card 1: Core Search Meta Tags */}
+                  <Card className="rounded-2xl border-border/80 shadow-xs">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider">
+                            <Search className="h-3 w-3" />
+                            <span>Google Rank #1 Engine</span>
+                          </div>
+                          <CardTitle className="text-lg font-bold font-headline">
+                            Global Meta Tags &amp; Title
+                          </CardTitle>
+                          <CardDescription className="text-xs">
+                            Configure the exact titles, descriptions, and keywords Google displays in search results.
+                          </CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-5 pt-0">
+                      {/* Meta Title */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs font-semibold text-foreground">SEO Title Tag (50-60 characters)</Label>
+                          <span className={`text-[10px] font-mono font-bold ${titleLen > 60 ? 'text-amber-500' : 'text-emerald-500'}`}>
+                            {titleLen} / 60 chars
+                          </span>
+                        </div>
+                        <Input
+                          value={currentSeo.metaTitle || ''}
+                          placeholder="Authentic Gem Mine Tours Sri Lanka | Sapphire Trails Ratnapura"
+                          onChange={(e) => handleUpdateSeo({ metaTitle: e.target.value })}
+                          className="font-medium"
+                        />
+                        <p className="text-[11px] text-muted-foreground">
+                          Include primary keywords like <em>&quot;Authentic Gem Mine Tours&quot;</em> and <em>&quot;Ratnapura&quot;</em>.
+                        </p>
+                      </div>
+
+                      {/* Meta Description */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs font-semibold text-foreground">Meta Description (140-160 characters)</Label>
+                          <span className={`text-[10px] font-mono font-bold ${descLen > 160 ? 'text-amber-500' : 'text-emerald-500'}`}>
+                            {descLen} / 160 chars
+                          </span>
+                        </div>
+                        <Textarea
+                          rows={3}
+                          value={currentSeo.metaDescription || ''}
+                          placeholder="Experience authentic, traditional gem mining in Ratnapura, Sri Lanka. Descend into active timber pits, try riverbed gem washing, and tour with certified local gemologists."
+                          onChange={(e) => handleUpdateSeo({ metaDescription: e.target.value })}
+                          className="text-xs leading-relaxed"
+                        />
+                        <p className="text-[11px] text-muted-foreground">
+                          This is the snippet text searchers read under your title on Google.
+                        </p>
+                      </div>
+
+                      {/* Focus Keywords */}
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-foreground">Primary Focus Keywords (Comma-separated)</Label>
+                        <Textarea
+                          rows={3}
+                          value={(currentSeo.keywords || []).join(', ')}
+                          placeholder="authentic gem mining tour sri lanka, ratnapura gem mine tour, traditional gem washing experience..."
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            const arr = raw.split(',').map(s => s.trim()).filter(Boolean);
+                            handleUpdateSeo({ keywords: arr });
+                          }}
+                          className="text-xs font-mono"
+                        />
+                        {/* Quick Add Buttons from Competitor Research */}
+                        <div className="pt-1.5">
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground block mb-1.5">
+                            Competitor-Proven Keywords (Click to add):
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {[
+                              'authentic gem mining tour sri lanka',
+                              'ratnapura gem mine tour',
+                              'traditional gem washing experience',
+                              'ethical gem tour sri lanka',
+                              'ratnapura day tour from colombo',
+                              'gem pit visit ratnapura',
+                              'can tourists visit gem mines in ratnapura',
+                              'ceylon sapphire tours',
+                              'mine to market gemstone tour'
+                            ].map((kw) => {
+                              const alreadyHas = (currentSeo.keywords || []).includes(kw);
+                              return (
+                                <button
+                                  key={kw}
+                                  type="button"
+                                  disabled={alreadyHas}
+                                  onClick={() => {
+                                    const next = [...(currentSeo.keywords || []), kw];
+                                    handleUpdateSeo({ keywords: next });
+                                  }}
+                                  className={`px-2 py-0.5 rounded-md text-[10px] font-medium border transition-colors ${
+                                    alreadyHas 
+                                      ? 'bg-muted text-muted-foreground border-transparent opacity-60' 
+                                      : 'bg-primary/5 hover:bg-primary/15 border-primary/30 text-primary cursor-pointer'
+                                  }`}
+                                >
+                                  {alreadyHas ? '✓ ' : '+ '} {kw}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* OpenGraph Image URL */}
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-foreground">Social Preview Image (OpenGraph URL)</Label>
+                        <Input
+                          value={currentSeo.ogImage || ''}
+                          placeholder="https://content-provider.payshia.com/sapphire-trail/images/img35.webp"
+                          onChange={(e) => handleUpdateSeo({ ogImage: e.target.value })}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Card 2: Google Review Rich Snippet Stars */}
+                  <Card className="rounded-2xl border-border/80 shadow-xs">
+                    <CardHeader className="pb-3">
+                      <div className="space-y-1">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[10px] font-semibold uppercase tracking-wider">
+                          <Star className="h-3 w-3" />
+                          <span>Google Rich Snippet Stars</span>
+                        </div>
+                        <CardTitle className="text-lg font-bold font-headline">
+                          AggregateRating Schema Settings
+                        </CardTitle>
+                        <CardDescription className="text-xs">
+                          Shows gold rating stars (⭐️⭐️⭐️⭐️⭐️ 4.9) directly in Google Search Results to maximize click-through rate.
+                        </CardDescription>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4 pt-0">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-semibold">Average Rating (out of 5.0)</Label>
+                          <Input
+                            type="text"
+                            value={currentSeo.ratingValue || '4.9'}
+                            onChange={(e) => handleUpdateSeo({ ratingValue: e.target.value })}
+                            placeholder="4.9"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-semibold">Total Verified Reviews Count</Label>
+                          <Input
+                            type="text"
+                            value={currentSeo.reviewCount || '124'}
+                            onChange={(e) => handleUpdateSeo({ reviewCount: e.target.value })}
+                            placeholder="124"
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Card 3: Featured Snippet & FAQ Management */}
+                  <Card className="rounded-2xl border-border/80 shadow-xs">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-semibold uppercase tracking-wider">
+                            <HelpCircle className="h-3 w-3" />
+                            <span>Featured Snippet Stealer (FAQPage Schema)</span>
+                          </div>
+                          <CardTitle className="text-lg font-bold font-headline">
+                            Q&amp;A &amp; Direct Answer Manager
+                          </CardTitle>
+                          <CardDescription className="text-xs">
+                            Each question added here dynamically appears on the Homepage Accordion AND generates the <code>FAQPage</code> JSON-LD schema for Google Direct Answers.
+                          </CardDescription>
+                        </div>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handleAddFaq}
+                          className="h-8 rounded-xl text-xs font-semibold gap-1.5 bg-primary text-primary-foreground"
+                        >
+                          <Plus className="h-3.5 w-3.5" /> Add FAQ
+                        </Button>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4 pt-0">
+                      <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20 text-xs text-muted-foreground space-y-1">
+                        <p className="font-semibold text-primary">💡 How to Win Position #0 on Google:</p>
+                        <p>
+                          Always begin the answer with a direct confirmation like <strong>&quot;Yes. Many guesthouses and licensed tour operators in Ratnapura...&quot;</strong> within the first 30–40 words. This matches Google’s direct-answer algorithm.
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        {currentFaqs.map((faq, index) => (
+                          <div key={index} className="p-4 rounded-xl border border-border/80 bg-background/50 space-y-3 relative group">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-primary font-mono">
+                                FAQ #{index + 1}
+                              </span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteFaq(index)}
+                                className="h-7 w-7 p-0 text-rose-500 hover:text-rose-700 hover:bg-rose-500/10 rounded-lg"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+
+                            <div className="space-y-1">
+                              <Label className="text-xs font-semibold text-foreground">Question</Label>
+                              <Input
+                                value={faq.question}
+                                onChange={(e) => handleUpdateFaq(index, 'question', e.target.value)}
+                                placeholder="e.g. Can tourists visit gem mines in Ratnapura?"
+                                className="text-xs font-medium"
+                              />
+                            </div>
+
+                            <div className="space-y-1">
+                              <Label className="text-xs font-semibold text-foreground">Direct Answer (BLUF Format)</Label>
+                              <Textarea
+                                rows={3}
+                                value={faq.answer}
+                                onChange={(e) => handleUpdateFaq(index, 'answer', e.target.value)}
+                                placeholder="Yes. Visitors can tour authentic, government-licensed mines..."
+                                className="text-xs leading-relaxed"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                </div>
+
+                {/* RIGHT 5 COLS: LIVE GOOGLE SEARCH SERP PREVIEW */}
+                <div className="lg:col-span-5 space-y-6 sticky top-24">
+                  
+                  <Card className="rounded-2xl border-border/80 shadow-xs bg-card overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-border/60">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="h-3 w-3 rounded-full bg-rose-500 inline-block" />
+                          <span className="h-3 w-3 rounded-full bg-amber-500 inline-block" />
+                          <span className="h-3 w-3 rounded-full bg-emerald-500 inline-block" />
+                        </div>
+                        <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider font-semibold">
+                          Google Search Live Simulator
+                        </span>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="p-5 space-y-4 font-sans">
+                      
+                      {/* Google Result Preview Box */}
+                      <div className="p-4 rounded-xl bg-white dark:bg-[#1f1f1f] border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
+                        
+                        {/* URL Breadcrumbs & Favicon */}
+                        <div className="flex items-center gap-2">
+                          <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-[10px]">
+                            ST
+                          </div>
+                          <div className="space-y-0.5">
+                            <p className="text-[12px] font-semibold text-neutral-800 dark:text-neutral-200 leading-none">
+                              Sapphire Trails
+                            </p>
+                            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono leading-none">
+                              https://sapphiretrails.lk &rsaquo; ratnapura-gem-tours
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Title (Google Blue) */}
+                        <h3 className="text-base sm:text-lg font-medium text-[#1a0dab] dark:text-[#8ab4f8] hover:underline cursor-pointer leading-snug">
+                          {currentSeo.metaTitle || defaultSeoSettings.metaTitle}
+                        </h3>
+
+                        {/* Star Rating Rich Snippet */}
+                        <div className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400">
+                          <div className="flex items-center text-amber-400">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star key={s} className="h-3.5 w-3.5 fill-current" />
+                            ))}
+                          </div>
+                          <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                            Rating: {currentSeo.ratingValue || '4.9'}
+                          </span>
+                          <span>&bull;</span>
+                          <span>{currentSeo.reviewCount || '124'} reviews</span>
+                        </div>
+
+                        {/* Meta Description Snippet */}
+                        <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                          <span className="text-neutral-500 dark:text-neutral-400 font-medium">
+                            2026 &mdash; 
+                          </span>{' '}
+                          {currentSeo.metaDescription || defaultSeoSettings.metaDescription}
+                        </p>
+                      </div>
+
+                      {/* Google Featured Snippet Preview */}
+                      {currentFaqs.length > 0 && (
+                        <div className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-2">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                            <Sparkles className="h-3.5 w-3.5" />
+                            <span>Featured Snippet (Position #0 Target)</span>
+                          </div>
+                          <p className="text-xs font-semibold text-foreground">
+                            {currentFaqs[0].question}
+                          </p>
+                          <p className="text-xs text-muted-foreground leading-relaxed italic border-l-2 border-primary pl-2.5">
+                            &quot;{currentFaqs[0].answer}&quot;
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Active Keywords Badges */}
+                      <div className="pt-2 border-t border-border/60 space-y-2">
+                        <span className="text-[11px] font-semibold text-foreground uppercase tracking-wider block">
+                          Active Target Search Keywords ({currentSeo.keywords?.length || 0}):
+                        </span>
+                        <div className="flex flex-wrap gap-1">
+                          {(currentSeo.keywords || []).map((kw, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary border border-primary/20"
+                            >
+                              {kw}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                    </CardContent>
+                  </Card>
+
+                  {/* Info Tip Box */}
+                  <div className="p-4 rounded-2xl bg-muted/40 border border-border/80 flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
+                    <div className="text-xs space-y-1">
+                      <p className="font-semibold text-foreground">Instant Database Sync</p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        When you click <strong>&quot;Save All Changes&quot;</strong>, all SEO tags and the <code>FAQPage</code> schema are written to MySQL and immediately pre-rendered on the Next.js server side.
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            );
+          })()}
         </TabsContent>
 
       </Tabs>

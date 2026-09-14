@@ -10,46 +10,14 @@ import { ScrollAnimate } from "@/components/shared/scroll-animate";
 import { HelpCircle, Sparkles, MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useSiteContent, getWhatsappUrl } from "@/lib/site-content";
-
-const faqs = [
-  {
-    q: "How do I book an authentic Gem Mining Tour in Ratnapura (Rathnapura), Sri Lanka?",
-    a: "You can easily reserve your private Sri Lankan gem mine tour online through our booking portal on sapphiretrails.lk, via WhatsApp at +94 76 375 6688, or by consulting our concierge. We offer all-inclusive day expeditions and multi-day gemological journeys starting from Colombo, Kandy, Galle, or directly in Ratnapura."
-  },
-  {
-    q: "What makes a Sri Lankan gem mine tour unique compared to other world destinations?",
-    a: "Unlike hard-rock diamond or emerald extraction elsewhere, Sri Lanka features ancient alluvial gravel layers ('Illam') located in Ratnapura (Rathnapura). Visitors can experience authentic hand-dug shafts, traditional wicker basket river washing ('Garilla'), open-air street trading markets, and Ceylon sapphire lapidaries—all in one immersive gem mining tour."
-  },
-  {
-    q: "Is it safe to descend into the active gem mines?",
-    a: "Yes, 100%. We operate strictly with government-licensed, timber-reinforced traditional mines inspected for structural integrity. Every guest is outfitted with safety harnesses, hard hats, and LED headlamps. You are guided one-on-one by our veteran mining team and licensed guide throughout the descent."
-  },
-  {
-    q: "Can I keep the gemstones I find while washing the gravel?",
-    a: "Absolutely! Any semi-precious gemstones (such as tourmalines, garnets, zircons, and quartz) and raw minerals you discover during your hands-on traditional gravel washing experience are yours to keep as authentic Sri Lankan souvenirs. If you uncover a high-value precious sapphire, our gemologist will assist with valuation and export certification."
-  },
-  {
-    q: "Do you offer private hotel pickup from Colombo, Kandy, or Galle?",
-    a: "Yes. All our signature and custom tour packages include private round-trip transfers in air-conditioned luxury SUVs or passenger vans directly from your hotel or resort in Colombo, Kandy, Galle, Bentota, or Bandaranaike International Airport (CMB)."
-  },
-  {
-    q: "What is the recommended dress code for the gem mine tour?",
-    a: "We recommend comfortable, lightweight cotton clothing that you don't mind getting slightly dusty or splashed with river water. Closed-toe walking shoes or sneakers are mandatory for pit descents. We provide specialized safety boots and rain boots for the riverbed gravel washing experience."
-  },
-  {
-    q: "Can I buy certified Ceylon Sapphires or custom jewellery during the tour?",
-    a: "Yes. At the conclusion of your tour at Grand Silver Ray, you can visit our certified gemological laboratory. You can select unheated or heated natural Ceylon Blue, Padparadscha, Pink, and Yellow sapphires accompanied by recognized international laboratory certificates (GIA, GIC, Lotus)."
-  },
-  {
-    q: "What is your booking flexibility and cancellation policy?",
-    a: "We offer flexible rescheduling. If your travel plans change due to weather or flight adjustments, you can reschedule your expedition free of charge with 24 hours notice. Advance deposit refunds are processed according to our transparent concierge terms."
-  }
-];
+import { useSiteContent, getWhatsappUrl, defaultSeoFaqs } from "@/lib/site-content";
 
 export function FAQSection() {
   const { content } = useSiteContent();
   const faqHeader = content.homepage.faqHeader;
+  const activeFaqs = (content.settings?.seo?.faqs && content.settings.seo.faqs.length > 0)
+    ? content.settings.seo.faqs
+    : defaultSeoFaqs;
 
   return (
     <section className="w-full bg-background-alt py-16 md:py-28 relative">
@@ -73,17 +41,17 @@ export function FAQSection() {
         {/* Accordion List */}
         <ScrollAnimate>
           <Accordion type="single" collapsible className="w-full space-y-3">
-            {faqs.map((faq, index) => (
+            {activeFaqs.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
                 className="bg-background border border-border/80 rounded-xl px-5 py-1 shadow-sm transition-colors data-[state=open]:border-primary/50"
               >
                 <AccordionTrigger className="text-left text-sm sm:text-base font-headline font-semibold text-foreground hover:text-primary transition-colors py-4">
-                  {faq.q}
+                  {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="text-xs sm:text-sm text-muted-foreground leading-relaxed pt-1 pb-4">
-                  {faq.a}
+                  {faq.answer}
                 </AccordionContent>
               </AccordionItem>
             ))}

@@ -5,6 +5,7 @@ import { Cinzel, Montserrat, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { LayoutProvider } from '@/components/layout-provider';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
+import { fetchSiteContentServer, defaultSeoSettings } from '@/lib/site-seo';
 
 const cinzel = Cinzel({
   subsets: ['latin'],
@@ -25,63 +26,73 @@ const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700'],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://sapphiretrails.lk'),
-  alternates: {
-    canonical: './',
-  },
-  title: {
-    template: '%s | Sapphire Trails - Sri Lanka Gem Tours',
-    default: 'Gem Mine Tours Sri Lanka | Sapphire Trails - Luxury Ratnapura Mining Trips',
-  },
-  description: 'Book the ultimate Gem Mine Tour in Ratnapura (Rathnapura), Sri Lanka. Experience active mining pits, traditional gem washing, and private luxury sapphire tours with Sapphire Trails.',
-  keywords: [
-    'Gem mining Rathnapura',
-    'Gem mining Ratnapura',
-    'Gem tours',
-    'gem mine tours',
-    'gem mine tours rathnapura',
-    'sri lanka gem mine tour',
-    'srilankan gem tours',
-    'sri lankan gem tours',
-    'gem mining tour',
-    'Ceylon sapphire tours',
-    'Ratnapura gem market',
-    'gem washing experience Sri Lanka'
-  ],
-  icons: {
-    icon: [
-      { url: '/img/favicon.ico' },
-      { url: '/img/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/img/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/img/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/img/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    shortcut: '/img/favicon.ico',
-    apple: [
-      { url: '/img/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-  },
-  manifest: '/site.webmanifest',
-  openGraph: {
-    title: 'Gem Mine Tours Sri Lanka | Sapphire Trails - Luxury Ratnapura Mining Trips',
-    description: 'Book the ultimate Gem Mine Tour in Ratnapura (Rathnapura), Sri Lanka. Experience active mining pits, traditional gem washing, and luxury service with Sapphire Trails.',
-    images: [{
-      url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
-      width: 1200,
-      height: 630,
-      alt: 'Inside a gem mine on a Sapphire Trails gem tour in Sri Lanka.'
-    }],
-  }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const siteContent = await fetchSiteContentServer();
+  const seo = siteContent.settings?.seo || defaultSeoSettings;
 
+  const title = seo.metaTitle || defaultSeoSettings.metaTitle;
+  const description = seo.metaDescription || defaultSeoSettings.metaDescription;
+  const keywords = (seo.keywords && seo.keywords.length > 0) ? seo.keywords : defaultSeoSettings.keywords;
+  const ogImage = seo.ogImage || defaultSeoSettings.ogImage;
 
+  return {
+    metadataBase: new URL('https://sapphiretrails.lk'),
+    alternates: {
+      canonical: './',
+    },
+    title: {
+      template: '%s | Sapphire Trails',
+      default: title,
+    },
+    description,
+    keywords,
+    icons: {
+      icon: [
+        { url: '/img/favicon.ico' },
+        { url: '/img/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+        { url: '/img/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/img/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/img/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+      ],
+      shortcut: '/img/favicon.ico',
+      apple: [
+        { url: '/img/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      ],
+    },
+    manifest: '/site.webmanifest',
+    openGraph: {
+      title,
+      description,
+      url: 'https://sapphiretrails.lk',
+      siteName: 'Sapphire Trails Sri Lanka',
+      images: [{
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: title,
+      }],
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteContent = await fetchSiteContentServer();
+  const seo = siteContent.settings?.seo || defaultSeoSettings;
+  const contact = siteContent.contact;
+  const footer = siteContent.footer;
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -90,38 +101,39 @@ export default function RootLayout({
     "logo": "https://sapphiretrails.lk/img/logo4.png",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Grand Silver Ray, Colombo - Batticaloa Hwy",
+      "streetAddress": contact?.physicalAddress || "Grand Silver Ray, Colombo - Batticaloa Hwy",
       "addressLocality": "Ratnapura",
       "addressCountry": "LK"
     },
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+94-76-375-6688",
+      "telephone": contact?.primaryPhone || "+94-76-375-6688",
       "contactType": "Customer Service",
       "areaServed": "LK",
       "availableLanguage": ["en"]
     },
     "sameAs": [
-      "https://www.facebook.com/p/Sapphire-Trails-61573050367074/",
-      "https://instagram.com",
-      "https://youtube.com"
+      footer?.facebookUrl || "https://www.facebook.com/p/Sapphire-Trails-61573050367074/",
+      footer?.instagramUrl || "https://instagram.com",
+      footer?.tripadvisorUrl || "https://www.tripadvisor.com",
+      footer?.youtubeUrl || "https://youtube.com"
     ]
   };
 
   const websiteStructuredData = {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "url": "https://sapphiretrails.lk",
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://sapphiretrails.lk",
+    "name": "Sapphire Trails",
+    "description": seo.metaDescription,
+    "publisher": {
+      "@type": "Organization",
       "name": "Sapphire Trails",
-      "description": "Discover the best gem tours in Ratnapura, Sri Lanka with Sapphire Trails. Experience authentic gem mining, explore cultural heritage, and enjoy luxury stays.",
-      "publisher": {
-          "@type": "Organization",
-          "name": "Sapphire Trails",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://sapphiretrails.lk/img/logo4.png"
-          }
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://sapphiretrails.lk/img/logo4.png"
       }
+    }
   };
 
   const touristAttractionSchema = {
@@ -130,12 +142,12 @@ export default function RootLayout({
     "name": "Sapphire Trails Gem Mine Tours",
     "alternateName": [
       "Ratnapura Gem Mine Tours",
-      "Rathnapura Gem Mining Tour",
-      "Sri Lankan Gem Tours",
-      "Ceylon Gem Mine Tour"
+      "Traditional Gem Mining Sri Lanka",
+      "Ceylon Sapphire Mining Experience",
+      "Ethical Gem Mine Visit Ratnapura"
     ],
-    "description": "Authentic and luxury gem mine tours in Ratnapura (Rathnapura), Sri Lanka. Experience active underground mining pit descent, traditional river gem gravel washing, and certified gemologist consultations.",
-    "touristType": ["EcoTourism", "CulturalTourism", "GemstoneTourism", "LuxuryTourism"],
+    "description": seo.metaDescription,
+    "touristType": ["EcoTourism", "CulturalTourism", "GemstoneTourism"],
     "location": {
       "@type": "Place",
       "name": "Ratnapura, Sri Lanka",
@@ -145,7 +157,27 @@ export default function RootLayout({
         "addressRegion": "Sabaragamuwa",
         "addressCountry": "LK"
       }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": seo.ratingValue || "4.9",
+      "reviewCount": seo.reviewCount || "124"
     }
+  };
+
+  // Dynamic FAQPage Schema for Featured Snippet Domination
+  const activeFaqs = (seo.faqs && seo.faqs.length > 0) ? seo.faqs : defaultSeoSettings.faqs;
+  const faqPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": activeFaqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
   };
 
   const siteNavigationSchema = {
@@ -253,6 +285,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(touristAttractionSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageSchema) }}
         />
         <script
           type="application/ld+json"

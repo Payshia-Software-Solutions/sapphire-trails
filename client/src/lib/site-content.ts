@@ -30,12 +30,16 @@ export interface TopBarConfig {
   taglineLink?: string;
 }
 
+export { type SeoFaqItem, type SeoSettings, defaultSeoFaqs, defaultSeoSettings } from './site-seo';
+import { type SeoSettings, defaultSeoSettings, defaultSeoFaqs } from './site-seo';
+
 export interface SiteContentData {
   // Global Site Settings
   settings?: {
     defaultTheme?: 'light' | 'dark';
     banner?: FeaturedBannerConfig;
     topbar?: TopBarConfig;
+    seo?: SeoSettings;
     [key: string]: any;
   };
 
@@ -50,6 +54,11 @@ export interface SiteContentData {
       ctaSecondaryText: string;
       videoUrl?: string;
       posterImageUrl?: string;
+      heroMode?: 'editorial_image' | 'cinematic_video';
+      gemImageUrl?: string;
+      cornerLeftText?: string;
+      cornerCenterText?: string;
+      cornerRightText?: string;
     };
     stats: Array<{
       value: string;
@@ -450,7 +459,7 @@ export const defaultTopBarConfig: TopBarConfig = {
   enabled: true,
   email: 'info@sapphiretrails.lk',
   phone: '071 235 7700',
-  tagline: 'Luxury Gem Tours',
+  tagline: 'Authentic Gem Tours',
   taglineLink: '',
 };
 
@@ -459,6 +468,7 @@ export const defaultSiteContent: SiteContentData = {
     defaultTheme: 'light',
     banner: defaultFeaturedBanner,
     topbar: defaultTopBarConfig,
+    seo: defaultSeoSettings,
   },
 
   homepage: {
@@ -471,6 +481,11 @@ export const defaultSiteContent: SiteContentData = {
       ctaSecondaryText: 'Explore Packages',
       videoUrl: 'https://content-provider.payshia.com/sapphire-trail/hero/hero-video-sapphire-trail.webm',
       posterImageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
+      heroMode: 'editorial_image',
+      gemImageUrl: '/img/hero-sapphire-gem.png',
+      cornerLeftText: 'SAPPHIRE TRAILS • RATNAPURA',
+      cornerCenterText: 'SRI LANKA',
+      cornerRightText: '01 / PRIVATE EXPEDITIONS',
     },
     stats: [
       { value: '5,000+', label: 'Happy Guests' },
@@ -1240,6 +1255,68 @@ export function mergeFooterContent(parsedFooter?: any) {
   };
 }
 
+export function mergeSiteSettings(incoming?: any) {
+  const d = defaultSiteContent.settings;
+  if (!incoming || typeof incoming !== 'object') return d;
+
+  const rawFaqs = incoming.seo?.faqs;
+  const faqs = (Array.isArray(rawFaqs) && rawFaqs.length > 0)
+    ? rawFaqs
+    : defaultSeoSettings.faqs;
+
+  const rawKeywords = incoming.seo?.keywords;
+  const keywords = (Array.isArray(rawKeywords) && rawKeywords.length > 0)
+    ? rawKeywords
+    : defaultSeoSettings.keywords;
+
+  return {
+    ...d,
+    ...incoming,
+    banner: {
+      ...d?.banner,
+      ...(incoming.banner || {}),
+    },
+    topbar: {
+      ...d?.topbar,
+      ...(incoming.topbar || {}),
+    },
+    seo: {
+      ...defaultSeoSettings,
+      ...(incoming.seo || {}),
+      keywords,
+      faqs,
+    },
+  };
+}
+
+export async function fetchSiteContentServer(): Promise<SiteContentData> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/content/site_data`, {
+      next: { revalidate: 3600 },
+      headers: { Accept: 'application/json' },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data && typeof data === 'object') {
+        return {
+          ...defaultSiteContent,
+          ...data,
+          settings: mergeSiteSettings(data.settings),
+          tours: mergeToursContent(data.tours),
+          proposal: mergeProposalContent(data.proposal),
+          explore: mergeExploreContent(data.explore),
+          articles: mergeArticlesContent(data.articles),
+          contact: mergeContactContent(data.contact),
+          footer: mergeFooterContent(data.footer),
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('[fetchSiteContentServer] Failed to fetch remote site data, using defaults:', err);
+  }
+  return defaultSiteContent;
+}
+
 export async function fetchSiteContent(): Promise<SiteContentData> {
 
   try {
@@ -1254,18 +1331,7 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         const merged: SiteContentData = {
           ...defaultSiteContent,
           ...data,
-          settings: {
-            ...defaultSiteContent.settings,
-            ...(data.settings || {}),
-            banner: {
-              ...defaultSiteContent.settings?.banner,
-              ...(data.settings?.banner || {}),
-            },
-            topbar: {
-              ...defaultSiteContent.settings?.topbar,
-              ...(data.settings?.topbar || {}),
-            },
-          },
+          settings: mergeSiteSettings(data.settings),
           homepage: { 
             ...defaultSiteContent.homepage, 
             ...data.homepage,
@@ -1341,18 +1407,7 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         return {
           ...defaultSiteContent,
           ...parsed,
-          settings: {
-            ...defaultSiteContent.settings,
-            ...(parsed.settings || {}),
-            banner: {
-              ...defaultSiteContent.settings?.banner,
-              ...(parsed.settings?.banner || {}),
-            },
-            topbar: {
-              ...defaultSiteContent.settings?.topbar,
-              ...(parsed.settings?.topbar || {}),
-            },
-          },
+          settings: mergeSiteSettings(parsed.settings),
           homepage: {
             ...defaultSiteContent.homepage,
             ...(parsed.homepage || {}),
@@ -1559,18 +1614,7 @@ export function useSiteContent() {
             setContent({
               ...defaultSiteContent,
               ...parsed,
-              settings: {
-                ...defaultSiteContent.settings,
-                ...(parsed.settings || {}),
-                banner: {
-                  ...defaultSiteContent.settings?.banner,
-                  ...(parsed.settings?.banner || {}),
-                },
-                topbar: {
-                  ...defaultSiteContent.settings?.topbar,
-                  ...(parsed.settings?.topbar || {}),
-                },
-              },
+              settings: mergeSiteSettings(parsed.settings),
               homepage: {
                 ...defaultSiteContent.homepage,
                 ...(parsed.homepage || {}),
