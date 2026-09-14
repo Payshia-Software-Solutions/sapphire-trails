@@ -81,7 +81,7 @@ html {
 }
 
 .font-brand {
-  font-family: var(--font-cinzel), serif;
+  font-family: var(--font-cinzel), serif !important;
 }
 
 /* Authentic Ceylon Sapphire Blue utility for intentional accents */
