@@ -156,63 +156,45 @@ export function HeroSection() {
         <div className="w-[500px] sm:w-[750px] md:w-[900px] h-[500px] sm:h-[750px] md:h-[900px] rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.06)_0%,rgba(218,165,32,0.04)_40%,transparent_70%)] blur-3xl" />
       </div>
 
-      {/* Center Stage: Symmetrically Balanced Editorial Brand & Ceylon Sapphire Ring */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-5 sm:space-y-6 max-w-6xl mx-auto px-4 w-full my-auto">
+      {/* Center Stage: Sapphire Gem on Top with SAPPHIRE TRAILS Unified Headline */}
+      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-4 sm:space-y-5 max-w-5xl mx-auto px-4 w-full my-auto">
         
-        {/* Flanking Typography: S A P P H I R E  [ 💎 Ceylon Sapphire Ring ]  T R A I L S */}
-        {/* Symmetrical 3-column grid guarantees the gemstone sits at the EXACT 50% center of the screen */}
-        <div className="w-full grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-center justify-items-center select-none my-1 sm:my-2">
-          {/* Left Wordmark: SAPPHIRE - Aligned to right edge of left column */}
-          <div className="w-full flex justify-center sm:justify-end items-center sm:pr-4 md:pr-8 lg:pr-10">
-            <span className="font-brand text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-[0.22em] md:tracking-[0.28em] lg:tracking-[0.32em] text-foreground font-light shrink-0">
-              SAPPHIRE
-            </span>
-          </div>
-
-          {/* Center Focal Gemstone Visual - Exactly in true 50% midpoint */}
-          <div className="relative my-3 sm:my-0 group cursor-pointer transition-transform duration-500 hover:scale-105 shrink-0 flex justify-center items-center">
-            {/* Soft contact shadow beneath the ring */}
-            <div 
-              className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-3 sm:h-4 bg-primary/25 dark:bg-black/80 rounded-full blur-md" 
-              aria-hidden="true" 
-            />
-            
-            <Image
-              src={gemImg}
-              alt="Authentic Ceylon Blue Sapphire Gemstone Ring - Ratnapura Sri Lanka"
-              width={264}
-              height={206}
-              sizes="(max-width: 640px) 140px, (max-width: 768px) 180px, (max-width: 1024px) 220px, 264px"
-              className="relative z-10 w-32 sm:w-40 md:w-48 lg:w-56 xl:w-64 h-auto object-contain drop-shadow-[0_14px_28px_rgba(26,54,93,0.18)] dark:drop-shadow-[0_18px_36px_rgba(0,0,0,0.85)]"
-              priority
-              fetchPriority="high"
-            />
-          </div>
-
-          {/* Right Wordmark: TRAILS - Aligned to left edge of right column */}
-          <div className="w-full flex justify-center sm:justify-start items-center sm:pl-4 md:pl-8 lg:pl-10">
-            <span className="font-brand text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-[0.22em] md:tracking-[0.28em] lg:tracking-[0.32em] text-foreground font-light shrink-0">
-              TRAILS
-            </span>
-          </div>
+        {/* 1. Ceylon Sapphire Gem Visual on Top */}
+        <div className="relative group cursor-pointer transition-transform duration-500 hover:scale-105 flex justify-center items-center">
+          {/* Soft contact shadow beneath the ring */}
+          <div 
+            className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-3 sm:h-4 bg-primary/25 dark:bg-black/80 rounded-full blur-md" 
+            aria-hidden="true" 
+          />
+          
+          <Image
+            src={gemImg}
+            alt="Authentic Ceylon Blue Sapphire Gemstone Ring - Ratnapura Sri Lanka"
+            width={264}
+            height={206}
+            sizes="(max-width: 640px) 140px, (max-width: 768px) 190px, (max-width: 1024px) 230px, 264px"
+            className="relative z-10 w-28 sm:w-36 md:w-44 lg:w-52 h-auto object-contain drop-shadow-[0_14px_28px_rgba(26,54,93,0.18)] dark:drop-shadow-[0_18px_36px_rgba(0,0,0,0.85)]"
+            priority
+            fetchPriority="high"
+          />
         </div>
 
-        {/* Subtle Brand Tagline Badge - Placed cleanly beneath the ring */}
+        {/* 2. Unified Brand Headline: SAPPHIRE TRAILS */}
+        <h1 className="font-brand text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-[0.2em] sm:tracking-[0.25em] md:tracking-[0.3em] text-foreground font-light select-none uppercase">
+          SAPPHIRE TRAILS
+        </h1>
+
+        {/* 3. Subtle Brand Tagline Badge */}
         <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-primary font-medium font-sans shadow-2xs">
           <span>{tagline}</span>
         </div>
 
-        {/* Semantic H1 for 100% SEO Power (Crawled by Google without visual clutter) */}
-        <h1 className="sr-only">
-          {headlineLine1} - {headlineLine2} | Sapphire Trails Sri Lanka
-        </h1>
-
-        {/* Elegant Editorial Subheadline */}
-        <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-2xl mx-auto font-sans font-normal leading-relaxed -mt-1 sm:-mt-2">
+        {/* 4. Elegant Editorial Subheadline */}
+        <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-2xl mx-auto font-sans font-normal leading-relaxed">
           {subheadline}
         </p>
 
-        {/* Quiet Luxury Call-To-Action (CTA) Group */}
+        {/* 5. Quiet Luxury Call-To-Action (CTA) Group */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 w-full max-w-xs sm:max-w-none font-sans">
           <Button 
             asChild 
