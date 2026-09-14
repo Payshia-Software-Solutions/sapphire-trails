@@ -16,6 +16,8 @@ import {
   type SiteContentData,
   defaultFeaturedBanner,
   type FeaturedBannerConfig,
+  defaultTopBarConfig,
+  type TopBarConfig,
   type BannerTemplate,
   type BannerDisplayType,
   SECTION_COLOR_THEMES,
@@ -270,6 +272,20 @@ export default function MasterCmsPage() {
         ...(prev.settings || {}),
         banner: {
           ...currentBanner,
+          ...fields,
+        },
+      },
+    }));
+  };
+
+  const handleUpdateTopBar = (fields: Partial<TopBarConfig>) => {
+    const currentTopBar = content.settings?.topbar || defaultTopBarConfig;
+    setContent((prev) => ({
+      ...prev,
+      settings: {
+        ...(prev.settings || {}),
+        topbar: {
+          ...currentTopBar,
           ...fields,
         },
       },
@@ -7315,6 +7331,187 @@ export default function MasterCmsPage() {
                   <p className="text-muted-foreground leading-relaxed">
                     Saving this setting stores the default preference in the central CMS database. When visitors open the site for the first time or clear their cache, the site automatically renders in this chosen theme with zero layout shifts or visual flicker.
                   </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Header TopBar Configuration Card */}
+          <Card className="border border-border/80 bg-card rounded-2xl shadow-xs overflow-hidden">
+            <CardHeader className="border-b border-border/60 bg-muted/20 p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold uppercase tracking-wider">
+                    <Megaphone className="h-3 w-3" />
+                    <span>Header Announcement &amp; Contact Bar</span>
+                  </div>
+                  <CardTitle className="text-xl font-bold font-headline text-foreground">
+                    Header TopBar Settings
+                  </CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground">
+                    Customize the slim top bar above the main navigation, including contact email, phone number, and announcement tagline.
+                  </CardDescription>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={(content.settings?.topbar?.enabled ?? defaultTopBarConfig.enabled) ? "default" : "outline"}
+                    onClick={() => handleUpdateTopBar({ 
+                      enabled: !(content.settings?.topbar?.enabled ?? defaultTopBarConfig.enabled) 
+                    })}
+                    className={`h-8 px-4 rounded-full text-xs font-semibold gap-1.5 transition-all ${
+                      (content.settings?.topbar?.enabled ?? defaultTopBarConfig.enabled)
+                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs' 
+                        : 'border-rose-500/50 text-rose-500 hover:bg-rose-500/10'
+                    }`}
+                  >
+                    {(content.settings?.topbar?.enabled ?? defaultTopBarConfig.enabled) ? (
+                      <>
+                        <Eye className="h-3.5 w-3.5" />
+                        <span>TopBar Active</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="h-3.5 w-3.5" />
+                        <span>TopBar Hidden</span>
+                      </>
+                    )}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    onClick={() => handleSave()}
+                    disabled={isSaving}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs h-9 px-5 gap-1.5 shadow-sm"
+                  >
+                    {isSaving ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                    <span>Save TopBar</span>
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-6 space-y-6">
+              {/* Form Inputs */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
+                    <Mail className="h-3.5 w-3.5 text-primary" />
+                    Contact Email Address
+                  </Label>
+                  <Input
+                    value={content.settings?.topbar?.email ?? defaultTopBarConfig.email}
+                    onChange={(e) => handleUpdateTopBar({ email: e.target.value })}
+                    placeholder="info@sapphiretrails.lk"
+                    className="rounded-xl text-xs h-9"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Displayed on the left side of the top bar with a direct email link.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
+                    <Phone className="h-3.5 w-3.5 text-primary" />
+                    Contact Phone Number
+                  </Label>
+                  <Input
+                    value={content.settings?.topbar?.phone ?? defaultTopBarConfig.phone}
+                    onChange={(e) => handleUpdateTopBar({ phone: e.target.value })}
+                    placeholder="071 235 7700"
+                    className="rounded-xl text-xs h-9"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Displayed next to email with one-touch phone calling on click.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    Right-Side Tagline / Announcement
+                  </Label>
+                  <Input
+                    value={content.settings?.topbar?.tagline ?? defaultTopBarConfig.tagline}
+                    onChange={(e) => handleUpdateTopBar({ tagline: e.target.value })}
+                    placeholder="Luxury Gem Tours"
+                    className="rounded-xl text-xs h-9"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Uppercase highlighted text on the right side of the bar.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
+                    <ExternalLink className="h-3.5 w-3.5 text-primary" />
+                    Tagline Link URL (Optional)
+                  </Label>
+                  <Input
+                    value={content.settings?.topbar?.taglineLink ?? defaultTopBarConfig.taglineLink}
+                    onChange={(e) => handleUpdateTopBar({ taglineLink: e.target.value })}
+                    placeholder="/tours or https://..."
+                    className="rounded-xl text-xs h-9"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    If set, clicking the tagline navigates to this destination page.
+                  </p>
+                </div>
+              </div>
+
+              {/* Live Preview Box */}
+              <div className="space-y-3 pt-2">
+                <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Eye className="h-3.5 w-3.5 text-primary" />
+                  Live Header TopBar Preview
+                </Label>
+                
+                <div className="rounded-xl border border-border/80 p-4 bg-muted/20 space-y-3">
+                  {/* Light mode preview */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Light Theme Appearance</span>
+                    <div className="w-full bg-white text-xs text-muted-foreground border border-border rounded-lg py-2 px-4 shadow-2xs">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 text-[11px]">
+                          <span className="flex items-center gap-1 text-primary">
+                            <Mail className="h-3 w-3" />
+                            {content.settings?.topbar?.email || defaultTopBarConfig.email}
+                          </span>
+                          <span className="flex items-center gap-1 text-primary">
+                            <Phone className="h-3 w-3" />
+                            {content.settings?.topbar?.phone || defaultTopBarConfig.phone}
+                          </span>
+                        </div>
+                        <span className="text-primary font-sans tracking-wide uppercase text-[11px] font-medium">
+                          {content.settings?.topbar?.tagline || defaultTopBarConfig.tagline}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dark mode preview */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Dark Theme Appearance</span>
+                    <div className="w-full bg-[#0B1118] text-xs text-slate-400 border border-white/10 rounded-lg py-2 px-4 shadow-2xs">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 text-[11px]">
+                          <span className="flex items-center gap-1 text-primary">
+                            <Mail className="h-3 w-3" />
+                            {content.settings?.topbar?.email || defaultTopBarConfig.email}
+                          </span>
+                          <span className="flex items-center gap-1 text-primary">
+                            <Phone className="h-3 w-3" />
+                            {content.settings?.topbar?.phone || defaultTopBarConfig.phone}
+                          </span>
+                        </div>
+                        <span className="text-primary font-sans tracking-wide uppercase text-[11px] font-medium">
+                          {content.settings?.topbar?.tagline || defaultTopBarConfig.tagline}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>

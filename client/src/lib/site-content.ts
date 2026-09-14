@@ -22,11 +22,20 @@ export interface FeaturedBannerConfig {
   delaySeconds?: number;
 }
 
+export interface TopBarConfig {
+  enabled: boolean;
+  email?: string;
+  phone?: string;
+  tagline?: string;
+  taglineLink?: string;
+}
+
 export interface SiteContentData {
   // Global Site Settings
   settings?: {
     defaultTheme?: 'light' | 'dark';
     banner?: FeaturedBannerConfig;
+    topbar?: TopBarConfig;
     [key: string]: any;
   };
 
@@ -437,10 +446,19 @@ export const defaultFeaturedBanner: FeaturedBannerConfig = {
   delaySeconds: 2,
 };
 
+export const defaultTopBarConfig: TopBarConfig = {
+  enabled: true,
+  email: 'info@sapphiretrails.lk',
+  phone: '071 235 7700',
+  tagline: 'Luxury Gem Tours',
+  taglineLink: '',
+};
+
 export const defaultSiteContent: SiteContentData = {
   settings: {
     defaultTheme: 'light',
     banner: defaultFeaturedBanner,
+    topbar: defaultTopBarConfig,
   },
 
   homepage: {
@@ -1243,6 +1261,10 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
               ...defaultSiteContent.settings?.banner,
               ...(data.settings?.banner || {}),
             },
+            topbar: {
+              ...defaultSiteContent.settings?.topbar,
+              ...(data.settings?.topbar || {}),
+            },
           },
           homepage: { 
             ...defaultSiteContent.homepage, 
@@ -1325,6 +1347,10 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
             banner: {
               ...defaultSiteContent.settings?.banner,
               ...(parsed.settings?.banner || {}),
+            },
+            topbar: {
+              ...defaultSiteContent.settings?.topbar,
+              ...(parsed.settings?.topbar || {}),
             },
           },
           homepage: {
@@ -1447,6 +1473,10 @@ export function useSiteContent() {
                 ...defaultSiteContent.settings?.banner,
                 ...(parsed.settings?.banner || {}),
               },
+              topbar: {
+                ...defaultSiteContent.settings?.topbar,
+                ...(parsed.settings?.topbar || {}),
+              },
             },
             homepage: {
               ...defaultSiteContent.homepage,
@@ -1535,6 +1565,10 @@ export function useSiteContent() {
                 banner: {
                   ...defaultSiteContent.settings?.banner,
                   ...(parsed.settings?.banner || {}),
+                },
+                topbar: {
+                  ...defaultSiteContent.settings?.topbar,
+                  ...(parsed.settings?.topbar || {}),
                 },
               },
               homepage: {
@@ -1656,5 +1690,16 @@ export function getWhatsappUrl(content?: SiteContentData | null, message?: strin
     return `https://wa.me/${num}?text=${encodeURIComponent(message)}`;
   }
   return `https://wa.me/${num}`;
+}
+
+export function getTopBarConfig(content?: SiteContentData | null): TopBarConfig {
+  const topbar = content?.settings?.topbar;
+  return {
+    enabled: topbar?.enabled !== false,
+    email: topbar?.email !== undefined && topbar.email !== '' ? topbar.email : (content?.contact?.primaryEmail || 'info@sapphiretrails.lk'),
+    phone: topbar?.phone !== undefined && topbar.phone !== '' ? topbar.phone : getContactPhone(content),
+    tagline: topbar?.tagline !== undefined ? topbar.tagline : 'Luxury Gem Tours',
+    taglineLink: topbar?.taglineLink || '',
+  };
 }
 

@@ -25,7 +25,7 @@ import {
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
-import { useSiteContent, getContactPhone, getCleanPhone, getWhatsappUrl } from '@/lib/site-content';
+import { useSiteContent, getContactPhone, getCleanPhone, getWhatsappUrl, getTopBarConfig } from '@/lib/site-content';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,10 +64,11 @@ export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { content } = useSiteContent();
+  const topbar = getTopBarConfig(content);
 
-  const primaryPhone = getContactPhone(content);
+  const primaryPhone = topbar.phone || getContactPhone(content);
   const primaryPhoneTel = `tel:${getCleanPhone(primaryPhone)}`;
-  const primaryEmail = content?.contact?.primaryEmail || 'info@sapphiretrails.lk';
+  const primaryEmail = topbar.email || content?.contact?.primaryEmail || 'info@sapphiretrails.lk';
   const whatsappUrl = getWhatsappUrl(content);
 
   const headerRef = useRef<HTMLElement>(null);
@@ -95,7 +96,7 @@ export function Header() {
     updateHeaderHeight();
     window.addEventListener('resize', updateHeaderHeight);
     return () => window.removeEventListener('resize', updateHeaderHeight);
-  }, [showTopBar]);
+  }, [showTopBar, topbar.enabled]);
 
   const handleLogout = () => {
     logout();
@@ -115,26 +116,40 @@ export function Header() {
   return (
     <header ref={headerRef} className="sticky top-0 z-50 w-full bg-white dark:bg-background border-b border-border shadow-sm">
       {/* Top Bar */}
-      <div className={cn(
-        "w-full bg-white dark:bg-background-alt text-xs text-muted-foreground border-b border-border py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",
-        showTopBar ? "max-h-[40px] opacity-100" : "max-h-0 opacity-0 py-0 border-b-transparent"
-      )}>
-        <div className="container mx-auto max-w-screen-2xl flex items-center justify-between px-4 md:px-6">
-          <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-3 sm:gap-6">
-            <a href={`mailto:${primaryEmail}`} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
-              <Mail className="h-3 w-3 text-primary shrink-0" />
-              <span>{primaryEmail}</span>
-            </a>
-            <a href={primaryPhoneTel} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs shrink-0">
-              <Phone className="h-3 w-3 text-primary shrink-0" />
-              <span>{primaryPhone}</span>
-            </a>
-          </div>
-          <div className="hidden sm:block text-primary/80 font-sans tracking-wide uppercase text-[11px] font-medium">
-            Luxury Gem Tours
+      {topbar.enabled && (
+        <div className={cn(
+          "w-full bg-white dark:bg-background-alt text-xs text-muted-foreground border-b border-border py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",
+          showTopBar ? "max-h-[40px] opacity-100" : "max-h-0 opacity-0 py-0 border-b-transparent"
+        )}>
+          <div className="container mx-auto max-w-screen-2xl flex items-center justify-between px-4 md:px-6">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-3 sm:gap-6">
+              {primaryEmail && (
+                <a href={`mailto:${primaryEmail}`} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
+                  <Mail className="h-3 w-3 text-primary shrink-0" />
+                  <span>{primaryEmail}</span>
+                </a>
+              )}
+              {primaryPhone && (
+                <a href={primaryPhoneTel} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs shrink-0">
+                  <Phone className="h-3 w-3 text-primary shrink-0" />
+                  <span>{primaryPhone}</span>
+                </a>
+              )}
+            </div>
+            {topbar.tagline && (
+              topbar.taglineLink ? (
+                <Link href={topbar.taglineLink} className="hidden sm:block text-primary/80 hover:text-primary transition-colors font-sans tracking-wide uppercase text-[11px] font-medium">
+                  {topbar.tagline}
+                </Link>
+              ) : (
+                <div className="hidden sm:block text-primary/80 font-sans tracking-wide uppercase text-[11px] font-medium">
+                  {topbar.tagline}
+                </div>
+              )
+            )}
           </div>
         </div>
-      </div>
+      )}
 
       <div className="container mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
