@@ -1,11 +1,14 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from '@/components/ui/button';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
-import { Footprints, ArrowRight } from 'lucide-react';
+import { Footprints, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSiteContent } from '@/lib/site-content';
+import { cn } from '@/lib/utils';
 
 const default6Steps = [
   {
@@ -52,10 +55,72 @@ const default6Steps = [
   },
 ];
 
+function JourneyStepCard({ step, idx }: { step: any; idx: number }) {
+  const stepNum = step.step || `0${idx + 1}`;
+  const stepImg = step.image || default6Steps[idx % default6Steps.length].image;
+
+  return (
+    <div className="group flex flex-col h-full cursor-pointer">
+      {/* Tall Immersive Portrait Image Container matching Brochure Pages 04 & 05 */}
+      <div className="relative aspect-[4/5] sm:aspect-[341/405] w-full rounded-2xl overflow-hidden bg-white/5 mb-4 shadow-md border border-white/10">
+        <Image
+          src={stepImg}
+          alt={step.title}
+          fill
+          sizes="(max-width: 768px) 85vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080E18]/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+        
+        {/* Quiet Luxury Glass Step Pill */}
+        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/25 px-3 py-1 rounded-full text-xs font-sans font-medium text-white/95 tracking-widest shadow-sm">
+          {stepNum}
+        </div>
+      </div>
+
+      {/* Editorial Typography & Narrative (Fully Legible, No Truncation) */}
+      <div className="flex flex-col flex-grow space-y-1.5 font-sans px-1">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-blue-300 font-medium font-sans">
+          {step.subtitle || `Stage ${stepNum}`}
+        </p>
+        
+        <h3 className="text-base sm:text-lg lg:text-xl font-sans font-semibold text-white group-hover:text-blue-200 transition-colors leading-snug">
+          {step.title}
+        </h3>
+        
+        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal font-sans pt-0.5">
+          {step.description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function JourneySection() {
   const { content } = useSiteContent();
   const journey = content.homepage.journey;
   const steps = (journey.steps && journey.steps.length >= 6) ? journey.steps : default6Steps;
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: false, 
+    align: 'start',
+    skipSnaps: false,
+    dragFree: false,
+    duration: 25,
+  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+    emblaApi.on('select', onSelect);
+    onSelect();
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
 
   return (
     <section id="journey" className="w-full bg-[#080E18] text-white py-16 md:py-24 lg:py-28 relative overflow-hidden border-y border-white/10">
@@ -65,7 +130,7 @@ export function JourneySection() {
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
-        <ScrollAnimate className="max-w-3xl lg:max-w-4xl mx-auto text-center space-y-3 mb-14 md:mb-18 px-4">
+        <ScrollAnimate className="max-w-3xl lg:max-w-4xl mx-auto text-center space-y-3 mb-12 md:mb-18 px-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-medium uppercase tracking-[0.18em] text-blue-200 font-sans shadow-2xs">
             <Footprints className="h-3.5 w-3.5 text-blue-300" />
             {journey.tagline || 'The Signature Gemological Trail'}
@@ -80,56 +145,71 @@ export function JourneySection() {
           </p>
         </ScrollAnimate>
 
-        {/* All 6 Steps in 2 Rows (3 columns x 2 rows) with Grand Tall Portrait Proportions */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 sm:gap-x-4 md:gap-x-5 lg:gap-x-6 gap-y-12 sm:gap-y-16 md:gap-y-20">
-          {steps.map((step, idx) => {
-            const stepNum = step.step || `0${idx + 1}`;
-            const stepImg = step.image || default6Steps[idx % default6Steps.length].image;
+        {/* Desktop / Tablet Grid (3 columns x 2 rows) matching Grand Brochure Layout */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 lg:gap-x-6 gap-y-12 sm:gap-y-16 md:gap-y-20">
+          {steps.map((step, idx) => (
+            <ScrollAnimate key={idx} className="flex flex-col">
+              <JourneyStepCard step={step} idx={idx} />
+            </ScrollAnimate>
+          ))}
+        </div>
 
-            return (
-              <ScrollAnimate key={idx} className="flex flex-col">
-                <div className="group flex flex-col h-full cursor-pointer">
-                  
-                  {/* Tall Immersive Portrait Image Container matching Brochure Pages 04 & 05 */}
-                  <div className="relative aspect-[4/5] sm:aspect-[341/405] w-full rounded-2xl overflow-hidden bg-white/5 mb-4 shadow-md border border-white/10">
-                    <Image
-                      src={stepImg}
-                      alt={step.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#080E18]/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                    
-                    {/* Quiet Luxury Glass Step Pill */}
-                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/25 px-3 py-1 rounded-full text-xs font-sans font-medium text-white/95 tracking-widest shadow-sm">
-                      {stepNum}
-                    </div>
-                  </div>
-
-                  {/* Editorial Typography & Narrative (Fully Legible, No Truncation) */}
-                  <div className="flex flex-col flex-grow space-y-1.5 font-sans px-1">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-blue-300 font-medium font-sans">
-                      {step.subtitle || `Stage ${stepNum}`}
-                    </p>
-                    
-                    <h3 className="text-base sm:text-lg lg:text-xl font-sans font-semibold text-white group-hover:text-blue-200 transition-colors leading-snug">
-                      {step.title}
-                    </h3>
-                    
-                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal font-sans pt-0.5">
-                      {step.description}
-                    </p>
-                  </div>
-
+        {/* Mobile View Slider - Touch Pan with Card Peek to avoid vertical scroll fatigue */}
+        <div className="md:hidden relative">
+          <div className="overflow-hidden -mx-4 px-4 touch-pan-y select-none" ref={emblaRef}>
+            <div className="flex items-stretch transform-gpu gap-4">
+              {steps.map((step, idx) => (
+                <div key={idx} className="relative flex-[0_0_82%] min-w-0 flex flex-col">
+                  <JourneyStepCard step={step} idx={idx} />
                 </div>
-              </ScrollAnimate>
-            );
-          })}
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile Carousel Controls & Progress Indicator */}
+          <div className="flex items-center justify-between mt-6 px-1">
+            <div className="flex items-center gap-1.5">
+              {steps.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => emblaApi?.scrollTo(i)}
+                  className={cn(
+                    "h-1.5 rounded-full transition-all duration-300",
+                    selectedIndex === i ? "w-6 bg-white" : "w-1.5 bg-white/30"
+                  )}
+                  aria-label={`Go to step ${i + 1}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <span className="text-[11px] font-sans font-medium uppercase tracking-widest text-slate-400">
+                0{selectedIndex + 1} / 0{steps.length}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => emblaApi?.scrollPrev()}
+                  disabled={selectedIndex === 0}
+                  className="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center text-white disabled:opacity-30 transition-opacity active:scale-95"
+                  aria-label="Previous step"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => emblaApi?.scrollNext()}
+                  disabled={selectedIndex === steps.length - 1}
+                  className="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center text-white disabled:opacity-30 transition-opacity active:scale-95"
+                  aria-label="Next step"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Professional Bottom CTA */}
-        <ScrollAnimate className="mt-14 md:mt-20 text-center">
+        <ScrollAnimate className="mt-12 md:mt-20 text-center">
           <Button 
             asChild 
             size="lg" 
