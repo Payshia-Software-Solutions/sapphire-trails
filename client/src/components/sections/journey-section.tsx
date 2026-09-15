@@ -58,21 +58,24 @@ export function JourneySection() {
   const steps = (journey.steps && journey.steps.length >= 6) ? journey.steps : default6Steps;
 
   return (
-    <section id="journey" className="w-full bg-background py-16 md:py-24 lg:py-28 relative overflow-hidden">
+    <section id="journey" className="w-full bg-[#080E18] text-white py-16 md:py-24 lg:py-28 relative overflow-hidden border-y border-white/10">
+      {/* Subtle Luxury Ambient Glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] md:w-[900px] h-[400px] bg-blue-900/15 blur-[140px] pointer-events-none rounded-full" />
+
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
         <ScrollAnimate className="max-w-3xl lg:max-w-4xl mx-auto text-center space-y-3 mb-14 md:mb-18 px-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-xs font-medium uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-200 font-sans shadow-2xs">
-            <Footprints className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-medium uppercase tracking-[0.18em] text-blue-200 font-sans shadow-2xs">
+            <Footprints className="h-3.5 w-3.5 text-blue-300" />
             {journey.tagline || 'The Signature Gemological Trail'}
           </div>
           
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-sans font-bold tracking-tight text-foreground leading-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-sans font-bold tracking-tight text-white leading-tight">
             {journey.heading && journey.heading.includes('6-Step') ? journey.heading : 'The 6-Step Gemological Trail'}
           </h2>
 
-          <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto font-sans font-normal">
+          <p className="text-xs sm:text-sm md:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto font-sans font-normal">
             {journey.subtitle || 'From subterranean timber-reinforced shafts to the world-famous street trading bazaar, experience every stage of authentic Ceylon sapphire heritage.'}
           </p>
         </ScrollAnimate>
@@ -88,7 +91,7 @@ export function JourneySection() {
                 <div className="group flex flex-col h-full cursor-pointer">
                   
                   {/* Tall Immersive Portrait Image Container matching Brochure Pages 04 & 05 */}
-                  <div className="relative aspect-[4/5] sm:aspect-[341/405] w-full rounded-2xl overflow-hidden bg-muted/20 mb-4 shadow-sm">
+                  <div className="relative aspect-[4/5] sm:aspect-[341/405] w-full rounded-2xl overflow-hidden bg-white/5 mb-4 shadow-md border border-white/10">
                     <Image
                       src={stepImg}
                       alt={step.title}
@@ -96,25 +99,25 @@ export function JourneySection() {
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-40 group-hover:opacity-20 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#080E18]/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                     
                     {/* Quiet Luxury Glass Step Pill */}
-                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-sans font-medium text-white/95 tracking-widest shadow-sm">
+                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/25 px-3 py-1 rounded-full text-xs font-sans font-medium text-white/95 tracking-widest shadow-sm">
                       {stepNum}
                     </div>
                   </div>
 
                   {/* Editorial Typography & Narrative (Fully Legible, No Truncation) */}
                   <div className="flex flex-col flex-grow space-y-1.5 font-sans px-1">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-300 font-medium font-sans">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-blue-300 font-medium font-sans">
                       {step.subtitle || `Stage ${stepNum}`}
                     </p>
                     
-                    <h3 className="text-base sm:text-lg lg:text-xl font-sans font-semibold text-foreground group-hover:text-[#0B1E38] dark:group-hover:text-blue-200 transition-colors leading-snug">
+                    <h3 className="text-base sm:text-lg lg:text-xl font-sans font-semibold text-white group-hover:text-blue-200 transition-colors leading-snug">
                       {step.title}
                     </h3>
                     
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-normal font-sans pt-0.5">
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal font-sans pt-0.5">
                       {step.description}
                     </p>
                   </div>
@@ -130,7 +133,7 @@ export function JourneySection() {
           <Button 
             asChild 
             size="lg" 
-            className="bg-[#0B1E38] hover:bg-[#071527] text-white font-medium text-xs sm:text-sm h-11 px-8 rounded-full shadow-sm transition-all border border-[#0B1E38]"
+            className="bg-white hover:bg-slate-100 text-[#080E18] font-semibold text-xs sm:text-sm h-11 px-8 rounded-full shadow-lg transition-all border border-white"
           >
             <Link href="/tours">
               View All Tour Packages &amp; Bookings
