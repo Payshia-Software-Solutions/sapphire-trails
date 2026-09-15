@@ -67,10 +67,10 @@ export function JourneySection() {
 
   return (
     <section id="journey" className="w-full bg-background py-16 md:py-24 lg:py-28 relative overflow-hidden">
-      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="w-full px-3 sm:px-5 md:px-8 lg:px-10 xl:px-12 2xl:px-16 relative z-10">
         
         {/* Section Header */}
-        <ScrollAnimate className="max-w-3xl lg:max-w-4xl mx-auto text-center space-y-3 mb-12 md:mb-16">
+        <ScrollAnimate className="max-w-3xl lg:max-w-4xl mx-auto text-center space-y-3 mb-10 md:mb-14 px-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-xs font-medium uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-200 font-sans shadow-2xs">
             <Footprints className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300" />
             {journey.tagline || 'The Signature Gemological Trail'}
@@ -85,8 +85,8 @@ export function JourneySection() {
           </p>
         </ScrollAnimate>
 
-        {/* 6 Steps - 3-Column Triptych Grid matching Brochure Pages 04 & 05 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8 lg:gap-9">
+        {/* 6 Steps - Full-Width Narrow-Bezel 3-Column Triptych Grid matching Brochure Pages 04 & 05 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-2 sm:gap-x-3 md:gap-x-3.5 lg:gap-x-4 gap-y-10 sm:gap-y-12 md:gap-y-16">
           {steps.map((step, idx) => {
             const stepNum = step.step || `0${idx + 1}`;
             const stepImg = step.image || default6Steps[idx % default6Steps.length].image;
@@ -95,8 +95,8 @@ export function JourneySection() {
               <ScrollAnimate key={idx} className="flex flex-col">
                 <div className="group flex flex-col h-full cursor-pointer">
                   
-                  {/* Minimalist Image Container with Soft Rounded Corners */}
-                  <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-muted/20 mb-4 shadow-xs">
+                  {/* Narrow-Bezel Tall Portrait Image Container matching Brochure (Aspect ~0.84) */}
+                  <div className="relative aspect-[4/5] sm:aspect-[341/405] w-full rounded-xl sm:rounded-2xl overflow-hidden bg-muted/20 mb-3.5 shadow-xs">
                     <Image
                       src={stepImg}
                       alt={step.title}
@@ -113,8 +113,8 @@ export function JourneySection() {
                   </div>
 
                   {/* Editorial Typography & Narrative */}
-                  <div className="flex flex-col flex-grow space-y-1.5 font-sans">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-300 font-medium font-sans">
+                  <div className="flex flex-col flex-grow space-y-1 font-sans px-1">
+                    <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-300 font-medium font-sans">
                       {step.subtitle || `Stage ${stepNum}`}
                     </p>
                     
