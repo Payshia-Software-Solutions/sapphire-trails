@@ -59,7 +59,7 @@ export function JourneySection() {
 
   return (
     <section id="journey" className="w-full bg-background py-16 md:py-24 lg:py-28 relative overflow-hidden">
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
         <ScrollAnimate className="max-w-3xl lg:max-w-4xl mx-auto text-center space-y-3 mb-14 md:mb-18 px-4">
