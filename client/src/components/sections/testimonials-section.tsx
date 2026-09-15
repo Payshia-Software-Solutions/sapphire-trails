@@ -128,7 +128,7 @@ export function TestimonialsSection() {
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-foreground truncate">{item.name}</p>
                           <p className="text-[11px] text-muted-foreground truncate">{item.location}</p>
-                          <p className="text-[10px] text-primary font-medium font-sans mt-0.5 truncate">{item.tour}</p>
+                          <p className="text-[10px] text-[#0B1E38] dark:text-blue-300 font-medium font-sans mt-0.5 truncate">{item.tour}</p>
                         </div>
                       </div>
 
@@ -145,7 +145,7 @@ export function TestimonialsSection() {
               variant="outline"
               size="icon"
               onClick={scrollPrev}
-              className="h-9 w-9 rounded-full border-border hover:bg-primary/10 hover:text-primary"
+              className="h-9 w-9 rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
               aria-label="Previous review"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -154,7 +154,7 @@ export function TestimonialsSection() {
               variant="outline"
               size="icon"
               onClick={scrollNext}
-              className="h-9 w-9 rounded-full border-border hover:bg-primary/10 hover:text-primary"
+              className="h-9 w-9 rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
               aria-label="Next review"
             >
               <ArrowRight className="h-4 w-4" />

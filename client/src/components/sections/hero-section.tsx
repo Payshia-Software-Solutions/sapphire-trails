@@ -115,16 +115,16 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 sm:pt-3 w-full max-w-xs sm:max-w-none font-sans">
-            <Button asChild size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 h-11 sm:h-12 rounded-full shadow-md transition-all">
+            <Button asChild size="lg" className="w-full sm:w-auto bg-[#0B1E38] hover:bg-[#071527] text-white font-medium px-8 h-11 sm:h-12 rounded-full shadow-md transition-all border border-[#0B1E38]">
               <Link href="/booking">
-                <CalendarCheck className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                <CalendarCheck className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 {ctaPrimary}
               </Link>
             </Button>
 
             <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border border-white/40 bg-black/60 hover:bg-white hover:text-black text-white font-medium px-7 h-11 sm:h-12 rounded-full transition-all">
               <Link href="#tours">
-                <Compass className="mr-2 h-4 w-4 text-primary" />
+                <Compass className="mr-2 h-4 w-4 text-white" />
                 {ctaSecondary}
               </Link>
             </Button>
@@ -137,7 +137,7 @@ export function HeroSection() {
           aria-label="Scroll to next section"
         >
           <span className="text-[10px] uppercase tracking-wider text-white/60 mb-0.5 hidden sm:block font-sans">Explore Packages</span>
-          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
         </Link>
       </section>
     );
@@ -159,52 +159,51 @@ export function HeroSection() {
       </div>
 
       {/* Center Stage: Proportioned Sapphire Gem on Top with SAPPHIRE TRAILS Unified Headline */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-2.5 sm:space-y-3.5 max-w-4xl mx-auto px-4 w-full my-auto">
+      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-3 sm:space-y-3.5 md:space-y-4 lg:space-y-5 max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-4 w-full my-auto">
         
         {/* 1. Ceylon Sapphire Gem Visual on Top - Calibrated height to prevent viewport overflow */}
         <div className="relative group cursor-pointer transition-transform duration-500 hover:scale-105 flex justify-center items-center">
           {/* Soft contact shadow beneath the ring */}
           <div 
-            className="absolute -bottom-2 sm:-bottom-2.5 left-1/2 -translate-x-1/2 w-3/4 h-2.5 sm:h-3.5 bg-primary/25 dark:bg-black/80 rounded-full blur-md" 
+            className="absolute -bottom-2 sm:-bottom-2.5 md:-bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-2.5 sm:h-3.5 md:h-4 bg-primary/25 dark:bg-black/80 rounded-full blur-md" 
             aria-hidden="true" 
           />
           
           <Image
             src={gemImg}
             alt="Authentic Ceylon Blue Sapphire Gemstone Ring - Ratnapura Sri Lanka"
-            width={264}
-            height={206}
-            sizes="(max-width: 640px) 110px, (max-width: 768px) 130px, 160px"
-            className="relative z-10 w-24 sm:w-28 md:w-32 lg:w-36 max-h-[16vh] h-auto object-contain drop-shadow-[0_10px_20px_rgba(26,54,93,0.16)] dark:drop-shadow-[0_15px_30px_rgba(0,0,0,0.85)]"
+            width={300}
+            height={235}
+            sizes="(max-width: 640px) 110px, (max-width: 1024px) 160px, 200px"
+            className="relative z-10 w-28 sm:w-34 md:w-40 lg:w-44 xl:w-48 max-h-[16vh] sm:max-h-[18vh] lg:max-h-[20vh] h-auto object-contain drop-shadow-[0_10px_22px_rgba(26,54,93,0.16)] dark:drop-shadow-[0_15px_30px_rgba(0,0,0,0.85)]"
             priority
             fetchPriority="high"
           />
         </div>
 
-        {/* 2. Unified Brand Headline: SAPPHIRE TRAILS */}
-        <h1 className="font-brand text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-[0.18em] sm:tracking-[0.22em] md:tracking-[0.25em] text-foreground font-light select-none uppercase">
+        {/* 2. Unified Brand Headline: SAPPHIRE TRAILS (Strict Single-Line Grand Wordmark) */}
+        <h1 className="font-brand text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.85rem] 2xl:text-[4.25rem] tracking-[0.18em] sm:tracking-[0.22em] md:tracking-[0.24em] xl:tracking-[0.25em] text-foreground font-light select-none uppercase whitespace-nowrap">
           SAPPHIRE TRAILS
         </h1>
 
         {/* 3. Subtle Brand Tagline Badge */}
-        <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[#0B1E38] dark:text-blue-200 font-medium font-sans shadow-2xs">
+        <div className="inline-flex items-center px-4 sm:px-4.5 py-1 sm:py-1.5 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-[10px] sm:text-[11px] md:text-xs tracking-[0.2em] md:tracking-[0.22em] uppercase text-[#0B1E38] dark:text-blue-200 font-medium font-sans shadow-2xs">
           <span>{tagline}</span>
         </div>
 
         {/* 4. Elegant Editorial Subheadline */}
-        <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto font-sans font-normal leading-relaxed line-clamp-2 sm:line-clamp-none">
+        <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto font-sans font-normal leading-relaxed line-clamp-2 sm:line-clamp-none">
           {subheadline}
         </p>
 
         {/* 5. Quiet Luxury Call-To-Action (CTA) Group in Signature Navy Blue */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-1 w-full max-w-xs sm:max-w-none font-sans">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-3.5 md:gap-4 pt-1 sm:pt-2 w-full max-w-xs sm:max-w-none font-sans">
           <Button 
             asChild 
-            size="lg" 
-            className="w-full sm:w-auto bg-[#0B1E38] hover:bg-[#071527] text-white font-medium px-7 h-10 sm:h-11 rounded-full shadow-md transition-all border border-[#0B1E38] text-xs sm:text-sm"
+            className="w-full sm:w-auto bg-[#0B1E38] hover:bg-[#071527] text-white font-medium h-10 sm:h-11 md:h-12 lg:h-[50px] xl:h-[54px] px-6 sm:px-7 md:px-8 lg:px-9 xl:px-10 rounded-full shadow-md transition-all border border-[#0B1E38] text-xs sm:text-sm md:text-[15px] lg:text-base"
           >
             <Link href="/booking">
-              <CalendarCheck className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+              <CalendarCheck className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-[18px] md:w-[18px] lg:h-5 lg:w-5 text-white" />
               {ctaPrimary}
             </Link>
           </Button>
@@ -212,11 +211,10 @@ export function HeroSection() {
           <Button 
             asChild 
             variant="outline" 
-            size="lg" 
-            className="w-full sm:w-auto border border-[#0B1E38]/30 hover:border-[#0B1E38] bg-white/80 dark:bg-card/80 hover:bg-[#0B1E38]/5 text-[#0B1E38] dark:text-white dark:border-white/20 font-medium px-6 h-10 sm:h-11 rounded-full transition-all text-xs sm:text-sm"
+            className="w-full sm:w-auto border border-[#0B1E38]/30 hover:border-[#0B1E38] bg-white/80 dark:bg-card/80 hover:bg-[#0B1E38]/5 text-[#0B1E38] dark:text-white dark:border-white/20 font-medium h-10 sm:h-11 md:h-12 lg:h-[50px] xl:h-[54px] px-6 sm:px-7 md:px-8 lg:px-9 xl:px-10 rounded-full transition-all text-xs sm:text-sm md:text-[15px] lg:text-base"
           >
             <Link href="#tours">
-              <Compass className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#0B1E38] dark:text-blue-300" />
+              <Compass className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-[18px] md:w-[18px] lg:h-5 lg:w-5 text-[#0B1E38] dark:text-blue-300" />
               {ctaSecondary}
             </Link>
           </Button>
@@ -226,12 +224,11 @@ export function HeroSection() {
             <Button
               type="button"
               variant="ghost"
-              size="lg"
               onClick={() => setIsVideoModalOpen(true)}
-              className="w-full sm:w-auto text-xs sm:text-sm text-muted-foreground hover:text-[#0B1E38] dark:hover:text-white gap-2 h-10 sm:h-11 rounded-full transition-colors group"
+              className="w-full sm:w-auto text-xs sm:text-sm md:text-[15px] lg:text-base text-muted-foreground hover:text-[#0B1E38] dark:hover:text-white gap-2.5 h-10 sm:h-11 md:h-12 lg:h-[50px] xl:h-[54px] px-4 sm:px-5 md:px-6 lg:px-7 rounded-full transition-colors group"
             >
-              <div className="h-6 w-6 rounded-full bg-[#0B1E38]/10 dark:bg-white/10 flex items-center justify-center text-[#0B1E38] dark:text-white group-hover:scale-110 transition-transform">
-                <Play className="h-3 w-3 fill-[#0B1E38] dark:fill-white" />
+              <div className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-full bg-[#0B1E38]/10 dark:bg-white/10 flex items-center justify-center text-[#0B1E38] dark:text-white group-hover:scale-110 transition-transform">
+                <Play className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 fill-[#0B1E38] dark:fill-white" />
               </div>
               <span className="font-medium">Watch Film</span>
             </Button>
@@ -240,7 +237,7 @@ export function HeroSection() {
       </div>
 
       {/* Editorial Bottom / Corner Meta Strip (Directly from Reference Visual) */}
-      <div className="w-full max-w-screen-2xl mx-auto pt-1 pb-1 sm:pb-2 px-4 sm:px-8 flex items-center justify-between text-[9px] sm:text-[10px] text-muted-foreground/70 font-sans tracking-widest uppercase select-none">
+      <div className="w-full max-w-screen-2xl mx-auto pt-1 pb-1 sm:pb-2 px-4 sm:px-8 lg:px-12 flex items-center justify-between text-[9px] sm:text-[10px] md:text-xs text-muted-foreground/70 font-sans tracking-widest uppercase select-none">
         <div className="hover:text-foreground transition-colors font-medium">
           {cornerLeft}
         </div>

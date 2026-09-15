@@ -132,7 +132,7 @@ export function ExploreRatnapuraSection() {
             </p>
           </div>
 
-          <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button asChild size="lg" className="bg-[#0B1E38] hover:bg-[#071527] text-white font-medium text-xs sm:text-sm h-11 px-8 rounded-full shadow-sm transition-all border border-[#0B1E38]">
             <Link href="/explore-ratnapura">Explore More</Link>
           </Button>
         </ScrollAnimate>

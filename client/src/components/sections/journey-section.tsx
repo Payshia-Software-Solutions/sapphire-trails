@@ -38,8 +38,8 @@ export function JourneySection() {
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <ScrollAnimate className="max-w-4xl lg:max-w-5xl mx-auto text-center space-y-3 mb-14 md:mb-18">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold uppercase tracking-wider text-primary font-sans">
-            <Footprints className="h-3.5 w-3.5" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-xs font-medium uppercase tracking-wider text-[#0B1E38] dark:text-blue-200 font-sans shadow-2xs">
+            <Footprints className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300" />
             {journey.tagline || 'The Signature Gem Mine Tour Experience'}
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-foreground">
@@ -54,7 +54,7 @@ export function JourneySection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {journey.steps.map((step, idx) => (
             <ScrollAnimate key={idx} className="flex">
-              <div className="group relative w-full bg-card border border-border/80 rounded-xl overflow-hidden flex flex-col justify-between transition-colors duration-300 hover:border-primary/40">
+              <div className="group relative w-full bg-card border border-border/80 rounded-xl overflow-hidden flex flex-col justify-between transition-colors duration-300 hover:border-[#0B1E38]/40 dark:hover:border-white/30">
                 
                 {/* Image Container */}
                 <div className="relative h-48 sm:h-52 w-full overflow-hidden">
@@ -75,10 +75,10 @@ export function JourneySection() {
                 {/* Content */}
                 <div className="p-5 sm:p-6 flex flex-col flex-grow justify-between space-y-4">
                   <div className="space-y-2">
-                    <p className="text-[11px] uppercase tracking-wider text-primary font-semibold font-sans">
+                    <p className="text-[11px] uppercase tracking-wider text-[#0B1E38] dark:text-blue-300 font-medium font-sans">
                       {step.subtitle}
                     </p>
-                    <h3 className="text-base sm:text-lg font-headline font-bold text-foreground group-hover:text-primary transition-colors sm:min-h-[3.25rem] flex items-center">
+                    <h3 className="text-base sm:text-lg font-headline font-bold text-foreground group-hover:text-[#0B1E38] dark:group-hover:text-blue-200 transition-colors sm:min-h-[3.25rem] flex items-center">
                       {step.title}
                     </h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">
@@ -90,7 +90,7 @@ export function JourneySection() {
                   <div className="space-y-1.5 pt-3 border-t border-border/60">
                     {(defaultHighlights[idx] || []).map((h, i) => (
                       <div key={i} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                        <CheckCircle2 className="h-3 w-3 text-primary flex-shrink-0" />
+                        <CheckCircle2 className="h-3 w-3 text-[#0B1E38] dark:text-blue-300 flex-shrink-0" />
                         <span className="truncate">{h}</span>
                       </div>
                     ))}
@@ -104,7 +104,7 @@ export function JourneySection() {
 
         {/* Bottom CTA Strip */}
         <ScrollAnimate className="mt-14 text-center">
-          <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 rounded-full shadow-lg">
+          <Button asChild size="lg" className="bg-[#0B1E38] hover:bg-[#071527] text-white font-medium text-xs sm:text-sm h-11 px-8 rounded-full shadow-sm transition-all border border-[#0B1E38]">
             <Link href="/tours">
               View All Tour Packages &amp; Bookings
               <ArrowRight className="ml-2 h-4 w-4" />

@@ -20,86 +20,88 @@ import {
   CheckCircle2 
 } from 'lucide-react';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
-import { API_BASE_URL } from '@/lib/utils';
+import { API_BASE_URL, cn } from '@/lib/utils';
 import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 
 
 const TourCard = ({ tour }: { tour: TourPackage }) => (
-  <Card className="bg-card border border-border/80 flex flex-col w-full h-full transition-colors duration-300 hover:border-primary/40 rounded-xl overflow-hidden group cursor-pointer shadow-sm">
-    {/* Clickable Card Header & Image */}
-    <Link href={`/tours/${tour.slug}`} className="block relative h-60 sm:h-72 w-full overflow-hidden shrink-0">
+  <Card className="bg-card border border-border/80 flex flex-col w-full h-full transition-colors duration-300 hover:border-primary/40 rounded-2xl overflow-hidden group cursor-pointer shadow-sm">
+    {/* Clickable Card Header & Image - Scaled down for mobile to maximize viewport efficiency */}
+    <Link href={`/tours/${tour.slug}`} className="block relative h-44 sm:h-56 md:h-64 w-full overflow-hidden shrink-0">
       <Image
         src={tour.imageUrl}
         alt={tour.imageAlt || tour.homepageTitle}
         data-ai-hint={tour.imageHint}
         fill
-        className="object-cover transition-transform duration-700 group-hover:scale-105"
+        sizes="(max-width: 640px) 80vw, (max-width: 1024px) 45vw, 33vw"
+        loading="lazy"
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       
       {/* Duration Badge */}
-      <div className="absolute top-3 left-3 bg-black/80 border border-white/15 px-3 py-1 rounded-full text-xs font-medium text-white flex items-center gap-1.5 z-10">
-        <Clock className="h-3 w-3 text-primary" />
+      <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-black/80 border border-white/15 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-medium text-white flex items-center gap-1.5 z-10">
+        <Clock className="h-3 w-3 text-white" />
         <span>{tour.duration || 'Full Day Expedition'}</span>
       </div>
 
       {/* Pricing Header */}
-      <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between text-white z-10 font-sans">
+      <div className="absolute bottom-2.5 left-3 right-3 sm:bottom-3 sm:left-4 sm:right-4 flex items-end justify-between text-white z-10 font-sans">
         <div>
-          <span className="text-2xl sm:text-3xl font-bold font-sans text-white">
+          <span className="text-xl sm:text-2xl md:text-3xl font-bold font-sans text-white">
             {tour.price}
           </span>
-          <span className="text-xs text-white/80 ml-1.5 uppercase font-medium">
+          <span className="text-[11px] sm:text-xs text-white/80 ml-1 uppercase font-medium">
             {tour.priceSuffix || '/ Person'}
           </span>
         </div>
-        <Badge className="bg-black/80 text-white/90 border border-white/20 font-medium text-[10px] uppercase tracking-wider">
+        <Badge className="bg-black/80 text-white/90 border border-white/20 font-medium text-[9px] sm:text-[10px] uppercase tracking-wider px-2 py-0.5">
           VIP Inclusive
         </Badge>
       </div>
     </Link>
 
-    {/* Content */}
-    <CardContent className="p-5 sm:p-7 flex flex-col flex-grow justify-between space-y-4">
-      <Link href={`/tours/${tour.slug}`} className="block space-y-2">
-        <h3 className="text-lg sm:text-2xl font-headline font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-[3.25rem] sm:min-h-[4rem] flex items-start">
+    {/* Content - Compact mobile padding & clean Poppins typography */}
+    <CardContent className="p-4 sm:p-5 md:p-6 flex flex-col flex-grow justify-between space-y-3 sm:space-y-4">
+      <Link href={`/tours/${tour.slug}`} className="block space-y-1.5 sm:space-y-2">
+        <h3 className="text-base sm:text-lg md:text-xl font-sans font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-0 sm:min-h-[3rem] flex items-start leading-snug">
           {tour.homepageTitle}
         </h3>
-        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed min-h-[3.6rem] sm:min-h-[4rem]">
+        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3 leading-relaxed min-h-0 sm:min-h-[3rem]">
           {tour.homepageDescription}
         </p>
       </Link>
 
-      {/* Key Inclusions Badges */}
-      <div className="grid grid-cols-2 gap-2 py-3 border-y border-border/60 text-[11px] text-muted-foreground">
+      {/* Key Inclusions Badges in Navy accents */}
+      <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 py-2.5 border-y border-border/60 text-[11px] text-muted-foreground font-sans">
         <div className="flex items-center gap-1.5">
-          <Car className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+          <Car className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300 flex-shrink-0" />
           <span className="truncate">Private AC Transport</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <ShieldCheck className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+          <ShieldCheck className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300 flex-shrink-0" />
           <span className="truncate">Licensed Gemologist</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <Gem className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+          <Gem className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300 flex-shrink-0" />
           <span className="truncate">Active Pit Descent</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+          <CheckCircle2 className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300 flex-shrink-0" />
           <span className="truncate">All Entry Permits</span>
         </div>
       </div>
 
-      {/* Dual CTA Buttons */}
-      <div className="flex items-center gap-2.5 sm:gap-3 pt-2">
-        <Button asChild className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs h-10 rounded-full shadow-md">
+      {/* Dual CTA Buttons in Signature Navy */}
+      <div className="flex items-center gap-2 sm:gap-3 pt-1">
+        <Button asChild className="flex-1 bg-[#0B1E38] hover:bg-[#071527] text-white font-medium text-xs h-9 sm:h-10 rounded-full shadow-sm border border-[#0B1E38]">
           <Link href={`/tours/${tour.slug}/book`}>
             <CalendarCheck className="mr-1.5 h-3.5 w-3.5" />
             Book Now
           </Link>
         </Button>
 
-        <Button asChild variant="outline" className="border-border text-foreground hover:bg-primary/10 hover:text-primary text-xs h-10 px-4 sm:px-5 rounded-full">
+        <Button asChild variant="outline" className="border border-[#0B1E38]/25 hover:border-[#0B1E38] text-[#0B1E38] hover:bg-[#0B1E38]/5 dark:border-white/20 dark:text-white text-xs h-9 sm:h-10 px-3.5 sm:px-5 rounded-full font-medium transition-colors">
           <Link href={`/tours/${tour.slug}`}>
             Details
             <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -112,8 +114,27 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
 
 
 export function ToursSection() {
-  const [emblaRef] = useEmblaCarousel({ loop: true, align: 'start' });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: false, 
+    align: 'start',
+    skipSnaps: false,
+    dragFree: false,
+    duration: 25,
+  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [tours, setTours] = useState<TourPackage[]>([]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+    emblaApi.on('select', onSelect);
+    onSelect();
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
 
   useEffect(() => {
     async function fetchTours() {
@@ -136,13 +157,13 @@ export function ToursSection() {
   const toursHeader = content.homepage.toursHeader;
 
   return (
-    <section id="tours" className="w-full bg-background py-16 md:py-28 relative">
+    <section id="tours" className="w-full bg-background pt-12 md:pt-16 pb-16 md:pb-24 relative">
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         {/* Section Title */}
-        <ScrollAnimate className="text-center max-w-4xl lg:max-w-5xl mx-auto space-y-3 mb-14 md:mb-18">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary font-sans">
-            <Gem className="h-3.5 w-3.5" />
+        <ScrollAnimate className="text-center max-w-4xl lg:max-w-5xl mx-auto space-y-3 mb-10 md:mb-14">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-xs font-medium uppercase tracking-wider text-[#0B1E38] dark:text-blue-200 font-sans shadow-2xs">
+            <Gem className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300" />
             {toursHeader.tagline || 'Curated Expeditions'}
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-foreground">
@@ -163,54 +184,71 @@ export function ToursSection() {
             ))}
           </div>
 
-          {/* Mobile View Slider */}
+          {/* Mobile View Slider - High performance 60/120fps touch physics */}
           <div className="md:hidden relative">
-            <div className="overflow-hidden -ml-4" ref={emblaRef}>
-              <div className="flex items-stretch">
+            <div className="overflow-hidden -ml-4 touch-pan-y select-none" ref={emblaRef}>
+              <div className="flex items-stretch transform-gpu">
                 {tours.map((tour, index) => (
-                  <div className="relative flex-[0_0_86%] sm:flex-[0_0_88%] min-w-0 pl-4 flex flex-col" key={index}>
+                  <div className="relative flex-[0_0_80%] sm:flex-[0_0_84%] min-w-0 pl-4 flex flex-col" key={index}>
                     <TourCard tour={tour} />
                   </div>
                 ))}
               </div>
             </div>
+
+            {/* Mobile Carousel Indicator Dots */}
+            {tours.length > 1 && (
+              <div className="flex justify-center items-center gap-1.5 pt-4">
+                {tours.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => emblaApi?.scrollTo(i)}
+                    className={cn(
+                      "h-1.5 rounded-full transition-all duration-300",
+                      selectedIndex === i ? "w-6 bg-[#0B1E38] dark:bg-blue-300" : "w-1.5 bg-muted-foreground/30"
+                    )}
+                    aria-label={`Go to slide ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </ScrollAnimate>
 
         {/* Spotlight Banner: Custom Proposal & Engagement Ring Tour */}
-        <ScrollAnimate className="mt-14 md:mt-20">
-          <div className="relative rounded-3xl overflow-hidden border border-primary/40 bg-gradient-to-r from-black via-zinc-950 to-neutral-900 p-8 sm:p-12 shadow-2xl">
-            <div className="absolute right-0 top-0 bottom-0 w-full lg:w-1/2 opacity-30 lg:opacity-60">
+        <ScrollAnimate className="mt-12 md:mt-18">
+          <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-border/80 dark:border-white/10 bg-[#0B1E38] text-white p-6 sm:p-8 md:p-12 shadow-xl">
+            <div className="absolute right-0 top-0 bottom-0 w-full lg:w-1/2 opacity-25 lg:opacity-45">
               <Image
                 src={content.tours.proposalCallout?.image || "https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp"}
                 alt="Custom Engagement Ring & Sapphire Craftsmanship"
                 fill
                 className="object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-[#0B1E38] via-[#0B1E38]/90 to-transparent" />
             </div>
 
-            <div className="relative z-10 max-w-2xl space-y-5 text-white">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 border border-primary/50 text-xs font-semibold uppercase tracking-wider text-primary">
-                <Heart className="h-3.5 w-3.5 fill-primary text-primary" />
+            <div className="relative z-10 max-w-2xl space-y-4 text-white font-sans">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-medium uppercase tracking-wider text-white">
+                <Heart className="h-3 w-3 fill-white text-white" />
                 {content.tours.proposalCallout?.badge || 'Once in a Lifetime'}
               </div>
 
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-headline font-bold leading-tight">
+              <h3 className="text-xl sm:text-3xl md:text-4xl font-sans font-bold leading-snug">
                 {content.tours.proposalCallout?.title || 'Design Your Custom Engagement Ring in the Mines of Ceylon'}
               </h3>
 
-              <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-light">
+              <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-normal">
                 {content.tours.proposalCallout?.description || 'Find your own rough sapphire straight from the earth, watch our master lapidaries precision-cut your gem, and craft a bespoke engagement ring with our master jewelers.'}
               </p>
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
-                <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs rounded-full px-7 h-11 shadow-sm transition-colors">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                <Button asChild className="bg-white hover:bg-white/90 text-[#0B1E38] font-semibold text-xs rounded-full px-6 h-10 shadow-sm transition-all">
                   <Link href="/custom-proposal-package">
                     {content.tours.proposalCallout?.primaryButtonText || 'Explore Proposal Package'}
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="border border-white/50 bg-transparent hover:bg-white hover:text-black text-white font-medium text-xs rounded-full px-6 h-11 transition-colors">
+                <Button asChild variant="outline" className="border border-white/30 bg-transparent hover:bg-white/10 text-white font-medium text-xs rounded-full px-5 h-10 transition-colors">
                   <a 
                     href={getWhatsappUrl(content, 'Hello Sapphire Trails, I am interested in the Custom Proposal Package & Bespoke Ring Crafting.')} 
                     target="_blank" 
@@ -223,7 +261,6 @@ export function ToursSection() {
             </div>
           </div>
         </ScrollAnimate>
-
 
       </div>
     </section>

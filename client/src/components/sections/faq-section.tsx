@@ -66,13 +66,13 @@ export function FAQSection() {
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <Button asChild variant="outline" size="sm" className="w-full sm:w-auto text-xs h-9 border-primary/40 text-primary hover:bg-primary/10">
+            <Button asChild variant="outline" size="sm" className="w-full sm:w-auto text-xs h-9.5 px-4 rounded-full border border-[#0B1E38]/25 hover:border-[#0B1E38] text-[#0B1E38] hover:bg-[#0B1E38]/5 dark:border-white/20 dark:text-white dark:hover:bg-white/5 font-medium transition-colors">
               <a href={getWhatsappUrl(content, 'Hello Sapphire Trails, I have a question regarding your tours.')} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
                 WhatsApp Us
               </a>
             </Button>
-            <Button asChild size="sm" className="w-full sm:w-auto text-xs h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+            <Button asChild size="sm" className="w-full sm:w-auto text-xs h-9.5 px-5 rounded-full bg-[#0B1E38] hover:bg-[#071527] text-white font-medium border border-[#0B1E38] shadow-sm transition-all">
               <Link href="/contact">
                 Contact Concierge
               </Link>

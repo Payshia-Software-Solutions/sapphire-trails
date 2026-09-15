@@ -25,7 +25,7 @@ export function TrustSection() {
                 <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-8 text-center">
                     {points.map((pt, index) => (
                         <div key={index} className="flex items-center justify-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                            <CheckCircle className="h-5 w-5 text-[#0B1E38] dark:text-blue-300 flex-shrink-0" />
                             <span className="text-sm font-medium text-muted-foreground">{pt}</span>
                         </div>
                     ))}
