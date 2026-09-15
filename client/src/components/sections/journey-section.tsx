@@ -15,16 +15,55 @@ import {
 } from 'lucide-react';
 import { useSiteContent } from '@/lib/site-content';
 
-const defaultStepImages = [
-  "https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp",
-  "https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp",
-  "https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp",
-  "https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp",
+const default6Steps = [
+  {
+    step: '01',
+    title: 'Introduction to Sri Lankan Gemology',
+    subtitle: 'Heritage & Science',
+    description: "Discover Sri Lanka's rich gemstone heritage, geological origins, and the legendary history of Ceylon sapphires.",
+    image: '/img/journey/journey-1-gemology.webp',
+  },
+  {
+    step: '02',
+    title: 'Gem Market Experience',
+    subtitle: 'The Trading Bazaar',
+    description: "Explore local gem markets and Sri Lanka's vibrant open-air gem trade conducted through secret hand signals.",
+    image: '/img/journey/journey-2-market.webp',
+  },
+  {
+    step: '03',
+    title: 'Gem Cut & Polishing Experience',
+    subtitle: 'Master Lapidary',
+    description: "See how rough gemstones become beautiful polished stones under the precision hands of traditional master cutters.",
+    image: '/img/journey/journey-3-lapidary.webp',
+  },
+  {
+    step: '04',
+    title: 'Gem Museum Visit',
+    subtitle: 'Curated Specimens',
+    description: "Explore Sri Lanka's fascinating gemstone history, ancient artifacts, and rare natural crystal formations.",
+    image: '/img/journey/journey-4-museum.webp',
+  },
+  {
+    step: '05',
+    title: 'Gem Mine Experience',
+    subtitle: 'Subterranean Pits & Washing',
+    description: "Experience a traditional Sri Lankan gem mine. Stand alongside veteran miners washing sapphire gravel in natural mountain streams.",
+    image: '/img/journey/journey-5-mine.webp',
+  },
+  {
+    step: '06',
+    title: 'Gem & Jewellery Showcase',
+    subtitle: 'Haute Joaillerie',
+    description: "Discover a curated collection of natural certified Ceylon gemstones and bespoke fine jewelry handcrafted to perfection.",
+    image: '/img/journey/journey-6-showcase.webp',
+  },
 ];
 
 export function JourneySection() {
   const { content } = useSiteContent();
   const journey = content.homepage.journey;
+  const steps = (journey.steps && journey.steps.length >= 6) ? journey.steps : default6Steps;
 
   return (
     <section id="journey" className="w-full bg-background py-16 md:py-24 lg:py-28 relative overflow-hidden">
@@ -38,34 +77,34 @@ export function JourneySection() {
           </div>
           
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-sans font-bold tracking-tight text-foreground leading-tight">
-            {journey.heading || 'The 4-Step Expedition Journey'}
+            {journey.heading && journey.heading.includes('6-Step') ? journey.heading : 'The 6-Step Gemological Trail'}
           </h2>
           
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto font-sans font-normal">
-            {journey.subtitle || 'From subterranean timber-reinforced shafts to the world-famous street trading bazaar, experience every stage of Ceylon sapphire heritage.'}
+            {journey.subtitle || 'From subterranean mines to the world-famous street trading bazaar and bespoke ateliers, experience every stage of Ceylon sapphire heritage.'}
           </p>
         </ScrollAnimate>
 
-        {/* 4 Steps - Clean Editorial Minimalist Columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7 lg:gap-8 xl:gap-9">
-          {journey.steps.map((step, idx) => {
+        {/* 6 Steps - 3-Column Triptych Grid matching Brochure Pages 04 & 05 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8 lg:gap-9">
+          {steps.map((step, idx) => {
             const stepNum = step.step || `0${idx + 1}`;
-            const stepImg = step.image || defaultStepImages[idx % defaultStepImages.length];
+            const stepImg = step.image || default6Steps[idx % default6Steps.length].image;
 
             return (
               <ScrollAnimate key={idx} className="flex flex-col">
                 <div className="group flex flex-col h-full cursor-pointer">
                   
                   {/* Minimalist Image Container with Soft Rounded Corners */}
-                  <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-muted/30 mb-4 shadow-xs">
+                  <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-muted/20 mb-4 shadow-xs">
                     <Image
                       src={stepImg}
                       alt={step.title}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 group-hover:opacity-25 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 group-hover:opacity-20 transition-opacity" />
                     
                     {/* Quiet Luxury Glass Step Pill */}
                     <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/20 px-2.5 py-0.5 rounded-full text-[11px] font-sans font-medium text-white/95 tracking-widest shadow-sm">
@@ -73,13 +112,13 @@ export function JourneySection() {
                     </div>
                   </div>
 
-                  {/* Editorial Typography & Narrative (Zero Clutter) */}
+                  {/* Editorial Typography & Narrative */}
                   <div className="flex flex-col flex-grow space-y-1.5 font-sans">
                     <p className="text-[11px] uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-300 font-medium font-sans">
                       {step.subtitle || `Stage ${stepNum}`}
                     </p>
                     
-                    <h3 className="text-base sm:text-lg font-sans font-semibold text-foreground group-hover:text-[#0B1E38] dark:group-hover:text-blue-200 transition-colors leading-snug">
+                    <h3 className="text-base sm:text-lg lg:text-xl font-sans font-semibold text-foreground group-hover:text-[#0B1E38] dark:group-hover:text-blue-200 transition-colors leading-snug">
                       {step.title}
                     </h3>
                     
