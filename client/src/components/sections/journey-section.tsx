@@ -68,12 +68,12 @@ function JourneyStepCard({ step, idx }: { step: any; idx: number }) {
           alt={step.title}
           fill
           sizes="(max-width: 768px) 85vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          className="object-cover transition-transform duration-500 ease-out md:group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080E18]/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080E18]/80 via-transparent to-transparent opacity-60 md:group-hover:opacity-40 transition-opacity" />
         
-        {/* Quiet Luxury Glass Step Pill */}
-        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/25 px-3 py-1 rounded-full text-xs font-sans font-medium text-white/95 tracking-widest shadow-sm">
+        {/* Quiet Luxury Step Pill (GPU-friendly high performance) */}
+        <div className="absolute top-3 left-3 bg-black/75 border border-white/20 px-3 py-1 rounded-full text-xs font-sans font-medium text-white tracking-widest shadow-sm">
           {stepNum}
         </div>
       </div>
@@ -84,7 +84,7 @@ function JourneyStepCard({ step, idx }: { step: any; idx: number }) {
           {step.subtitle || `Stage ${stepNum}`}
         </p>
         
-        <h3 className="text-base sm:text-lg lg:text-xl font-sans font-semibold text-white group-hover:text-blue-200 transition-colors leading-snug">
+        <h3 className="text-base sm:text-lg lg:text-xl font-sans font-semibold text-white md:group-hover:text-blue-200 transition-colors leading-snug">
           {step.title}
         </h3>
         
@@ -104,9 +104,10 @@ export function JourneySection() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
     loop: false, 
     align: 'start',
-    skipSnaps: false,
+    skipSnaps: true,
     dragFree: false,
-    duration: 25,
+    duration: 20,
+    containScroll: 'trimSnaps',
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -154,12 +155,12 @@ export function JourneySection() {
           ))}
         </div>
 
-        {/* Mobile View Slider - Touch Pan with Card Peek to avoid vertical scroll fatigue */}
+        {/* Mobile View Slider - High Performance 60/120fps touch physics */}
         <div className="md:hidden relative">
-          <div className="overflow-hidden -mx-4 px-4 touch-pan-y select-none" ref={emblaRef}>
-            <div className="flex items-stretch transform-gpu gap-4">
+          <div className="overflow-hidden -ml-4 touch-pan-y select-none" ref={emblaRef}>
+            <div className="flex items-stretch transform-gpu">
               {steps.map((step, idx) => (
-                <div key={idx} className="relative flex-[0_0_82%] min-w-0 flex flex-col">
+                <div key={idx} className="relative flex-[0_0_80%] sm:flex-[0_0_84%] min-w-0 pl-4 flex flex-col">
                   <JourneyStepCard step={step} idx={idx} />
                 </div>
               ))}

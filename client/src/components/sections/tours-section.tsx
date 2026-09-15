@@ -35,7 +35,7 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
         fill
         sizes="(max-width: 640px) 80vw, (max-width: 1024px) 45vw, 33vw"
         loading="lazy"
-        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        className="object-cover transition-transform duration-500 md:group-hover:scale-105"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       
@@ -117,9 +117,10 @@ export function ToursSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
     loop: false, 
     align: 'start',
-    skipSnaps: false,
+    skipSnaps: true,
     dragFree: false,
-    duration: 25,
+    duration: 20,
+    containScroll: 'trimSnaps',
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [tours, setTours] = useState<TourPackage[]>([]);
