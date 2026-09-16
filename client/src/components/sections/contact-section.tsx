@@ -79,38 +79,46 @@ export function ContactSection() {
   }
 
   return (
-    <section id="contact" className="w-full py-12 md:py-24 bg-background-alt">
-      <div className="container mx-auto px-4 md:px-6">
+    <section id="contact" className="w-full py-16 md:py-24 bg-background-alt">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
             <div className="space-y-8">
                 <div>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">Contact Sapphire Trails – Book Your Gem Mine Tour</h2>
-                    <p className="mt-3 text-muted-foreground font-light text-sm sm:text-base leading-relaxed">Ready to explore the City of Gems? Contact our team in Ratnapura to plan your exclusive gem mine tour or inquire about our luxury tour packages. We are located at the Grand Silver Ray, conveniently accessible from the Colombo-Batticaloa Highway.</p>
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0B1E38]/80 dark:text-blue-400">
+                      Direct Concierge
+                    </span>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground mt-2">
+                      Contact Sapphire Trails – Book Your Gem Mine Tour
+                    </h2>
+                    <div className="w-20 h-0.5 bg-[#0B1E38] dark:bg-blue-500 my-4"></div>
+                    <p className="mt-3 text-muted-foreground font-light text-sm sm:text-base leading-relaxed">
+                      Ready to explore the City of Gems? Contact our team in Ratnapura to plan your exclusive gem mine tour or inquire about our luxury tour packages. We are located at the Grand Silver Ray, conveniently accessible from the Colombo-Batticaloa Highway.
+                    </p>
                 </div>
                 <div className="space-y-4 text-muted-foreground">
                     <div className="flex items-start gap-4">
-                        <MapPin className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                        <MapPin className="h-5 w-5 text-[#0B1E38] dark:text-blue-400 mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-foreground">Our Location</p>
                             <p>{contact.physicalAddress}</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-4">
-                        <Mail className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                        <Mail className="h-5 w-5 text-[#0B1E38] dark:text-blue-400 mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-foreground">Email</p>
-                            <a href={`mailto:${contact.primaryEmail}`} className="hover:text-primary transition-colors">{contact.primaryEmail}</a>
+                            <a href={`mailto:${contact.primaryEmail}`} className="hover:text-[#0B1E38] dark:hover:text-blue-400 transition-colors">{contact.primaryEmail}</a>
                         </div>
                     </div>
                     <div className="flex items-start gap-4">
-                        <Phone className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                        <Phone className="h-5 w-5 text-[#0B1E38] dark:text-blue-400 mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-foreground">Phone</p>
-                            <a href={`tel:${contact.primaryPhone.replace(/\s+/g, '')}`} className="hover:text-primary transition-colors">Primary: {contact.primaryPhone}</a>
+                            <a href={`tel:${contact.primaryPhone.replace(/\s+/g, '')}`} className="hover:text-[#0B1E38] dark:hover:text-blue-400 transition-colors">Primary: {contact.primaryPhone}</a>
                             {contact.secondaryPhone && (
                               <>
                                 <br/>
-                                <a href={`tel:${contact.secondaryPhone.replace(/\s+/g, '')}`} className="hover:text-primary transition-colors">Secondary: {contact.secondaryPhone}</a>
+                                <a href={`tel:${contact.secondaryPhone.replace(/\s+/g, '')}`} className="hover:text-[#0B1E38] dark:hover:text-blue-400 transition-colors">Secondary: {contact.secondaryPhone}</a>
                               </>
                             )}
                         </div>
@@ -120,10 +128,10 @@ export function ContactSection() {
                 <div className="p-6 rounded-2xl bg-card border border-border/80 shadow-xs space-y-4">
                   <div className="flex items-center justify-between border-b pb-3">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-primary" />
-                      <span className="font-bold text-sm text-foreground">Expedition Hours &amp; Lounge</span>
+                      <Clock className="h-4 w-4 text-[#0B1E38] dark:text-blue-400" />
+                      <span className="font-semibold text-sm text-foreground">Expedition Hours &amp; Lounge</span>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200">
                       ● Open Daily
                     </span>
                   </div>
@@ -139,7 +147,7 @@ export function ContactSection() {
                     </div>
                     <div className="flex justify-between py-1">
                       <span>Expedition Departures</span>
-                      <span className="font-semibold text-primary">Private / On-Demand</span>
+                      <span className="font-semibold text-[#0B1E38] dark:text-blue-400">Private / On-Demand</span>
                     </div>
                   </div>
 
@@ -169,9 +177,9 @@ export function ContactSection() {
                         <Button onClick={() => setIsSubmitted(false)} variant="link" className="mt-4">Send another message</Button>
                     </div>
                 ) : (
-                    <Card className="bg-card border border-border/80 rounded-2xl shadow-none">
+                    <Card className="bg-card border border-border/80 rounded-2xl shadow-sm">
                         <CardHeader>
-                            <CardTitle className="text-xl sm:text-2xl font-serif font-normal text-foreground">Send Us a Message</CardTitle>
+                            <CardTitle className="text-xl sm:text-2xl font-semibold text-foreground">Send Us a Message</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Form {...form}>
@@ -255,7 +263,7 @@ export function ContactSection() {
                                     </FormItem>
                                 )}
                                 />
-                                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                                <Button type="submit" className="w-full bg-[#0B1E38] hover:bg-[#071527] text-white rounded-full h-11 font-medium shadow-sm" disabled={isLoading}>
                                     {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                                     Send Message
                                 </Button>

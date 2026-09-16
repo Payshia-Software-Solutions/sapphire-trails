@@ -745,34 +745,33 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               
               {/* Breadcrumb Navigation */}
               <nav className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
-                <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+                <Link href="/" className="hover:text-[#0B1E38] dark:hover:text-blue-400 transition-colors">Home</Link>
                 <ChevronRight className="h-3 w-3" />
-                <Link href="/articles" className="hover:text-primary transition-colors">Articles</Link>
+                <Link href="/articles" className="hover:text-[#0B1E38] dark:hover:text-blue-400 transition-colors">Articles</Link>
                 <ChevronRight className="h-3 w-3" />
-                <span className="text-primary font-medium truncate max-w-xs">{article.title}</span>
-
+                <span className="text-[#0B1E38] dark:text-blue-400 font-medium truncate max-w-xs">{article.title}</span>
               </nav>
 
               {/* Category Pill */}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 border border-primary/40 text-xs font-semibold uppercase tracking-wider text-primary">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#0B1E38]/10 dark:bg-blue-950/40 border border-[#0B1E38]/20 dark:border-blue-800/40 text-xs font-semibold uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-400">
                 <BookOpen className="h-3.5 w-3.5" />
                 <span>{article.category}</span>
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold text-foreground tracking-tight leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground tracking-tight leading-tight">
                 {article.title}
               </h1>
 
               {/* Subtitle */}
-              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed font-light">
                 {article.subtitle}
               </p>
 
               {/* Meta details bar */}
               <div className="pt-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm text-muted-foreground">
                 <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden border border-primary/40">
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#0B1E38]/20">
                     <Image
                       src={article.author.avatar}
                       alt={article.author.name}
@@ -788,12 +787,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
                 <div className="flex items-center gap-4 text-xs">
                   <span className="flex items-center gap-1">
-                    <Calendar className="h-3.5 w-3.5 text-primary" />
+                    <Calendar className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-400" />
                     {article.publishedDate}
                   </span>
                   <span>&bull;</span>
                   <span className="flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5 text-primary" />
+                    <Clock className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-400" />
                     {article.readTime}
                   </span>
                 </div>
@@ -826,15 +825,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
                 {/* Key Takeaways Box */}
                 {article.keyTakeaways && article.keyTakeaways.length > 0 && (
-                  <div className="p-6 sm:p-8 rounded-2xl bg-primary/[0.05] border border-primary/30 space-y-4">
-                    <div className="flex items-center gap-2 text-primary font-headline font-bold text-sm sm:text-base tracking-wide">
+                  <div className="p-6 sm:p-8 rounded-2xl bg-[#0B1E38]/[0.04] dark:bg-blue-950/30 border border-[#0B1E38]/20 dark:border-blue-900/40 space-y-4">
+                    <div className="flex items-center gap-2 text-[#0B1E38] dark:text-blue-400 font-semibold text-sm sm:text-base tracking-wide">
                       <Sparkles className="h-4 w-4" />
                       <span>Key Takeaways &amp; Executive Summary</span>
                     </div>
                     <ul className="grid grid-cols-1 gap-2.5">
                       {article.keyTakeaways.map((item, idx) => (
                         <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-foreground/90 leading-relaxed">
-                          <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                          <CheckCircle2 className="h-4 w-4 text-[#0B1E38] dark:text-blue-400 shrink-0 mt-0.5" />
                           <span>{item}</span>
                         </li>
                       ))}
@@ -845,8 +844,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 {/* Rich HTML Content Body */}
                 <div
                   className="prose prose-neutral dark:prose-invert max-w-none 
-                    [&_h2]:text-2xl sm:[&_h2]:text-3xl [&_h2]:font-headline [&_h2]:font-bold [&_h2]:text-primary [&_h2]:mt-10 [&_h2]:mb-4
-                    [&_h3]:text-xl [&_h3]:font-headline [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-6 [&_h3]:mb-2
+                    [&_h2]:text-2xl sm:[&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:text-[#0B1E38] dark:[&_h2]:text-blue-400 [&_h2]:tracking-tight [&_h2]:mt-10 [&_h2]:mb-4
+                    [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-6 [&_h3]:mb-2
                     [&_p]:text-sm sm:[&_p]:text-base [&_p]:leading-relaxed [&_p]:text-foreground/90 [&_p]:mb-5
                     [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_ul]:mb-6 [&_li]:text-sm sm:[&_li]:text-base [&_li]:text-foreground/90
                     [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-2 [&_ol]:mb-6 [&_li]:text-sm sm:[&_li]:text-base [&_li]:text-foreground/90
@@ -867,14 +866,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                       />
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-widest text-primary font-semibold">Written by</p>
-                      <h4 className="text-sm font-bold text-foreground">{article.author.name}</h4>
+                      <p className="text-xs uppercase tracking-widest text-[#0B1E38] dark:text-blue-400 font-semibold">Written by</p>
+                      <h4 className="text-sm font-semibold text-foreground">{article.author.name}</h4>
                       <p className="text-xs text-muted-foreground">{article.author.role}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Button asChild variant="outline" size="sm" className="rounded-full text-xs gap-1.5 border-border hover:bg-primary/10 hover:text-primary">
+                    <Button asChild variant="outline" size="sm" className="rounded-full text-xs gap-1.5 border-border hover:bg-[#0B1E38]/10 hover:text-[#0B1E38]">
                       <a href={`https://wa.me/?text=${encodeURIComponent(`${article.title} - https://sapphiretrails.lk/articles/${article.slug}`)}`} target="_blank" rel="noopener noreferrer">
                         <Share2 className="h-3.5 w-3.5" />
                         Share Article
@@ -892,7 +891,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 {tours && tours.length > 0 ? (
                   <div className="space-y-6">
                     {tours.slice(0, 2).map((tour) => (
-                      <Card key={tour.id} className="bg-card border border-primary/30 rounded-2xl overflow-hidden shadow-lg">
+                      <Card key={tour.id} className="bg-card border border-border/80 rounded-2xl overflow-hidden shadow-sm hover:border-[#0B1E38]/30 transition-colors">
                         <div className="relative h-44 w-full">
                           <Image
                             src={tour.imageUrl || "https://content-provider.payshia.com/sapphire-trail/images/img2.webp"}
@@ -905,8 +904,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                             {tour.duration || 'Full Day Expedition'}
                           </div>
                           <div className="absolute bottom-3 left-3 right-3 text-white">
-                            <p className="text-xs text-primary font-semibold uppercase tracking-wider font-serif">Featured Tour</p>
-                            <h4 className="text-base font-headline font-bold leading-tight line-clamp-1">{tour.homepageTitle}</h4>
+                            <p className="text-xs text-blue-300 font-semibold uppercase tracking-wider">Featured Tour</p>
+                            <h4 className="text-base font-semibold leading-tight line-clamp-1">{tour.homepageTitle}</h4>
                           </div>
                         </div>
                         <CardContent className="p-5 space-y-4">
@@ -914,10 +913,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                             {tour.homepageDescription}
                           </p>
                           <div className="flex items-center justify-between pt-2 border-t border-border">
-                            <span className="text-lg font-bold font-serif text-primary">
+                            <span className="text-lg font-bold text-[#0B1E38] dark:text-blue-400">
                               {tour.price} <span className="text-xs text-muted-foreground font-normal">{tour.priceSuffix || '/ Person'}</span>
                             </span>
-                            <Button asChild size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full px-5 text-xs shadow-md">
+                            <Button asChild size="sm" className="bg-[#0B1E38] hover:bg-[#071527] text-white font-medium rounded-full px-5 text-xs shadow-sm">
                               <Link href={`/tours/${tour.slug}/book`}>
                                 <CalendarCheck className="mr-1.5 h-3.5 w-3.5" />
                                 Book Now
@@ -936,28 +935,28 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 {/* 3. More Journal Articles */}
                 {otherArticles.length > 0 && (
                   <div className="space-y-4 pt-2">
-                    <h3 className="text-base font-headline font-bold tracking-wide text-foreground flex items-center justify-between">
+                    <h3 className="text-base font-semibold tracking-wide text-foreground flex items-center justify-between">
                       <span>Related Field Guides</span>
-                      <Link href="/articles" className="text-xs text-primary hover:underline font-normal">View All</Link>
+                      <Link href="/articles" className="text-xs text-[#0B1E38] dark:text-blue-400 hover:underline font-normal">View All</Link>
                     </h3>
                     <div className="space-y-3.5">
                       {otherArticles.map(item => (
                         <Link 
                           key={item.slug} 
                           href={`/articles/${item.slug}`}
-                          className="group flex items-center gap-3.5 p-2.5 rounded-xl border border-border/60 hover:border-primary/40 bg-card hover:bg-background-alt transition-all"
+                          className="group flex items-center gap-3.5 p-2.5 rounded-2xl border border-border/60 hover:border-[#0B1E38]/40 bg-card hover:bg-background-alt transition-all"
                         >
-                          <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
+                          <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0">
                             <Image
                               src={item.imageUrl}
                               alt={item.title}
                               fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              className="object-cover md:group-hover:scale-105 transition-transform duration-300"
                             />
                           </div>
                           <div className="min-w-0">
-                            <span className="text-[10px] font-semibold text-primary uppercase tracking-wider">{item.category}</span>
-                            <h4 className="text-xs font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                            <span className="text-[10px] font-semibold text-[#0B1E38] dark:text-blue-400 uppercase tracking-wider">{item.category}</span>
+                            <h4 className="text-xs font-semibold text-foreground group-hover:text-[#0B1E38] dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
                               {item.title}
                             </h4>
                             <span className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">

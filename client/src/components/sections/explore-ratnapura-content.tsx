@@ -40,7 +40,7 @@ const LocationCard = ({ location }: { location: Location }) => {
 
   return (
     <Link href={`/explore-ratnapura/${location.slug}`} className="group block h-full">
-      <Card className="bg-card hover:bg-card/80 border border-border/80 hover:border-primary/50 transition-colors flex flex-col h-full rounded-2xl overflow-hidden group">
+      <Card className="bg-card hover:bg-card/80 border border-border/80 hover:border-[#0B1E38]/30 dark:hover:border-blue-500/40 transition-colors flex flex-col h-full rounded-2xl overflow-hidden group shadow-sm">
         
         {/* Card Thumbnail Box */}
         <div className="relative aspect-[16/10] overflow-hidden bg-muted/50">
@@ -57,19 +57,19 @@ const LocationCard = ({ location }: { location: Location }) => {
               (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE; 
               setImageLoaded(true);
             }}
-            className={`object-cover w-full h-full transition-all duration-700 group-hover:scale-105 ${
+            className={`object-cover w-full h-full transition-all duration-700 md:group-hover:scale-105 ${
               imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
             }`}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
           
-          <Badge className="absolute top-3 left-3 bg-slate-950/85 text-primary border-primary/30 text-[11px] font-semibold uppercase tracking-wider">
+          <Badge className="absolute top-3 left-3 bg-slate-950/85 text-blue-200 border-white/10 text-[11px] font-semibold uppercase tracking-wider rounded-full">
             {location.category === 'agriculture' ? 'Gem Mining' : location.category === 'cultural' ? 'Cultural' : 'Nature'}
           </Badge>
 
           {location.distance && (
-            <Badge variant="outline" className="absolute bottom-3 left-3 bg-slate-950/85 text-white border-white/20 text-[10px]">
-              <MapPin className="h-3 w-3 mr-1 text-primary" />
+            <Badge variant="outline" className="absolute bottom-3 left-3 bg-slate-950/85 text-white border-white/20 text-[10px] rounded-full">
+              <MapPin className="h-3 w-3 mr-1 text-blue-300" />
               {location.distance}
             </Badge>
           )}
@@ -78,7 +78,7 @@ const LocationCard = ({ location }: { location: Location }) => {
         {/* Card Text Content */}
         <CardContent className="p-5 flex flex-col flex-grow justify-between text-left space-y-3">
           <div>
-            <h3 className="text-lg sm:text-xl font-serif font-medium text-foreground group-hover:text-primary transition-colors leading-snug">
+            <h3 className="text-lg sm:text-xl font-semibold text-foreground group-hover:text-[#0B1E38] dark:group-hover:text-blue-400 transition-colors leading-snug">
               {location.title}
             </h3>
             <p className="text-xs text-muted-foreground mt-2 line-clamp-3 leading-relaxed font-light">
@@ -86,9 +86,9 @@ const LocationCard = ({ location }: { location: Location }) => {
             </p>
           </div>
 
-          <div className="pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
+          <div className="pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-[#0B1E38] dark:text-blue-400">
             <span>Explore Attraction</span>
-            <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1.5 transition-transform" />
+            <ArrowRight className="h-4 w-4 transform md:group-hover:translate-x-1.5 transition-transform" />
           </div>
         </CardContent>
       </Card>
@@ -143,18 +143,18 @@ export function ExploreRatnapuraContent() {
 
   return (
     <section className="w-full py-16 sm:py-24 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 border border-primary/20 px-3.5 py-1 rounded-full">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#0B1E38] dark:text-blue-400 mb-3 bg-[#0B1E38]/10 dark:bg-blue-950/40 border border-[#0B1E38]/20 dark:border-blue-800/40 px-3.5 py-1 rounded-full">
             <Compass className="h-3.5 w-3.5" />
             <span>{catalogHeader.badge}</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">
             {catalogHeader.heading}
           </h2>
-          <p className="text-base text-muted-foreground mt-3 leading-relaxed">
+          <p className="text-sm sm:text-base text-muted-foreground mt-3 leading-relaxed">
             {catalogHeader.subtitle}
           </p>
         </div>
@@ -177,17 +177,29 @@ export function ExploreRatnapuraContent() {
         ) : (
           <Tabs defaultValue="all" className="w-full">
             <div className="flex justify-center mb-10">
-              <TabsList className="grid grid-cols-4 max-w-2xl w-full bg-background-alt border border-border p-1 rounded-xl">
-                <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm">
+              <TabsList className="flex flex-wrap items-center justify-center gap-1 bg-transparent p-1">
+                <TabsTrigger 
+                  value="all" 
+                  className="rounded-full px-5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#0B1E38] data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 border border-transparent data-[state=inactive]:border-slate-200 dark:data-[state=inactive]:border-slate-800"
+                >
                   All ({allLocations.length})
                 </TabsTrigger>
-                <TabsTrigger value="nature" className="rounded-lg text-xs sm:text-sm">
+                <TabsTrigger 
+                  value="nature" 
+                  className="rounded-full px-5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#0B1E38] data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 border border-transparent data-[state=inactive]:border-slate-200 dark:data-[state=inactive]:border-slate-800"
+                >
                   Nature ({natureLocations.length})
                 </TabsTrigger>
-                <TabsTrigger value="agriculture" className="rounded-lg text-xs sm:text-sm">
+                <TabsTrigger 
+                  value="agriculture" 
+                  className="rounded-full px-5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#0B1E38] data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 border border-transparent data-[state=inactive]:border-slate-200 dark:data-[state=inactive]:border-slate-800"
+                >
                   Gem Mining ({agricultureLocations.length})
                 </TabsTrigger>
-                <TabsTrigger value="cultural" className="rounded-lg text-xs sm:text-sm">
+                <TabsTrigger 
+                  value="cultural" 
+                  className="rounded-full px-5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#0B1E38] data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 border border-transparent data-[state=inactive]:border-slate-200 dark:data-[state=inactive]:border-slate-800"
+                >
                   Cultural ({culturalLocations.length})
                 </TabsTrigger>
               </TabsList>

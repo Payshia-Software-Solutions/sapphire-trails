@@ -144,15 +144,20 @@ ${data.message}
   };
 
   return (
-    <section id="inquiry" className="w-full py-12 md:py-24 bg-background-alt">
-      <div className="container mx-auto px-4 md:px-6">
+    <section id="inquiry" className="w-full py-16 md:py-24 bg-background-alt">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
           
           {/* Left Column: Details matching contact-section.tsx */}
           <div className="space-y-8">
             <div>
-              <h2 className="text-3xl font-headline font-bold text-primary">Inquire About Custom Proposal Package</h2>
-              <div className="w-24 h-px bg-primary my-4"></div>
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0B1E38]/80 dark:text-blue-400">
+                Start Your Journey
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground mt-2">
+                Inquire About Custom Proposal Package
+              </h2>
+              <div className="w-20 h-0.5 bg-[#0B1E38] dark:bg-blue-500 my-4"></div>
               <p className="text-muted-foreground leading-relaxed">
                 Every romantic proposal is unique. Share your preferred gemstone, metal type, ring style, and travel dates with us. Our certified gemologists and private jewelry designers will curate a personalized itinerary and custom proposal quote.
               </p>
@@ -160,7 +165,7 @@ ${data.message}
 
             <div className="space-y-4 text-muted-foreground">
               <div className="flex items-start gap-4">
-                <Gem className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <Gem className="h-5 w-5 text-[#0B1E38] dark:text-blue-400 mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-foreground">Certified Ceylon Gemstones</p>
                   <p>100% natural, ethically sourced Ratnapura sapphires and gems with government NGJA / GIA certification.</p>
@@ -168,7 +173,7 @@ ${data.message}
               </div>
 
               <div className="flex items-start gap-4">
-                <Clock className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <Clock className="h-5 w-5 text-[#0B1E38] dark:text-blue-400 mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-foreground">5-Day Fast-Track Crafting</p>
                   <p>Custom 3D CAD modeling, precision casting, stone setting, and laser hallmarking within 5 working days.</p>
@@ -176,7 +181,7 @@ ${data.message}
               </div>
 
               <div className="flex items-start gap-4">
-                <Truck className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <Truck className="h-5 w-5 text-[#0B1E38] dark:text-blue-400 mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-foreground">Insured Hand Delivery</p>
                   <p>White-glove delivery directly to your luxury hotel or proposal venue across Sri Lanka (or international express shipping).</p>
@@ -184,18 +189,18 @@ ${data.message}
               </div>
 
               <div className="flex items-start gap-4">
-                <Phone className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <Phone className="h-5 w-5 text-[#0B1E38] dark:text-blue-400 mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-foreground">Direct Concierge Assistance</p>
-                  <a href={primaryPhoneTel} className="hover:text-primary transition-colors block">Primary: {primaryPhone}</a>
-                  <a href={`mailto:${primaryEmail}`} className="hover:text-primary transition-colors block">Email: {primaryEmail}</a>
+                  <a href={primaryPhoneTel} className="hover:text-[#0B1E38] dark:hover:text-blue-400 transition-colors block">Primary: {primaryPhone}</a>
+                  <a href={`mailto:${primaryEmail}`} className="hover:text-[#0B1E38] dark:hover:text-blue-400 transition-colors block">Email: {primaryEmail}</a>
                 </div>
               </div>
             </div>
 
             {/* WhatsApp Quick CTA */}
             <div className="pt-2">
-              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
+              <Button asChild className="bg-[#0B1E38] hover:bg-[#071527] text-white rounded-full px-6 h-11">
                 <a href={generateWhatsAppUrl()} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="mr-2 h-4 w-4" />
                   Chat on WhatsApp ({primaryPhone})
@@ -207,19 +212,19 @@ ${data.message}
           {/* Right Column: Form Card matching contact-section.tsx */}
           <div>
             {isSubmitted ? (
-              <div className="flex flex-col items-center justify-center text-center rounded-lg border bg-card text-card-foreground shadow-sm p-12 h-full">
-                <h3 className="text-2xl font-bold text-primary">Thank You!</h3>
+              <div className="flex flex-col items-center justify-center text-center rounded-2xl border bg-card text-card-foreground shadow-sm p-12 h-full">
+                <h3 className="text-2xl font-semibold text-[#0B1E38] dark:text-blue-400">Thank You!</h3>
                 <p className="text-muted-foreground mt-4">
                   Your proposal inquiry has been sent successfully. Our master gemologist and concierge will review your details and contact you shortly.
                 </p>
-                <Button onClick={() => setIsSubmitted(false)} variant="link" className="mt-4 text-primary">
+                <Button onClick={() => setIsSubmitted(false)} variant="link" className="mt-4 text-[#0B1E38] dark:text-blue-400">
                   Send another inquiry
                 </Button>
               </div>
             ) : (
-              <Card className="border border-border">
+              <Card className="border border-border/80 rounded-2xl shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-xl font-headline font-bold text-foreground">
+                  <CardTitle className="text-xl font-semibold text-foreground">
                     Custom Proposal & Ring Inquiry
                   </CardTitle>
                 </CardHeader>
@@ -411,7 +416,7 @@ ${data.message}
 
                       <Button 
                         type="submit" 
-                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-2" 
+                        className="w-full bg-[#0B1E38] hover:bg-[#071527] text-white rounded-full h-11 mt-2 font-medium" 
                         disabled={isLoading}
                       >
                         {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}

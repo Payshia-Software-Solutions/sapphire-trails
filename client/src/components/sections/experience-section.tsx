@@ -12,38 +12,43 @@ export function ExperienceSection() {
   const exp = content.about.experience;
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background-alt">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-4xl mx-auto mb-14 space-y-3">
+    <section className="w-full py-16 md:py-24 bg-background-alt font-sans">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-14 md:mb-18 space-y-3">
           {exp.tagline && (
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary font-serif">
-              {exp.tagline}
-            </span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-xs font-medium uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-200 shadow-2xs">
+              <span>{exp.tagline}</span>
+            </div>
           )}
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground">{exp.heading}</h2>
-          <p className="mt-4 text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed font-light max-w-3xl md:max-w-4xl mx-auto">{exp.description}</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-sans font-bold tracking-tight text-foreground leading-tight">
+            {exp.heading}
+          </h2>
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed font-normal max-w-2xl mx-auto">
+            {exp.description}
+          </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {exp.items.map((item, index) => {
             const Icon = defaultIcons[index % defaultIcons.length];
             return (
-              <Card key={index} className="overflow-hidden border border-border/70 hover:border-primary/50 transition-colors bg-card">
-                <div className="relative h-48 w-full">
+              <Card key={index} className="overflow-hidden border border-border/80 hover:border-[#0B1E38]/40 transition-colors bg-card rounded-2xl shadow-xs group">
+                <div className="relative h-48 w-full overflow-hidden bg-muted/20">
                   <Image
                     src={item.image}
                     alt={item.title}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-500 ease-out md:group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 25vw"
                   />
                 </div>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                      <Icon className="h-5 w-5" />
+                <CardContent className="p-5 space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-[#0B1E38]/5 dark:bg-white/10 text-[#0B1E38] dark:text-blue-300">
+                      <Icon className="h-4 w-4" />
                     </div>
-                    <h3 className="text-lg font-serif font-medium text-foreground">{item.title}</h3>
+                    <h3 className="text-base sm:text-lg font-sans font-semibold text-foreground leading-snug">{item.title}</h3>
                   </div>
-                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed font-light">{item.description}</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed font-normal">{item.description}</p>
                 </CardContent>
               </Card>
             );

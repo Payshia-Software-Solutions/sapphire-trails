@@ -100,15 +100,15 @@ export function BookingForm({
                               key={pkg.id}
                               onClick={() => field.onChange(pkg.id)}
                               className={cn(
-                                "group relative rounded-2xl border p-3 cursor-pointer transition-all duration-300 flex flex-col justify-between overflow-hidden bg-card/60 hover:bg-card hover:shadow-lg",
+                                "group relative rounded-2xl border p-3 cursor-pointer transition-all duration-300 flex flex-col justify-between overflow-hidden bg-card hover:shadow-sm",
                                 isSelected
-                                  ? "border-primary ring-2 ring-primary/40 bg-primary/5 shadow-md shadow-primary/10"
-                                  : "border-border/80 hover:border-primary/40"
+                                  ? "border-[#0B1E38] ring-2 ring-[#0B1E38]/30 bg-[#0B1E38]/5 dark:border-blue-500 shadow-sm"
+                                  : "border-border/80 hover:border-[#0B1E38]/40"
                               )}
                             >
                               {/* Active Selected Badge */}
                               {isSelected && (
-                                <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-md">
+                                <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 bg-[#0B1E38] text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full shadow-sm">
                                   <CheckCircle2 className="h-3 w-3" />
                                   <span>Selected</span>
                                 </div>
@@ -122,28 +122,28 @@ export function BookingForm({
                                     alt={pkg.homepageTitle || 'Tour Package'}
                                     fill
                                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                    className="object-cover md:group-hover:scale-105 transition-transform duration-500"
                                   />
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                                   
                                   {pkg.duration && (
                                     <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium px-2 py-0.5 rounded-md border border-white/10">
-                                      <Clock className="h-3 w-3 text-primary" />
+                                      <Clock className="h-3 w-3 text-blue-300" />
                                       <span>{pkg.duration}</span>
                                     </div>
                                   )}
                                 </div>
 
                                 {/* Title */}
-                                <h4 className="font-headline font-bold text-xs sm:text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                                <h4 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-2 group-hover:text-[#0B1E38] dark:group-hover:text-blue-400 transition-colors">
                                   {pkg.homepageTitle || pkg.tourPageTitle}
                                 </h4>
                               </div>
 
                               {/* Price Strip */}
                               <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between text-xs">
-                                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">From</span>
-                                <span className="font-bold text-xs sm:text-sm text-primary">
+                                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">From</span>
+                                <span className="font-bold text-xs sm:text-sm text-[#0B1E38] dark:text-blue-400">
                                   {pkg.price ? `${pkg.price} ${pkg.priceSuffix || '/ person'}` : 'Custom Quote'}
                                 </span>
                               </div>

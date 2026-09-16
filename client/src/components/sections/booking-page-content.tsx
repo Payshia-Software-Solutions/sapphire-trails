@@ -39,7 +39,7 @@ function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent" />
             <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-between text-white">
                 <div>
-                    <h2 className="text-xl sm:text-2xl font-serif font-normal text-white">{selectedTour.tourPageTitle}</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white">{selectedTour.tourPageTitle}</h2>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm mt-2 opacity-90">
                         <div className="flex items-center gap-1.5"><Clock size={16} /> {selectedTour.duration}</div>
                         <div className="flex items-center gap-1.5"><DollarSign size={16} /> {selectedTour.price} {selectedTour.priceSuffix}</div>
@@ -130,12 +130,12 @@ function BookingSummary({
               </div>
               <div className="flex justify-between text-lg font-bold">
                   <span className="text-foreground">Total:</span>
-                  <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                  <span className="text-[#0B1E38] dark:text-blue-400 font-bold">${totalPrice.toFixed(2)}</span>
               </div>
           </div>
         )}
         
-        <Button type="submit" form="booking-form-main" className="w-full rounded-full font-serif uppercase tracking-widest text-xs h-11" size="lg" disabled={!selectedTour || isSubmitting}>
+        <Button type="submit" form="booking-form-main" className="w-full bg-[#0B1E38] hover:bg-[#071527] text-white rounded-full font-medium text-sm h-11 shadow-sm" size="lg" disabled={!selectedTour || isSubmitting}>
             {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
             Complete Booking
         </Button>
@@ -298,43 +298,37 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
        hotel_transfer: 'Private Hotel Pickup & Tour Chauffeur',
        custom: 'Custom Island-wide Transport Arrangement',
      };
-     const label = transportLabels[data.transportService] || data.transportService;
-     const details = data.transportNotes ? ` [Flight / Pickup Details: ${data.transportNotes.trim()}]` : '';
-     const transportHeader = `🚗 Vehicle Arrangement: ${label}${details}`;
-     fullMessage = fullMessage ? `${transportHeader}\n\n📝 Special Requests: ${fullMessage}` : transportHeader;
+     const selectedTransportLabel = transportLabels[data.transportService] || data.transportService;
+     const transportBlock = `[TRANSPORT & CHAUFFEUR SERVICE REQUESTED]\n- Service: ${selectedTransportLabel}${data.transportNotes ? `\n- Details / Flight / Pickup Address: ${data.transportNotes}` : ''}`;
+     
+     fullMessage = fullMessage ? `${fullMessage}\n\n${transportBlock}` : transportBlock;
    }
 
-   const payload = {
-       user_id: user ? user.id : null,
-       tour_package_id: data.tourType,
-       tour_name: selectedTour.homepageTitle,
+   const bookingPayload = {
        name: data.name,
        email: data.email,
        phone: data.phone,
        address: data.address,
-       transport_service: data.transportService,
-       transport_notes: data.transportNotes,
+       tour_type_id: selectedTour.id,
+       booking_date: format(data.date, 'yyyy-MM-dd'),
        adults: data.adults,
        children: data.children,
-       guests: totalGuestsOnSubmit,
-       tour_date: format(data.date, 'yyyy-MM-dd'),
+       total_price: totalPriceOnSubmit,
        message: fullMessage,
-       type: user ? user.type : 'client',
    };
    
    try {
-       const response = await fetch('/api/booking', {
+       const response = await fetch(`${API_BASE_URL}/bookings`, {
            method: 'POST',
            headers: {
                'Content-Type': 'application/json',
-               'Accept': 'application/json',
            },
-           body: JSON.stringify(payload),
+           body: JSON.stringify(bookingPayload),
        });
 
        if (!response.ok) {
-           const errorData = await response.json().catch(() => ({ message: "An unknown error occurred."}));
-           throw new Error(errorData.message || 'Failed to submit booking request.');
+           const errData = await response.json().catch(() => ({}));
+           throw new Error(errData.error || errData.message || "Failed to create booking.");
        }
        
        const savedBooking = await response.json();
@@ -363,9 +357,9 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
 
   return (
     <div className="flex-1 bg-background-alt py-12 md:py-20">
-       <div className="container mx-auto px-4 md:px-6 max-w-screen-2xl">
+       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
-            <Button variant="link" onClick={() => router.back()} className="text-foreground hover:text-primary p-0 h-auto">
+            <Button variant="link" onClick={() => router.back()} className="text-foreground hover:text-[#0B1E38] dark:hover:text-blue-400 p-0 h-auto">
                 <ArrowLeft className="mr-2 h-4 w-4"/>
                 Back to Tour Page
             </Button>
@@ -375,12 +369,12 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
             <div className="lg:col-span-2 space-y-6">
               {tourSlug && selectedTour ? (
                 <div className="mb-2">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">Book Your Tour</h1>
-                  <p className="text-muted-foreground mt-1 font-light text-sm sm:text-base">Reserve your spot for the <span className="font-medium text-primary">{selectedTour.tourPageTitle}</span></p>
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">Book Your Tour</h1>
+                  <p className="text-muted-foreground mt-1 font-light text-sm sm:text-base">Reserve your spot for the <span className="font-semibold text-[#0B1E38] dark:text-blue-400">{selectedTour.tourPageTitle}</span></p>
                 </div>
               ) : (
                 <div className="mb-2">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal tracking-wide text-foreground">Book Your Private Expedition</h1>
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">Book Your Private Expedition</h1>
                   <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-light">
                     Select your preferred tour package below and customize your journey with Sapphire Trails.
                   </p>

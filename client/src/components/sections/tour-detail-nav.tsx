@@ -51,53 +51,53 @@ export function TourDetailNav({ tourTitle, bookingLink = '#book-tour', price }: 
       style={{ top: `${headerHeight}px` }}
       className="sticky z-40 w-full bg-background/98 backdrop-blur-md border-b border-border/90 shadow-md transition-[top] duration-150 ease-out"
     >
-      <div className="container mx-auto px-3 sm:px-6 lg:px-8 max-w-screen-2xl">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 font-sans">
         <div className="flex items-center justify-between gap-2 sm:gap-4 py-2 sm:py-2.5 overflow-x-auto no-scrollbar touch-pan-x">
           
           {/* Section Navigation Links */}
-          <nav className="flex items-center gap-1 sm:gap-3 text-[11px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+          <nav className="flex items-center gap-1 sm:gap-2 text-[11px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground whitespace-nowrap">
             <a 
               href="#overview" 
-              className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md transition-all ${activeSection === 'overview' ? 'text-primary font-bold bg-primary/10' : 'hover:text-foreground'}`}
+              className={`px-3 py-1 sm:py-1.5 rounded-full transition-all ${activeSection === 'overview' ? 'text-[#0B1E38] dark:text-blue-200 font-bold bg-[#0B1E38]/10 dark:bg-white/10' : 'hover:text-foreground'}`}
             >
               Overview
             </a>
             <a 
               href="#highlights" 
-              className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md transition-all ${activeSection === 'highlights' ? 'text-primary font-bold bg-primary/10' : 'hover:text-foreground'}`}
+              className={`px-3 py-1 sm:py-1.5 rounded-full transition-all ${activeSection === 'highlights' ? 'text-[#0B1E38] dark:text-blue-200 font-bold bg-[#0B1E38]/10 dark:bg-white/10' : 'hover:text-foreground'}`}
             >
               Highlights
             </a>
             <a 
               href="#itinerary" 
-              className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md transition-all ${activeSection === 'itinerary' ? 'text-primary font-bold bg-primary/10' : 'hover:text-foreground'}`}
+              className={`px-3 py-1 sm:py-1.5 rounded-full transition-all ${activeSection === 'itinerary' ? 'text-[#0B1E38] dark:text-blue-200 font-bold bg-[#0B1E38]/10 dark:bg-white/10' : 'hover:text-foreground'}`}
             >
               Itinerary
             </a>
             <a 
               href="#inclusions" 
-              className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md transition-all ${activeSection === 'inclusions' ? 'text-primary font-bold bg-primary/10' : 'hover:text-foreground'}`}
+              className={`px-3 py-1 sm:py-1.5 rounded-full transition-all ${activeSection === 'inclusions' ? 'text-[#0B1E38] dark:text-blue-200 font-bold bg-[#0B1E38]/10 dark:bg-white/10' : 'hover:text-foreground'}`}
             >
               Inclusions
             </a>
             <a 
               href="#gallery" 
-              className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md transition-all ${activeSection === 'gallery' ? 'text-primary font-bold bg-primary/10' : 'hover:text-foreground'}`}
+              className={`px-3 py-1 sm:py-1.5 rounded-full transition-all ${activeSection === 'gallery' ? 'text-[#0B1E38] dark:text-blue-200 font-bold bg-[#0B1E38]/10 dark:bg-white/10' : 'hover:text-foreground'}`}
             >
               Gallery
             </a>
           </nav>
 
           {/* Quick Book CTA in Sticky Bar */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
             {price && (
-              <span className="hidden lg:inline-block text-xs font-serif text-muted-foreground">
-                From <strong className="text-primary font-bold text-sm">{price}</strong>
+              <span className="hidden lg:inline-block text-xs font-sans text-muted-foreground">
+                From <strong className="text-foreground font-bold text-sm font-sans">{price}</strong>
               </span>
             )}
             <a 
               href={bookingLink} 
-              className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[11px] sm:text-xs shadow-sm transition-all"
+              className="inline-flex items-center gap-1.5 bg-[#0B1E38] hover:bg-[#071527] text-white font-medium px-4 py-1.5 rounded-full text-xs shadow-sm transition-all border border-[#0B1E38]"
             >
               <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               <span>Book</span>

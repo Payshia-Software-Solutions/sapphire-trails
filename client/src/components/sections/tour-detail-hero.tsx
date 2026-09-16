@@ -65,15 +65,15 @@ export function TourDetailHero({
       <div className="container relative z-10 mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Navigation - Unified site-wide */}
-        <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground mb-6">
-          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+        <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground mb-6 font-sans">
+          <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
           <ChevronRight className="h-3.5 w-3.5 opacity-60" />
-          <Link href="/tours" className="hover:text-primary transition-colors">Tours</Link>
+          <Link href="/tours" className="hover:text-foreground transition-colors">Tours</Link>
           <ChevronRight className="h-3.5 w-3.5 opacity-60" />
-          <span className="text-primary font-medium truncate max-w-[200px] sm:max-w-md">{title}</span>
+          <span className="text-foreground font-medium truncate max-w-[200px] sm:max-w-md">{title}</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center font-sans">
 
           
           {/* LEFT 7 COLS: TEXT CONTENT & ACTIONS */}
@@ -81,12 +81,12 @@ export function TourDetailHero({
             
             {/* Top Badges */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs uppercase tracking-widest font-semibold gap-1.5 shadow-xs">
-                <Gem className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-xs font-medium uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-200 shadow-2xs">
+                <Gem className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#0B1E38] dark:text-blue-300" />
                 <span>Exclusive Private Excursion</span>
-              </Badge>
+              </div>
 
-              <div className="flex items-center gap-1 bg-background-alt border border-border px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs text-foreground">
+              <div className="flex items-center gap-1 bg-background-alt border border-border px-2.5 py-1 rounded-full text-[11px] sm:text-xs text-foreground shadow-2xs">
                 {[1, 2, 3, 4, 5].map(i => (
                   <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
                 ))}
@@ -95,29 +95,29 @@ export function TourDetailHero({
             </div>
 
             {/* Tour Title */}
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-normal text-foreground leading-[1.2] sm:leading-[1.15] tracking-wide">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-sans font-bold text-foreground leading-[1.2] sm:leading-[1.15] tracking-tight">
               {title}
             </h1>
 
             {/* Feature Pills */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1">
               <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-background-alt px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-foreground shadow-xs">
-                <Clock className="h-3.5 w-3.5 text-primary" />
+                <Clock className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300" />
                 <span>{duration || 'Full Day'}</span>
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-background-alt px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-foreground shadow-xs">
-                <Shield className="h-3.5 w-3.5 text-primary" />
+                <Shield className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300" />
                 <span>Safety Certified</span>
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-background-alt px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-foreground shadow-xs">
-                <Users className="h-3.5 w-3.5 text-primary" />
+                <Users className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300" />
                 <span>Master Gemologist Guided</span>
               </div>
 
               {price && (
-                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold text-primary shadow-xs">
+                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-[#0B1E38]/20 bg-[#0B1E38]/5 px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold text-[#0B1E38] dark:text-blue-200 shadow-xs">
                   <span>{price}</span>
                   <span className="text-[10px] sm:text-[11px] text-muted-foreground font-normal">{priceSuffix || 'per person'}</span>
                 </div>
@@ -127,19 +127,19 @@ export function TourDetailHero({
             {/* Quick Inclusions Highlights */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 pt-1 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>100% Private Chauffeured Tour</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Authentic 5-Course Plantation Lunch</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Underground Pit Descent &amp; Panning</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Free Date Changes &amp; Cancellation</span>
               </div>
             </div>
@@ -149,7 +149,7 @@ export function TourDetailHero({
               <Button
                 asChild
                 size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold w-full sm:w-auto px-8 h-11 sm:h-12 text-xs sm:text-sm shadow-sm rounded-full justify-center"
+                className="bg-[#0B1E38] hover:bg-[#071527] text-white font-medium w-full sm:w-auto px-8 h-11 sm:h-12 text-xs sm:text-sm shadow-sm rounded-full justify-center border border-[#0B1E38] transition-all"
               >
                 <Link href={bookingLink}>
                   <Calendar className="mr-2 h-4 w-4" />
@@ -161,14 +161,14 @@ export function TourDetailHero({
                 asChild
                 size="lg"
                 variant="outline"
-                className="bg-background hover:bg-background-alt border-border text-foreground hover:text-primary w-full sm:w-auto h-11 sm:h-12 text-xs sm:text-sm px-6 rounded-full justify-center"
+                className="bg-background hover:bg-background-alt border-border hover:border-[#0B1E38]/40 text-foreground w-full sm:w-auto h-11 sm:h-12 text-xs sm:text-sm px-6 rounded-full justify-center transition-colors"
               >
                 <a
                   href={getWhatsappUrl(content, `Hello Sapphire Trails, I would like to inquire about booking the "${title}".`)}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <MessageCircle className="mr-2 h-4 w-4 text-emerald-400" />
+                  <MessageCircle className="mr-2 h-4 w-4 text-emerald-500" />
                   WhatsApp Concierge
                 </a>
               </Button>

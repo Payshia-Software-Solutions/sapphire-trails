@@ -19,17 +19,24 @@ import { useSiteContent, getSectionThemeClass } from '@/lib/site-content';
 function DynamicFaqSection({ faqs, heading }: { faqs: Array<{ question: string; answer: string }>; heading?: string }) {
   if (!faqs || faqs.length === 0) return null;
   return (
-    <section className="w-full py-12 md:py-24 bg-background">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="w-full py-16 md:py-24 bg-background">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-sans font-bold tracking-tight text-center mb-10 text-foreground">
-            {heading || 'Frequently Asked Questions'}
-          </h2>
-          <Accordion type="single" collapsible className="w-full font-sans">
+          <div className="text-center mb-10 space-y-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0B1E38]/80 dark:text-blue-400">
+              Got Questions?
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">
+              {heading || 'Frequently Asked Questions'}
+            </h2>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
             {faqs.map((item, index) => (
               <AccordionItem key={index} value={`item-${index}`} className="border-b border-border/80">
-                <AccordionTrigger className="text-base sm:text-lg font-sans font-semibold hover:no-underline text-left text-foreground hover:text-primary transition-colors">{item.question}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pt-2">
+                <AccordionTrigger className="text-base sm:text-lg font-medium hover:no-underline text-left text-foreground hover:text-[#0B1E38] dark:hover:text-blue-400 transition-colors py-4">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pt-1 pb-4 leading-relaxed font-light text-sm sm:text-base">
                   {item.answer}
                 </AccordionContent>
               </AccordionItem>

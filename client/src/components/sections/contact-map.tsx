@@ -21,24 +21,24 @@ export function ContactMap() {
 
   return (
     <section id="our-location" className="w-full py-16 md:py-24 bg-background border-t border-border">
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         <div className="text-center max-w-2xl mx-auto mb-10 md:mb-12">
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-2 bg-primary/10 border border-primary/20 px-3.5 py-1 rounded-full">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#0B1E38] dark:text-blue-400 mb-2 bg-[#0B1E38]/10 dark:bg-blue-950/40 border border-[#0B1E38]/20 dark:border-blue-800/40 px-3.5 py-1 rounded-full">
             <MapPin className="h-3.5 w-3.5" />
             <span>{mapData.badge}</span>
           </div>
-          <h2 className="text-3xl font-serif font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">
             {mapData.heading}
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm sm:text-base text-muted-foreground leading-relaxed">
             {mapData.subtitle}
           </p>
         </div>
 
         <div className="max-w-6xl mx-auto space-y-4">
           <div
-            className="relative rounded-2xl overflow-hidden border border-border shadow-xl h-[420px] sm:h-[500px] w-full bg-background-alt group"
+            className="relative rounded-2xl overflow-hidden border border-border shadow-sm h-[420px] sm:h-[500px] w-full bg-background-alt group"
             onClick={() => setIsMapActive(true)}
           >
             <iframe
@@ -54,8 +54,8 @@ export function ContactMap() {
             
             {/* Active Pin Badge */}
             <div className="absolute top-4 left-4 z-10 pointer-events-none">
-              <Badge className="bg-black/85 backdrop-blur-md text-white border-primary/40 text-xs px-3.5 py-1.5 gap-2 shadow-xl font-semibold">
-                <MapPin className="h-3.5 w-3.5 text-primary animate-pulse" />
+              <Badge className="bg-slate-950/85 backdrop-blur-md text-white border-white/20 text-xs px-3.5 py-1.5 gap-2 shadow-xl font-medium rounded-full">
+                <MapPin className="h-3.5 w-3.5 text-blue-300 animate-pulse" />
                 Sapphire Trails HQ • Grand Silver Ray
               </Badge>
             </div>
@@ -65,14 +65,14 @@ export function ContactMap() {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-background-alt rounded-xl border border-border text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-background-alt rounded-2xl border border-border text-xs">
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Navigation className="h-4 w-4 text-primary shrink-0" />
+              <Navigation className="h-4 w-4 text-[#0B1E38] dark:text-blue-400 shrink-0" />
               <span>{mapData.addressText}</span>
             </div>
             
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild className="text-primary hover:bg-primary/10 gap-1.5 text-xs h-8 border-primary/30">
+              <Button variant="outline" size="sm" asChild className="text-[#0B1E38] dark:text-blue-400 hover:bg-[#0B1E38]/10 gap-1.5 text-xs h-9 px-4 rounded-full border-[#0B1E38]/30 font-medium">
                 <a 
                   href={mapData.directionsUrl || 'https://maps.app.goo.gl/uX3rK6fDpzQZ6mZ46'} 
                   target="_blank" 
@@ -82,7 +82,7 @@ export function ContactMap() {
                   Get Driving Directions
                 </a>
               </Button>
-              <Button size="sm" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 text-xs h-8 font-semibold">
+              <Button size="sm" asChild className="bg-[#0B1E38] hover:bg-[#071527] text-white gap-1.5 text-xs h-9 px-4 rounded-full font-medium shadow-sm">
                 <a 
                   href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=Hello%20Sapphire%20Trails%2C%20I%20would%20like%20directions%20to%20your%20Ratnapura%20lounge.`} 
                   target="_blank" 
@@ -95,7 +95,6 @@ export function ContactMap() {
             </div>
           </div>
         </div>
-
 
       </div>
     </section>
