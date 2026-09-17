@@ -201,6 +201,12 @@ export default async function TourDetailPage({ params }: Props) {
     ]
   };
 
+  const tiers = tourPackage.pricingTiers || [];
+  const hasTiers = tiers.length > 0;
+  const perPersonTiers = tiers.filter(t => t.pricing_type === 'per_person');
+  const lowestTierPrice = perPersonTiers.length > 0 ? Math.min(...perPersonTiers.map(t => t.price)) : null;
+  const displayNavPrice = hasTiers && lowestTierPrice !== null ? `$${lowestTierPrice}` : tourPackage.price;
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <script
@@ -222,14 +228,17 @@ export default async function TourDetailPage({ params }: Props) {
             duration={tourPackage.duration}
             price={tourPackage.price}
             priceSuffix={tourPackage.priceSuffix}
+            pricingTiers={tourPackage.pricingTiers}
             imageUrl={tourPackage.heroImage || tourPackage.imageUrl}
             imageHint={tourPackage.heroImageHint}
             bookingLink={`/tours/${slug}/book`}
             galleryImages={tourPackage.experienceGallery}
+            inclusions={tourPackage.inclusions}
+            category="Gem Mine Tours"
         />
         <TourDetailNav
             tourTitle={tourPackage.tourPageTitle}
-            price={tourPackage.price}
+            price={displayNavPrice}
             bookingLink={`/tours/${slug}/book`}
         />
         <TourDetailHighlights 
@@ -253,6 +262,7 @@ export default async function TourDetailPage({ params }: Props) {
             priceSuffix={tourPackage.priceSuffix}
             duration={tourPackage.duration}
             bookingLink={`/tours/${slug}/book`}
+            pricingTiers={tourPackage.pricingTiers}
         />
       </main>
       <TrustSection />

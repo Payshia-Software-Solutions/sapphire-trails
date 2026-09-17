@@ -135,26 +135,26 @@ export function WhatsAppButton() {
           style={{ maxHeight: 'min(620px, 85vh)' }}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#0d2818] via-[#1b4332] to-[#2d6a4f] text-white p-3.5 sm:p-4 flex items-center justify-between relative shadow-md">
+          <div className="bg-gradient-to-r from-[#071527] via-[#0B1E38] to-[#162a45] text-white p-3.5 sm:p-4 flex items-center justify-between relative shadow-md border-b border-white/10">
             <div className="flex items-center gap-2.5">
               {/* Concierge Avatar with Active Dot */}
               <div className="relative">
-                <div className="h-10 w-10 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-primary font-serif font-bold text-sm shadow-inner">
-                  <Gem className="h-4 w-4 text-emerald-300" />
+                <div className="h-10 w-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white shadow-inner">
+                  <Gem className="h-4.5 w-4.5 text-amber-300 dark:text-blue-300" />
                 </div>
-                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-400 border-2 border-[#1b4332] animate-pulse" />
+                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#0B1E38]" />
               </div>
 
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h4 className="font-serif font-medium text-sm tracking-wide text-white">
+                  <h4 className="font-sans font-semibold text-sm tracking-wide text-white">
                     Sapphire Trails Concierge
                   </h4>
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-300" />
+                  <ShieldCheck className="h-3.5 w-3.5 text-blue-300" />
                 </div>
-                <p className="text-[10px] text-emerald-100/80 font-light flex items-center gap-1 mt-0.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block" />
-                  Direct WhatsApp Dispatch &bull; Online
+                <p className="text-[10px] text-blue-100/80 font-normal flex items-center gap-1 mt-0.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                  Direct WhatsApp Concierge &bull; Online
                 </p>
               </div>
             </div>
@@ -162,7 +162,7 @@ export function WhatsAppButton() {
             {/* Close Button */}
             <button
               onClick={() => setIsOpen(false)}
-              className="h-7 w-7 rounded-full bg-black/20 hover:bg-black/30 text-white/80 hover:text-white flex items-center justify-center transition-colors"
+              className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/20 text-white/90 hover:text-white flex items-center justify-center transition-colors"
               aria-label="Close chat"
             >
               <X className="h-3.5 w-3.5" />
@@ -170,7 +170,7 @@ export function WhatsAppButton() {
           </div>
 
           {/* Chat Messages Body (Scrollbar hidden for luxury app feel) */}
-          <div className="p-3.5 sm:p-4 space-y-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex-1 bg-muted/20 text-xs">
+          <div className="p-3.5 sm:p-4 space-y-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex-1 bg-background-alt/50 text-xs">
             {/* Timestamp */}
             <div className="text-center">
               <span className="inline-block px-2.5 py-0.5 rounded-full bg-muted/60 text-muted-foreground text-[10px] font-mono">
@@ -180,26 +180,26 @@ export function WhatsAppButton() {
 
             {/* Inbound Agent Welcome Bubble */}
             <div className="flex items-start gap-2.5 max-w-[88%]">
-              <div className="h-7 w-7 rounded-full bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+              <div className="h-7 w-7 rounded-full bg-[#0B1E38]/10 dark:bg-blue-400/20 text-[#0B1E38] dark:text-blue-300 flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
                 <Sparkles className="h-3.5 w-3.5" />
               </div>
-              <div className="p-3.5 rounded-2xl rounded-tl-sm bg-card border border-border/70 shadow-xs space-y-1.5">
+              <div className="p-3.5 rounded-2xl rounded-tl-sm bg-card border border-border/80 shadow-xs space-y-1.5">
                 <p className="text-xs text-foreground leading-relaxed">
-                  Ayubowan! Welcome to <strong>Sapphire Trails</strong>.
+                  Ayubowan! Welcome to <strong className="text-[#0B1E38] dark:text-blue-300 font-semibold">Sapphire Trails</strong>.
                 </p>
-                <p className="text-[11px] text-muted-foreground leading-relaxed font-light">
+                <p className="text-[11px] text-muted-foreground leading-relaxed font-normal">
                   How may we assist you with our private gem pit expeditions, certified gemologists, or custom proposal packages?
                 </p>
                 <div className="flex items-center justify-end gap-1 text-[9px] text-muted-foreground/60 pt-0.5">
                   <span>{currentTime}</span>
-                  <CheckCheck className="h-3 w-3 text-emerald-500" />
+                  <CheckCheck className="h-3 w-3 text-[#0B1E38] dark:text-blue-400" />
                 </div>
               </div>
             </div>
 
             {/* Quick Inquiry Suggestions */}
             <div className="space-y-1.5 pt-1">
-              <p className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground/80 font-semibold px-1">
+              <p className="text-[10px] uppercase font-sans tracking-wider text-muted-foreground font-bold px-1">
                 Frequently Requested
               </p>
               <div className="flex flex-col gap-1.5">
@@ -211,10 +211,10 @@ export function WhatsAppButton() {
                       setMessage(item);
                       inputRef.current?.focus();
                     }}
-                    className="text-left px-3 py-2 rounded-xl border border-border/60 bg-background/80 hover:bg-primary/10 hover:border-primary/40 hover:text-primary transition-all text-[11px] flex items-center justify-between group shadow-2xs"
+                    className="text-left px-3 py-2 rounded-xl border border-border/70 bg-card hover:bg-[#0B1E38]/5 dark:hover:bg-white/5 hover:border-[#0B1E38]/40 hover:text-[#0B1E38] dark:hover:text-blue-300 transition-all text-[11px] flex items-center justify-between group shadow-2xs"
                   >
                     <span className="line-clamp-1">{item}</span>
-                    <ChevronRight className="h-3 w-3 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+                    <ChevronRight className="h-3 w-3 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0 ml-1 text-muted-foreground group-hover:text-[#0B1E38] dark:group-hover:text-blue-300" />
                   </button>
                 ))}
               </div>
@@ -222,7 +222,7 @@ export function WhatsAppButton() {
 
             {/* Feedback when message dispatched */}
             {hasSent && (
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-center animate-in fade-in zoom-in-95 duration-200">
+              <div className="p-3 rounded-xl bg-[#0B1E38]/10 border border-[#0B1E38]/30 text-[#0B1E38] dark:text-blue-300 text-center animate-in fade-in zoom-in-95 duration-200">
                 <p className="text-xs font-semibold flex items-center justify-center gap-1.5">
                   <CheckCheck className="h-4 w-4" />
                   Connecting to WhatsApp Concierge...
@@ -241,7 +241,7 @@ export function WhatsAppButton() {
                 onKeyDown={handleKeyDown}
                 rows={2}
                 placeholder="Type your message or inquiry..."
-                className="w-full text-xs p-3 pr-10 rounded-2xl border border-border/80 bg-background resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500/50 leading-relaxed placeholder:text-muted-foreground/60"
+                className="w-full text-xs p-3 pr-10 rounded-2xl border border-border/80 bg-background resize-none focus:outline-none focus:border-[#0B1E38] focus:ring-1 focus:ring-[#0B1E38]/20 dark:focus:border-blue-400 leading-relaxed placeholder:text-muted-foreground/60"
               />
               <button
                 type="button"
@@ -250,7 +250,7 @@ export function WhatsAppButton() {
                 className={cn(
                   "absolute bottom-2.5 right-2.5 h-8 w-8 rounded-xl flex items-center justify-center transition-all",
                   message.trim() 
-                    ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs" 
+                    ? "bg-[#0B1E38] hover:bg-[#071527] text-white shadow-xs" 
                     : "bg-muted text-muted-foreground hover:text-foreground"
                 )}
                 aria-label="Send message to WhatsApp"
@@ -266,7 +266,7 @@ export function WhatsAppButton() {
               <button
                 type="button"
                 onClick={() => handleSendMessage()}
-                className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium inline-flex items-center gap-1"
+                className="text-[#0B1E38] dark:text-blue-400 hover:underline font-medium inline-flex items-center gap-1"
               >
                 <span>Direct to WhatsApp</span>
                 <ExternalLink className="h-2.5 w-2.5" />
@@ -283,32 +283,32 @@ export function WhatsAppButton() {
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full shadow-2xl transition-all duration-300",
+            "flex h-14 w-14 sm:h-15 sm:w-15 items-center justify-center rounded-full shadow-[0_10px_30px_rgba(11,30,56,0.25)] transition-all duration-300 border border-[#0B1E38]/20",
             isOpen
-              ? "bg-foreground text-background rotate-90 scale-95"
-              : "bg-primary text-primary-foreground hover:scale-105 active:scale-95 shadow-primary/25"
+              ? "bg-[#071527] text-white rotate-90 scale-95"
+              : "bg-[#0B1E38] hover:bg-[#071527] text-white hover:scale-105 active:scale-95"
           )}
           aria-label={isOpen ? "Close concierge chat" : "Open WhatsApp concierge chat"}
         >
           {isOpen ? (
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 sm:h-6 sm:w-6" />
           ) : (
-            <MessageSquare className="h-7 w-7 sm:h-8 sm:w-8" fill="currentColor" />
+            <MessageSquare className="h-6 w-6 sm:h-7 sm:w-7" fill="currentColor" />
           )}
         </button>
 
         {/* Pulsing "Online" Green Status Badge when closed */}
         {!isOpen && (
-          <span className="absolute top-0 right-0 flex h-4 w-4">
+          <span className="absolute top-0 right-0 flex h-3.5 w-3.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-background" />
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-background" />
           </span>
         )}
 
         {/* Hover Micro Tooltip */}
         {!isOpen && (
           <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden sm:block opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200">
-            <div className="bg-slate-950 text-white text-[11px] font-serif tracking-wider uppercase px-3 py-1.5 rounded-full shadow-lg border border-primary/30 whitespace-nowrap">
+            <div className="bg-[#0B1E38] text-white text-[11px] font-sans font-medium tracking-wide px-3.5 py-1.5 rounded-full shadow-lg border border-white/15 whitespace-nowrap">
               Chat with Concierge
             </div>
           </div>

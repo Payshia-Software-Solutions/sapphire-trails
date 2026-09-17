@@ -69,6 +69,9 @@ class ContactController
             $newId = $this->model->create([
                 'name' => $name,
                 'email' => $email,
+                'phone' => $phone,
+                'tour_interest' => $data['tour_interest'] ?? null,
+                'subject' => $subject,
                 'message' => $message
             ]);
 

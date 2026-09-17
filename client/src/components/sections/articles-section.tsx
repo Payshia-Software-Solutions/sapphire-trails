@@ -59,18 +59,18 @@ const ArticleCard = ({ article }: { article: typeof mockArticles[0] }) => (
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
       
       {/* Category Pill */}
-      <div className="absolute top-3.5 left-3.5 bg-black/65 border border-primary/40 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-semibold text-primary uppercase tracking-wider">
+      <div className="absolute top-3.5 left-3.5 bg-black/75 border border-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-medium text-white uppercase tracking-wider">
         {article.category}
       </div>
 
       {/* Read Time & Date */}
-      <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-[11px] text-white/90 font-medium">
+      <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-[11px] text-white/90 font-medium font-sans">
         <span className="flex items-center gap-1">
-          <Clock className="h-3 w-3 text-primary" />
+          <Clock className="h-3 w-3 text-white/80" />
           {article.readTime}
         </span>
         <span className="flex items-center gap-1">
-          <CalendarDays className="h-3 w-3 text-primary" />
+          <CalendarDays className="h-3 w-3 text-white/80" />
           {article.date}
         </span>
       </div>
@@ -115,14 +115,14 @@ export function ArticlesSection() {
           
           {/* Section Header */}
           <div className="text-center max-w-4xl lg:max-w-5xl mx-auto space-y-3 mb-14 md:mb-18">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary font-sans">
               <BookOpen className="h-3.5 w-3.5" />
               {articlesHeader.tagline || 'Field Journal & Gemology Insights'}
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-foreground">
               {articlesHeader.heading || 'Stories from the Mines'}
             </h2>
-            <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4 font-sans">
               {articlesHeader.subtitle}
             </p>
           </div>
@@ -150,10 +150,10 @@ export function ArticlesSection() {
 
           {/* Bottom Action */}
           <div className="text-center mt-12 md:mt-16">
-            <Button asChild size="lg" variant="outline" className="rounded-full border-primary/40 text-foreground hover:bg-primary/10 hover:text-primary px-8 h-11 text-xs font-semibold">
+            <Button asChild size="lg" className="bg-[#0B1E38] hover:bg-[#071527] text-white font-medium text-xs sm:text-sm h-11 px-8 rounded-full shadow-sm transition-all border border-[#0B1E38]">
               <Link href="/articles">
                 Explore All Journal Articles
-                <ArrowRight className="ml-2 h-4 w-4 text-primary" />
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>

@@ -69,10 +69,17 @@ const getFullImageUrl = (path: string | null | undefined) => {
 };
 
 
+import { API_BASE_URL } from './utils';
+
+const sanitizeText = (txt: string | null | undefined): string => {
+  if (!txt) return '';
+  return txt.replace(/\.jkl$/i, '.').trim();
+};
+
 export const mapServerLocationToClient = (loc: any): Location => ({
   slug: loc.slug || '',
   title: loc.title || '',
-  cardDescription: loc.card_description || '',
+  cardDescription: sanitizeText(loc.card_description),
   cardImage: getFullImageUrl(loc.card_image_url),
   imageHint: loc.card_image_hint || '',
   distance: loc.distance || '',
@@ -81,7 +88,7 @@ export const mapServerLocationToClient = (loc: any): Location => ({
   heroImageHint: loc.hero_image_hint || '',
   intro: {
     title: loc.intro_title || '',
-    description: loc.intro_description || '',
+    description: sanitizeText(loc.intro_description),
     imageUrl: getFullImageUrl(loc.intro_image_url),
     imageHint: loc.intro_image_hint || '',
   },
@@ -107,3 +114,28 @@ export const locationsData: Location[] = natureAndWildlife.map(location => ({
     ...location,
     category: 'nature',
 }));
+
+/**
+ * Fetch all attractions/locations for SSR with ISR support
+ */
+export async function fetchLocationsServer(revalidateSeconds = 3600): Promise<Location[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/locations/`, {
+      next: { revalidate: revalidateSeconds },
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      console.warn(`[fetchLocationsServer] Request failed with status ${response.status}`);
+      return locationsData;
+    }
+    const data = await response.json();
+    if (Array.isArray(data) && data.length > 0) {
+      return data.map(mapServerLocationToClient);
+    }
+  } catch (error) {
+    console.error('[fetchLocationsServer] Failed to fetch locations:', error);
+  }
+  return locationsData;
+}

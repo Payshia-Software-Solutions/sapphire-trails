@@ -52,13 +52,13 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
   }, []);
 
   const toursToShow = selectedTour
-    ? allTours.filter(tour => tour.id === selectedTour)
+    ? allTours.filter(tour => String(tour.id) === String(selectedTour))
     : allTours;
 
   const gridColsClass = toursToShow.length === 1 ? 'md:grid-cols-1 justify-center' : 'md:grid-cols-2';
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-background font-sans">
       <div className="container mx-auto px-4 md:px-6">
         {toursToShow.length === 0 ? (
           <div className="text-center text-muted-foreground py-16">
@@ -69,12 +69,12 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
           </div>
         ) : (
           <div className={`grid grid-cols-1 ${gridColsClass} gap-8 lg:gap-12 items-stretch max-w-5xl mx-auto`}>
-            {toursToShow.map(tour => (
-              <Card key={tour.id} className="bg-card border-border/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-xl dark:shadow-black/60 shadow-stone-300/40 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
+            {toursToShow.map((tour: any) => (
+              <Card key={tour.id} className="bg-card border-border/50 flex flex-col w-full rounded-2xl overflow-hidden shadow-sm hover:border-primary/40 transition-all duration-300">
                 <div className="relative h-[400px] w-full">
                   <Image
                     src={tour.imageUrl}
-                    alt={tour.imageAlt}
+                    alt={tour.imageAlt || tour.homepageTitle || 'Tour'}
                     data-ai-hint={tour.imageHint}
                     fill
                     className="object-cover"
@@ -82,28 +82,28 @@ export function TourCards({ selectedTour }: { selectedTour: string | null }) {
                   {tour.title && (
                     <>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                      <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-white font-headline w-full px-4">
+                      <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-white font-sans w-full px-4">
                         <p className="text-sm tracking-[0.2em]">{tour.title.line1}</p>
-                        <h3 className="text-6xl font-bold tracking-tight my-2">{tour.title.line2}</h3>
-                        <p className="text-2xl tracking-[0.1em]">{tour.title.line3}</p>
+                        <h3 className="text-4xl font-bold tracking-tight my-2">{tour.title.line2}</h3>
+                        <p className="text-xl tracking-[0.1em]">{tour.title.line3}</p>
                       </div>
                     </>
                   )}
                 </div>
                 <CardContent className="p-8 flex flex-col flex-grow">
                   <div className="space-y-3 flex-grow text-sm text-muted-foreground">
-                    {tour.features.map((feature, index) => (
+                    {Array.isArray(tour.features) && tour.features.map((feature: any, index: number) => (
                       <div key={index} className="flex items-start gap-3">
-                        <feature.icon className="h-4 w-4 mt-1 text-primary shrink-0" />
-                        <span>{feature.text}</span>
+                        {feature.icon && <feature.icon className="h-4 w-4 mt-1 text-primary shrink-0" />}
+                        <span>{feature.text || feature}</span>
                       </div>
                     ))}
                   </div>
                   <div className="flex justify-between items-center mt-8 pt-6 border-t border-border">
                     <p className="text-3xl font-bold text-primary">{tour.price} <span className="text-sm font-normal text-muted-foreground">{tour.priceSuffix}</span></p>
                     <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8">
-                      <Link href={tour.id === 'sapphire-trails-deluxe' ? '/contact' : (tour.slug ? `/tours/${tour.slug}/book` : `/booking?tourType=${tour.id}`)}>
-                        {tour.id === 'sapphire-trails-deluxe' ? 'Contact Us' : 'Book Now'}
+                      <Link href={String(tour.id) === 'sapphire-trails-deluxe' ? '/contact' : (tour.slug ? `/tours/${tour.slug}/book` : `/booking?tourType=${tour.id}`)}>
+                        {String(tour.id) === 'sapphire-trails-deluxe' ? 'Contact Us' : 'Book Now'}
                       </Link>
                     </Button>
                   </div>

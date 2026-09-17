@@ -48,6 +48,7 @@ export interface TourPackage {
     duration: string;
     price: string;
     priceSuffix: string;
+    pricingTiers?: PricingTier[];
     heroImage: string;
     heroImageHint: string;
     tourPageDescription: string;
@@ -63,6 +64,81 @@ export interface TourPackage {
     metaDescription?: string;
     metaKeywords?: string;
     canonicalUrl?: string;
+}
+
+export interface PricingTier {
+  min_guests: number;
+  max_guests: number | null; // null means "and above" (e.g. 4+)
+  price: number;
+  pricing_type: 'per_person' | 'fixed_group';
+}
+
+export interface PriceCalculationResult {
+  totalPrice: number;
+  unitPrice: number;
+  appliedTier: PricingTier | null;
+  pricingType: 'per_person' | 'fixed_group';
+  isTiered: boolean;
+}
+
+export function calculatePackagePrice(
+  pkg: TourPackage | null | undefined,
+  totalGuests: number
+): PriceCalculationResult {
+  if (!pkg || totalGuests <= 0) {
+    return {
+      totalPrice: 0,
+      unitPrice: 0,
+      appliedTier: null,
+      pricingType: 'per_person',
+      isTiered: false,
+    };
+  }
+
+  const basePriceNum = parseFloat((pkg.price || '').replace(/[^0-9.-]+/g, '')) || 0;
+
+  if (!pkg.pricingTiers || pkg.pricingTiers.length === 0) {
+    return {
+      totalPrice: basePriceNum * totalGuests,
+      unitPrice: basePriceNum,
+      appliedTier: null,
+      pricingType: 'per_person',
+      isTiered: false,
+    };
+  }
+
+  // Sort tiers by min_guests ascending
+  const sortedTiers = [...pkg.pricingTiers].sort((a, b) => a.min_guests - b.min_guests);
+
+  // Match tier based on totalGuests
+  const matchedTier = sortedTiers.find((tier) => {
+    const isAboveMin = totalGuests >= tier.min_guests;
+    const isBelowMax = tier.max_guests === null || totalGuests <= tier.max_guests;
+    return isAboveMin && isBelowMax;
+  });
+
+  if (matchedTier) {
+    const isFixed = matchedTier.pricing_type === 'fixed_group';
+    const totalPrice = isFixed ? matchedTier.price : matchedTier.price * totalGuests;
+    const unitPrice = isFixed ? (totalGuests > 0 ? matchedTier.price / totalGuests : matchedTier.price) : matchedTier.price;
+
+    return {
+      totalPrice,
+      unitPrice,
+      appliedTier: matchedTier,
+      pricingType: matchedTier.pricing_type,
+      isTiered: true,
+    };
+  }
+
+  // Fallback to base price
+  return {
+    totalPrice: basePriceNum * totalGuests,
+    unitPrice: basePriceNum,
+    appliedTier: null,
+    pricingType: 'per_person',
+    isTiered: false,
+  };
 }
 
 const IMAGE_BASE_URL = 'https://content-provider.payshia.com/sapphire-trail';
@@ -90,6 +166,14 @@ export const mapServerPackageToClient = (pkg: any): TourPackage => ({
   duration: pkg.duration || '',
   price: pkg.price || '',
   priceSuffix: pkg.price_suffix || '',
+  pricingTiers: Array.isArray(pkg.pricing_tiers)
+    ? pkg.pricing_tiers.map((t: any) => ({
+        min_guests: Number(t.min_guests) || 1,
+        max_guests: t.max_guests !== null && t.max_guests !== undefined && t.max_guests !== '' ? Number(t.max_guests) : null,
+        price: Number(t.price) || 0,
+        pricing_type: t.pricing_type === 'fixed_group' ? 'fixed_group' : 'per_person',
+      }))
+    : [],
   heroImage: getFullImageUrl(pkg.hero_image_url),
   heroImageHint: pkg.hero_image_hint || '',
   tourPageDescription: pkg.tour_page_description || '',
@@ -108,5 +192,32 @@ export const mapServerPackageToClient = (pkg: any): TourPackage => ({
   canonicalUrl: pkg.canonical_url || '',
 });
 
+import { API_BASE_URL } from './utils';
+
 // This array is now empty. All tour packages should be managed and fetched from the server.
 export const initialTourPackages: TourPackage[] = [];
+
+/**
+ * Fetch all tour packages for SSR with ISR support
+ */
+export async function fetchTourPackages(revalidateSeconds = 3600): Promise<TourPackage[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/tours`, {
+      next: { revalidate: revalidateSeconds },
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      console.warn(`[fetchTourPackages] Request failed with status ${response.status}`);
+      return [];
+    }
+    const data = await response.json();
+    if (Array.isArray(data)) {
+      return data.map(mapServerPackageToClient);
+    }
+  } catch (error) {
+    console.error('[fetchTourPackages] Failed to fetch tour packages:', error);
+  }
+  return [];
+}

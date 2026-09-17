@@ -58,7 +58,12 @@ import {
   getStoredSubscribers, 
   saveStoredSubscribers,
   getStoredBroadcasts,
-  saveBroadcastLog
+  saveBroadcastLog,
+  fetchSubscribersFromServer,
+  createSubscriberOnServer,
+  updateSubscriberStatusOnServer,
+  deleteSubscriberOnServer,
+  sendBroadcastOnServer
 } from '@/lib/subscribers-data';
 
 export default function SubscribersPage() {
@@ -68,6 +73,7 @@ export default function SubscribersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'unsubscribed'>('all');
   const [activeTab, setActiveTab] = useState<'subscribers' | 'broadcasts'>('subscribers');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Broadcast Modal State
   const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
@@ -80,10 +86,22 @@ export default function SubscribersPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [newSource, setNewSource] = useState('Manual Admin Entry');
+  const [isAddingSubscriber, setIsAddingSubscriber] = useState(false);
 
   useEffect(() => {
-    setSubscribers(getStoredSubscribers());
-    setBroadcasts(getStoredBroadcasts());
+    async function load() {
+      setIsLoading(true);
+      try {
+        const data = await fetchSubscribersFromServer();
+        setSubscribers(data);
+      } catch (err) {
+        console.error('Failed to load subscribers:', err);
+      } finally {
+        setIsLoading(false);
+      }
+      setBroadcasts(getStoredBroadcasts());
+    }
+    load();
   }, []);
 
   const activeSubscribers = subscribers.filter(s => s.status === 'active');
@@ -92,17 +110,17 @@ export default function SubscribersPage() {
 
   const filteredSubscribers = subscribers.filter(sub => {
     const matchesStatus = statusFilter === 'all' || sub.status === statusFilter;
-    const matchesSearch = sub.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          sub.source.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = (sub.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (sub.source || '').toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
-  const handleAddSubscriber = (e: React.FormEvent) => {
+  const handleAddSubscriber = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEmail.trim()) return;
 
     const normalized = newEmail.trim().toLowerCase();
-    if (subscribers.some(s => s.email.toLowerCase() === normalized)) {
+    if (subscribers.some(s => (s.email || '').toLowerCase() === normalized)) {
       toast({
         variant: 'destructive',
         title: 'Already Subscribed',
@@ -111,48 +129,70 @@ export default function SubscribersPage() {
       return;
     }
 
-    const newItem: SubscriberItem = {
-      id: `sub-${Date.now()}`,
-      email: normalized,
-      source: newSource.trim() || 'Manual Admin Entry',
-      subscribedAt: new Date().toISOString(),
-      status: 'active',
-    };
+    setIsAddingSubscriber(true);
+    try {
+      const newItem = await createSubscriberOnServer(normalized, newSource.trim() || 'Manual Admin Entry');
+      const updated = [newItem, ...subscribers.filter(s => (s.email || '').toLowerCase() !== normalized)];
+      setSubscribers(updated);
+      saveStoredSubscribers(updated);
+      setIsAddModalOpen(false);
+      setNewEmail('');
 
-    const updated = [newItem, ...subscribers];
-    setSubscribers(updated);
-    saveStoredSubscribers(updated);
-    setIsAddModalOpen(false);
-    setNewEmail('');
-
-    toast({
-      title: '✨ Subscriber Added',
-      description: `${normalized} has been added to the newsletter list.`,
-    });
+      toast({
+        title: '✨ Subscriber Added',
+        description: `${normalized} has been saved to the database.`,
+      });
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to Add',
+        description: err instanceof Error ? err.message : 'Could not add subscriber to server.',
+      });
+    } finally {
+      setIsAddingSubscriber(false);
+    }
   };
 
-  const handleDeleteSubscriber = (id: string) => {
-    const updated = subscribers.filter(s => s.id !== id);
-    setSubscribers(updated);
-    saveStoredSubscribers(updated);
-    toast({
-      title: 'Subscriber Deleted',
-      description: 'The email address was removed from the database.',
-    });
+  const handleDeleteSubscriber = async (id: string | number) => {
+    try {
+      await deleteSubscriberOnServer(id);
+      const updated = subscribers.filter(s => s.id !== id);
+      setSubscribers(updated);
+      saveStoredSubscribers(updated);
+      toast({
+        title: 'Subscriber Deleted',
+        description: 'The email address was removed from the database.',
+      });
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Delete Failed',
+        description: err instanceof Error ? err.message : 'Could not remove subscriber.',
+      });
+    }
   };
 
-  const handleToggleStatus = (sub: SubscriberItem) => {
-    const nextStatus = sub.status === 'active' ? 'unsubscribed' : 'active';
-    const updated = subscribers.map(s => s.id === sub.id ? { ...s, status: nextStatus } : s);
-    setSubscribers(updated);
-    saveStoredSubscribers(updated);
-    toast({
-      title: nextStatus === 'active' ? 'Subscriber Reactivated' : 'Subscriber Unsubscribed',
-      description: `${sub.email} status set to ${nextStatus}.`,
-    });
+  const handleToggleStatus = async (sub: SubscriberItem) => {
+    const nextStatus: 'active' | 'unsubscribed' = sub.status === 'active' ? 'unsubscribed' : 'active';
+    try {
+      await updateSubscriberStatusOnServer(sub.id, nextStatus);
+      const updated = subscribers.map(s => s.id === sub.id ? { ...s, status: nextStatus } : s);
+      setSubscribers(updated);
+      saveStoredSubscribers(updated);
+      toast({
+        title: nextStatus === 'active' ? 'Subscriber Reactivated' : 'Subscriber Unsubscribed',
+        description: `${sub.email} status set to ${nextStatus}.`,
+      });
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Update Failed',
+        description: err instanceof Error ? err.message : 'Could not change status.',
+      });
+    }
   };
 
-  const handleSendBroadcast = (e: React.FormEvent) => {
+  const handleSendBroadcast = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!broadcastSubject.trim() || !broadcastMessage.trim()) {
       toast({
@@ -174,19 +214,24 @@ export default function SubscribersPage() {
 
     setIsSendingBroadcast(true);
 
-    setTimeout(() => {
+    try {
+      const res = await sendBroadcastOnServer({
+        subject: broadcastSubject.trim(),
+        message: broadcastMessage.trim(),
+        preheader: broadcastPreheader.trim(),
+      });
+
       const logEntry: BroadcastLog = {
         id: `bc-${Date.now()}`,
         subject: broadcastSubject.trim(),
-        sentAt: new Date().toISOString(),
-        recipientCount: activeCount,
+        sentAt: res?.sentAt || new Date().toISOString(),
+        recipientCount: res?.recipientCount || activeCount,
         status: 'sent',
       };
 
       saveBroadcastLog(logEntry);
       setBroadcasts([logEntry, ...broadcasts]);
 
-      setIsSendingBroadcast(false);
       setIsBroadcastModalOpen(false);
       setBroadcastSubject('');
       setBroadcastPreheader('');
@@ -194,9 +239,17 @@ export default function SubscribersPage() {
 
       toast({
         title: '🚀 Mass Broadcast Dispatched!',
-        description: `Successfully delivered newsletter to all ${activeCount} active subscribers.`,
+        description: `Delivered newsletter to ${res?.successCount || activeCount} active subscribers in database.`,
       });
-    }, 1500);
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Broadcast Dispatch Error',
+        description: err instanceof Error ? err.message : 'Could not complete broadcast.',
+      });
+    } finally {
+      setIsSendingBroadcast(false);
+    }
   };
 
   const handleExportCSV = () => {
@@ -378,7 +431,12 @@ export default function SubscribersPage() {
           {/* Subscribers Table */}
           <Card className="bg-card border-border/80 shadow-sm overflow-hidden">
             <CardContent className="p-0">
-              {filteredSubscribers.length > 0 ? (
+              {isLoading ? (
+                <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-3">
+                  <LoaderCircle className="h-8 w-8 text-primary animate-spin" />
+                  <p className="text-xs">Loading subscribers from database...</p>
+                </div>
+              ) : filteredSubscribers.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-background-alt/50 border-b border-border/80">
@@ -390,23 +448,34 @@ export default function SubscribersPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredSubscribers.map((sub) => (
-                      <TableRow key={sub.id} className="border-b border-border/60 hover:bg-background-alt/40 transition-colors">
-                        <TableCell className="font-semibold text-xs text-foreground flex items-center gap-2 py-3.5">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shrink-0">
-                            <Mail className="h-3.5 w-3.5" />
-                          </div>
-                          <span>{sub.email}</span>
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary border border-primary/25">
-                            <BookOpen className="h-3 w-3" />
-                            {sub.source}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          {format(parseISO(sub.subscribedAt), 'PPP')}
-                        </TableCell>
+                    {filteredSubscribers.map((sub) => {
+                      let displayDate = sub.subscribedAt || '';
+                      try {
+                        const parsed = new Date(displayDate.includes(' ') ? displayDate.replace(' ', 'T') : displayDate);
+                        if (!isNaN(parsed.getTime())) {
+                          displayDate = format(parsed, 'PPP');
+                        }
+                      } catch {
+                        // fallback
+                      }
+
+                      return (
+                        <TableRow key={sub.id} className="border-b border-border/60 hover:bg-background-alt/40 transition-colors">
+                          <TableCell className="font-semibold text-xs text-foreground flex items-center gap-2 py-3.5">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shrink-0">
+                              <Mail className="h-3.5 w-3.5" />
+                            </div>
+                            <span>{sub.email}</span>
+                          </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary border border-primary/25">
+                              <BookOpen className="h-3 w-3" />
+                              {sub.source}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">
+                            {displayDate}
+                          </TableCell>
                         <TableCell>
                           {sub.status === 'active' ? (
                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
@@ -451,7 +520,8 @@ export default function SubscribersPage() {
                           </AlertDialog>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    );
+                  })}
                   </TableBody>
                 </Table>
               ) : (

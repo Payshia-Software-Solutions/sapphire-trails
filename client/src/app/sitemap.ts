@@ -5,7 +5,7 @@ import { API_BASE_URL } from '@/lib/utils';
 const BASE_URL = 'https://sapphiretrails.lk';
 const STABLE_RELEASE_DATE = '2026-09-13T00:00:00.000Z';
 
-export const revalidate = 86400; // 24-hour ISR cache
+export const revalidate = 3600; // 1-hour ISR cache
 
 function parseValidDate(dateVal: any, fallback: string): string {
     if (!dateVal) return fallback;
@@ -74,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const seenSlugs = new Set<string>();
 
         try {
-            const articlesRes = await fetch(`${API_BASE_URL}/articles`, { next: { revalidate: 86400 } });
+            const articlesRes = await fetch(`${API_BASE_URL}/articles`, { next: { revalidate: 3600 } });
             if (articlesRes.ok) {
                 const articles = await articlesRes.json();
                 if (Array.isArray(articles)) {
