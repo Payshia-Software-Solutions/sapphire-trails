@@ -22,37 +22,44 @@ import {
 } from 'lucide-react';
 import { API_BASE_URL, cn } from '@/lib/utils';
 
-export function AllToursGrid() {
-  const [allTours, setAllTours] = useState<TourPackage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface AllToursGridProps {
+  initialTours?: TourPackage[];
+}
+
+export function AllToursGrid({ initialTours = [] }: AllToursGridProps) {
+  const [allTours, setAllTours] = useState<TourPackage[]>(initialTours);
+  const [isLoading, setIsLoading] = useState(initialTours.length === 0);
   const [activeCategory, setActiveCategory] = useState<'all' | 'single-day' | 'multi-day'>('all');
 
   useEffect(() => {
+    // If we already have initial server-rendered tours, do not block UI with a loading state
     async function fetchTours() {
-      setIsLoading(true);
+      if (allTours.length === 0) {
+        setIsLoading(true);
+      }
       try {
         const response = await fetch(`${API_BASE_URL}/tours`);
         if (!response.ok) {
           console.error('Failed to fetch from server.');
-          setAllTours([]);
           return;
         }
 
         const data = await response.json();
         if (Array.isArray(data)) {
           setAllTours(data.map(mapServerPackageToClient));
-        } else {
-          setAllTours([]);
         }
       } catch (e) {
         console.error('Failed to fetch packages', e);
-        setAllTours([]);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchTours();
-  }, []);
+
+    // If no initial tours were provided, fetch immediately
+    if (initialTours.length === 0) {
+      fetchTours();
+    }
+  }, [initialTours]);
 
   const filteredTours = useMemo(() => {
     if (activeCategory === 'all') return allTours;
@@ -88,41 +95,46 @@ export function AllToursGrid() {
             </h2>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex items-center bg-card p-1 rounded-full border border-border/80 gap-1 shadow-xs">
-            <Button
-              variant={activeCategory === 'all' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setActiveCategory('all')}
-              className={cn(
-                "rounded-full text-xs h-8 px-4 font-medium transition-all",
-                activeCategory === 'all' ? "bg-[#0B1E38] hover:bg-[#071527] text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              All Packages ({allTours.length})
-            </Button>
-            <Button
-              variant={activeCategory === 'single-day' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setActiveCategory('single-day')}
-              className={cn(
-                "rounded-full text-xs h-8 px-4 font-medium transition-all",
-                activeCategory === 'single-day' ? "bg-[#0B1E38] hover:bg-[#071527] text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Single-Day Tours
-            </Button>
-            <Button
-              variant={activeCategory === 'multi-day' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setActiveCategory('multi-day')}
-              className={cn(
-                "rounded-full text-xs h-8 px-4 font-medium transition-all",
-                activeCategory === 'multi-day' ? "bg-[#0B1E38] hover:bg-[#071527] text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Multi-Day Expeditions
-            </Button>
+          {/* Category Filter Pills (Responsive for Mobile & Desktop) */}
+          <div className="w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="inline-flex items-center bg-card p-1 rounded-full border border-border/80 gap-1 shadow-xs whitespace-nowrap min-w-max">
+              <Button
+                variant={activeCategory === 'all' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveCategory('all')}
+                className={cn(
+                  "rounded-full text-xs h-8 px-3.5 sm:px-4 font-medium transition-all shrink-0 whitespace-nowrap",
+                  activeCategory === 'all' ? "bg-[#0B1E38] hover:bg-[#071527] text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="sm:hidden">All ({allTours.length})</span>
+                <span className="hidden sm:inline">All Packages ({allTours.length})</span>
+              </Button>
+              <Button
+                variant={activeCategory === 'single-day' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveCategory('single-day')}
+                className={cn(
+                  "rounded-full text-xs h-8 px-3.5 sm:px-4 font-medium transition-all shrink-0 whitespace-nowrap",
+                  activeCategory === 'single-day' ? "bg-[#0B1E38] hover:bg-[#071527] text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="sm:hidden">Single-Day</span>
+                <span className="hidden sm:inline">Single-Day Tours</span>
+              </Button>
+              <Button
+                variant={activeCategory === 'multi-day' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveCategory('multi-day')}
+                className={cn(
+                  "rounded-full text-xs h-8 px-3.5 sm:px-4 font-medium transition-all shrink-0 whitespace-nowrap",
+                  activeCategory === 'multi-day' ? "bg-[#0B1E38] hover:bg-[#071527] text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="sm:hidden">Multi-Day</span>
+                <span className="hidden sm:inline">Multi-Day Expeditions</span>
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -138,6 +150,13 @@ export function AllToursGrid() {
               const highlights = Array.isArray(tour.tourHighlights) ? tour.tourHighlights.slice(0, 3) : [];
               const duration = tour.duration || 'Full Day Expedition';
               const price = tour.price || 'Custom Quote';
+
+              const tiers = tour.pricingTiers || [];
+              const hasTiers = tiers.length > 0;
+              const perPersonTiers = tiers.filter(t => t.pricing_type === 'per_person');
+              const lowestTierPrice = perPersonTiers.length > 0 ? Math.min(...perPersonTiers.map(t => t.price)) : null;
+              const displayPrice = hasTiers && lowestTierPrice !== null ? `From $${lowestTierPrice}` : price;
+              const displaySuffix = hasTiers && lowestTierPrice !== null ? '/ person' : (tour.priceSuffix || '/ person');
 
               return (
                 <Card
@@ -160,6 +179,11 @@ export function AllToursGrid() {
                         <Clock className="h-3 w-3 mr-1" />
                         {duration}
                       </Badge>
+                      {hasTiers && (
+                        <Badge className="bg-emerald-700/90 text-white font-medium text-[10px] border border-white/20 px-2 py-0.5 rounded-full shadow-sm">
+                          Group Rates
+                        </Badge>
+                      )}
                     </div>
 
                     <div className="absolute top-3 right-3 z-10">
@@ -178,9 +202,9 @@ export function AllToursGrid() {
                       {/* Price Header */}
                       <div className="flex items-baseline justify-between border-b border-border/70 pb-3">
                         <span className="text-xl font-sans font-bold text-foreground tracking-tight">
-                          {price}{' '}
+                          {displayPrice}{' '}
                           <span className="text-xs font-normal text-muted-foreground">
-                            {tour.priceSuffix || '/ person'}
+                            {displaySuffix}
                           </span>
                         </span>
                         <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
@@ -202,6 +226,19 @@ export function AllToursGrid() {
                           {tour.homepageDescription}
                         </p>
                       </Link>
+
+                      {/* Group Rates Preview Strip */}
+                      {hasTiers && tour.pricingTiers && (
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Group Rates:</span>
+                          {tour.pricingTiers.map((tier, tIdx) => (
+                            <span key={tIdx} className="inline-flex items-center text-[10px] bg-muted/60 dark:bg-muted/30 border border-border px-2 py-0.5 rounded-full font-medium text-foreground">
+                              {tier.min_guests}{tier.max_guests ? `–${tier.max_guests}` : '+'} pax: <strong className="ml-1 text-[#0B1E38] dark:text-blue-300">${tier.price}</strong>
+                              <span className="text-muted-foreground ml-0.5">{tier.pricing_type === 'fixed_group' ? 'grp' : '/p'}</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Key Highlights / Inclusions */}
                       {highlights.length > 0 && (
@@ -245,11 +282,27 @@ export function AllToursGrid() {
             })}
           </div>
         ) : (
-          <div className="text-center text-muted-foreground py-20 flex flex-col items-center gap-4">
-            <PackageSearch className="h-12 w-12 text-muted-foreground/50" />
-            <p className="text-base font-semibold text-foreground">No tour packages found in this category.</p>
-            <Button variant="outline" size="sm" onClick={() => setActiveCategory('all')}>
-              Show All Tours
+          <div className="text-center text-muted-foreground py-16 sm:py-20 flex flex-col items-center gap-3 sm:gap-4 bg-card/50 dark:bg-card/30 border border-dashed border-border/80 rounded-3xl p-6 sm:p-10 my-4 shadow-2xs">
+            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-primary/5 dark:bg-blue-950/40 flex items-center justify-center border border-primary/10 dark:border-blue-800/30 text-[#0B1E38] dark:text-blue-300">
+              <PackageSearch className="h-7 w-7 sm:h-8 sm:w-8" />
+            </div>
+            <div className="space-y-1 max-w-md">
+              <p className="text-base sm:text-lg font-semibold text-foreground">
+                No tour packages found
+              </p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                There are currently no packages listed under &ldquo;
+                {activeCategory === 'single-day' ? 'Single-Day Tours' : 'Multi-Day Expeditions'}
+                &rdquo;.
+              </p>
+            </div>
+            <Button 
+              variant="default" 
+              size="sm" 
+              onClick={() => setActiveCategory('all')}
+              className="mt-2 bg-[#0B1E38] hover:bg-[#071527] text-white rounded-full text-xs h-9 px-5 shadow-xs font-medium"
+            >
+              Show All Packages ({allTours.length})
             </Button>
           </div>
         )}

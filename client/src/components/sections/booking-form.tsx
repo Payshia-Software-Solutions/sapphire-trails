@@ -141,12 +141,31 @@ export function BookingForm({
                               </div>
 
                               {/* Price Strip */}
-                              <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between text-xs">
-                                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">From</span>
-                                <span className="font-bold text-xs sm:text-sm text-[#0B1E38] dark:text-blue-400">
-                                  {pkg.price ? `${pkg.price} ${pkg.priceSuffix || '/ person'}` : 'Custom Quote'}
-                                </span>
-                              </div>
+                              {(() => {
+                                const tiers = pkg.pricingTiers || [];
+                                const hasTiers = tiers.length > 0;
+                                const perPersonTiers = tiers.filter(t => t.pricing_type === 'per_person');
+                                const lowestTierPrice = perPersonTiers.length > 0 ? Math.min(...perPersonTiers.map(t => t.price)) : null;
+                                const displayPrice = hasTiers && lowestTierPrice !== null ? `$${lowestTierPrice} / person` : (pkg.price ? `${pkg.price} ${pkg.priceSuffix || '/ person'}` : 'Custom Quote');
+
+                                return (
+                                  <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between text-xs">
+                                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+                                      {hasTiers ? 'From' : 'Rate'}
+                                    </span>
+                                    <div className="flex items-center gap-1.5">
+                                      {hasTiers && (
+                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+                                          Group Rates
+                                        </span>
+                                      )}
+                                      <span className="font-bold text-xs sm:text-sm text-[#0B1E38] dark:text-blue-400">
+                                        {displayPrice}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                             </div>
                           );
                         })}

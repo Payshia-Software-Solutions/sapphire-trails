@@ -24,7 +24,15 @@ import { API_BASE_URL, cn } from '@/lib/utils';
 import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 
 
-const TourCard = ({ tour }: { tour: TourPackage }) => (
+const TourCard = ({ tour }: { tour: TourPackage }) => {
+  const tiers = tour.pricingTiers || [];
+  const hasTiers = tiers.length > 0;
+  const perPersonTiers = tiers.filter(t => t.pricing_type === 'per_person');
+  const lowestTierPrice = perPersonTiers.length > 0 ? Math.min(...perPersonTiers.map(t => t.price)) : null;
+  const displayPrice = hasTiers && lowestTierPrice !== null ? `From $${lowestTierPrice}` : tour.price;
+  const displaySuffix = hasTiers && lowestTierPrice !== null ? '/ Person' : (tour.priceSuffix || '/ Person');
+
+  return (
   <Card className="bg-card border border-border/80 flex flex-col w-full h-full transition-colors duration-300 hover:border-primary/40 rounded-2xl overflow-hidden group cursor-pointer shadow-sm">
     {/* Clickable Card Header & Image - Scaled down for mobile to maximize viewport efficiency */}
     <Link href={`/tours/${tour.slug}`} className="block relative h-44 sm:h-56 md:h-64 w-full overflow-hidden shrink-0">
@@ -49,15 +57,21 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       <div className="absolute bottom-2.5 left-3 right-3 sm:bottom-3 sm:left-4 sm:right-4 flex items-end justify-between text-white z-10 font-sans">
         <div>
           <span className="text-xl sm:text-2xl md:text-3xl font-bold font-sans text-white">
-            {tour.price}
+            {displayPrice}
           </span>
           <span className="text-[11px] sm:text-xs text-white/80 ml-1 uppercase font-medium">
-            {tour.priceSuffix || '/ Person'}
+            {displaySuffix}
           </span>
         </div>
-        <Badge className="bg-black/80 text-white/90 border border-white/20 font-medium text-[9px] sm:text-[10px] uppercase tracking-wider px-2 py-0.5">
-          VIP Inclusive
-        </Badge>
+        {hasTiers ? (
+          <Badge className="bg-emerald-700/90 text-white font-medium text-[9px] sm:text-[10px] uppercase tracking-wider px-2 py-0.5 shadow-sm border border-white/20">
+            Group Rates
+          </Badge>
+        ) : (
+          <Badge className="bg-black/80 text-white/90 border border-white/20 font-medium text-[9px] sm:text-[10px] uppercase tracking-wider px-2 py-0.5">
+            VIP Inclusive
+          </Badge>
+        )}
       </div>
     </Link>
 
@@ -71,6 +85,18 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
           {tour.homepageDescription}
         </p>
       </Link>
+
+      {/* Group Rates Chips */}
+      {hasTiers && tour.pricingTiers && (
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          {tour.pricingTiers.map((tier, tIdx) => (
+            <span key={tIdx} className="inline-flex items-center text-[10px] bg-muted/60 dark:bg-muted/30 border border-border px-2 py-0.5 rounded-full font-medium text-foreground">
+              {tier.min_guests}{tier.max_guests ? `–${tier.max_guests}` : '+'} pax: <strong className="ml-1 text-primary dark:text-blue-300">${tier.price}</strong>
+              <span className="text-muted-foreground ml-0.5">{tier.pricing_type === 'fixed_group' ? 'grp' : '/p'}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Key Inclusions Badges in Navy accents */}
       <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 py-2.5 border-y border-border/60 text-[11px] text-muted-foreground font-sans">
@@ -110,7 +136,8 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
       </div>
     </CardContent>
   </Card>
-);
+  );
+};
 
 
 export function ToursSection() {

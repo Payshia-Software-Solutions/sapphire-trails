@@ -56,7 +56,7 @@ import {
 import { mapServerPackageToClient } from '@/lib/packages-data';
 import { API_BASE_URL } from '@/lib/utils';
 
-export const SAMPLE_TRIPADVISOR_IMPORTS: ReviewItem[] = [
+const SAMPLE_TRIPADVISOR_IMPORTS: ReviewItem[] = [
   {
     id: 'ta-import-1',
     name: 'Lord Arthur Sterling',

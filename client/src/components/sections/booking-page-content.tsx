@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { bookingFormSchema } from '@/lib/schemas';
 import type { z } from 'zod';
 import { format } from "date-fns"
-import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import { mapServerPackageToClient, type TourPackage, calculatePackagePrice, type PriceCalculationResult } from '@/lib/packages-data';
 import Image from 'next/image';
 import { BookingForm } from '@/components/sections/booking-form';
 import { useToast } from "@/hooks/use-toast";
@@ -69,12 +69,14 @@ function BookingSummary({
   selectedTour,
   selectedDate,
   totalGuests,
-  totalPrice
+  totalPrice,
+  calculationResult,
 } : {
   selectedTour?: TourPackage;
   selectedDate?: Date;
   totalGuests: number;
   totalPrice: number | null;
+  calculationResult?: PriceCalculationResult | null;
 }) {
   const { content } = useSiteContent();
   const { formState: { isSubmitting } } = useFormContext();
@@ -120,6 +122,27 @@ function BookingSummary({
 
         {totalPrice !== null && (
           <div className="space-y-2 border-t border-border/50 pt-4">
+              <div className="flex justify-between text-sm items-center">
+                  <span className="text-muted-foreground">Rate:</span>
+                  <span className="font-medium text-foreground text-right">
+                    {calculationResult?.appliedTier ? (
+                      <span className="inline-flex flex-col items-end">
+                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                          ${calculationResult.unitPrice.toFixed(2)}
+                          <span className="text-xs font-normal text-muted-foreground ml-1">
+                            {calculationResult.pricingType === 'fixed_group' ? '(Group Rate)' : '/ person'}
+                          </span>
+                        </span>
+                        <span className="text-[10px] text-emerald-600/90 dark:text-emerald-400/90 font-medium">
+                          ✓ Group Rate Applied: {calculationResult.appliedTier.min_guests}
+                          {calculationResult.appliedTier.max_guests ? `–${calculationResult.appliedTier.max_guests}` : '+'} Guests
+                        </span>
+                      </span>
+                    ) : (
+                      <span>{selectedTour?.price} {selectedTour?.priceSuffix}</span>
+                    )}
+                  </span>
+              </div>
               <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal:</span>
                   <span className="font-medium text-foreground">${totalPrice.toFixed(2)}</span>
@@ -157,7 +180,7 @@ function BookingSummary({
 }
 
 
-export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
+export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlug?: string; initialPackages?: TourPackage[] }) {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -166,7 +189,19 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
   const tourSlugParam = tourSlug || searchParams.get('tour') || searchParams.get('slug');
   const tourTypeParam = searchParams.get('tourType');
 
-  const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
+  const [tourPackages, setTourPackages] = useState<TourPackage[]>(initialPackages);
+
+  const initialTourTypeId = (() => {
+    if (tourTypeParam) return Number(tourTypeParam);
+    if (tourSlugParam && initialPackages.length > 0) {
+      const found = initialPackages.find(p => p.slug === tourSlugParam);
+      if (found) return found.id;
+    }
+    if (initialPackages.length > 0) {
+      return initialPackages[0].id;
+    }
+    return undefined;
+  })();
 
   const methods = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -177,7 +212,7 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
       address: "",
       transportService: "none",
       transportNotes: "",
-      tourType: tourTypeParam ? Number(tourTypeParam) : undefined,
+      tourType: initialTourTypeId,
       adults: 1,
       children: 0,
       message: "",
@@ -189,9 +224,10 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
   const watchedChildren = methods.watch('children');
   const watchedDate = methods.watch('date');
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
+  const [calculationResult, setCalculationResult] = useState<PriceCalculationResult | null>(null);
 
   useEffect(() => {
-    async function fetchTourPackages() {
+    async function fetchTourPackagesData() {
         try {
             const response = await fetch(`${API_BASE_URL}/tours`);
             if (response.ok) {
@@ -215,8 +251,22 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
             }
         } catch(e) { console.error("Could not fetch tour packages", e); }
     }
-    fetchTourPackages();
-  }, [tourSlugParam, tourTypeParam, methods]);
+
+    if (initialPackages.length === 0) {
+      fetchTourPackagesData();
+    } else {
+      // If already initialized with initialPackages, ensure tourType value is applied
+      if (tourSlugParam) {
+        const found = initialPackages.find(p => p.slug === tourSlugParam);
+        if (found) methods.setValue('tourType', found.id);
+      } else if (tourTypeParam) {
+        const found = initialPackages.find(p => String(p.id) === String(tourTypeParam));
+        if (found) methods.setValue('tourType', found.id);
+      } else if (initialPackages.length > 0 && !methods.getValues('tourType')) {
+        methods.setValue('tourType', initialPackages[0].id);
+      }
+    }
+  }, [tourSlugParam, tourTypeParam, methods, initialPackages]);
 
   const selectedTour = watchedTourType
     ? tourPackages.find(p => p.id === Number(watchedTourType))
@@ -232,17 +282,11 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
 
   useEffect(() => {
     if (selectedTour && totalGuests > 0) {
-      if (selectedTour.price) {
-        const pricePerPerson = parseFloat(selectedTour.price.replace(/[^0-9.-]+/g,""));
-        if (!isNaN(pricePerPerson)) {
-          setTotalPrice(pricePerPerson * totalGuests);
-        } else {
-          setTotalPrice(null);
-        }
-      } else {
-        setTotalPrice(null);
-      }
+      const res = calculatePackagePrice(selectedTour, totalGuests);
+      setCalculationResult(res);
+      setTotalPrice(res.totalPrice);
     } else {
+      setCalculationResult(null);
       setTotalPrice(null);
     }
   }, [selectedTour, totalGuests]);
@@ -285,9 +329,9 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
        return;
    }
    
-   const totalGuestsOnSubmit = data.adults + data.children;
-   const pricePerPerson = parseFloat(selectedTour.price.replace(/[^0-9.-]+/g,""));
-   const totalPriceOnSubmit = !isNaN(pricePerPerson) ? pricePerPerson * totalGuestsOnSubmit : 0;
+    const totalGuestsOnSubmit = data.adults + data.children;
+    const calcResult = calculatePackagePrice(selectedTour, totalGuestsOnSubmit);
+    const totalPriceOnSubmit = calcResult.totalPrice;
 
    // Format vehicle arrangement into clear note
    let fullMessage = (data.message || '').trim();
@@ -393,6 +437,7 @@ export function BookingPageContent({ tourSlug }: { tourSlug?: string }) {
                 selectedDate={watchedDate}
                 totalGuests={totalGuests}
                 totalPrice={totalPrice}
+                calculationResult={calculationResult}
               />
             </div>
           </div>

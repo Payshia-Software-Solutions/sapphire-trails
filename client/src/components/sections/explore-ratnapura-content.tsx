@@ -96,7 +96,11 @@ const LocationCard = ({ location }: { location: Location }) => {
   );
 };
 
-export function ExploreRatnapuraContent() {
+interface ExploreRatnapuraContentProps {
+  initialLocations?: Location[];
+}
+
+export function ExploreRatnapuraContent({ initialLocations = [] }: ExploreRatnapuraContentProps) {
   const { content } = useSiteContent();
   const catalogHeader = content.explore?.catalogHeader || {
     badge: 'Curated Destinations',
@@ -104,15 +108,20 @@ export function ExploreRatnapuraContent() {
     subtitle: 'From world-famous alluvial gem gravel pits to virgin rainforest sanctuaries and sacred temples.'
   };
 
-  const [allLocations, setAllLocations] = useState<Location[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [allLocations, setAllLocations] = useState<Location[]>(initialLocations);
+  const [isLoading, setIsLoading] = useState(initialLocations.length === 0);
 
   useEffect(() => {
     async function fetchLocations() {
+      if (allLocations.length === 0) {
+        setIsLoading(true);
+      }
       try {
         const response = await fetch(`${API_BASE_URL}/locations`);
         if (!response.ok) {
-          setAllLocations(staticLocationsData);
+          if (allLocations.length === 0) {
+            setAllLocations(staticLocationsData);
+          }
           return;
         }
 
@@ -125,17 +134,22 @@ export function ExploreRatnapuraContent() {
             uniqueLocations[loc.slug] = loc;
           }
           setAllLocations(Object.values(uniqueLocations));
-        } else {
+        } else if (allLocations.length === 0) {
           setAllLocations(staticLocationsData);
         }
       } catch (e) {
-        setAllLocations(staticLocationsData);
+        if (allLocations.length === 0) {
+          setAllLocations(staticLocationsData);
+        }
       } finally {
         setIsLoading(false);
       }
     }
-    fetchLocations();
-  }, []);
+
+    if (initialLocations.length === 0) {
+      fetchLocations();
+    }
+  }, [initialLocations]);
 
   const natureLocations = allLocations.filter(loc => loc.category === 'nature');
   const agricultureLocations = allLocations.filter(loc => loc.category === 'agriculture');

@@ -1,5 +1,4 @@
-'use client';
-
+import type { Metadata } from 'next';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Faq } from '@/components/sections/faq';
@@ -7,10 +6,29 @@ import { ToursHeroSection } from '@/components/sections/tours-hero';
 import { AllToursGrid } from '@/components/sections/all-tours-grid';
 import { ToursGuaranteesSection } from '@/components/sections/ToursGuaranteesSection';
 import { TrustSection } from '@/components/sections/TrustSection';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Gem, Clock, ArrowRight, Truck, MessageSquare } from 'lucide-react';
-import { useSiteContent, getSectionThemeClass, getWhatsappUrl } from '@/lib/site-content';
+import { ToursProposalCallout } from '@/components/sections/tours-proposal-callout';
+import { fetchTourPackages } from '@/lib/packages-data';
+
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: 'Luxury Gem Mine Tours in Ratnapura Sri Lanka | Sapphire Trails',
+  description: 'Experience hands-on sapphire mining, alluvial gravel panning, and private gemological grading sessions in Ratnapura, Sri Lanka with Sapphire Trails.',
+  alternates: {
+    canonical: '/tours',
+  },
+  openGraph: {
+    title: 'Luxury Gem Mine Tours in Ratnapura Sri Lanka | Sapphire Trails',
+    description: 'Descend into authentic sapphire mines, pan traditional river gravel, and explore custom jewelry design with Sapphire Trails.',
+    url: 'https://sapphiretrails.lk/tours',
+    images: [{
+      url: 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp',
+      width: 1200,
+      height: 630,
+      alt: 'Luxury Gem Mine Tours in Ratnapura Sri Lanka',
+    }],
+  },
+};
 
 const faqStructuredData = {
   "@context": "https://schema.org",
@@ -35,14 +53,10 @@ const faqStructuredData = {
   ]
 };
 
-export default function ToursPage() {
+export default async function ToursPage() {
   const breadcrumbs = [{ label: 'Tours', href: '/tours' }];
-  const { content } = useSiteContent();
-  const tours = content.tours;
-  const proposalCallout = tours.proposalCallout;
-  const vis = tours.sectionVisibility || {};
-  const sty = tours.sectionStyles || {};
-  
+  const initialTours = await fetchTourPackages(3600);
+
   return (
     <div className="flex min-h-screen flex-col bg-background selection:bg-primary/20 selection:text-primary">
       <script
@@ -52,74 +66,19 @@ export default function ToursPage() {
       <Header />
       <main className="flex-1">
         {/* 1. Proportional Luxury Tours Hero */}
-        {vis.hero !== false && (
-          <div className={getSectionThemeClass(sty.hero)}>
-            <ToursHeroSection breadcrumbs={breadcrumbs} />
-          </div>
-        )}
+        <ToursHeroSection breadcrumbs={breadcrumbs} />
 
         {/* 2. Featured Custom Proposal Callout Banner */}
-        {vis.proposalCallout !== false && (
-          <div className={getSectionThemeClass(sty.proposalCallout, 'w-full bg-background pt-10 pb-4')}>
-            <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
-              <div className="relative overflow-hidden rounded-2xl bg-card border border-border/80 p-8 md:p-10 shadow-xs">
-                <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 font-sans">
-                  <div className="space-y-4 max-w-3xl">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-xs font-medium uppercase tracking-[0.18em] text-[#0B1E38] dark:text-blue-200 shadow-2xs">
-                      <span>{proposalCallout.badge || 'Special Experience'}</span>
-                    </div>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-sans font-bold tracking-tight text-foreground leading-tight">
-                      {proposalCallout.title}
-                    </h2>
-                    <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed font-sans font-normal">
-                      {proposalCallout.description}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-sans uppercase tracking-wider text-[#0B1E38] dark:text-blue-300 pt-1 font-medium">
-                      <span className="flex items-center gap-1.5"><Gem className="h-4 w-4" /> Mine Sourcing</span>
-                      <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> 5-Day Atelier Crafting</span>
-                      <span className="flex items-center gap-1.5"><Truck className="h-4 w-4" /> Insured Delivery</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full sm:w-auto shrink-0">
-                    <Button asChild size="lg" className="bg-[#0B1E38] hover:bg-[#071527] text-white font-medium text-xs sm:text-sm h-11 px-8 rounded-full shadow-sm transition-all border border-[#0B1E38]">
-                      <Link href="/custom-proposal-package">
-                        {proposalCallout.primaryButtonText || 'Explore Proposal Package'}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline" size="lg" className="border border-border/80 hover:border-[#0B1E38]/40 text-foreground font-medium text-xs sm:text-sm h-11 rounded-full px-8 bg-transparent transition-colors">
-                      <a href={getWhatsappUrl(content, 'Hello, I am interested in the Custom Proposal Package.')} target="_blank" rel="noopener noreferrer">
-                        <MessageSquare className="mr-1.5 h-4 w-4 text-emerald-500" />
-                        {proposalCallout.secondaryButtonText || 'WhatsApp Concierge'}
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <ToursProposalCallout />
 
-        {/* 3. Main Filterable Tour Grid */}
-        {vis.grid !== false && (
-          <div className={getSectionThemeClass(sty.grid)}>
-            <AllToursGrid />
-          </div>
-        )}
+        {/* 3. Main Filterable Tour Grid with pre-rendered tours */}
+        <AllToursGrid initialTours={initialTours} />
 
         {/* 4. Guarantees & Standard Inclusions Strip */}
-        {vis.guarantees !== false && (
-          <div className={getSectionThemeClass(sty.guarantees)}>
-            <ToursGuaranteesSection />
-          </div>
-        )}
+        <ToursGuaranteesSection />
 
         {/* 5. Frequently Asked Questions */}
-        {vis.faqs !== false && (
-          <div className={getSectionThemeClass(sty.faqs)}>
-            <Faq />
-          </div>
-        )}
+        <Faq />
       </main>
 
       {/* 6. Global Trust Strip & Footer */}
@@ -128,4 +87,6 @@ export default function ToursPage() {
     </div>
   );
 }
+
+
 

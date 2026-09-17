@@ -3,18 +3,26 @@
 
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { CalendarCheck, Clock, DollarSign } from 'lucide-react';
+import { CalendarCheck, Clock, DollarSign, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import type { PricingTier } from '@/lib/packages-data';
 
 interface TourFloatingBarProps {
   price: string;
   priceSuffix: string;
   duration: string;
   bookingLink: string;
+  pricingTiers?: PricingTier[];
 }
 
-export function TourFloatingBar({ price, priceSuffix, duration, bookingLink }: TourFloatingBarProps) {
+export function TourFloatingBar({ price, priceSuffix, duration, bookingLink, pricingTiers = [] }: TourFloatingBarProps) {
   const [isVisible, setIsVisible] = useState(false);
+
+  const hasTiers = Array.isArray(pricingTiers) && pricingTiers.length > 0;
+  const perPersonTiers = hasTiers ? pricingTiers.filter(t => t.pricing_type === 'per_person') : [];
+  const lowestTierPrice = perPersonTiers.length > 0 ? Math.min(...perPersonTiers.map(t => t.price)) : null;
+  const displayPrice = hasTiers && lowestTierPrice !== null ? `$${lowestTierPrice}` : price;
+  const displaySuffix = hasTiers && lowestTierPrice !== null ? 'per person' : priceSuffix;
 
   useEffect(() => {
     const heroElement = document.querySelector('section');
@@ -43,11 +51,21 @@ export function TourFloatingBar({ price, priceSuffix, duration, bookingLink }: T
 
         <div className="p-5 font-sans">
           {/* Price */}
-          <p className="text-[11px] text-muted-foreground uppercase tracking-[0.18em] font-sans font-medium mb-1">Starting from</p>
-          <div className="flex items-end gap-1 mb-4">
-            <span className="text-3xl font-bold text-foreground font-sans tracking-tight">{price}</span>
-            <span className="text-sm text-muted-foreground mb-1 font-sans">{priceSuffix}</span>
+          <p className="text-[11px] text-muted-foreground uppercase tracking-[0.18em] font-sans font-medium mb-1">
+            {hasTiers ? 'Starting from' : 'Price'}
+          </p>
+          <div className="flex items-end gap-1 mb-2">
+            <span className="text-3xl font-bold text-foreground font-sans tracking-tight">{displayPrice}</span>
+            <span className="text-sm text-muted-foreground mb-1 font-sans">{displaySuffix}</span>
           </div>
+
+          {hasTiers && (
+            <div className="mb-3">
+              <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                ✓ Group Rates Available
+              </span>
+            </div>
+          )}
 
           {/* Duration */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-5 pb-5 border-b border-border">

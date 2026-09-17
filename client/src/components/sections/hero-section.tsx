@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { 
   CalendarCheck, 
@@ -11,6 +11,8 @@ import {
   Compass, 
   Play, 
   Sparkles,
+  Volume2,
+  VolumeX,
   X 
 } from 'lucide-react';
 import { useSiteContent } from '@/lib/site-content';
@@ -27,6 +29,18 @@ export function HeroSection() {
   const [isVideoMounted, setIsVideoMounted] = useState(false);
   const [isVideoVisible, setIsVideoVisible] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [hasVideoError, setHasVideoError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (isVideoModalOpen) {
+      setIsVideoLoading(true);
+      setHasVideoError(false);
+      setIsMuted(true);
+    }
+  }, [isVideoModalOpen]);
 
   useEffect(() => {
     // Only mount background video if explicitly in video mode
@@ -163,19 +177,19 @@ export function HeroSection() {
         
         {/* 1. Ceylon Sapphire Gem Visual on Top - Calibrated height to prevent viewport overflow */}
         <div className="relative group cursor-pointer transition-transform duration-500 hover:scale-105 flex justify-center items-center">
-          {/* Soft contact shadow beneath the ring */}
+          {/* Soft contact shadow beneath the loose gemstones */}
           <div 
-            className="absolute -bottom-2 sm:-bottom-2.5 md:-bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-2.5 sm:h-3.5 md:h-4 bg-primary/25 dark:bg-black/80 rounded-full blur-md" 
+            className="absolute -bottom-1 sm:-bottom-1.5 md:-bottom-2 left-1/2 -translate-x-1/2 w-4/5 h-2.5 sm:h-3.5 md:h-4 bg-primary/20 dark:bg-black/80 rounded-full blur-md" 
             aria-hidden="true" 
           />
           
           <Image
             src={gemImg}
-            alt="Authentic Ceylon Blue Sapphire Gemstone Ring - Ratnapura Sri Lanka"
-            width={300}
-            height={235}
-            sizes="(max-width: 640px) 110px, (max-width: 1024px) 160px, 200px"
-            className="relative z-10 w-28 sm:w-34 md:w-40 lg:w-44 xl:w-48 max-h-[16vh] sm:max-h-[18vh] lg:max-h-[20vh] h-auto object-contain drop-shadow-[0_10px_22px_rgba(26,54,93,0.16)] dark:drop-shadow-[0_15px_30px_rgba(0,0,0,0.85)]"
+            alt="Natural Loose Ceylon Precious Gemstones - Royal Blue Sapphire, Ruby, Pushparaga and Padparadscha - Ratnapura Sri Lanka"
+            width={1194}
+            height={517}
+            sizes="(max-width: 640px) 240px, (max-width: 1024px) 380px, 520px"
+            className="relative z-10 w-52 sm:w-64 md:w-80 lg:w-[440px] xl:w-[490px] max-h-[20vh] sm:max-h-[22vh] lg:max-h-[24vh] h-auto object-contain drop-shadow-[0_12px_28px_rgba(26,54,93,0.16)] dark:drop-shadow-[0_15px_35px_rgba(0,0,0,0.85)]"
             priority
             fetchPriority="high"
           />
@@ -253,19 +267,120 @@ export function HeroSection() {
         </Link>
       </div>
 
-      {/* Cinematic Film Video Modal */}
+      {/* Enhanced Luxury Cinematic Film Video Modal */}
       <Dialog open={isVideoModalOpen} onOpenChange={setIsVideoModalOpen}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black border border-zinc-800 text-white rounded-2xl shadow-2xl">
+        <DialogContent className="max-w-4xl w-[94vw] sm:w-[90vw] p-0 overflow-hidden bg-black border border-white/15 text-white rounded-2xl sm:rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.85)] [&>button]:z-50 [&>button]:text-white [&>button]:bg-black/70 [&>button]:hover:bg-black [&>button]:p-2 [&>button]:rounded-full [&>button]:border [&>button]:border-white/20 [&>button]:top-3 [&>button]:right-3 [&>button]:transition-all">
           <DialogTitle className="sr-only">Sapphire Trails Cinematic Film</DialogTitle>
-          <div className="relative aspect-video w-full bg-black">
+          <div className="relative aspect-video w-full bg-black overflow-hidden flex items-center justify-center">
+            {/* Top Luxury Branding Ribbon */}
+            <div className="absolute top-0 left-0 right-0 z-30 p-3 sm:p-4 bg-gradient-to-b from-black/85 via-black/35 to-transparent flex items-center justify-between pointer-events-none">
+              <div className="flex items-center gap-2 sm:gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="text-[10px] sm:text-xs tracking-[0.22em] uppercase text-white/90 font-medium font-sans drop-shadow-sm">
+                  Sapphire Trails • Cinematic Expedition
+                </span>
+              </div>
+            </div>
+
             {isVideoModalOpen && (
-              <video
-                src={videoUrl}
-                controls
-                autoPlay
-                playsInline
-                className="w-full h-full object-cover"
-              />
+              <>
+                <video
+                  ref={videoRef}
+                  src={videoUrl}
+                  poster={posterImg}
+                  controls
+                  autoPlay
+                  muted={isMuted}
+                  playsInline
+                  preload="auto"
+                  onWaiting={() => setIsVideoLoading(true)}
+                  onPlaying={() => setIsVideoLoading(false)}
+                  onCanPlay={() => {
+                    setIsVideoLoading(false);
+                    videoRef.current?.play().catch(() => {
+                      if (videoRef.current) {
+                        videoRef.current.muted = true;
+                        setIsMuted(true);
+                        videoRef.current.play().catch(() => {});
+                      }
+                    });
+                  }}
+                  onError={() => {
+                    setIsVideoLoading(false);
+                    setHasVideoError(true);
+                  }}
+                  className="w-full h-full object-cover sm:object-contain bg-black"
+                >
+                  <source src={videoUrl} type="video/webm" />
+                </video>
+
+                {/* Loading Spinner with Luxury Gem Glow */}
+                {isVideoLoading && !hasVideoError && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xs z-20 pointer-events-none transition-opacity duration-300">
+                    <div className="relative flex items-center justify-center">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+                      <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary absolute animate-pulse" />
+                    </div>
+                    <span className="text-[10px] sm:text-xs uppercase tracking-[0.22em] text-white/90 font-medium font-sans mt-3">
+                      Loading Ceylon Film...
+                    </span>
+                  </div>
+                )}
+
+                {/* Error Fallback */}
+                {hasVideoError && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-20 p-6 text-center">
+                    <p className="text-xs sm:text-sm text-white/90 font-medium mb-3">
+                      Video stream could not load on this connection.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setHasVideoError(false);
+                        setIsVideoLoading(true);
+                        if (videoRef.current) {
+                          videoRef.current.load();
+                          videoRef.current.play().catch(() => {});
+                        }
+                      }}
+                      className="border-white/20 text-white bg-white/10 hover:bg-white/20 rounded-full text-xs"
+                    >
+                      Retry Playback
+                    </Button>
+                  </div>
+                )}
+
+                {/* One-Tap Sound Toggle Pill */}
+                {!hasVideoError && (
+                  <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 z-30">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (videoRef.current) {
+                          const nextMuted = !videoRef.current.muted;
+                          videoRef.current.muted = nextMuted;
+                          setIsMuted(nextMuted);
+                        }
+                      }}
+                      className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-black/80 hover:bg-black text-white text-[10px] sm:text-xs font-medium border border-white/20 shadow-lg backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+                      aria-label={isMuted ? "Unmute video" : "Mute video"}
+                    >
+                      {isMuted ? (
+                        <>
+                          <VolumeX className="w-3.5 h-3.5 text-white/80" />
+                          <span className="tracking-wider uppercase text-[9px] sm:text-[10px]">Tap For Sound</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3.5 h-3.5 text-primary" />
+                          <span className="tracking-wider uppercase text-[9px] sm:text-[10px]">Sound On</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </DialogContent>

@@ -25,15 +25,12 @@ export function SubscriptionSection() {
     setIsSubmitting(true);
     addSubscriber(email.trim(), '2026 Gem Buyer Guide Download');
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: 'Guide Subscriber',
           email: email.trim(),
-          phone: '',
-          tourInterest: 'Guide Download (Lead Magnet)',
-          message: 'Subscriber requested the 2026 Ratnapura Gem Buyer & Traveler Guide from Homepage.',
+          source: '2026 Gem Buyer Guide Download',
         }),
       });
 

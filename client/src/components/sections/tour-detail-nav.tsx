@@ -92,7 +92,7 @@ export function TourDetailNav({ tourTitle, bookingLink = '#book-tour', price }: 
           <div className="flex items-center gap-3 shrink-0">
             {price && (
               <span className="hidden lg:inline-block text-xs font-sans text-muted-foreground">
-                From <strong className="text-foreground font-bold text-sm font-sans">{price}</strong>
+                From <strong className="text-foreground font-bold text-sm font-sans">{price.replace(/^From\s*/i, '')}</strong>
               </span>
             )}
             <a 

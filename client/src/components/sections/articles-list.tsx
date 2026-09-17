@@ -14,33 +14,53 @@ import {
   Search, 
   Filter, 
   Gem,
-  Tag
+  Tag,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { type ArticleItem, getStoredArticles, fetchArticles } from '@/lib/articles-data';
 import { useSiteContent } from '@/lib/site-content';
 
-export function ArticlesList() {
+interface ArticlesListProps {
+  initialArticles?: ArticleItem[];
+}
+
+export function ArticlesList({ initialArticles = [] }: ArticlesListProps) {
   const { content } = useSiteContent();
   const listHeader = content.articles?.listHeader || {
     tagline: 'Field Journal & Guides',
     heading: 'Explore Articles & Insights'
   };
 
-  const [articles, setArticles] = useState<ArticleItem[]>([]);
+  const [articles, setArticles] = useState<ArticleItem[]>(() => {
+    if (initialArticles && initialArticles.length > 0) {
+      return initialArticles;
+    }
+    return getStoredArticles();
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 6;
 
   useEffect(() => {
-    // Initial sync from cache
-    setArticles(getStoredArticles());
+    // If no initial articles were passed, sync from stored cache
+    if (initialArticles.length === 0) {
+      setArticles(getStoredArticles());
+    }
     // Live async update from database
     fetchArticles(3600).then((live) => {
       if (live && live.length > 0) {
         setArticles(live);
       }
     }).catch(console.error);
-  }, []);
+  }, [initialArticles]);
+
+  // Reset pagination when search or category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory]);
 
   const categories = useMemo(() => {
     return ['all', ...Array.from(new Set(articles.map((a) => a.category)))];
@@ -66,8 +86,23 @@ export function ArticlesList() {
     ? filteredArticles.slice(1) 
     : filteredArticles;
 
+  const totalPages = Math.ceil(remainingArticles.length / ITEMS_PER_PAGE) || 1;
+  const paginatedArticles = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return remainingArticles.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [remainingArticles, currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    const anchor = document.getElementById('articles-list-heading');
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
-    <section className="w-full py-12 md:py-20 bg-background relative">
+    <section id="articles-list-heading" className="w-full py-12 md:py-20 bg-background relative scroll-mt-24">
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         {/* Search & Category Filter Header */}
@@ -194,70 +229,129 @@ export function ArticlesList() {
         )}
 
         {/* 2. Remaining Articles Grid */}
-        {remainingArticles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {remainingArticles.map((article) => (
-              <Card
-                key={article.slug}
-                className="bg-card border border-border/80 flex flex-col w-full rounded-2xl overflow-hidden hover:border-[#0B1E38]/30 dark:hover:border-blue-500/40 transition-colors group cursor-pointer shadow-sm"
-              >
-                {/* Article Thumbnail - Clickable */}
-                <Link href={`/articles/${article.slug}`} className="block relative aspect-[16/10] w-full overflow-hidden">
-                  <Image
-                    src={article.imageUrl}
-                    alt={article.title}
-                    data-ai-hint={article.imageHint}
-                    fill
-                    className="object-cover transition-transform duration-700 md:group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                  
-                  {/* Category Pill */}
-                  <div className="absolute top-3 left-3 bg-slate-950/85 border border-white/10 px-2.5 py-0.5 rounded-full text-[10px] font-semibold text-blue-200 uppercase tracking-wider z-10">
-                    {article.category}
-                  </div>
+        {paginatedArticles.length > 0 ? (
+          <div className="space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {paginatedArticles.map((article) => (
+                <Card
+                  key={article.slug}
+                  className="bg-card border border-border/80 flex flex-col w-full rounded-2xl overflow-hidden hover:border-[#0B1E38]/30 dark:hover:border-blue-500/40 transition-colors group cursor-pointer shadow-sm"
+                >
+                  {/* Article Thumbnail - Clickable */}
+                  <Link href={`/articles/${article.slug}`} className="block relative aspect-[16/10] w-full overflow-hidden">
+                    <Image
+                      src={article.imageUrl}
+                      alt={article.title}
+                      data-ai-hint={article.imageHint}
+                      fill
+                      className="object-cover transition-transform duration-700 md:group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                    
+                    {/* Category Pill */}
+                    <div className="absolute top-3 left-3 bg-slate-950/85 border border-white/10 px-2.5 py-0.5 rounded-full text-[10px] font-semibold text-blue-200 uppercase tracking-wider z-10">
+                      {article.category}
+                    </div>
 
-                  {/* Read Time & Date Overlay */}
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-slate-200 font-medium z-10">
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3 text-blue-300" />
-                      {article.readTime}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <CalendarDays className="h-3 w-3 text-blue-300" />
-                      {article.publishedDate}
-                    </span>
-                  </div>
-                </Link>
+                    {/* Read Time & Date Overlay */}
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-slate-200 font-medium z-10">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3 text-blue-300" />
+                        {article.readTime}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <CalendarDays className="h-3 w-3 text-blue-300" />
+                        {article.publishedDate}
+                      </span>
+                    </div>
+                  </Link>
 
-                {/* Card Content */}
-                <CardContent className="p-6 flex flex-col flex-grow justify-between space-y-4">
-                  <div className="space-y-2.5">
-                    <Link href={`/articles/${article.slug}`} className="block">
-                      <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-[#0B1E38] dark:group-hover:text-blue-400 transition-colors leading-snug line-clamp-2">
-                        {article.title}
-                      </h3>
-                    </Link>
-                    <Link href={`/articles/${article.slug}`} className="block">
-                      <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed font-light">
-                        {article.description}
-                      </p>
-                    </Link>
-                  </div>
+                  {/* Card Content */}
+                  <CardContent className="p-6 flex flex-col flex-grow justify-between space-y-4">
+                    <div className="space-y-2.5">
+                      <Link href={`/articles/${article.slug}`} className="block">
+                        <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-[#0B1E38] dark:group-hover:text-blue-400 transition-colors leading-snug line-clamp-2">
+                          {article.title}
+                        </h3>
+                      </Link>
+                      <Link href={`/articles/${article.slug}`} className="block">
+                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed font-light">
+                          {article.description}
+                        </p>
+                      </Link>
+                    </div>
 
-                  {/* Read More Link */}
-                  <div className="pt-3 border-t border-border/80 flex items-center justify-between">
-                    <Link
-                      href={`/articles/${article.slug}`}
-                      className="inline-flex items-center text-xs font-semibold text-[#0B1E38] dark:text-blue-400 hover:text-[#0B1E38]/80 transition-colors md:group-hover:translate-x-1 duration-200"
+                    {/* Read More Link */}
+                    <div className="pt-3 border-t border-border/80 flex items-center justify-between">
+                      <Link
+                        href={`/articles/${article.slug}`}
+                        className="inline-flex items-center text-xs font-semibold text-[#0B1E38] dark:text-blue-400 hover:text-[#0B1E38]/80 transition-colors md:group-hover:translate-x-1 duration-200"
+                      >
+                        <span>Read Full Guide</span>
+                        <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-border/80">
+                <p className="text-xs text-muted-foreground">
+                  Showing <span className="font-semibold text-foreground">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to{' '}
+                  <span className="font-semibold text-foreground">
+                    {Math.min(currentPage * ITEMS_PER_PAGE, remainingArticles.length)}
+                  </span>{' '}
+                  of <span className="font-semibold text-foreground">{remainingArticles.length}</span> articles
+                </p>
+
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="h-9 px-3 text-xs rounded-full border-border/80 gap-1 text-muted-foreground hover:text-foreground"
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="hidden sm:inline">Prev</span>
+                  </Button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`h-9 w-9 p-0 text-xs rounded-full font-medium transition-all ${
+                        currentPage === pageNum
+                          ? 'bg-[#0B1E38] text-white dark:bg-blue-600 font-bold shadow-sm'
+                          : 'border-border/80 text-muted-foreground hover:text-foreground hover:border-[#0B1E38]/40'
+                      }`}
+                      aria-label={`Page ${pageNum}`}
+                      aria-current={currentPage === pageNum ? 'page' : undefined}
                     >
-                      <span>Read Full Guide</span>
-                      <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                      {pageNum}
+                    </Button>
+                  ))}
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="h-9 px-3 text-xs rounded-full border-border/80 gap-1 text-muted-foreground hover:text-foreground"
+                    aria-label="Next page"
+                  >
+                    <span className="hidden sm:inline">Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         ) : !featuredArticle && (
           <div className="text-center text-muted-foreground py-20 flex flex-col items-center gap-4">

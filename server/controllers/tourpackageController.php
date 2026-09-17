@@ -120,6 +120,7 @@ class TourPackageController
             $data['highlights'] = json_decode($data['highlights'], true);
             $data['inclusions'] = json_decode($data['inclusions'], true);
             $data['itinerary'] = json_decode($data['itinerary'], true);
+            $data['pricing_tiers'] = isset($data['pricing_tiers']) ? (is_string($data['pricing_tiers']) ? json_decode($data['pricing_tiers'], true) : $data['pricing_tiers']) : (isset($data['pricingTiers']) ? (is_string($data['pricingTiers']) ? json_decode($data['pricingTiers'], true) : $data['pricingTiers']) : null);
             $data['experience_gallery'] = [];
 
             $data['homepage_image_url'] = 'default_home.jpg';
@@ -275,6 +276,7 @@ class TourPackageController
     $data['highlights'] = json_decode($data['highlights'], true);
     $data['inclusions'] = json_decode($data['inclusions'], true);
     $data['itinerary'] = json_decode($data['itinerary'], true);
+    $data['pricing_tiers'] = isset($data['pricing_tiers']) ? (is_string($data['pricing_tiers']) ? json_decode($data['pricing_tiers'], true) : $data['pricing_tiers']) : (isset($data['pricingTiers']) ? (is_string($data['pricingTiers']) ? json_decode($data['pricingTiers'], true) : $data['pricingTiers']) : null);
 
     $data['homepage_image_url'] = $existing['homepage_image_url'];
     $data['hero_image_url'] = $existing['hero_image_url'];

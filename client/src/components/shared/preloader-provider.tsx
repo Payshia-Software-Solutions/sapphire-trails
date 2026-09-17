@@ -72,8 +72,8 @@ export function PreloaderProvider({ children }: { children: React.ReactNode }) {
         <>
             {/* Top Navigation Progress Indicator */}
             {isLoading && !isAdminPage && (
-                <div className="fixed top-0 left-0 right-0 h-[2.5px] z-[110] overflow-hidden bg-primary/20">
-                    <div className="h-full w-full bg-gradient-to-r from-primary via-amber-300 to-primary animate-pulse" />
+                <div className="fixed top-0 left-0 right-0 h-[2.5px] z-[110] overflow-hidden bg-[#0B1E38]/20 dark:bg-blue-400/20">
+                    <div className="h-full w-full bg-gradient-to-r from-[#0B1E38] via-blue-400 to-[#0B1E38] animate-pulse" />
                 </div>
             )}
 

@@ -8,13 +8,13 @@ export function PreLoader() {
       {/* Animated Ring Container */}
       <div className="relative flex items-center justify-center w-28 h-28 sm:w-32 sm:h-32">
         {/* Soft Ambient Glow Behind Logo */}
-        <div className="absolute inset-0 rounded-full bg-primary/10 blur-xl animate-pulse" />
+        <div className="absolute inset-0 rounded-full bg-[#0B1E38]/10 dark:bg-blue-400/10 blur-xl animate-pulse" />
         
         {/* Outer Expanding Pulse Ring */}
-        <div className="absolute inset-0 rounded-full border border-primary/25 animate-ping opacity-40" />
+        <div className="absolute inset-0 rounded-full border border-[#0B1E38]/20 dark:border-blue-400/20 animate-ping opacity-40" />
         
         {/* Rotating Luxury Golden Accent Ring */}
-        <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary/80 border-r-primary/40 animate-spin" style={{ animationDuration: '2.5s' }} />
+        <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#0B1E38] dark:border-t-blue-400 border-r-[#0B1E38]/40 animate-spin" style={{ animationDuration: '2.5s' }} />
         
         {/* Inner Subtle Border Ring */}
         <div className="absolute inset-2 rounded-full border border-border/60 bg-background/50 backdrop-blur-sm shadow-inner flex items-center justify-center">
@@ -26,7 +26,7 @@ export function PreLoader() {
               width={70}
               height={70}
               priority
-              className="object-contain drop-shadow-[0_2px_10px_rgba(199,153,84,0.35)]"
+              className="object-contain drop-shadow-[0_2px_10px_rgba(11,30,56,0.25)]"
             />
           </div>
         </div>
@@ -34,17 +34,17 @@ export function PreLoader() {
 
       {/* Brand Typography */}
       <div className="mt-5 space-y-1">
-        <h3 className="font-serif text-sm sm:text-base font-bold tracking-[0.25em] text-primary uppercase">
+        <h3 className="font-serif text-sm sm:text-base font-bold tracking-[0.25em] text-[#0B1E38] dark:text-blue-200 uppercase">
           SAPPHIRE TRAILS
         </h3>
-        <p className="text-[10px] sm:text-[11px] uppercase tracking-widest text-muted-foreground font-sans">
-          Luxury Gem Expeditions
+        <p className="text-[10px] sm:text-[11px] uppercase tracking-widest text-muted-foreground font-sans font-medium">
+          Gem Mine Tours
         </p>
       </div>
 
       {/* Subtle Luxury Loading Progress Indicator */}
       <div className="w-24 h-0.5 bg-border/80 rounded-full mt-3 overflow-hidden">
-        <div className="w-full h-full bg-gradient-to-r from-transparent via-primary to-transparent animate-top-loading-bar" />
+        <div className="w-full h-full bg-gradient-to-r from-transparent via-[#0B1E38] dark:via-blue-400 to-transparent animate-top-loading-bar" />
       </div>
     </div>
   );

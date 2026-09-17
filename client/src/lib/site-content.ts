@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
@@ -489,7 +491,7 @@ export const defaultSiteContent: SiteContentData = {
     },
     stats: [
       { value: '5,000+', label: 'Happy Guests' },
-      { value: '27+', label: 'Years Hospitality Excellence' },
+      { value: '29+', label: 'Years Hospitality Excellence' },
       { value: '100%', label: 'Safety Record' },
       { value: '50+', label: 'Active Mine Pits Accessed' },
     ],
@@ -638,12 +640,12 @@ export const defaultSiteContent: SiteContentData = {
     hero: {
       tagline: "The Guardians of Ceylon's Sapphire Legacy",
       title: 'About Sapphire Trails',
-      subtitle: "Backed by 27+ years of hospitality excellence at Grand Silver Ray, we lead ethical, VIP gemological journeys into Sri Lanka's most legendary sapphire mines.",
+      subtitle: "Backed by 29+ years of hospitality excellence at Grand Silver Ray, we lead ethical, VIP gemological journeys into Sri Lanka's most legendary sapphire mines.",
       image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-11-optimized.webp',
     },
     // 2. Metrics
     metrics: [
-      { value: '27+', label: 'Years Hospitality Heritage', description: 'Backed by the iconic Grand Silver Ray resort in Ratnapura' },
+      { value: '29+', label: 'Years Hospitality Heritage', description: 'Backed by the iconic Grand Silver Ray resort in Ratnapura' },
       { value: '100%', label: 'Ethical & Conflict-Free', description: 'Direct sourcing with fair artisan wages & environmental restoration' },
       { value: '15+', label: 'Partner Active Mines', description: 'Exclusive private pit access unavailable to standard mass tours' },
       { value: '4.9★', label: 'Guest Satisfaction', description: 'Unrivaled private tour ratings from discerning global travelers' },
@@ -651,8 +653,8 @@ export const defaultSiteContent: SiteContentData = {
     // 3. Our Story
     story: {
       tagline: 'Our Heritage & Origins',
-      heading: 'From 27 Years of Hospitality to the Birth of Sapphire Trails',
-      paragraph1: "Our journey is deeply rooted in Ratnapura—the legendary 'City of Gems' in Sri Lanka's Sabaragamuwa province. For over 27 years, our parent establishment, Grand Silver Ray, has welcomed global dignitaries, connoisseurs, and adventurers, establishing the gold standard in regional hospitality.",
+      heading: 'From 29 Years of Hospitality to the Birth of Sapphire Trails',
+      paragraph1: "Our journey is deeply rooted in Ratnapura—the legendary 'City of Gems' in Sri Lanka's Sabaragamuwa province. For over 29 years, our parent establishment, Grand Silver Ray, has welcomed global dignitaries, connoisseurs, and adventurers, establishing the gold standard in regional hospitality.",
       paragraph2: "However, we observed that most travelers visiting Sri Lanka only experienced gemstones behind glass display cases. The true magic—the ancient rhythm of timber pit mining and raw sapphire discovery—remained hidden.",
       quote: "Sapphire Trails was founded on a singular conviction: to bridge world-class luxury hospitality with authentic, ethical, and safe gem exploration directly at the source.",
       image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp',
@@ -884,7 +886,7 @@ export const defaultSiteContent: SiteContentData = {
         {
           title: 'Insured White-Glove Delivery',
           description: 'Discreet, fully insured hand delivery directly to your luxury hotel, villa, or proposal venue across Sri Lanka.',
-          image: 'https://content-provider.payshia.com/silver-ray/room-images/89/BEDROOM-1-optimized-69470fe99fc4c.webp',
+          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp',
         },
       ]
     },
@@ -1013,7 +1015,7 @@ export const defaultSiteContent: SiteContentData = {
       subtitle: 'Connect with our gemological expedition specialists to plan your private tour, bespoke gemstone acquisition, or luxury suite reservations in Ratnapura.',
       image: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
     },
-    primaryPhone: '076 375 6688',
+    primaryPhone: '(+94) 76 37 56 688',
     secondaryPhone: '',
     primaryEmail: 'info@sapphiretrails.lk',
     physicalAddress: 'Grand Silver Ray, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka',
@@ -1152,7 +1154,12 @@ export function mergeProposalContent(parsedProposal?: any) {
   if (rawFaqs && typeof rawFaqs === 'object') {
     if (rawFaqs.heading) faqsHeading = rawFaqs.heading;
     if (Array.isArray(rawFaqs.items) && rawFaqs.items.length > 0) {
-      faqsItems = rawFaqs.items;
+      faqsItems = rawFaqs.items.map((item: any, idx: number) => {
+        const defaultMatch = d.faqs.items[idx];
+        const question = (item.question && item.question.trim()) || defaultMatch?.question || '';
+        const answer = (item.answer && item.answer.trim()) || defaultMatch?.answer || 'Please contact our concierge team on WhatsApp or via our inquiry form for tailored details.';
+        return { question, answer };
+      });
     }
   }
 
@@ -1730,7 +1737,7 @@ export async function uploadCmsImage(file: File, folder: string = 'cms'): Promis
  * Contact & WhatsApp helper functions for dynamic CMS configuration
  */
 export function getContactPhone(content?: SiteContentData | null): string {
-  return content?.contact?.primaryPhone || '076 375 6688';
+  return content?.contact?.primaryPhone || '(+94) 76 37 56 688';
 }
 
 export function getCleanPhone(phone?: string): string {
