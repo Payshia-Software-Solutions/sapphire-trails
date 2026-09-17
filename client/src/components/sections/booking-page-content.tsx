@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Clock, DollarSign, Gem, Shield, Users, LoaderCircle, MessageCircle } from 'lucide-react';
@@ -290,6 +290,23 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
       setTotalPrice(null);
     }
   }, [selectedTour, totalGuests]);
+
+  // Track InitiateCheckout (Meta Pixel) & begin_checkout (GA4)
+  const trackedTourRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (selectedTour && trackedTourRef.current !== selectedTour.id) {
+      trackedTourRef.current = selectedTour.id;
+      const rawPrice = (typeof selectedTour.price === 'string') ? selectedTour.price.replace(/[^0-9.]/g, '') : '';
+      const fallbackPrice = parseFloat(rawPrice) || 150;
+      const unitPrice = calculationResult?.unitPrice || fallbackPrice;
+      trackInitiateBooking({
+        id: selectedTour.id,
+        name: selectedTour.tourPageTitle || selectedTour.homepageTitle || 'Tour Package',
+        pricePerPerson: unitPrice,
+        guests: totalGuests || 1,
+      });
+    }
+  }, [selectedTour, calculationResult, totalGuests]);
 
   useEffect(() => {
      if (user) {

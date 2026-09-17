@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ import {
 import { getFullImageUrl } from '@/lib/utils';
 import type { GalleryImage, PricingTier, TourInclusion } from '@/lib/packages-data';
 import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
+import { trackViewTour } from '@/lib/analytics';
 
 interface TourDetailHeroProps {
   title: string;
@@ -72,6 +73,18 @@ export function TourDetailHero({
   const lowestTierPrice = perPersonTiers.length > 0 ? Math.min(...perPersonTiers.map(t => t.price)) : null;
   const startingDisplayPrice = hasTiers && lowestTierPrice !== null ? `$${lowestTierPrice}` : price;
   const startingSuffix = hasTiers ? 'per person' : (priceSuffix || 'per person');
+
+  // Track Tour View in GA4 (view_item) and Meta Pixel (ViewContent)
+  useEffect(() => {
+    const rawPrice = (typeof price === 'string') ? price.replace(/[^0-9.]/g, '') : '';
+    const numericPrice = parseFloat(rawPrice) || (lowestTierPrice || 150);
+    trackViewTour({
+      id: title,
+      name: title,
+      price: numericPrice,
+      category: category || 'Gem Mine Tours',
+    });
+  }, [title, price, category, lowestTierPrice]);
 
   return (
     <section id="overview" className="relative w-full py-8 sm:py-12 lg:py-20 bg-background border-b border-border/80 overflow-hidden">

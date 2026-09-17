@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useSiteContent, getContactPhone, getCleanPhone, getWhatsappUrl } from '@/lib/site-content';
+import { trackLeadSubmission } from '@/lib/analytics';
 import { 
   LoaderCircle, 
   MessageCircle, 
@@ -120,6 +121,11 @@ ${data.message}
       }
 
       setIsSubmitted(true);
+      trackLeadSubmission({
+        leadType: 'bespoke_proposal',
+        name: data.name,
+        category: 'Custom Proposal & 5-Day Bespoke Ring Package',
+      });
       form.reset();
       toast({
         title: 'Proposal Inquiry Received!',
