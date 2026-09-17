@@ -3,18 +3,26 @@
 
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { CalendarCheck, Clock, DollarSign } from 'lucide-react';
+import { CalendarCheck, Clock, DollarSign, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import type { PricingTier } from '@/lib/packages-data';
 
 interface TourFloatingBarProps {
   price: string;
   priceSuffix: string;
   duration: string;
   bookingLink: string;
+  pricingTiers?: PricingTier[];
 }
 
-export function TourFloatingBar({ price, priceSuffix, duration, bookingLink }: TourFloatingBarProps) {
+export function TourFloatingBar({ price, priceSuffix, duration, bookingLink, pricingTiers = [] }: TourFloatingBarProps) {
   const [isVisible, setIsVisible] = useState(false);
+
+  const hasTiers = Array.isArray(pricingTiers) && pricingTiers.length > 0;
+  const perPersonTiers = hasTiers ? pricingTiers.filter(t => t.pricing_type === 'per_person') : [];
+  const lowestTierPrice = perPersonTiers.length > 0 ? Math.min(...perPersonTiers.map(t => t.price)) : null;
+  const displayPrice = hasTiers && lowestTierPrice !== null ? `$${lowestTierPrice}` : price;
+  const displaySuffix = hasTiers && lowestTierPrice !== null ? 'per person' : priceSuffix;
 
   useEffect(() => {
     const heroElement = document.querySelector('section');
@@ -39,27 +47,37 @@ export function TourFloatingBar({ price, priceSuffix, duration, bookingLink }: T
     >
       <div className="rounded-2xl border border-border bg-card/95 backdrop-blur-md shadow-2xl overflow-hidden">
         {/* Colored top strip */}
-        <div className="h-1 bg-primary w-full" />
+        <div className="h-1 bg-[#0B1E38] w-full" />
 
-        <div className="p-5">
+        <div className="p-5 font-sans">
           {/* Price */}
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-serif mb-1">Starting from</p>
-          <div className="flex items-end gap-1 mb-4">
-            <span className="text-3xl font-bold text-foreground font-headline">{price}</span>
-            <span className="text-sm text-muted-foreground mb-1">{priceSuffix}</span>
+          <p className="text-[11px] text-muted-foreground uppercase tracking-[0.18em] font-sans font-medium mb-1">
+            {hasTiers ? 'Starting from' : 'Price'}
+          </p>
+          <div className="flex items-end gap-1 mb-2">
+            <span className="text-3xl font-bold text-foreground font-sans tracking-tight">{displayPrice}</span>
+            <span className="text-sm text-muted-foreground mb-1 font-sans">{displaySuffix}</span>
           </div>
+
+          {hasTiers && (
+            <div className="mb-3">
+              <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                ✓ Group Rates Available
+              </span>
+            </div>
+          )}
 
           {/* Duration */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-5 pb-5 border-b border-border">
-            <Clock className="h-4 w-4 text-primary shrink-0" />
+            <Clock className="h-4 w-4 text-[#0B1E38] dark:text-blue-300 shrink-0" />
             <span>{duration}</span>
           </div>
 
           {/* Book Now CTA */}
-          <Button asChild size="default" className="w-full rounded-full font-serif uppercase tracking-widest text-xs">
+          <Button asChild size="default" className="w-full rounded-full font-sans font-medium uppercase tracking-wider text-xs bg-[#0B1E38] hover:bg-[#071527] text-white border border-[#0B1E38] shadow-sm transition-all">
             <Link href={bookingLink} className="flex items-center justify-center gap-2">
               <CalendarCheck className="h-4 w-4" />
-              Book Now
+              <span>Book Tour</span>
             </Link>
           </Button>
         </div>

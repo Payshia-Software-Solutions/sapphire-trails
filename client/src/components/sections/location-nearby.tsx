@@ -430,31 +430,31 @@ export function LocationNearby({
 
   return (
     <section id="map-location" className="w-full py-16 sm:py-24 bg-background border-b border-border/60 scroll-mt-28">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         {/* Section Heading */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-2 bg-primary/10 border border-primary/20 px-3.5 py-1 rounded-full">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#0B1E38] dark:text-blue-400 mb-2 bg-[#0B1E38]/10 dark:bg-blue-950/40 border border-[#0B1E38]/20 dark:border-blue-800/40 px-3.5 py-1 rounded-full">
             <Navigation className="h-3.5 w-3.5" />
-            <span>Luxury Tour Circuit &amp; Interactive Map</span>
+            <span>Tour Circuit &amp; Interactive Map</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold font-serif text-foreground tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight">
             Interactive Destination Map
           </h2>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm sm:text-base text-muted-foreground mt-2">
             Click on any marker or excursion card to view photos, driving routes, and full details.
           </p>
         </div>
 
         {/* Quick Filter Destination Pills */}
         {nearbyAttractions.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-3">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-4">
             <button
               type="button"
               onClick={resetToAllBounds}
               className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all shadow-sm flex items-center gap-1.5 ${
                 !activePlace
-                  ? 'bg-primary text-primary-foreground shadow-primary/25 ring-2 ring-primary/40'
+                  ? 'bg-[#0B1E38] text-white dark:bg-blue-600 shadow-sm'
                   : 'bg-background-alt text-muted-foreground hover:text-foreground border border-border/70'
               }`}
             >
@@ -468,14 +468,14 @@ export function LocationNearby({
                 setActivePlace(null);
                 flyToMarker(currentLocationTitle);
               }}
-              className={`px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all shadow-sm flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all shadow-sm flex items-center gap-1.5 ${
                 activePlace?.name === currentLocationTitle
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'bg-[#0B1E38] text-white dark:bg-blue-600'
                   : 'bg-background-alt text-muted-foreground hover:text-foreground border border-border/70'
               }`}
             >
-              <MapPin className="h-3.5 w-3.5 text-primary" />
-              <span>👑 {currentLocationTitle}</span>
+              <MapPin className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-400" />
+              <span>{currentLocationTitle}</span>
             </button>
 
             {nearbyAttractions.map((place, idx) => (
@@ -556,15 +556,15 @@ export function LocationNearby({
           {/* Connected Nearby Excursions (4 Cols) */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-border/60">
-              <h3 className="text-base font-bold font-serif uppercase tracking-wider text-foreground flex items-center gap-2">
-                <Compass className="h-4 w-4 text-primary" />
+              <h3 className="text-sm sm:text-base font-semibold uppercase tracking-wider text-foreground flex items-center gap-2">
+                <Compass className="h-4 w-4 text-[#0B1E38] dark:text-blue-400" />
                 Connected Excursions ({nearbyAttractions.length})
               </h3>
               {nearbyAttractions.length > 0 && (
                 <button
                   type="button"
                   onClick={resetToAllBounds}
-                  className="text-[11px] text-primary hover:underline font-semibold"
+                  className="text-[11px] text-[#0B1E38] dark:text-blue-400 hover:underline font-semibold"
                 >
                   Show All
                 </button>
@@ -572,7 +572,7 @@ export function LocationNearby({
             </div>
 
             {nearbyAttractions.length === 0 ? (
-              <div className="p-6 bg-background-alt rounded-xl border border-border/60 text-center text-xs text-muted-foreground">
+              <div className="p-6 bg-background-alt rounded-2xl border border-border/60 text-center text-xs text-muted-foreground">
                 No nearby attractions recorded.
               </div>
             ) : (
@@ -589,23 +589,23 @@ export function LocationNearby({
                         setActivePlace(attraction);
                         flyToMarker(attraction.name);
                       }}
-                      className={`p-3.5 rounded-xl border transition-all duration-300 flex flex-col gap-2.5 cursor-pointer shadow-sm ${
+                      className={`p-3.5 rounded-2xl border transition-all duration-300 flex flex-col gap-2.5 cursor-pointer shadow-sm ${
                         isSelected 
-                          ? 'bg-card border-primary ring-1 ring-primary/40' 
-                          : 'bg-background-alt hover:bg-card border-border/70 hover:border-primary/40'
+                          ? 'bg-card border-[#0B1E38] ring-1 ring-[#0B1E38]/30 dark:border-blue-500' 
+                          : 'bg-background-alt hover:bg-card border-border/70 hover:border-[#0B1E38]/40'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-primary/10 border border-primary/20 text-primary'}`}>
+                          <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-[#0B1E38] text-white' : 'bg-[#0B1E38]/10 border border-[#0B1E38]/20 text-[#0B1E38] dark:bg-blue-950/40 dark:text-blue-400'}`}>
                             <Icon className="h-4 w-4" />
                           </div>
-                          <span className="font-bold text-xs sm:text-sm font-serif text-foreground truncate">
+                          <span className="font-semibold text-xs sm:text-sm text-foreground truncate">
                             {attraction.name}
                           </span>
                         </div>
                         {attraction.distance && (
-                          <Badge variant="outline" className="text-[10px] font-mono shrink-0 bg-primary/10 text-primary border-primary/20">
+                          <Badge variant="outline" className="text-[10px] font-mono shrink-0 bg-[#0B1E38]/5 text-[#0B1E38] dark:text-blue-400 border-[#0B1E38]/20 rounded-full">
                             {attraction.distance}
                           </Badge>
                         )}

@@ -379,501 +379,377 @@ class Mailer
     }
 
     /**
+     * Common Sapphire Trails luxury email wrapper matching website theme
+     */
+    public function wrapEmailTheme($titleBadge, $mainHeading, $bodyContent, $refBadge = null, $actionButtonsHtml = '')
+    {
+        $contact = $this->getContactDetails();
+        $waNum = $contact['whatsapp'];
+        $phoneStr = $contact['phone'];
+        $emailStr = $contact['email'];
+        $year = date('Y');
+
+        return "
+        <!DOCTYPE html>
+        <html lang=\"en\">
+        <head>
+          <meta charset=\"UTF-8\">
+          <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+          <title>" . htmlspecialchars(strip_tags($mainHeading)) . "</title>
+        </head>
+        <body style=\"margin: 0; padding: 0; background-color: #F1F5F9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;\">
+          <div style=\"background-color: #F1F5F9; padding: 36px 12px; min-height: 100%;\">
+            <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 620px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(11, 30, 56, 0.08);\">
+              
+              <!-- Luxury Top Gold Stripe -->
+              <tr>
+                <td style=\"height: 4px; background: linear-gradient(90deg, #b8860b 0%, #d4af37 35%, #f7e6a1 50%, #d4af37 65%, #b8860b 100%); font-size: 0; line-height: 0;\">&nbsp;</td>
+              </tr>
+
+              <!-- Brand Header (Deep Midnight Navy #0B1E38) -->
+              <tr>
+                <td style=\"background-color: #0B1E38; padding: 24px 30px;\">
+                  <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
+                    <tr>
+                      <td align=\"left\" style=\"vertical-align: middle;\">
+                        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">
+                          <tr>
+                            <td style=\"vertical-align: middle; padding-right: 12px;\">
+                              <div style=\"width: 40px; height: 40px; border-radius: 10px; background: rgba(212,175,55,0.18); border: 1px solid rgba(212,175,55,0.45); text-align: center; line-height: 40px; font-size: 20px;\">
+                                💎
+                              </div>
+                            </td>
+                            <td style=\"vertical-align: middle;\">
+                              <span style=\"font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-size: 19px; font-weight: 700; letter-spacing: 0.16em; color: #FFFFFF; text-transform: uppercase; display: block;\">SAPPHIRE TRAILS</span>
+                              <span style=\"font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #D4AF37; font-weight: 600; display: block; margin-top: 3px;\">CEYLON GEM EXPEDITIONS &bull; SRI LANKA</span>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      " . (!empty($refBadge) ? "
+                      <td align=\"right\" style=\"vertical-align: middle;\">
+                        <span style=\"display: inline-block; background-color: rgba(255,255,255,0.08); color: #F7E6A1; border: 1px solid rgba(212,175,55,0.35); font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.06em; font-family: monospace;\">
+                          {$refBadge}
+                        </span>
+                      </td>
+                      " : "") . "
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Main Card Body -->
+              <tr>
+                <td style=\"padding: 32px 30px 24px 30px; background-color: #FFFFFF;\">
+                  " . (!empty($titleBadge) ? "
+                  <div style=\"margin-bottom: 14px;\">
+                    {$titleBadge}
+                  </div>
+                  " : "") . "
+                  
+                  <h1 style=\"color: #0B1E38; font-size: 22px; font-weight: 700; margin: 0 0 12px 0; font-family: 'Playfair Display', Georgia, serif; line-height: 1.35;\">
+                    {$mainHeading}
+                  </h1>
+
+                  {$bodyContent}
+
+                  " . (!empty($actionButtonsHtml) ? "
+                  <div style=\"margin-top: 28px; text-align: center;\">
+                    {$actionButtonsHtml}
+                  </div>
+                  " : "") . "
+                </td>
+              </tr>
+
+              <!-- Footer (Deep Midnight Navy #0B1E38 with Gold Trim) -->
+              <tr>
+                <td style=\"background-color: #0B1E38; border-top: 3px solid #D4AF37; padding: 24px 30px; text-align: center;\">
+                  <span style=\"font-family: 'Playfair Display', Georgia, serif; font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: #FFFFFF; text-transform: uppercase; display: block;\">SAPPHIRE TRAILS SRI LANKA</span>
+                  <p style=\"margin: 6px 0 0 0; font-size: 11px; color: #94A3B8; line-height: 1.5;\">
+                    Grand Silver Ray Complex, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka
+                  </p>
+                  <p style=\"margin: 4px 0 0 0; font-size: 11px; color: #CBD5E1;\">
+                    Direct: <a href=\"tel:" . preg_replace('/[^\+0-9]/', '', $phoneStr) . "\" style=\"color: #CBD5E1; text-decoration: none;\">{$phoneStr}</a> &bull; 
+                    <a href=\"mailto:{$emailStr}\" style=\"color: #F7E6A1; text-decoration: none;\">{$emailStr}</a> &bull; 
+                    <a href=\"https://sapphiretrails.lk\" style=\"color: #F7E6A1; text-decoration: none;\">www.sapphiretrails.lk</a>
+                  </p>
+                  <div style=\"margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: #64748B;\">
+                    NGJA Registered &bull; Certified Private Gem Mine Expeditions &bull; &copy; {$year} Sapphire Trails (Pvt) Ltd.
+                  </div>
+                </td>
+              </tr>
+
+            </table>
+          </div>
+        </body>
+        </html>
+        ";
+    }
+
+    /**
      * Send Diagnostics Test Email
      */
     public function sendTestEmail($to)
     {
-        $html = "
-        <div style=\"background-color: #0f1115; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px 20px; color: #f8fafc;\">
-          <div style=\"max-width: 580px; margin: 0 auto; background-color: #171923; border: 1px solid #2d3748; border-radius: 12px; padding: 32px;\">
-            <div style=\"text-align: center; margin-bottom: 24px;\">
-              <span style=\"font-size: 30px; letter-spacing: 0.1em; font-weight: bold; color: #c79954;\">SAPPHIRE TRAILS</span>
-            </div>
-            <h2 style=\"color: #ffffff; font-size: 22px; margin-bottom: 12px; text-align: center;\">SMTP Test Email Successful</h2>
-            <p style=\"color: #94a3b8; font-size: 15px; line-height: 1.6;\">This is an automated test message from your Sapphire Trails PHP Mail Server. If you are receiving this, your SMTP connection settings, authentication, and encryption are functioning perfectly.</p>
-            <div style=\"background-color: #0f1115; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; margin: 24px 0; font-size: 13px; color: #cbd5e1;\">
-              <div><strong>SMTP Host:</strong> {$this->settings['smtp_host']}</div>
-              <div><strong>Port:</strong> {$this->settings['smtp_port']} ({$this->settings['smtp_encryption']})</div>
-              <div><strong>From Address:</strong> {$this->settings['from_email']}</div>
-              <div><strong>Timestamp:</strong> " . date('Y-m-d H:i:s T') . "</div>
-            </div>
-            <p style=\"font-size: 12px; color: #64748b; text-align: center; margin: 0;\">Sapphire Trails Luxury Concierge Mail Engine</p>
-          </div>
-        </div>";
+        $badge = "<span style=\"display: inline-block; background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">✓ SMTP Connection Operational</span>";
+        $heading = "SMTP Mail Server Diagnostics Passed";
 
+        $body = "
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 20px 0;\">
+          This is an automated test message from your Sapphire Trails PHP Mail Server. Your SMTP connection settings, TLS/SSL authentication, and luxury HTML email formatting are functioning properly.
+        </p>
+        <div style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; font-size: 13px; color: #334155;\">
+          <div style=\"padding: 4px 0;\"><strong>SMTP Host:</strong> <span style=\"color: #0B1E38;\">{$this->settings['smtp_host']}</span></div>
+          <div style=\"padding: 4px 0;\"><strong>Port:</strong> <span style=\"color: #0B1E38;\">{$this->settings['smtp_port']} ({$this->settings['smtp_encryption']})</span></div>
+          <div style=\"padding: 4px 0;\"><strong>Sender Address:</strong> <span style=\"color: #0B1E38;\">{$this->settings['from_email']}</span></div>
+          <div style=\"padding: 4px 0;\"><strong>Timestamp:</strong> <span style=\"color: #0B1E38;\">" . date('Y-m-d H:i:s T') . "</span></div>
+        </div>
+        ";
+
+        $html = $this->wrapEmailTheme($badge, $heading, $body, 'DIAGNOSTICS');
         return $this->send($to, "✅ Sapphire Trails Mail Server Test - " . date('H:i:s'), $html, 'test');
     }
 
-    // ==========================================
-    // HTML Email Templates with Luxury Dark/Gold Styling
-    // ==========================================
-
+    /**
+     * Customer Booking Confirmation Template
+     */
     private function renderCustomerBookingTemplate($bookingId, $name, $tourName, $tourDate, $guests, $adults, $children, $totalPrice, $tourImage = '', $tourDuration = '1 Day Expedition', $specialRequests = null)
     {
         $displayImg = $this->resolveFullImageUrl($tourImage);
         $formattedPrice = number_format((float)$totalPrice, 2);
         $contact = $this->getContactDetails();
         $waNum = $contact['whatsapp'];
-        $phoneStr = $contact['phone'];
-        $emailStr = $contact['email'];
 
-        return "
-        <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
-          <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 620px; margin: 0 auto; background-color: #111622; border: 1px solid #232d40; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);\">
-            
-            <!-- Top Luxury Gold Gradient Bar -->
-            <tr>
-              <td style=\"height: 4px; background: linear-gradient(90deg, #997838 0%, #d4af37 35%, #fff2be 50%, #d4af37 65%, #997838 100%); font-size: 0; line-height: 0;\">&nbsp;</td>
-            </tr>
+        $badge = "<span style=\"display: inline-block; background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">✓ Reservation Request Received</span>";
+        $heading = "Your Expedition Request is Confirmed!";
 
-            <!-- Brand Header -->
-            <tr>
-              <td style=\"padding: 26px 30px 20px 30px; border-bottom: 1px solid #1c2333;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
-                  <tr>
-                    <td align=\"left\" style=\"vertical-align: middle;\">
-                      <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">
-                        <tr>
-                          <td style=\"vertical-align: middle; padding-right: 12px;\">
-                            <div style=\"width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.06)); border: 1px solid rgba(212,175,55,0.45); text-align: center; line-height: 42px; font-size: 22px;\">
-                              💎
-                            </div>
-                          </td>
-                          <td style=\"vertical-align: middle;\">
-                            <span style=\"font-family: 'Cinzel', 'Georgia', serif; font-size: 20px; font-weight: bold; letter-spacing: 0.18em; color: #d4af37; text-transform: uppercase; display: block;\">SAPPHIRE TRAILS</span>
-                            <span style=\"font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #94a3b8; display: block; margin-top: 3px;\">Luxury Gem Mine Expeditions &bull; Sri Lanka</span>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                    <td align=\"right\" style=\"vertical-align: middle;\">
-                      <span style=\"display: inline-block; background-color: rgba(212,175,55,0.12); color: #e6ca65; border: 1px solid rgba(212,175,55,0.35); font-size: 11px; font-weight: bold; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.08em; font-family: monospace;\">
-                        Ref #{$bookingId}
-                      </span>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+        $imgHtml = !empty($displayImg) ? "
+        <div style=\"margin-bottom: 22px; border-radius: 12px; overflow: hidden; border: 1px solid #E2E8F0;\">
+          <img src=\"{$displayImg}\" alt=\"{$tourName}\" width=\"560\" style=\"width: 100%; max-width: 560px; height: 180px; object-fit: cover; display: block;\" />
+          <div style=\"padding: 12px 16px; background-color: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;\">
+            <span style=\"font-size: 13px; font-weight: 700; color: #0B1E38;\">{$tourName}</span>
+            <span style=\"font-size: 11px; color: #64748B; font-weight: 600;\">⏱ {$tourDuration}</span>
+          </div>
+        </div>
+        " : "";
 
-            <!-- Hero Notification -->
-            <tr>
-              <td style=\"padding: 30px 30px 20px 30px;\">
-                <span style=\"display: inline-block; background-color: rgba(52, 211, 153, 0.12); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 14px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;\">
-                  ✓ Reservation Request Received
-                </span>
-                <h1 style=\"color: #ffffff; font-size: 24px; font-weight: 700; margin: 0 0 10px 0; font-family: 'Cinzel', 'Georgia', serif; letter-spacing: 0.02em; line-height: 1.3;\">
-                  Your Expedition Request is Confirmed!
-                </h1>
-                <p style=\"color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0;\">
-                  Dear <strong style=\"color: #ffffff;\">{$name}</strong>, thank you for booking with Sapphire Trails. We have received your reservation inquiry for the <strong style=\"color: #d4af37;\">{$tourName}</strong>. Our luxury concierge is reviewing pit access and logistics and will confirm your pickup schedule shortly.
-                </p>
-              </td>
-            </tr>
+        $body = "
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 18px 0;\">
+          Dear <strong style=\"color: #0B1E38;\">{$name}</strong>, thank you for booking with Sapphire Trails. We have received your reservation inquiry for the <strong style=\"color: #0B1E38;\">{$tourName}</strong>. Our luxury concierge is reviewing pit access and logistics and will confirm your pickup schedule shortly.
+        </p>
 
-            <!-- Visual Tour Showcase Card -->
-            <tr>
-              <td style=\"padding: 0 30px 22px 30px;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #0b0f17; border: 1px solid #232c3f; border-radius: 14px; overflow: hidden;\">
-                  <tr>
-                    <td>
-                      <img src=\"{$displayImg}\" alt=\"{$tourName}\" width=\"560\" style=\"width: 100%; max-width: 560px; height: 180px; object-fit: cover; display: block; border-bottom: 1px solid #1f2738;\" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 16px 20px;\">
-                      <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
-                        <tr>
-                          <td align=\"left\" style=\"vertical-align: middle;\">
-                            <span style=\"font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.12em; color: #94a3b8; display: block;\">Selected Expedition Package</span>
-                            <span style=\"font-size: 17px; font-weight: bold; color: #d4af37; font-family: 'Georgia', serif; display: block; margin-top: 2px;\">{$tourName}</span>
-                          </td>
-                          <td align=\"right\" style=\"vertical-align: middle;\">
-                            <span style=\"font-size: 11px; font-weight: 600; color: #cbd5e1; background-color: #171d2b; border: 1px solid #283348; padding: 5px 12px; border-radius: 8px; white-space: nowrap;\">
-                              ⏱ {$tourDuration}
-                            </span>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+        {$imgHtml}
 
-            <!-- Booking Details Table -->
-            <tr>
-              <td style=\"padding: 0 30px 22px 30px;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #0b0f17; border: 1px solid #232c3f; border-radius: 14px; padding: 18px 20px;\">
-                  <tr>
-                    <td colspan=\"2\" style=\"padding-bottom: 12px; border-bottom: 1px solid #1a2232;\">
-                      <span style=\"font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.12em; color: #d4af37;\">Expedition Summary</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 10px 0; color: #94a3b8; font-size: 13px; border-bottom: 1px solid #161c28; width: 40%;\">Preferred Date:</td>
-                    <td style=\"padding: 10px 0; text-align: right; color: #ffffff; font-weight: 600; font-size: 13px; border-bottom: 1px solid #161c28;\">
-                      📅 {$tourDate} &bull; 9:00 AM
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 10px 0; color: #94a3b8; font-size: 13px; border-bottom: 1px solid #161c28;\">Travelers / Guests:</td>
-                    <td style=\"padding: 10px 0; text-align: right; color: #ffffff; font-weight: 600; font-size: 13px; border-bottom: 1px solid #161c28;\">
-                      👥 {$guests} Guest(s) ({$adults} Adults" . ($children > 0 ? ", {$children} Children" : "") . ")
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 10px 0; color: #94a3b8; font-size: 13px; border-bottom: 1px solid #161c28;\">Reservation Status:</td>
-                    <td style=\"padding: 10px 0; text-align: right; border-bottom: 1px solid #161c28;\">
-                      <span style=\"color: #fbbf24; background-color: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.3); font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 6px;\">
-                        Pending Review
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 12px 0 4px 0; color: #94a3b8; font-size: 13px;\">Estimated Total:</td>
-                    <td style=\"padding: 12px 0 4px 0; text-align: right;\">
-                      <span style=\"color: #d4af37; font-weight: bold; font-size: 18px; font-family: monospace;\">\${$formattedPrice} USD</span>
-                      <span style=\"display: block; font-size: 10px; color: #64748b; margin-top: 2px;\">(Pay on Arrival / Digital Invoice)</span>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+        <!-- Booking Details Table -->
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;\">
+          <tr>
+            <td colspan=\"2\" style=\"padding-bottom: 10px; border-bottom: 1px solid #E2E8F0;\">
+              <span style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #B8860B;\">Expedition Summary</span>
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 9px 0; color: #64748B; font-size: 13px; border-bottom: 1px solid #EDF2F7; width: 40%;\">Preferred Date:</td>
+            <td style=\"padding: 9px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">
+              📅 {$tourDate} &bull; 9:00 AM
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 9px 0; color: #64748B; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">Travelers:</td>
+            <td style=\"padding: 9px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">
+              👥 {$guests} Guest(s) ({$adults} Adults" . ($children > 0 ? ", {$children} Children" : "") . ")
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 9px 0; color: #64748B; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">Reservation Status:</td>
+            <td style=\"padding: 9px 0; text-align: right; border-bottom: 1px solid #EDF2F7;\">
+              <span style=\"color: #92400E; background-color: #FEF3C7; border: 1px solid #FDE68A; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 9999px;\">
+                Pending Concierge Review
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 12px 0 4px 0; color: #64748B; font-size: 13px;\">Estimated Total:</td>
+            <td style=\"padding: 12px 0 4px 0; text-align: right;\">
+              <span style=\"color: #0B1E38; font-weight: 700; font-size: 18px; font-family: monospace;\">\${$formattedPrice} USD</span>
+              <span style=\"display: block; font-size: 10px; color: #64748B; margin-top: 2px;\">(Pay on Arrival / Digital Invoice)</span>
+            </td>
+          </tr>
+        </table>
 
-            <!-- Vehicle Arrangement & Special Requests Callout (if present) -->
-            " . (!empty($specialRequests) ? "
-            <tr>
-              <td style=\"padding: 0 30px 22px 30px;\">
-                <div style=\"background-color: #121824; border-left: 3px solid #d4af37; border-radius: 0 10px 10px 0; padding: 14px 18px;\">
-                  <span style=\"color: #d4af37; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px;\">Vehicle &amp; Special Requests:</span>
-                  <p style=\"color: #cbd5e1; font-size: 13px; font-style: italic; margin: 0; line-height: 1.5;\">\"" . nl2br(htmlspecialchars($specialRequests)) . "\"</p>
-                </div>
-              </td>
-            </tr>
-            " : "") . "
+        " . (!empty($specialRequests) ? "
+        <div style=\"background-color: #FEF3C7; border-left: 3px solid #D4AF37; border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 20px;\">
+          <span style=\"color: #92400E; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;\">Vehicle &amp; Special Requests:</span>
+          <p style=\"color: #78350F; font-size: 13px; font-style: italic; margin: 0; line-height: 1.5;\">\"" . nl2br(htmlspecialchars($specialRequests)) . "\"</p>
+        </div>
+        " : "") . "
 
-            <!-- Next Steps Guide -->
-            <tr>
-              <td style=\"padding: 0 30px 24px 30px;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #0b0f17; border: 1px solid #232c3f; border-radius: 14px; padding: 18px 20px;\">
-                  <tr>
-                    <td colspan=\"3\" style=\"padding-bottom: 12px; border-bottom: 1px solid #1a2232;\">
-                      <span style=\"font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.12em; color: #d4af37;\">What Happens Next?</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 14px 8px 6px 0; vertical-align: top; width: 33%;\">
-                      <span style=\"display: inline-block; width: 22px; height: 22px; border-radius: 50%; background-color: rgba(212,175,55,0.2); color: #d4af37; font-weight: bold; font-size: 11px; text-align: center; line-height: 22px; margin-bottom: 6px;\">1</span>
-                      <p style=\"margin: 0; color: #ffffff; font-size: 12px; font-weight: 600;\">Concierge Review</p>
-                      <p style=\"margin: 4px 0 0 0; color: #94a3b8; font-size: 11px; line-height: 1.4;\">Verification of active mine pit safety.</p>
-                    </td>
-                    <td style=\"padding: 14px 8px 6px 8px; vertical-align: top; width: 33%;\">
-                      <span style=\"display: inline-block; width: 22px; height: 22px; border-radius: 50%; background-color: rgba(212,175,55,0.2); color: #d4af37; font-weight: bold; font-size: 11px; text-align: center; line-height: 22px; margin-bottom: 6px;\">2</span>
-                      <p style=\"margin: 0; color: #ffffff; font-size: 12px; font-weight: 600;\">Confirmed Voucher</p>
-                      <p style=\"margin: 4px 0 0 0; color: #94a3b8; font-size: 11px; line-height: 1.4;\">Delivered to your WhatsApp &amp; Email.</p>
-                    </td>
-                    <td style=\"padding: 14px 0 6px 8px; vertical-align: top; width: 33%;\">
-                      <span style=\"display: inline-block; width: 22px; height: 22px; border-radius: 50%; background-color: rgba(212,175,55,0.2); color: #d4af37; font-weight: bold; font-size: 11px; text-align: center; line-height: 22px; margin-bottom: 6px;\">3</span>
-                      <p style=\"margin: 0; color: #ffffff; font-size: 12px; font-weight: 600;\">Expedition Day</p>
-                      <p style=\"margin: 4px 0 0 0; color: #94a3b8; font-size: 11px; line-height: 1.4;\">VIP private pickup at your location.</p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+        <!-- Next Steps -->
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px 18px; margin-bottom: 22px;\">
+          <tr>
+            <td colspan=\"3\" style=\"padding-bottom: 10px; border-bottom: 1px solid #E2E8F0;\">
+              <span style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #B8860B;\">What Happens Next?</span>
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 12px 8px 6px 0; vertical-align: top; width: 33%;\">
+              <span style=\"display: inline-block; width: 22px; height: 22px; border-radius: 50%; background-color: #0B1E38; color: #FFFFFF; font-weight: 700; font-size: 11px; text-align: center; line-height: 22px; margin-bottom: 6px;\">1</span>
+              <p style=\"margin: 0; color: #0B1E38; font-size: 12px; font-weight: 700;\">Concierge Review</p>
+              <p style=\"margin: 3px 0 0 0; color: #64748B; font-size: 11px; line-height: 1.4;\">Verification of active mine pit safety.</p>
+            </td>
+            <td style=\"padding: 12px 8px 6px 8px; vertical-align: top; width: 33%;\">
+              <span style=\"display: inline-block; width: 22px; height: 22px; border-radius: 50%; background-color: #0B1E38; color: #FFFFFF; font-weight: 700; font-size: 11px; text-align: center; line-height: 22px; margin-bottom: 6px;\">2</span>
+              <p style=\"margin: 0; color: #0B1E38; font-size: 12px; font-weight: 700;\">Confirmed Voucher</p>
+              <p style=\"margin: 3px 0 0 0; color: #64748B; font-size: 11px; line-height: 1.4;\">Delivered to your WhatsApp &amp; Email.</p>
+            </td>
+            <td style=\"padding: 12px 0 6px 8px; vertical-align: top; width: 33%;\">
+              <span style=\"display: inline-block; width: 22px; height: 22px; border-radius: 50%; background-color: #0B1E38; color: #FFFFFF; font-weight: 700; font-size: 11px; text-align: center; line-height: 22px; margin-bottom: 6px;\">3</span>
+              <p style=\"margin: 0; color: #0B1E38; font-size: 12px; font-weight: 700;\">Expedition Day</p>
+              <p style=\"margin: 3px 0 0 0; color: #64748B; font-size: 11px; line-height: 1.4;\">VIP private pickup at your location.</p>
+            </td>
+          </tr>
+        </table>
+        ";
 
-            <!-- Action Buttons -->
-            <tr>
-              <td style=\"padding: 0 30px 30px 30px; text-align: center;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
-                  <tr>
-                    <td align=\"center\">
-                      <a href=\"http://localhost:3000/profile\" style=\"display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #aa8232 100%); color: #0b0d14; font-weight: 700; font-size: 13px; text-decoration: none; padding: 13px 26px; border-radius: 8px; letter-spacing: 0.03em; margin: 4px; box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);\">
-                        View in My Profile Portal &rarr;
-                      </a>
-                      <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails Concierge, I am inquiring about my booking #ST-BK-{$bookingId} ({$name}).") . "\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 8px; margin: 4px;\">
-                        💬 WhatsApp Concierge (24/7)
-                      </a>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+        $buttons = "
+          <a href=\"https://sapphiretrails.lk/booking/confirmation\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 26px; border-radius: 9999px; margin: 4px; box-shadow: 0 4px 12px rgba(11, 30, 56, 0.2);\">
+            View Booking Status &rarr;
+          </a>
+          <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails Concierge, I am inquiring about my booking #ST-BK-{$bookingId} ({$name}).") . "\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 9999px; margin: 4px;\">
+            💬 WhatsApp Concierge (24/7)
+          </a>
+        ";
 
-            <!-- Luxury Footer -->
-            <tr>
-              <td style=\"background-color: #0c0f17; border-top: 1px solid #1c2333; padding: 24px 30px; text-align: center;\">
-                <p style=\"margin: 0; font-size: 12px; color: #64748b; line-height: 1.6;\">
-                  Sapphire Trails Luxury Tour Concierge &bull; Grand Silver Ray Complex, Ratnapura, Sri Lanka
-                </p>
-                <p style=\"margin: 4px 0 0 0; font-size: 11px; color: #475569;\">
-                  Direct: {$phoneStr} &bull; {$emailStr} &bull; www.sapphiretrails.lk
-                </p>
-                <p style=\"margin: 8px 0 0 0; font-size: 10px; color: #334155;\">
-                  &copy; " . date('Y') . " Sapphire Trails (Pvt) Ltd. All rights reserved.
-                </p>
-              </td>
-            </tr>
-
-          </table>
-        </div>";
+        return $this->wrapEmailTheme($badge, $heading, $body, "#ST-BK-{$bookingId}", $buttons);
     }
 
+    /**
+     * Admin Booking Notification Template
+     */
     private function renderAdminBookingTemplate($bookingId, $name, $email, $phone, $tourName, $tourDate, $guests, $adults, $children, $totalPrice, $message, $tourImage = '', $tourDuration = '1 Day Expedition')
     {
         $displayImg = $this->resolveFullImageUrl($tourImage);
         $formattedPrice = number_format((float)$totalPrice, 2);
-        $contact = $this->getContactDetails();
-        $phoneStr = $contact['phone'];
-        $emailStr = $contact['email'];
-        
+
         $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
         if (substr($cleanPhone, 0, 1) === '0') {
             $cleanPhone = '94' . substr($cleanPhone, 1);
         }
 
-        return "
-        <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
-          <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 620px; margin: 0 auto; background-color: #111622; border: 1px solid #232d40; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);\">
-            
-            <!-- Top Luxury Gold Gradient Bar -->
-            <tr>
-              <td style=\"height: 4px; background: linear-gradient(90deg, #997838 0%, #d4af37 35%, #fff2be 50%, #d4af37 65%, #997838 100%); font-size: 0; line-height: 0;\">&nbsp;</td>
-            </tr>
+        $badge = "<span style=\"display: inline-block; background-color: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">⚡ Action Required &bull; New Booking Request</span>";
+        $heading = "New Expedition Reservation Received";
 
-            <!-- Brand Header -->
-            <tr>
-              <td style=\"padding: 26px 30px 20px 30px; border-bottom: 1px solid #1c2333;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
-                  <tr>
-                    <td align=\"left\" style=\"vertical-align: middle;\">
-                      <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">
-                        <tr>
-                          <td style=\"vertical-align: middle; padding-right: 12px;\">
-                            <div style=\"width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.06)); border: 1px solid rgba(212,175,55,0.45); text-align: center; line-height: 42px; font-size: 22px;\">
-                              💎
-                            </div>
-                          </td>
-                          <td style=\"vertical-align: middle;\">
-                            <span style=\"font-family: 'Cinzel', 'Georgia', serif; font-size: 20px; font-weight: bold; letter-spacing: 0.18em; color: #d4af37; text-transform: uppercase; display: block;\">SAPPHIRE TRAILS</span>
-                            <span style=\"font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #94a3b8; display: block; margin-top: 3px;\">Admin Expedition Concierge Desk</span>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                    <td align=\"right\" style=\"vertical-align: middle;\">
-                      <span style=\"display: inline-block; background-color: rgba(212,175,55,0.15); color: #e6ca65; border: 1px solid rgba(212,175,55,0.4); font-size: 11px; font-weight: bold; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.08em; font-family: monospace;\">
-                        New Booking #{$bookingId}
-                      </span>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+        $body = "
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 18px 0;\">
+          A new guest has submitted a reservation request for <strong style=\"color: #0B1E38;\">{$tourName}</strong>. Please review traveler details and confirm mine safety &amp; vehicle logistics.
+        </p>
 
-            <!-- Hero Notification -->
-            <tr>
-              <td style=\"padding: 30px 30px 20px 30px;\">
-                <span style=\"display: inline-block; background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 14px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;\">
-                  ⚡ Action Required &bull; New Booking Request
-                </span>
-                <h1 style=\"color: #ffffff; font-size: 24px; font-weight: 700; margin: 0 0 10px 0; font-family: 'Cinzel', 'Georgia', serif; letter-spacing: 0.02em; line-height: 1.3;\">
-                  New Tour Booking Request Received
-                </h1>
-                <p style=\"color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0;\">
-                  A new guest has submitted an expedition reservation request for <strong style=\"color: #d4af37;\">{$tourName}</strong>. Please review traveler details and confirm availability.
-                </p>
-              </td>
-            </tr>
+        <!-- Reservation Parameters Table -->
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 18px;\">
+          <tr>
+            <td colspan=\"2\" style=\"padding-bottom: 10px; border-bottom: 1px solid #E2E8F0;\">
+              <span style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #B8860B;\">Reservation Parameters</span>
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 8px 0; color: #64748B; font-size: 13px; width: 40%;\">Tour Requested:</td>
+            <td style=\"padding: 8px 0; text-align: right; color: #0B1E38; font-weight: 700; font-size: 13px;\">{$tourName} ({$tourDuration})</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 8px 0; color: #64748B; font-size: 13px;\">Requested Date:</td>
+            <td style=\"padding: 8px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px;\">📅 {$tourDate} &bull; 9:00 AM</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 8px 0; color: #64748B; font-size: 13px;\">Party Size:</td>
+            <td style=\"padding: 8px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px;\">👥 {$guests} Total ({$adults} Adults" . ($children > 0 ? ", {$children} Children" : "") . ")</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 8px 0; color: #64748B; font-size: 13px;\">Estimated Value:</td>
+            <td style=\"padding: 8px 0; text-align: right; color: #0B1E38; font-weight: 700; font-size: 15px; font-family: monospace;\">\${$formattedPrice} USD</td>
+          </tr>
+        </table>
 
-            <!-- Tour Visual Showcase Card -->
-            <tr>
-              <td style=\"padding: 0 30px 22px 30px;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #0b0f17; border: 1px solid #232c3f; border-radius: 14px; overflow: hidden;\">
-                  <tr>
-                    <td>
-                      <img src=\"{$displayImg}\" alt=\"{$tourName}\" width=\"560\" style=\"width: 100%; max-width: 560px; height: 180px; object-fit: cover; display: block; border-bottom: 1px solid #1f2738;\" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 16px 20px;\">
-                      <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
-                        <tr>
-                          <td align=\"left\" style=\"vertical-align: middle;\">
-                            <span style=\"font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.12em; color: #94a3b8; display: block;\">Tour Package Requested</span>
-                            <span style=\"font-size: 17px; font-weight: bold; color: #d4af37; font-family: 'Georgia', serif; display: block; margin-top: 2px;\">{$tourName}</span>
-                          </td>
-                          <td align=\"right\" style=\"vertical-align: middle;\">
-                            <span style=\"font-size: 11px; font-weight: 600; color: #cbd5e1; background-color: #171d2b; border: 1px solid #283348; padding: 5px 12px; border-radius: 8px; white-space: nowrap;\">
-                              ⏱ {$tourDuration}
-                            </span>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+        <!-- Guest Contact Details Table -->
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 18px;\">
+          <tr>
+            <td colspan=\"2\" style=\"padding-bottom: 10px; border-bottom: 1px solid #E2E8F0;\">
+              <span style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #B8860B;\">Guest Contact Information</span>
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 7px 0; color: #64748B; font-size: 13px; width: 35%;\">Lead Guest:</td>
+            <td style=\"padding: 7px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$name}</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 7px 0; color: #64748B; font-size: 13px;\">Email Address:</td>
+            <td style=\"padding: 7px 0; text-align: right; font-size: 13px;\">
+              <a href=\"mailto:{$email}\" style=\"color: #1E40AF; text-decoration: none; font-weight: 600;\">{$email}</a>
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 7px 0; color: #64748B; font-size: 13px;\">Phone / WhatsApp:</td>
+            <td style=\"padding: 7px 0; text-align: right; font-size: 13px;\">
+              <a href=\"tel:{$phone}\" style=\"color: #047857; text-decoration: none; font-weight: 600;\">{$phone}</a>
+            </td>
+          </tr>
+        </table>
 
-            <!-- Reservation Parameters Box -->
-            <tr>
-              <td style=\"padding: 0 30px 20px 30px;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #0b0f17; border: 1px solid #232c3f; border-radius: 14px; padding: 18px 20px;\">
-                  <tr>
-                    <td colspan=\"2\" style=\"padding-bottom: 12px; border-bottom: 1px solid #1a2232;\">
-                      <span style=\"font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.12em; color: #d4af37;\">Expedition Parameters</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 10px 0; color: #94a3b8; font-size: 13px; border-bottom: 1px solid #161c28; width: 40%;\">Requested Date:</td>
-                    <td style=\"padding: 10px 0; text-align: right; color: #ffffff; font-weight: 600; font-size: 13px; border-bottom: 1px solid #161c28;\">
-                      📅 {$tourDate} &bull; 9:00 AM
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 10px 0; color: #94a3b8; font-size: 13px; border-bottom: 1px solid #161c28;\">Travelers:</td>
-                    <td style=\"padding: 10px 0; text-align: right; color: #ffffff; font-weight: 600; font-size: 13px; border-bottom: 1px solid #161c28;\">
-                      👥 {$guests} Total ({$adults} Adults" . ($children > 0 ? ", {$children} Children" : "") . ")
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 10px 0; color: #94a3b8; font-size: 13px; border-bottom: 1px solid #161c28;\">Reservation Status:</td>
-                    <td style=\"padding: 10px 0; text-align: right; border-bottom: 1px solid #161c28;\">
-                      <span style=\"color: #fbbf24; background-color: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.3); font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 6px;\">
-                        Pending Review
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 12px 0 4px 0; color: #94a3b8; font-size: 13px;\">Estimated Total:</td>
-                    <td style=\"padding: 12px 0 4px 0; text-align: right;\">
-                      <span style=\"color: #d4af37; font-weight: bold; font-size: 18px; font-family: monospace;\">\${$formattedPrice} USD</span>
-                      <span style=\"display: block; font-size: 10px; color: #64748b; margin-top: 2px;\">(Pay on Arrival / Digital Invoice)</span>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+        " . (!empty($message) ? "
+        <div style=\"background-color: #F8FAFC; border-left: 3px solid #0B1E38; border-radius: 0 8px 8px 0; padding: 14px 18px; margin-bottom: 20px;\">
+          <span style=\"color: #0B1E38; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;\">Special Requests &amp; Notes:</span>
+          <p style=\"color: #334155; font-size: 13px; font-style: italic; margin: 0; line-height: 1.5;\">\"" . nl2br(htmlspecialchars($message)) . "\"</p>
+        </div>
+        " : "") . "
+        ";
 
-            <!-- Guest Contact Details Card -->
-            <tr>
-              <td style=\"padding: 0 30px 22px 30px;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #0b0f17; border: 1px solid #232c3f; border-radius: 14px; padding: 18px 20px;\">
-                  <tr>
-                    <td colspan=\"2\" style=\"padding-bottom: 12px; border-bottom: 1px solid #1a2232;\">
-                      <span style=\"font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.12em; color: #d4af37;\">Guest Contact Details</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 8px 0; color: #94a3b8; font-size: 13px; width: 35%;\">Lead Guest:</td>
-                    <td style=\"padding: 8px 0; text-align: right; color: #ffffff; font-weight: 600; font-size: 13px;\">{$name}</td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 8px 0; color: #94a3b8; font-size: 13px;\">Email Address:</td>
-                    <td style=\"padding: 8px 0; text-align: right; font-size: 13px;\">
-                      <a href=\"mailto:{$email}\" style=\"color: #60a5fa; text-decoration: none; font-weight: 600;\">{$email}</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style=\"padding: 8px 0; color: #94a3b8; font-size: 13px;\">Phone / WhatsApp:</td>
-                    <td style=\"padding: 8px 0; text-align: right; font-size: 13px;\">
-                      <a href=\"tel:{$phone}\" style=\"color: #34d399; text-decoration: none; font-weight: 600;\">{$phone}</a>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+        $buttons = "
+          <a href=\"https://sapphiretrails.lk/admin/booking-requests\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 26px; border-radius: 9999px; margin: 4px; box-shadow: 0 4px 12px rgba(11, 30, 56, 0.2);\">
+            Manage in Admin Portal &rarr;
+          </a>
+          " . (!empty($cleanPhone) ? "
+          <a href=\"https://wa.me/{$cleanPhone}?text=" . urlencode("Hello {$name}, thank you for your booking request with Sapphire Trails (#ST-BK-{$bookingId}).") . "\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 9999px; margin: 4px;\">
+            💬 Chat with Guest on WhatsApp
+          </a>
+          " : "") . "
+        ";
 
-            <!-- Special Requests Callout (if present) -->
-            " . (!empty($message) ? "
-            <tr>
-              <td style=\"padding: 0 30px 24px 30px;\">
-                <div style=\"background-color: #121824; border-left: 3px solid #d4af37; border-radius: 0 10px 10px 0; padding: 14px 18px;\">
-                  <span style=\"color: #d4af37; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px;\">Special Requests &amp; Notes:</span>
-                  <p style=\"color: #cbd5e1; font-size: 13px; font-style: italic; margin: 0; line-height: 1.5;\">\"" . nl2br(htmlspecialchars($message)) . "\"</p>
-                </div>
-              </td>
-            </tr>
-            " : "") . "
-
-            <!-- Action CTA Buttons -->
-            <tr>
-              <td style=\"padding: 0 30px 30px 30px; text-align: center;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
-                  <tr>
-                    <td align=\"center\">
-                      <a href=\"http://localhost:3000/admin/bookings\" style=\"display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #aa8232 100%); color: #0b0d14; font-weight: 700; font-size: 13px; text-decoration: none; padding: 13px 26px; border-radius: 8px; letter-spacing: 0.03em; margin: 4px; box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);\">
-                        Manage in Admin Dashboard &rarr;
-                      </a>
-                      " . (!empty($cleanPhone) ? "
-                      <a href=\"https://wa.me/{$cleanPhone}?text=" . urlencode("Hello {$name}, thank you for your booking request with Sapphire Trails (#{$bookingId}).") . "\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 8px; margin: 4px;\">
-                        💬 Chat with Guest on WhatsApp
-                      </a>
-                      " : "") . "
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-
-            <!-- Luxury Footer -->
-            <tr>
-              <td style=\"background-color: #0c0f17; border-top: 1px solid #1c2333; padding: 24px 30px; text-align: center;\">
-                <p style=\"margin: 0; font-size: 12px; color: #64748b; line-height: 1.6;\">
-                  Sapphire Trails Luxury Tour Concierge &bull; Grand Silver Ray Complex, Ratnapura, Sri Lanka
-                </p>
-                <p style=\"margin: 4px 0 0 0; font-size: 11px; color: #475569;\">
-                  Direct: {$phoneStr} &bull; {$emailStr} &bull; www.sapphiretrails.lk
-                </p>
-                <p style=\"margin: 8px 0 0 0; font-size: 10px; color: #334155;\">
-                  &copy; " . date('Y') . " Sapphire Trails (Pvt) Ltd. All rights reserved.
-                </p>
-              </td>
-            </tr>
-
-          </table>
-        </div>";
+        return $this->wrapEmailTheme($badge, $heading, $body, "#ST-BK-{$bookingId}", $buttons);
     }
 
+    /**
+     * Customer Contact Inquiry Confirmation
+     */
     private function renderCustomerContactTemplate($name, $subject)
     {
         $contact = $this->getContactDetails();
         $waNum = $contact['whatsapp'];
 
-        return "
-        <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
-          <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 600px; margin: 0 auto; background-color: #111622; border: 1px solid #232d40; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);\">
-            <tr><td style=\"height: 4px; background: linear-gradient(90deg, #997838 0%, #d4af37 50%, #fff2be 100%); font-size: 0; line-height: 0;\">&nbsp;</td></tr>
-            <tr>
-              <td style=\"padding: 28px 30px; text-align: center;\">
-                <div style=\"width: 44px; height: 44px; margin: 0 auto 12px auto; border-radius: 12px; background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.06)); border: 1px solid rgba(212,175,55,0.45); text-align: center; line-height: 44px; font-size: 24px;\">
-                  💎
-                </div>
-                <span style=\"font-family: 'Cinzel', 'Georgia', serif; font-size: 20px; font-weight: bold; letter-spacing: 0.18em; color: #d4af37; text-transform: uppercase; display: block;\">SAPPHIRE TRAILS</span>
-                <span style=\"font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #94a3b8; display: block; margin-top: 3px;\">Luxury Gem Mine Expeditions &bull; Sri Lanka</span>
-                
-                <h2 style=\"color: #ffffff; font-size: 22px; font-weight: 700; margin: 24px 0 10px 0; font-family: 'Cinzel', 'Georgia', serif;\">We&apos;ve Received Your Inquiry</h2>
-                <p style=\"color: #94a3b8; font-size: 14px; line-height: 1.6; max-width: 460px; margin: 0 auto 20px auto;\">
-                  Dear <strong style=\"color: #ffffff;\">{$name}</strong>, thank you for contacting Sapphire Trails. We have received your inquiry regarding <strong style=\"color: #d4af37;\">{$subject}</strong>. One of our destination specialists will get back to you within 24 hours.
-                </p>
-                <div style=\"margin: 20px 0;\">
-                  <a href=\"https://wa.me/{$waNum}\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 22px; border-radius: 8px;\">
-                    💬 WhatsApp Concierge (24/7)
-                  </a>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td style=\"background-color: #0c0f17; border-top: 1px solid #1c2333; padding: 18px 24px; font-size: 11px; color: #64748b; text-align: center;\">
-                &copy; " . date('Y') . " Sapphire Trails (Pvt) Ltd. Ratnapura, Sri Lanka.
-              </td>
-            </tr>
-          </table>
-        </div>";
+        $badge = "<span style=\"display: inline-block; background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">✓ Inquiry Received</span>";
+        $heading = "Thank You for Contacting Sapphire Trails";
+
+        $body = "
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 18px 0;\">
+          Dear <strong style=\"color: #0B1E38;\">{$name}</strong>, thank you for reaching out to us. We have successfully received your inquiry regarding <strong style=\"color: #0B1E38;\">{$subject}</strong>.
+        </p>
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 20px 0;\">
+          One of our certified gemologist guides and destination specialists will review your requirements and respond within 24 hours. For immediate assistance or bespoke planning, our 24/7 WhatsApp concierge is available.
+        </p>
+        ";
+
+        $buttons = "
+          <a href=\"https://wa.me/{$waNum}\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 26px; border-radius: 9999px; margin: 4px;\">
+            💬 WhatsApp Concierge (24/7)
+          </a>
+          <a href=\"https://sapphiretrails.lk/tours\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 26px; border-radius: 9999px; margin: 4px;\">
+            Explore Gem Mine Tours &rarr;
+          </a>
+        ";
+
+        return $this->wrapEmailTheme($badge, $heading, $body, 'INQUIRY', $buttons);
     }
 
+    /**
+     * Admin Contact Inquiry Notification
+     */
     private function renderAdminContactTemplate($contactId, $name, $email, $phone, $subject, $message)
     {
         $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
@@ -881,84 +757,85 @@ class Mailer
             $cleanPhone = '94' . substr($cleanPhone, 1);
         }
 
-        return "
-        <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
-          <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 600px; margin: 0 auto; background-color: #111622; border: 1px solid #232d40; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);\">
-            <tr><td style=\"height: 4px; background: linear-gradient(90deg, #997838 0%, #d4af37 50%, #fff2be 100%); font-size: 0; line-height: 0;\">&nbsp;</td></tr>
-            <tr>
-              <td style=\"padding: 24px 28px; border-bottom: 1px solid #1c2333;\">
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
-                  <tr>
-                    <td align=\"left\" style=\"vertical-align: middle;\">
-                      <span style=\"font-size: 18px; font-weight: bold; color: #d4af37; font-family: 'Cinzel', 'Georgia', serif;\">SAPPHIRE TRAILS INQUIRY</span>
-                    </td>
-                    <td align=\"right\" style=\"vertical-align: middle;\">
-                      <span style=\"background-color: rgba(212,175,55,0.15); color: #e6ca65; border: 1px solid rgba(212,175,55,0.4); font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 14px;\">#{$contactId}</span>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style=\"padding: 24px 28px;\">
-                <h2 style=\"color: #ffffff; font-size: 18px; font-weight: 700; margin: 0 0 16px 0;\">{$subject}</h2>
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #0b0f17; border: 1px solid #232c3f; border-radius: 12px; padding: 16px 18px; font-size: 13px;\">
-                  <tr><td style=\"padding: 6px 0; color: #94a3b8; width: 100px;\">From:</td><td style=\"padding: 6px 0; color: #ffffff; font-weight: 600;\">{$name}</td></tr>
-                  <tr><td style=\"padding: 6px 0; color: #94a3b8;\">Email:</td><td style=\"padding: 6px 0;\"><a href=\"mailto:{$email}\" style=\"color: #60a5fa; text-decoration: none;\">{$email}</a></td></tr>
-                  <tr><td style=\"padding: 6px 0; color: #94a3b8;\">Phone:</td><td style=\"padding: 6px 0;\"><a href=\"tel:{$phone}\" style=\"color: #34d399; text-decoration: none;\">{$phone}</a></td></tr>
-                </table>
-                <div style=\"margin-top: 16px; background: #0b0f17; border: 1px solid #232c3f; padding: 14px 18px; border-radius: 10px; color: #e2e8f0; font-size: 13px; line-height: 1.6;\">
-                  " . nl2br(htmlspecialchars($message)) . "
-                </div>
-                <div style=\"margin-top: 22px; text-align: center;\">
-                  <a href=\"mailto:{$email}?subject=" . urlencode("Re: Sapphire Trails Inquiry #{$contactId} - {$subject}") . "\" style=\"display: inline-block; background: linear-gradient(135deg, #d4af37, #aa8232); color: #0b0d14; font-weight: 700; font-size: 13px; text-decoration: none; padding: 10px 22px; border-radius: 8px; margin: 4px;\">
-                    Reply to Email &rarr;
-                  </a>
-                  " . (!empty($cleanPhone) ? "
-                  <a href=\"https://wa.me/{$cleanPhone}?text=" . urlencode("Hello {$name}, regarding your Sapphire Trails inquiry #{$contactId}...") . "\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 20px; border-radius: 8px; margin: 4px;\">
-                    💬 WhatsApp
-                  </a>
-                  " : "") . "
-                </div>
-              </td>
-            </tr>
-          </table>
-        </div>";
+        $badge = "<span style=\"display: inline-block; background-color: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">📬 New Message Received</span>";
+        $heading = "New Website Inquiry: " . htmlspecialchars($subject);
+
+        $body = "
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;\">
+          <tr>
+            <td colspan=\"2\" style=\"padding-bottom: 10px; border-bottom: 1px solid #E2E8F0;\">
+              <span style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #B8860B;\">Inquiry Sender Details</span>
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 8px 0; color: #64748B; font-size: 13px; width: 30%;\">From:</td>
+            <td style=\"padding: 8px 0; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$name}</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 8px 0; color: #64748B; font-size: 13px;\">Email:</td>
+            <td style=\"padding: 8px 0; font-size: 13px;\"><a href=\"mailto:{$email}\" style=\"color: #1E40AF; text-decoration: none; font-weight: 600;\">{$email}</a></td>
+          </tr>
+          <tr>
+            <td style=\"padding: 8px 0; color: #64748B; font-size: 13px;\">Phone:</td>
+            <td style=\"padding: 8px 0; font-size: 13px;\"><a href=\"tel:{$phone}\" style=\"color: #047857; text-decoration: none; font-weight: 600;\">{$phone}</a></td>
+          </tr>
+        </table>
+
+        <div style=\"background-color: #FFFFFF; border: 1px solid #E2E8F0; border-left: 3px solid #0B1E38; border-radius: 0 8px 8px 0; padding: 16px 20px; margin-bottom: 20px;\">
+          <span style=\"color: #64748B; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 6px;\">Inquiry Message:</span>
+          <div style=\"color: #334155; font-size: 13px; line-height: 1.6;\">" . nl2br(htmlspecialchars($message)) . "</div>
+        </div>
+        ";
+
+        $buttons = "
+          <a href=\"mailto:{$email}?subject=" . urlencode("Re: Sapphire Trails Inquiry #{$contactId} - {$subject}") . "\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 9999px; margin: 4px;\">
+            Reply via Email &rarr;
+          </a>
+          " . (!empty($cleanPhone) ? "
+          <a href=\"https://wa.me/{$cleanPhone}?text=" . urlencode("Hello {$name}, regarding your Sapphire Trails inquiry #{$contactId}...") . "\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 9999px; margin: 4px;\">
+            💬 WhatsApp Guest
+          </a>
+          " : "") . "
+          <a href=\"https://sapphiretrails.lk/admin/contact-submissions\" style=\"display: inline-block; background-color: #F1F5F9; color: #0B1E38; border: 1px solid #CBD5E1; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 9999px; margin: 4px;\">
+            View in Dashboard
+          </a>
+        ";
+
+        return $this->wrapEmailTheme($badge, $heading, $body, "#INQ-{$contactId}", $buttons);
     }
 
+    /**
+     * Customer Bespoke Proposal Confirmation
+     */
     private function renderCustomerProposalTemplate($name, $tourInterest)
     {
         $contact = $this->getContactDetails();
         $waNum = $contact['whatsapp'];
 
-        return "
-        <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
-          <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 600px; margin: 0 auto; background-color: #111622; border: 1px solid #232d40; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);\">
-            <tr><td style=\"height: 4px; background: linear-gradient(90deg, #997838 0%, #d4af37 50%, #fff2be 100%); font-size: 0; line-height: 0;\">&nbsp;</td></tr>
-            <tr>
-              <td style=\"padding: 28px 30px; text-align: center;\">
-                <div style=\"width: 44px; height: 44px; margin: 0 auto 12px auto; border-radius: 12px; background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.06)); border: 1px solid rgba(212,175,55,0.45); text-align: center; line-height: 44px; font-size: 24px;\">
-                  💎
-                </div>
-                <span style=\"font-family: 'Cinzel', 'Georgia', serif; font-size: 20px; font-weight: bold; letter-spacing: 0.18em; color: #d4af37; text-transform: uppercase; display: block;\">SAPPHIRE TRAILS</span>
-                <h2 style=\"color: #ffffff; font-size: 22px; font-weight: 700; margin: 24px 0 10px 0; font-family: 'Cinzel', 'Georgia', serif;\">Bespoke Proposal Request Received</h2>
-                <p style=\"color: #94a3b8; font-size: 14px; line-height: 1.6; max-width: 460px; margin: 0 auto 24px auto;\">
-                  Dear <strong style=\"color: #ffffff;\">{$name}</strong>, thank you for your bespoke tour inquiry for <strong style=\"color: #d4af37;\">{$tourInterest}</strong>. Our luxury travel curators are crafting a customized itinerary for you and will be in touch shortly.
-                </p>
-                <a href=\"https://wa.me/{$waNum}\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 22px; border-radius: 8px;\">
-                  💬 WhatsApp Concierge (24/7)
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td style=\"background-color: #0c0f17; border-top: 1px solid #1c2333; padding: 18px 24px; font-size: 11px; color: #64748b; text-align: center;\">
-                &copy; " . date('Y') . " Sapphire Trails Luxury Tours. Ratnapura, Sri Lanka.
-              </td>
-            </tr>
-          </table>
-        </div>";
+        $badge = "<span style=\"display: inline-block; background-color: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">💎 Bespoke Proposal Request Received</span>";
+        $heading = "Crafting Your Tailored Ceylon Expedition";
+
+        $body = "
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 16px 0;\">
+          Dear <strong style=\"color: #0B1E38;\">{$name}</strong>, thank you for your bespoke expedition inquiry for <strong style=\"color: #0B1E38;\">{$tourInterest}</strong>.
+        </p>
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 20px 0;\">
+          Our luxury travel curators and Senior Geologists are currently designing a custom private itinerary tailored to your schedule, preferences, and private mine access. We will present your custom proposal shortly.
+        </p>
+        ";
+
+        $buttons = "
+          <a href=\"https://wa.me/{$waNum}\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 26px; border-radius: 9999px; margin: 4px;\">
+            💬 WhatsApp Concierge (24/7)
+          </a>
+        ";
+
+        return $this->wrapEmailTheme($badge, $heading, $body, 'PROPOSAL', $buttons);
     }
 
+    /**
+     * Admin Bespoke Proposal Notification
+     */
     private function renderAdminProposalTemplate($name, $email, $phone, $tourInterest, $dates, $partySize, $requirements)
     {
         $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
@@ -966,42 +843,41 @@ class Mailer
             $cleanPhone = '94' . substr($cleanPhone, 1);
         }
 
-        return "
-        <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
-          <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 600px; margin: 0 auto; background-color: #111622; border: 1px solid #232d40; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);\">
-            <tr><td style=\"height: 4px; background: linear-gradient(90deg, #997838 0%, #d4af37 50%, #fff2be 100%); font-size: 0; line-height: 0;\">&nbsp;</td></tr>
-            <tr>
-              <td style=\"padding: 24px 28px; border-bottom: 1px solid #1c2333;\">
-                <span style=\"font-size: 18px; font-weight: bold; color: #d4af37; font-family: 'Cinzel', 'Georgia', serif;\">💎 BESPOKE TOUR INQUIRY</span>
-              </td>
-            </tr>
-            <tr>
-              <td style=\"padding: 24px 28px;\">
-                <h2 style=\"color: #ffffff; font-size: 18px; font-weight: 700; margin: 0 0 16px 0;\">{$tourInterest}</h2>
-                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #0b0f17; border: 1px solid #232c3f; border-radius: 12px; padding: 16px 18px; font-size: 13px;\">
-                  <tr><td style=\"padding: 6px 0; color: #94a3b8; width: 120px;\">Client:</td><td style=\"padding: 6px 0; color: #ffffff; font-weight: 600;\">{$name}</td></tr>
-                  <tr><td style=\"padding: 6px 0; color: #94a3b8;\">Email:</td><td style=\"padding: 6px 0;\"><a href=\"mailto:{$email}\" style=\"color: #60a5fa; text-decoration: none;\">{$email}</a></td></tr>
-                  <tr><td style=\"padding: 6px 0; color: #94a3b8;\">Phone:</td><td style=\"padding: 6px 0;\"><a href=\"tel:{$phone}\" style=\"color: #34d399; text-decoration: none;\">{$phone}</a></td></tr>
-                  <tr><td style=\"padding: 6px 0; color: #94a3b8;\">Dates:</td><td style=\"padding: 6px 0; color: #ffffff;\">{$dates}</td></tr>
-                  <tr><td style=\"padding: 6px 0; color: #94a3b8;\">Party Size:</td><td style=\"padding: 6px 0; color: #ffffff;\">{$partySize}</td></tr>
-                </table>
-                <div style=\"margin-top: 16px; background: #0b0f17; border: 1px solid #232c3f; padding: 14px 18px; border-radius: 10px; color: #e2e8f0; font-size: 13px; line-height: 1.6;\">
-                  " . nl2br(htmlspecialchars($requirements)) . "
-                </div>
-                <div style=\"margin-top: 22px; text-align: center;\">
-                  <a href=\"mailto:{$email}?subject=" . urlencode("Sapphire Trails - Bespoke Tour Proposal for {$tourInterest}") . "\" style=\"display: inline-block; background: linear-gradient(135deg, #d4af37, #aa8232); color: #0b0d14; font-weight: 700; font-size: 13px; text-decoration: none; padding: 10px 22px; border-radius: 8px; margin: 4px;\">
-                    Reply to Client &rarr;
-                  </a>
-                  " . (!empty($cleanPhone) ? "
-                  <a href=\"https://wa.me/{$cleanPhone}\" style=\"display: inline-block; background-color: #15202e; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 20px; border-radius: 8px; margin: 4px;\">
-                    💬 WhatsApp
-                  </a>
-                  " : "") . "
-                </div>
-              </td>
-            </tr>
-          </table>
-        </div>";
+        $badge = "<span style=\"display: inline-block; background-color: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">💎 High-Value Lead &bull; Bespoke Proposal</span>";
+        $heading = "New Proposal Request: {$tourInterest}";
+
+        $body = "
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;\">
+          <tr>
+            <td colspan=\"2\" style=\"padding-bottom: 10px; border-bottom: 1px solid #E2E8F0;\">
+              <span style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #B8860B;\">Client Proposal Parameters</span>
+            </td>
+          </tr>
+          <tr><td style=\"padding: 7px 0; color: #64748B; font-size: 13px; width: 35%;\">Client:</td><td style=\"padding: 7px 0; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$name}</td></tr>
+          <tr><td style=\"padding: 7px 0; color: #64748B; font-size: 13px;\">Email:</td><td style=\"padding: 7px 0; font-size: 13px;\"><a href=\"mailto:{$email}\" style=\"color: #1E40AF; text-decoration: none; font-weight: 600;\">{$email}</a></td></tr>
+          <tr><td style=\"padding: 7px 0; color: #64748B; font-size: 13px;\">Phone:</td><td style=\"padding: 7px 0; font-size: 13px;\"><a href=\"tel:{$phone}\" style=\"color: #047857; text-decoration: none; font-weight: 600;\">{$phone}</a></td></tr>
+          <tr><td style=\"padding: 7px 0; color: #64748B; font-size: 13px;\">Preferred Dates:</td><td style=\"padding: 7px 0; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$dates}</td></tr>
+          <tr><td style=\"padding: 7px 0; color: #64748B; font-size: 13px;\">Party Size:</td><td style=\"padding: 7px 0; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$partySize}</td></tr>
+        </table>
+
+        <div style=\"background-color: #FFFFFF; border: 1px solid #E2E8F0; border-left: 3px solid #D4AF37; border-radius: 0 8px 8px 0; padding: 16px 20px; margin-bottom: 20px;\">
+          <span style=\"color: #B8860B; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 6px;\">Special Requirements:</span>
+          <div style=\"color: #334155; font-size: 13px; line-height: 1.6;\">" . nl2br(htmlspecialchars($requirements)) . "</div>
+        </div>
+        ";
+
+        $buttons = "
+          <a href=\"mailto:{$email}?subject=" . urlencode("Sapphire Trails - Bespoke Tour Proposal for {$tourInterest}") . "\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 9999px; margin: 4px;\">
+            Reply to Client &rarr;
+          </a>
+          " . (!empty($cleanPhone) ? "
+          <a href=\"https://wa.me/{$cleanPhone}\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 9999px; margin: 4px;\">
+            💬 WhatsApp Client
+          </a>
+          " : "") . "
+        ";
+
+        return $this->wrapEmailTheme($badge, $heading, $body, 'PROPOSAL LEAD', $buttons);
     }
 
     /**
@@ -1018,118 +894,58 @@ class Mailer
         $formattedOldDate = date('F d, Y', strtotime($previousDate));
         $formattedNewDate = date('F d, Y', strtotime($newDate));
         if (!empty($newEndDate) && $newEndDate !== $newDate) {
-            $formattedNewDate .= ' to ' . date('F d, Y', strtotime($newEndDate));
+            $formattedNewDate .= " to " . date('F d, Y', strtotime($newEndDate));
         }
 
         $invoiceLink = !empty($invoice['invoice_number']) 
-            ? "http://localhost:3000/invoices/{$invoice['invoice_number']}" 
-            : "http://localhost:3000/booking";
+            ? "https://sapphiretrails.lk/invoices/{$invoice['invoice_number']}" 
+            : "https://sapphiretrails.lk/booking/confirmation";
 
-        if (!empty($email)) {
-            $customerHtml = $this->renderRescheduleTemplate($bookingId, $name, $tourTitle, $formattedOldDate, $formattedNewDate, $guests, $reason, $invoiceLink);
-            $this->send($email, "🗓️ Tour Rescheduled & Confirmed: $tourTitle (Ref #$bookingId)", $customerHtml, 'booking_rescheduled');
-        }
-
-        // Admin Notification
-        $adminEmails = $this->settings['admin_emails'];
-        if (!empty($adminEmails)) {
-            $adminHtml = "
-            <div style=\"background-color: #06090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px 12px; color: #f1f5f9; min-height: 100%;\">
-              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"max-width: 600px; margin: 0 auto; background-color: #111622; border: 1px solid #232d40; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);\">
-                <tr><td style=\"height: 4px; background: linear-gradient(90deg, #997838 0%, #d4af37 50%, #fff2be 100%); font-size: 0; line-height: 0;\">&nbsp;</td></tr>
-                <tr>
-                  <td style=\"padding: 24px 28px; border-bottom: 1px solid #1c2333;\">
-                    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
-                      <tr>
-                        <td align=\"left\"><span style=\"font-size: 17px; font-weight: bold; color: #d4af37; font-family: 'Cinzel', 'Georgia', serif;\">BOOKING RESCHEDULED</span></td>
-                        <td align=\"right\"><span style=\"background-color: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px;\">#{$bookingId}</span></td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <tr>
-                  <td style=\"padding: 24px 28px;\">
-                    <h2 style=\"color: #ffffff; font-size: 18px; font-weight: 700; margin: 0 0 16px 0;\">Expedition Dates Updated</h2>
-                    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #0b0f17; border: 1px solid #232c3f; border-radius: 12px; padding: 16px 18px; font-size: 13px;\">
-                      <tr><td style=\"padding: 6px 0; color: #94a3b8; width: 120px;\">Guest:</td><td style=\"padding: 6px 0; color: #ffffff; font-weight: 600;\">{$name} ({$email})</td></tr>
-                      <tr><td style=\"padding: 6px 0; color: #94a3b8;\">Tour:</td><td style=\"padding: 6px 0; color: #d4af37; font-weight: 600;\">{$tourTitle}</td></tr>
-                      <tr><td style=\"padding: 6px 0; color: #94a3b8;\">Previous Date:</td><td style=\"padding: 6px 0; color: #f87171; text-decoration: line-through;\">{$formattedOldDate}</td></tr>
-                      <tr><td style=\"padding: 6px 0; color: #94a3b8;\">New Date:</td><td style=\"padding: 6px 0; color: #34d399; font-weight: bold; font-size: 14px;\">{$formattedNewDate}</td></tr>
-                      <tr><td style=\"padding: 6px 0; color: #94a3b8;\">Reason:</td><td style=\"padding: 6px 0; color: #e2e8f0; font-style: italic;\">" . htmlspecialchars($reason ?: 'Requested by traveler') . "</td></tr>
-                    </table>
-                    <div style=\"margin-top: 22px; text-align: center;\">
-                      <a href=\"http://localhost:3000/admin/bookings\" style=\"display: inline-block; background: linear-gradient(135deg, #d4af37, #aa8232); color: #0b0d14; font-weight: 700; font-size: 13px; text-decoration: none; padding: 10px 22px; border-radius: 8px;\">
-                        Manage in Admin Dashboard &rarr;
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-              </table>
-            </div>";
-            $this->send($adminEmails, "🗓️ Booking #$bookingId Rescheduled to $formattedNewDate - $name", $adminHtml, 'rescheduled_admin', '', $this->settings['admin_emails_cc'], $this->settings['admin_emails_bcc']);
-        }
+        $html = $this->renderRescheduleTemplate($bookingId, $name, $tourTitle, $formattedOldDate, $formattedNewDate, $guests, $reason, $invoiceLink);
+        return $this->send($email, "📅 Tour Dates Updated & Confirmed - Sapphire Trails (#ST-BK-{$bookingId})", $html, 'reschedule_confirmation');
     }
 
     private function renderRescheduleTemplate($bookingId, $name, $tourTitle, $oldDate, $newDate, $guests, $reason, $invoiceLink)
     {
-        return "
-        <div style=\"background-color: #0b0d11; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px 15px; color: #f8fafc;\">
-          <div style=\"max-width: 600px; margin: 0 auto; background-color: #141721; border: 1px solid #c79954; border-radius: 18px; padding: 36px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);\">
-            
-            <div style=\"text-align: center; border-bottom: 1px solid #2d3748; padding-bottom: 24px; margin-bottom: 24px;\">
-              <span style=\"font-size: 24px; letter-spacing: 0.18em; font-weight: bold; color: #c79954;\">SAPPHIRE TRAILS</span>
-              <p style=\"margin: 4px 0 0 0; font-size: 11px; letter-spacing: 0.12em; color: #94a3b8; text-transform: uppercase;\">Luxury Gem Mine Expeditions &bull; Ratnapura, Sri Lanka</p>
-            </div>
+        $badge = "<span style=\"display: inline-block; background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">✓ Tour Dates Updated &amp; Confirmed</span>";
+        $heading = "Your Tour Dates Have Been Updated";
 
-            <div style=\"text-align: center; margin-bottom: 24px;\">
-              <span style=\"background-color: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 12px; font-weight: bold; padding: 6px 14px; border-radius: 9999px; border: 1px solid rgba(16, 185, 129, 0.3); text-transform: uppercase; letter-spacing: 0.05em;\">
-                ✓ Tour Dates Updated &amp; Confirmed
-              </span>
-              <h1 style=\"color: #ffffff; font-size: 24px; margin: 16px 0 8px 0; font-weight: 700;\">Your Tour Has Been Rescheduled</h1>
-              <p style=\"color: #94a3b8; font-size: 14px; margin: 0;\">Dear {$name}, your reservation dates for <strong>{$tourTitle}</strong> have been successfully updated.</p>
-            </div>
+        $body = "
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 18px 0;\">
+          Dear <strong style=\"color: #0B1E38;\">{$name}</strong>, your reservation schedule for <strong style=\"color: #0B1E38;\">{$tourTitle}</strong> has been successfully updated in our system.
+        </p>
 
-            <!-- Date Change Comparison Card -->
-            <div style=\"background-color: #0f1115; border: 1px solid #2d3748; border-radius: 12px; padding: 20px; margin-bottom: 24px;\">
-              <table style=\"width: 100%; font-size: 14px; border-collapse: collapse;\">
-                <tr style=\"border-bottom: 1px solid #1e2533;\">
-                  <td style=\"padding: 10px 0; color: #94a3b8; width: 140px;\">Previous Date:</td>
-                  <td style=\"padding: 10px 0; text-align: right; color: #f87171; text-decoration: line-through;\">{$oldDate}</td>
-                </tr>
-                <tr style=\"border-bottom: 1px solid #1e2533;\">
-                  <td style=\"padding: 12px 0; color: #ffffff; font-weight: bold;\">New Confirmed Date:</td>
-                  <td style=\"padding: 12px 0; text-align: right; color: #34d399; font-weight: bold; font-size: 16px;\">{$newDate}</td>
-                </tr>
-                <tr style=\"border-bottom: 1px solid #1e2533;\">
-                  <td style=\"padding: 10px 0; color: #94a3b8;\">Travelers:</td>
-                  <td style=\"padding: 10px 0; text-align: right; color: #ffffff;\">{$guests} Guest(s)</td>
-                </tr>
-                <tr>
-                  <td style=\"padding: 10px 0; color: #94a3b8;\">Booking Reference:</td>
-                  <td style=\"padding: 10px 0; text-align: right; color: #c79954; font-family: monospace; font-weight: bold;\">#ST-BK-{$bookingId}</td>
-                </tr>
-              </table>
-            </div>
+        <!-- Date Change Comparison Table -->
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;\">
+          <tr style=\"border-bottom: 1px solid #EDF2F7;\">
+            <td style=\"padding: 9px 0; color: #64748B; font-size: 13px; width: 40%;\">Previous Date:</td>
+            <td style=\"padding: 9px 0; text-align: right; color: #EF4444; font-size: 13px; text-decoration: line-through;\">{$oldDate}</td>
+          </tr>
+          <tr style=\"border-bottom: 1px solid #EDF2F7;\">
+            <td style=\"padding: 10px 0; color: #0B1E38; font-weight: 700; font-size: 13px;\">New Confirmed Date:</td>
+            <td style=\"padding: 10px 0; text-align: right; color: #047857; font-weight: 700; font-size: 15px;\">{$newDate}</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 9px 0; color: #64748B; font-size: 13px;\">Travelers:</td>
+            <td style=\"padding: 9px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$guests} Guest(s)</td>
+          </tr>
+        </table>
 
-            " . (!empty($reason) ? "
-            <div style=\"background-color: #1a1e2b; border-left: 4px solid #c79954; border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 24px;\">
-              <span style=\"color: #c79954; font-size: 11px; font-weight: bold; text-transform: uppercase;\">Reschedule Reason:</span>
-              <p style=\"margin: 4px 0 0 0; font-size: 13px; color: #e2e8f0; font-style: italic;\">\"" . htmlspecialchars($reason) . "\"</p>
-            </div>
-            " : "") . "
+        " . (!empty($reason) ? "
+        <div style=\"background-color: #FEF3C7; border-left: 3px solid #D4AF37; border-radius: 0 8px 8px 0; padding: 14px 18px; margin-bottom: 22px;\">
+          <span style=\"color: #92400E; font-size: 11px; font-weight: 700; text-transform: uppercase;\">Reschedule Notes:</span>
+          <p style=\"margin: 4px 0 0 0; font-size: 13px; color: #78350F; font-style: italic;\">\"" . htmlspecialchars($reason) . "\"</p>
+        </div>
+        " : "") . "
+        ";
 
-            <div style=\"text-align: center; margin: 30px 0;\">
-              <a href=\"{$invoiceLink}\" style=\"display: inline-block; background: linear-gradient(135deg, #c79954, #a87e38); color: #000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 14px 32px; border-radius: 8px; box-shadow: 0 4px 12px rgba(199, 153, 84, 0.3);\">
-                View Updated Invoice &amp; Details &rarr;
-              </a>
-            </div>
+        $buttons = "
+          <a href=\"{$invoiceLink}\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 28px; border-radius: 9999px; margin: 4px; box-shadow: 0 4px 12px rgba(11, 30, 56, 0.2);\">
+            View Updated Details &rarr;
+          </a>
+        ";
 
-            <div style=\"border-top: 1px solid #2d3748; padding-top: 20px; font-size: 12px; color: #64748b; text-align: center;\">
-              <p style=\"margin: 0 0 6px 0;\">Need further changes or private transportation? Reply to this email or contact our Concierge.</p>
-              <p style=\"margin: 0;\">&copy; " . date('Y') . " Sapphire Trails (Pvt) Ltd. Ratnapura, Sri Lanka.</p>
-            </div>
-          </div>
-        </div>";
+        return $this->wrapEmailTheme($badge, $heading, $body, "#ST-BK-{$bookingId}", $buttons);
     }
 
     /**
@@ -1157,104 +973,83 @@ class Mailer
             $totalP = number_format(floatval($item['total_price']), 2);
             $desc = htmlspecialchars($item['description']);
             $itemsHtml .= "
-            <tr style=\"border-bottom: 1px solid #262c3b;\">
-              <td style=\"padding: 12px 8px; color: #ffffff;\">{$desc}</td>
-              <td style=\"padding: 12px 8px; text-align: center; color: #94a3b8;\">{$lineQty}</td>
-              <td style=\"padding: 12px 8px; text-align: right; color: #94a3b8;\">{$currency} {$unitP}</td>
-              <td style=\"padding: 12px 8px; text-align: right; color: #c79954; font-weight: bold;\">{$currency} {$totalP}</td>
+            <tr style=\"border-bottom: 1px solid #EDF2F7;\">
+              <td style=\"padding: 10px 8px; color: #0B1E38; font-size: 13px; font-weight: 500;\">{$desc}</td>
+              <td style=\"padding: 10px 8px; text-align: center; color: #64748B; font-size: 13px;\">{$lineQty}</td>
+              <td style=\"padding: 10px 8px; text-align: right; color: #64748B; font-size: 13px;\">{$currency} {$unitP}</td>
+              <td style=\"padding: 10px 8px; text-align: right; color: #0B1E38; font-weight: 700; font-size: 13px;\">{$currency} {$totalP}</td>
             </tr>";
         }
 
-        $viewUrl = "http://localhost:3000/invoices/{$invoiceNumber}";
-
-        $statusColor = $paymentStatus === 'paid' ? '#10b981' : ($paymentStatus === 'partially_paid' ? '#3b82f6' : '#f59e0b');
+        $viewUrl = "https://sapphiretrails.lk/invoices/{$invoiceNumber}";
+        $statusBadgeColor = $paymentStatus === 'paid' ? '#ECFDF5; color: #047857; border: 1px solid #A7F3D0;' : ($paymentStatus === 'partially_paid' ? '#EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE;' : '#FEF3C7; color: #B45309; border: 1px solid #FDE68A;');
         $statusText = strtoupper(str_replace('_', ' ', $paymentStatus));
 
-        $html = "
-        <div style=\"background-color: #0b0d11; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px 15px; color: #f8fafc;\">
-          <div style=\"max-width: 640px; margin: 0 auto; background-color: #141721; border: 1px solid #c79954; border-radius: 18px; padding: 36px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);\">
-            
-            <div style=\"display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2d3748; padding-bottom: 20px; margin-bottom: 24px;\">
-              <div>
-                <span style=\"font-size: 22px; letter-spacing: 0.15em; font-weight: bold; color: #c79954;\">SAPPHIRE TRAILS</span>
-                <p style=\"margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;\">Luxury Gem Mine Expeditions &bull; Sri Lanka</p>
-              </div>
-              <div style=\"text-align: right;\">
-                <span style=\"display: inline-block; background-color: {$statusColor}20; color: {$statusColor}; border: 1px solid {$statusColor}50; font-size: 12px; font-weight: bold; padding: 4px 12px; border-radius: 6px;\">
-                  {$statusText}
-                </span>
-                <p style=\"margin: 4px 0 0 0; font-size: 12px; font-family: monospace; color: #94a3b8;\">{$invoiceNumber}</p>
-              </div>
-            </div>
+        $badge = "<span style=\"display: inline-block; background-color: {$statusBadgeColor} font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">● Payment {$statusText}</span>";
+        $heading = "Official Expedition Invoice {$invoiceNumber}";
 
-            <div style=\"margin-bottom: 24px;\">
-              <h2 style=\"color: #ffffff; font-size: 20px; margin: 0 0 8px 0;\">Official Tour Invoice</h2>
-              <p style=\"color: #94a3b8; font-size: 13px; margin: 0;\">Billed to: <strong style=\"color: #ffffff;\">{$customerName}</strong> ({$customerEmail})</p>
-              <p style=\"color: #94a3b8; font-size: 13px; margin: 4px 0 0 0;\">Tour Date: <strong style=\"color: #c79954;\">{$tourDate}</strong> | Due: <strong style=\"color: #ffffff;\">{$dueDate}</strong></p>
-            </div>
+        $body = "
+        <div style=\"margin-bottom: 20px; font-size: 13px; color: #64748B;\">
+          <p style=\"margin: 0; color: #475569;\">Billed to: <strong style=\"color: #0B1E38;\">{$customerName}</strong> ({$customerEmail})</p>
+          <p style=\"margin: 4px 0 0 0;\">Tour Date: <strong style=\"color: #0B1E38;\">{$tourDate}</strong> &bull; Due: <strong style=\"color: #0B1E38;\">{$dueDate}</strong></p>
+        </div>
 
-            <!-- Itemized Table -->
-            <table style=\"width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;\">
-              <thead>
-                <tr style=\"background-color: #1a1e2b; border-bottom: 2px solid #2d3748;\">
-                  <th style=\"padding: 10px 8px; text-align: left; color: #94a3b8;\">Item Description</th>
-                  <th style=\"padding: 10px 8px; text-align: center; color: #94a3b8; width: 50px;\">Qty</th>
-                  <th style=\"padding: 10px 8px; text-align: right; color: #94a3b8; width: 100px;\">Rate</th>
-                  <th style=\"padding: 10px 8px; text-align: right; color: #94a3b8; width: 100px;\">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {$itemsHtml}
-              </tbody>
-            </table>
+        <!-- Itemized Table -->
+        <table style=\"width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;\">
+          <thead>
+            <tr style=\"background-color: #F8FAFC; border-bottom: 2px solid #E2E8F0;\">
+              <th style=\"padding: 10px 8px; text-align: left; color: #64748B; font-weight: 700; font-size: 11px; text-transform: uppercase;\">Item Description</th>
+              <th style=\"padding: 10px 8px; text-align: center; color: #64748B; font-weight: 700; font-size: 11px; text-transform: uppercase; width: 50px;\">Qty</th>
+              <th style=\"padding: 10px 8px; text-align: right; color: #64748B; font-weight: 700; font-size: 11px; text-transform: uppercase; width: 100px;\">Rate</th>
+              <th style=\"padding: 10px 8px; text-align: right; color: #64748B; font-weight: 700; font-size: 11px; text-transform: uppercase; width: 100px;\">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {$itemsHtml}
+          </tbody>
+        </table>
 
-            <!-- Totals Summary -->
-            <div style=\"background-color: #0f1115; border: 1px solid #2d3748; border-radius: 12px; padding: 18px; margin-bottom: 24px;\">
-              <table style=\"width: 100%; font-size: 13px; border-collapse: collapse;\">
-                <tr>
-                  <td style=\"padding: 6px 0; color: #94a3b8;\">Subtotal:</td>
-                  <td style=\"padding: 6px 0; text-align: right; color: #ffffff;\">{$currency} " . number_format(floatval($invoice['subtotal']), 2) . "</td>
-                </tr>
-                " . (floatval($invoice['discount_amount']) > 0 ? "
-                <tr>
-                  <td style=\"padding: 6px 0; color: #34d399;\">Discount:</td>
-                  <td style=\"padding: 6px 0; text-align: right; color: #34d399;\">- {$currency} " . number_format(floatval($invoice['discount_amount']), 2) . "</td>
-                </tr>" : "") . "
-                " . (floatval($invoice['tax_amount']) > 0 ? "
-                <tr>
-                  <td style=\"padding: 6px 0; color: #94a3b8;\">Taxes / Service:</td>
-                  <td style=\"padding: 6px 0; text-align: right; color: #ffffff;\">+ {$currency} " . number_format(floatval($invoice['tax_amount']), 2) . "</td>
-                </tr>" : "") . "
-                <tr style=\"border-top: 1px solid #2d3748;\">
-                  <td style=\"padding: 10px 0 0 0; color: #ffffff; font-size: 15px; font-weight: bold;\">Total Amount:</td>
-                  <td style=\"padding: 10px 0 0 0; text-align: right; color: #c79954; font-size: 18px; font-weight: bold;\">{$currency} " . number_format($totalAmount, 2) . "</td>
-                </tr>
-                <tr>
-                  <td style=\"padding: 6px 0 0 0; color: #94a3b8;\">Balance Due:</td>
-                  <td style=\"padding: 6px 0 0 0; text-align: right; color: " . (floatval($invoice['balance_due']) > 0 ? '#f59e0b' : '#34d399') . "; font-weight: bold;\">{$currency} " . number_format(floatval($invoice['balance_due']), 2) . "</td>
-                </tr>
-              </table>
-            </div>
+        <!-- Totals Summary -->
+        <table style=\"width: 100%; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; font-size: 13px;\">
+          <tr>
+            <td style=\"padding: 6px 0; color: #64748B;\">Subtotal:</td>
+            <td style=\"padding: 6px 0; text-align: right; color: #0B1E38; font-weight: 600;\">{$currency} " . number_format(floatval($invoice['subtotal']), 2) . "</td>
+          </tr>
+          " . (floatval($invoice['discount_amount']) > 0 ? "
+          <tr>
+            <td style=\"padding: 6px 0; color: #047857;\">Discount:</td>
+            <td style=\"padding: 6px 0; text-align: right; color: #047857; font-weight: 600;\">- {$currency} " . number_format(floatval($invoice['discount_amount']), 2) . "</td>
+          </tr>" : "") . "
+          " . (floatval($invoice['tax_amount']) > 0 ? "
+          <tr>
+            <td style=\"padding: 6px 0; color: #64748B;\">Taxes &amp; Service:</td>
+            <td style=\"padding: 6px 0; text-align: right; color: #0B1E38;\">+ {$currency} " . number_format(floatval($invoice['tax_amount']), 2) . "</td>
+          </tr>" : "") . "
+          <tr style=\"border-top: 2px solid #E2E8F0;\">
+            <td style=\"padding: 10px 0 0 0; color: #0B1E38; font-size: 15px; font-weight: 700;\">Total Amount:</td>
+            <td style=\"padding: 10px 0 0 0; text-align: right; color: #0B1E38; font-size: 18px; font-weight: 700; font-family: monospace;\">{$currency} " . number_format($totalAmount, 2) . "</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 6px 0 0 0; color: #64748B;\">Balance Due:</td>
+            <td style=\"padding: 6px 0 0 0; text-align: right; color: " . (floatval($invoice['balance_due']) > 0 ? '#B45309' : '#047857') . "; font-weight: 700;\">{$currency} " . number_format(floatval($invoice['balance_due']), 2) . "</td>
+          </tr>
+        </table>
 
-            " . (!empty($invoice['bank_details']) ? "
-            <div style=\"background-color: #171c26; border: 1px dashed #3a455a; border-radius: 10px; padding: 16px; margin-bottom: 24px;\">
-              <span style=\"color: #c79954; font-size: 12px; font-weight: bold; text-transform: uppercase;\">Payment Instructions / Bank Details</span>
-              <p style=\"margin: 6px 0 0 0; font-size: 12px; color: #cbd5e1; line-height: 1.6;\">" . nl2br(htmlspecialchars($invoice['bank_details'])) . "</p>
-            </div>
-            " : "") . "
+        " . (!empty($invoice['bank_details']) ? "
+        <div style=\"background-color: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 10px; padding: 16px; margin-bottom: 22px;\">
+          <span style=\"color: #0B1E38; font-size: 11px; font-weight: 700; text-transform: uppercase;\">Payment Instructions / Bank Details</span>
+          <p style=\"margin: 6px 0 0 0; font-size: 12px; color: #475569; line-height: 1.6;\">" . nl2br(htmlspecialchars($invoice['bank_details'])) . "</p>
+        </div>
+        " : "") . "
+        ";
 
-            <div style=\"text-align: center; margin: 28px 0;\">
-              <a href=\"{$viewUrl}\" style=\"display: inline-block; background: linear-gradient(135deg, #c79954, #a87e38); color: #000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 14px 32px; border-radius: 8px;\">
-                View &amp; Print Full Invoice &rarr;
-              </a>
-            </div>
+        $buttons = "
+          <a href=\"{$viewUrl}\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 30px; border-radius: 9999px; margin: 4px; box-shadow: 0 4px 12px rgba(11, 30, 56, 0.2);\">
+            View &amp; Print Full Invoice &rarr;
+          </a>
+        ";
 
-            <div style=\"border-top: 1px solid #2d3748; padding-top: 16px; font-size: 11px; color: #64748b; text-align: center;\">
-              <p style=\"margin: 0;\">&copy; " . date('Y') . " Sapphire Trails (Pvt) Ltd. Grand Silver Ray, Ratnapura, Sri Lanka.</p>
-            </div>
-          </div>
-        </div>";
-
+        $html = $this->wrapEmailTheme($badge, $heading, $body, $invoiceNumber, $buttons);
         return $this->send($customerEmail, "Official Tour Invoice {$invoiceNumber} - Sapphire Trails", $html, 'invoice_customer');
     }
 
@@ -1278,96 +1073,58 @@ class Mailer
         $adults     = $booking['adults'] ?? $guests;
         $children   = $booking['children'] ?? 0;
 
-        $invoiceId     = $booking['invoice_id'] ?? null;
         $invoiceNumber = $booking['invoice_number'] ?? null;
-        $invoiceUrl    = $invoiceNumber ? "https://sapphiretrails.lk/invoices/{$invoiceNumber}" : "https://sapphiretrails.lk";
+        $invoiceUrl    = $invoiceNumber ? "https://sapphiretrails.lk/invoices/{$invoiceNumber}" : "https://sapphiretrails.lk/booking/confirmation";
 
         $contact = $this->getContactDetails();
         $waNum = $contact['whatsapp'];
-        $phoneStr = $contact['phone'];
-        $emailStr = $contact['email'];
 
-        $html = "
-        <div style=\"background-color: #090b0e; font-family: 'Montserrat', Helvetica, Arial, sans-serif; padding: 40px 15px; color: #f8fafc;\">
-          <div style=\"max-width: 600px; margin: 0 auto; background-color: #12151d; border: 1px solid #c7995440; border-radius: 16px; padding: 36px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);\">
-            
-            <!-- Header -->
-            <div style=\"text-align: center; border-bottom: 1px solid #232733; padding-bottom: 24px; margin-bottom: 28px;\">
-              <span style=\"font-size: 24px; letter-spacing: 0.18em; font-weight: bold; color: #c79954; font-family: 'Cinzel', Georgia, serif;\">SAPPHIRE TRAILS</span>
-              <p style=\"margin: 4px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #94a3b8;\">Luxury Gem Mine Expeditions &bull; Sri Lanka</p>
-            </div>
+        $badge = "<span style=\"display: inline-block; background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">✓ Booking Confirmed &amp; Accepted</span>";
+        $heading = "Your Expedition is Confirmed, {$guestName}!";
 
-            <!-- Success Hero Badge -->
-            <div style=\"text-align: center; margin-bottom: 28px;\">
-              <span style=\"display: inline-block; background-color: #05966920; color: #34d399; border: 1px solid #05966960; font-size: 12px; font-weight: bold; padding: 6px 18px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px;\">
-                ✓ Booking Confirmed &amp; Accepted
-              </span>
-              <h1 style=\"color: #ffffff; font-size: 22px; font-weight: 700; margin: 0 0 8px 0;\">Your Expedition is Confirmed, {$guestName}!</h1>
-              <p style=\"color: #94a3b8; font-size: 14px; margin: 0; line-height: 1.5;\">
-                We are delighted to confirm your private gem mining reservation. Our concierge team is preparing an unforgettable experience for you.
-              </p>
-            </div>
+        $body = "
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 18px 0;\">
+          We are delighted to confirm your private gem mining reservation. Our Senior Geologist and concierge team are preparing an exclusive, authentic expedition for your party.
+        </p>
 
-            <!-- Expedition Summary Card -->
-            <div style=\"background-color: #181c26; border: 1px solid #2b3345; border-radius: 12px; padding: 22px; margin-bottom: 24px;\">
-              <h3 style=\"color: #c79954; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 16px 0; border-bottom: 1px solid #2b3345; padding-bottom: 8px;\">
-                Confirmed Expedition Details
-              </h3>
-              
-              <table style=\"width: 100%; font-size: 13px; border-collapse: collapse;\">
-                <tr>
-                  <td style=\"padding: 6px 0; color: #94a3b8; width: 40%;\">Reservation Ref:</td>
-                  <td style=\"padding: 6px 0; color: #ffffff; font-family: monospace; font-weight: bold;\">#ST-BK-{$bookingId}</td>
-                </tr>
-                <tr>
-                  <td style=\"padding: 6px 0; color: #94a3b8;\">Tour Package:</td>
-                  <td style=\"padding: 6px 0; color: #ffffff; font-weight: 600;\">{$tourName}</td>
-                </tr>
-                <tr>
-                  <td style=\"padding: 6px 0; color: #94a3b8;\">Confirmed Date:</td>
-                  <td style=\"padding: 6px 0; color: #34d399; font-weight: bold; font-size: 14px;\">{$dateStr}</td>
-                </tr>
-                <tr>
-                  <td style=\"padding: 6px 0; color: #94a3b8;\">Party Size:</td>
-                  <td style=\"padding: 6px 0; color: #ffffff;\">{$guests} Traveler(s) ({$adults} Adults" . ($children > 0 ? ", {$children} Children" : "") . ")</td>
-                </tr>
-              </table>
-            </div>
+        <!-- Confirmed Details Table -->
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;\">
+          <tr>
+            <td colspan=\"2\" style=\"padding-bottom: 10px; border-bottom: 1px solid #E2E8F0;\">
+              <span style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #B8860B;\">Confirmed Reservation Details</span>
+            </td>
+          </tr>
+          <tr><td style=\"padding: 8px 0; color: #64748B; font-size: 13px; width: 40%;\">Tour Package:</td><td style=\"padding: 8px 0; text-align: right; color: #0B1E38; font-weight: 700; font-size: 13px;\">{$tourName}</td></tr>
+          <tr><td style=\"padding: 8px 0; color: #64748B; font-size: 13px;\">Confirmed Date:</td><td style=\"padding: 8px 0; text-align: right; color: #047857; font-weight: 700; font-size: 14px;\">{$dateStr}</td></tr>
+          <tr><td style=\"padding: 8px 0; color: #64748B; font-size: 13px;\">Party Size:</td><td style=\"padding: 8px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$guests} Traveler(s) ({$adults} Adults" . ($children > 0 ? ", {$children} Children" : "") . ")</td></tr>
+        </table>
 
-            <!-- What to Expect Card -->
-            <div style=\"background-color: #12151d; border: 1px solid #232733; border-radius: 12px; padding: 18px; margin-bottom: 26px;\">
-              <h4 style=\"color: #ffffff; font-size: 13px; margin: 0 0 10px 0;\">💎 What&apos;s Included in Your Private Tour:</h4>
-              <ul style=\"margin: 0; padding-left: 18px; font-size: 12px; color: #cbd5e1; line-height: 1.8;\">
-                <li>VIP air-conditioned private vehicle transportation.</li>
-                <li>Exclusive private access to active traditional gem mining pits in Ratnapura.</li>
-                <li>Hands-on gem washing in local streams &amp; sorting experience.</li>
-                <li>Expert licensed gemologist guidance &amp; rough sapphire valuation workshop.</li>
-                <li>Complimentary traditional Sri Lankan refreshments.</li>
-              </ul>
-            </div>
+        <!-- Inclusions Box -->
+        <div style=\"background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px; margin-bottom: 22px;\">
+          <h4 style=\"color: #0B1E38; font-size: 13px; margin: 0 0 10px 0;\">💎 What&apos;s Included in Your Private Tour:</h4>
+          <ul style=\"margin: 0; padding-left: 18px; font-size: 13px; color: #475569; line-height: 1.8;\">
+            <li>Private air-conditioned vehicle transport across all sites.</li>
+            <li>Exclusive private access to active traditional gem mining shafts in Ratnapura.</li>
+            <li>Hands-on gem panning &amp; washing experience in mineral-rich riverbeds.</li>
+            <li>Expert licensed gemologist guidance &amp; rough sapphire valuation workshop.</li>
+            <li>Underground safety helmets, boots, and illumination equipment provided.</li>
+            <li>Complimentary Ceylon tea &amp; refreshments.</li>
+          </ul>
+        </div>
+        ";
 
-            <!-- Action Buttons -->
-            <div style=\"text-align: center; margin-bottom: 28px;\">
-              " . ($invoiceNumber ? "
-              <a href=\"{$invoiceUrl}\" style=\"display: inline-block; background: linear-gradient(135deg, #c79954, #a87e38); color: #000; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 28px; border-radius: 8px; margin: 4px;\">
-                View Digital Invoice &amp; Payment Details &rarr;
-              </a>
-              " : "") . "
-              <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails, I am inquiring about my confirmed booking #ST-BK-{$bookingId} ({$guestName}).") . "\" style=\"display: inline-block; background-color: #1e293b; color: #34d399; border: 1px solid #05966950; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 8px; margin: 4px;\">
-                💬 WhatsApp Concierge (24/7)
-              </a>
-            </div>
+        $buttons = "
+          " . ($invoiceNumber ? "
+          <a href=\"{$invoiceUrl}\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 28px; border-radius: 9999px; margin: 4px; box-shadow: 0 4px 12px rgba(11, 30, 56, 0.2);\">
+            View Digital Invoice &rarr;
+          </a>
+          " : "") . "
+          <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails, I am inquiring about my confirmed booking #ST-BK-{$bookingId} ({$guestName}).") . "\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 9999px; margin: 4px;\">
+            💬 WhatsApp Concierge (24/7)
+          </a>
+        ";
 
-            <!-- Footer -->
-            <div style=\"border-top: 1px solid #232733; padding-top: 18px; font-size: 11px; color: #64748b; text-align: center; line-height: 1.6;\">
-              <p style=\"margin: 0;\">Grand Silver Ray Complex, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka</p>
-              <p style=\"margin: 4px 0 0 0;\">Direct: {$phoneStr} &bull; reservations@sapphiretrails.lk</p>
-              <p style=\"margin: 8px 0 0 0;\">&copy; " . date('Y') . " Sapphire Trails (Pvt) Ltd. All rights reserved.</p>
-            </div>
-
-          </div>
-        </div>";
-
+        $html = $this->wrapEmailTheme($badge, $heading, $body, "#ST-BK-{$bookingId}", $buttons);
         return $this->send($guestEmail, "✨ Confirmed: Your Gem Mine Tour is Scheduled! - Sapphire Trails (#ST-BK-{$bookingId})", $html, 'booking_confirmed');
     }
 
@@ -1389,60 +1146,35 @@ class Mailer
 
         $contactDetails = $this->getContactDetails();
         $waNum = $contactDetails['whatsapp'];
-        $phoneStr = $contactDetails['phone'];
-        $emailStr = $contactDetails['email'];
 
         $formattedReply = nl2br(htmlspecialchars($replyMessage));
         $formattedOriginal = nl2br(htmlspecialchars($originalMessage));
 
-        $html = "
-        <div style=\"background-color: #0b0d11; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 36px 16px; color: #f1f5f9;\">
-          <div style=\"max-width: 620px; margin: 0 auto; background-color: #13161f; border: 1px solid #242938; border-radius: 14px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);\">
-            
-            <!-- Header / Brand -->
-            <div style=\"text-align: center; border-bottom: 1px solid #232838; padding-bottom: 22px; margin-bottom: 24px;\">
-              <span style=\"font-size: 26px; letter-spacing: 0.15em; font-weight: 800; color: #d4af37;\">SAPPHIRE TRAILS</span>
-              <p style=\"font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: #94a3b8; margin: 4px 0 0 0;\">Ratnapura &bull; Sri Lanka &bull; Gem Tours &amp; Luxury Bespoke Experiences</p>
-            </div>
+        $badge = "<span style=\"display: inline-block; background-color: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">Concierge Response</span>";
+        $heading = "Regarding Your Inquiry";
 
-            <!-- Greeting -->
-            <div style=\"margin-bottom: 22px;\">
-              <p style=\"font-size: 16px; font-weight: 600; color: #f8fafc; margin: 0 0 12px 0;\">Dear {$guestName},</p>
-              <div style=\"font-size: 14px; line-height: 1.7; color: #cbd5e1; white-space: pre-wrap;\">
-                {$formattedReply}
-              </div>
-            </div>
+        $body = "
+        <p style=\"font-size: 15px; font-weight: 600; color: #0B1E38; margin: 0 0 12px 0;\">Dear {$guestName},</p>
+        <div style=\"font-size: 14px; line-height: 1.75; color: #334155; margin-bottom: 24px;\">
+          {$formattedReply}
+        </div>
 
-            <!-- Quick Contact & WhatsApp -->
-            <div style=\"background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.25); border-radius: 10px; padding: 18px; margin: 26px 0; text-align: center;\">
-              <p style=\"font-size: 12px; color: #e2e8f0; margin: 0 0 10px 0; font-weight: 500;\">Have additional questions or need immediate bespoke arrangements?</p>
-              <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails, I am following up on inquiry #{$inquiryId} ({$guestName}).") . "\" style=\"display: inline-block; background-color: #059669; color: #ffffff; font-weight: 600; font-size: 12px; text-decoration: none; padding: 9px 20px; border-radius: 6px;\">
-                💬 Chat with our Concierge on WhatsApp
-              </a>
-            </div>
-
-            <!-- Original Inquiry Reference -->
-            <div style=\"background-color: #0d1017; border-left: 3px solid #64748b; border-radius: 0 8px 8px 0; padding: 14px 18px; margin-bottom: 26px;\">
-              <p style=\"font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b; margin: 0 0 6px 0;\">Original Inquiry (#{$inquiryId}) &bull; {$originalSubject}</p>
-              <div style=\"font-size: 12px; color: #94a3b8; line-height: 1.5;\">
-                {$formattedOriginal}
-              </div>
-            </div>
-
-            <!-- Footer Signature -->
-            <div style=\"border-top: 1px solid #232838; padding-top: 20px; font-size: 12px; color: #64748b; line-height: 1.6;\">
-              <p style=\"margin: 0; font-weight: 600; color: #94a3b8;\">Best regards,</p>
-              <p style=\"margin: 2px 0 12px 0; font-weight: 700; color: #d4af37;\">The Sapphire Trails Concierge &amp; Gemology Team</p>
-              <p style=\"margin: 0; font-size: 11px;\">Grand Silver Ray Complex, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka</p>
-              <p style=\"margin: 2px 0 0 0; font-size: 11px;\">Tel: {$phoneStr} &bull; {$emailStr} &bull; www.sapphiretrails.lk</p>
-            </div>
-
+        <!-- Original Inquiry Reference -->
+        <div style=\"background-color: #F8FAFC; border-left: 3px solid #64748B; border-radius: 0 8px 8px 0; padding: 14px 18px; margin-bottom: 22px;\">
+          <p style=\"font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748B; margin: 0 0 6px 0;\">Original Inquiry (#{$inquiryId}) &bull; {$originalSubject}</p>
+          <div style=\"font-size: 12px; color: #475569; line-height: 1.5;\">
+            {$formattedOriginal}
           </div>
-        </div>";
+        </div>
+        ";
 
+        $buttons = "
+          <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails, I am following up on inquiry #{$inquiryId} ({$guestName}).") . "\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 9999px; margin: 4px;\">
+            💬 Chat with our Concierge on WhatsApp
+          </a>
+        ";
+
+        $html = $this->wrapEmailTheme($badge, $heading, $body, "#INQ-{$inquiryId}", $buttons);
         return $this->send($guestEmail, $subject, $html, 'inquiry_reply');
     }
 }
-
-
-

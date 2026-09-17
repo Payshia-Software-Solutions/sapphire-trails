@@ -1,7 +1,10 @@
 'use client';
 
+import { API_BASE_URL } from '@/lib/utils';
+import { authFetch } from '@/lib/api';
+
 export interface SubscriberItem {
-  id: string;
+  id: string | number;
   email: string;
   source: string;
   subscribedAt: string;
@@ -37,20 +40,6 @@ export const initialSubscribers: SubscriberItem[] = [
     source: 'Homepage Lead Magnet',
     subscribedAt: '2026-02-26T18:45:00Z',
     status: 'active',
-  },
-  {
-    id: 'sub-4',
-    email: 'elena.rostova@gemcollector-ch.ch',
-    source: '2026 Gem Buyer Guide Download',
-    subscribedAt: '2026-02-25T09:30:00Z',
-    status: 'active',
-  },
-  {
-    id: 'sub-5',
-    email: 'jeanpierre.laurent@parisgemology.fr',
-    source: '2026 Gem Buyer Guide Download',
-    subscribedAt: '2026-02-24T16:10:00Z',
-    status: 'active',
   }
 ];
 
@@ -62,7 +51,6 @@ export function getStoredSubscribers(): SubscriberItem[] {
   try {
     const raw = localStorage.getItem(SUBSCRIBERS_STORAGE_KEY);
     if (!raw) {
-      localStorage.setItem(SUBSCRIBERS_STORAGE_KEY, JSON.stringify(initialSubscribers));
       return initialSubscribers;
     }
     const parsed = JSON.parse(raw);
@@ -123,4 +111,103 @@ export function saveBroadcastLog(broadcast: BroadcastLog): void {
   } catch (e) {
     console.error('Failed to save broadcast log', e);
   }
+}
+
+/**
+ * Fetch subscribers from live database with fallback to localStorage
+ */
+export async function fetchSubscribersFromServer(): Promise<SubscriberItem[]> {
+  try {
+    const response = await authFetch(`${API_BASE_URL}/subscribers`);
+    if (!response.ok) {
+      throw new Error(`Failed with status ${response.status}`);
+    }
+    const data = await response.json();
+    if (Array.isArray(data)) {
+      const mapped: SubscriberItem[] = data.map((item: any) => ({
+        id: item.id,
+        email: item.email,
+        source: item.source || 'Website Subscription',
+        subscribedAt: item.created_at || new Date().toISOString(),
+        status: (item.status === 'unsubscribed' ? 'unsubscribed' : 'active') as 'active' | 'unsubscribed',
+      }));
+      saveStoredSubscribers(mapped);
+      return mapped;
+    }
+  } catch (err) {
+    console.warn('[fetchSubscribersFromServer] Falling back to local cache:', err);
+  }
+  return getStoredSubscribers();
+}
+
+/**
+ * Add a new subscriber to the server database
+ */
+export async function createSubscriberOnServer(email: string, source: string): Promise<SubscriberItem> {
+  const response = await authFetch(`${API_BASE_URL}/subscribers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email.trim(), source: source.trim() }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to save subscriber on server.');
+  }
+
+  const result = await response.json();
+  const sub = result.subscriber || result.data;
+  return {
+    id: sub?.id || `sub-${Date.now()}`,
+    email: sub?.email || email.trim().toLowerCase(),
+    source: sub?.source || source,
+    subscribedAt: sub?.created_at || new Date().toISOString(),
+    status: (sub?.status === 'unsubscribed' ? 'unsubscribed' : 'active') as 'active' | 'unsubscribed',
+  };
+}
+
+/**
+ * Toggle or update subscriber status on the server
+ */
+export async function updateSubscriberStatusOnServer(id: string | number, status: 'active' | 'unsubscribed'): Promise<void> {
+  const response = await authFetch(`${API_BASE_URL}/subscribers/${id}/status`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update subscriber status on server.');
+  }
+}
+
+/**
+ * Delete a subscriber from the server database
+ */
+export async function deleteSubscriberOnServer(id: string | number): Promise<void> {
+  const response = await authFetch(`${API_BASE_URL}/subscribers/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete subscriber from server.');
+  }
+}
+
+/**
+ * Dispatch mass broadcast newsletter to all active subscribers via server Mailer
+ */
+export async function sendBroadcastOnServer(payload: { subject: string; message: string; preheader?: string }): Promise<any> {
+  const response = await authFetch(`${API_BASE_URL}/subscribers/broadcast`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to send broadcast from server.');
+  }
+
+  return response.json();
 }

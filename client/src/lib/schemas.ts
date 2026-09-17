@@ -176,6 +176,13 @@ export const galleryImageSchema = z.object({
     isNew: z.boolean().optional(),
 });
 
+export const pricingTierSchema = z.object({
+  min_guests: z.coerce.number().min(1, "Min guests must be at least 1."),
+  max_guests: z.coerce.number().nullable().optional(),
+  price: z.coerce.number().min(0, "Price must be 0 or higher."),
+  pricing_type: z.enum(['per_person', 'fixed_group']).default('per_person'),
+});
+
 export const packageFormSchema = z.object({
   // Homepage Card
   imageUrl: z.string().min(1, "An image is required for the homepage card."),
@@ -189,6 +196,7 @@ export const packageFormSchema = z.object({
   duration: z.string().min(3, "Duration is required."),
   price: z.string().min(1, "Price is required."),
   priceSuffix: z.string().min(3, "Price suffix is required (e.g., per person)."),
+  pricingTiers: z.array(pricingTierSchema).optional().default([]),
   heroImage: z.string().min(1, "A hero image for the tour page is required."),
   heroImageHint: z.string().min(2, "Hero image hint is required."),
   tourPageDescription: z.string().min(10, "A description for the tour page is required."),

@@ -76,7 +76,6 @@ export function AnalyticsTracker() {
 
       if (window.fbq) {
         window.fbq('init', config.meta_pixel_id);
-        window.fbq('track', 'PageView');
         setIsPixelInitialized(true);
       }
     } catch (err) {
@@ -124,7 +123,7 @@ export function AnalyticsTracker() {
                 gtag('js', new Date());
                 gtag('config', '${config.google_analytics_id}', {
                   page_path: window.location.pathname,
-                  send_page_view: true
+                  send_page_view: false
                 });
               `,
             }}

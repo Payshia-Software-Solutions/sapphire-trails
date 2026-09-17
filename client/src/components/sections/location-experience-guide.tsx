@@ -76,8 +76,8 @@ export function LocationExperienceGuide({ highlights = [], visitorInfo = [] }: L
   }
 
   return (
-    <section id="highlights" className="w-full py-10 sm:py-14 bg-background border-b border-border/60 scroll-mt-28">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="highlights" className="w-full py-12 sm:py-16 bg-background border-b border-border/60 scroll-mt-28">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           
@@ -87,8 +87,8 @@ export function LocationExperienceGuide({ highlights = [], visitorInfo = [] }: L
           {hasHighlights && (
             <div className={`${hasVisitorInfo ? 'lg:col-span-6' : 'lg:col-span-12'} space-y-4`}>
               <div className="flex items-center gap-2 pb-2.5 border-b border-border/60">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <h3 className="text-lg sm:text-xl font-bold font-serif uppercase tracking-wider text-foreground">
+                <Sparkles className="h-4 w-4 text-[#0B1E38] dark:text-blue-400" />
+                <h3 className="text-base sm:text-lg font-semibold uppercase tracking-wider text-foreground">
                   Key Experience Highlights
                 </h3>
               </div>
@@ -97,12 +97,12 @@ export function LocationExperienceGuide({ highlights = [], visitorInfo = [] }: L
                 {highlights.map((item, idx) => {
                   const Icon = ICON_MAP[item.icon] || Sparkles;
                   return (
-                    <li key={idx} className="py-3 flex items-start gap-3.5 group">
-                      <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        <Icon className="h-3.5 w-3.5" />
+                    <li key={idx} className="py-3.5 flex items-start gap-3.5 group">
+                      <div className="h-8 w-8 rounded-xl bg-[#0B1E38]/10 dark:bg-blue-950/40 flex items-center justify-center text-[#0B1E38] dark:text-blue-400 shrink-0 mt-0.5 group-hover:bg-[#0B1E38] group-hover:text-white transition-colors">
+                        <Icon className="h-4 w-4" />
                       </div>
                       <div className="space-y-0.5 flex-1">
-                        <h4 className="text-xs sm:text-sm font-bold font-serif uppercase tracking-wide text-foreground">
+                        <h4 className="text-xs sm:text-sm font-semibold tracking-wide text-foreground">
                           {item.title}
                         </h4>
                         {item.description && (
@@ -124,8 +124,8 @@ export function LocationExperienceGuide({ highlights = [], visitorInfo = [] }: L
           {hasVisitorInfo && (
             <div id="visitor-info" className={`${hasHighlights ? 'lg:col-span-6' : 'lg:col-span-12'} space-y-4`}>
               <div className="flex items-center gap-2 pb-2.5 border-b border-border/60">
-                <Info className="h-4 w-4 text-primary" />
-                <h3 className="text-lg sm:text-xl font-bold font-serif uppercase tracking-wider text-foreground">
+                <Info className="h-4 w-4 text-[#0B1E38] dark:text-blue-400" />
+                <h3 className="text-base sm:text-lg font-semibold uppercase tracking-wider text-foreground">
                   Practical Visitor Guide
                 </h3>
               </div>
@@ -134,16 +134,16 @@ export function LocationExperienceGuide({ highlights = [], visitorInfo = [] }: L
                 {visitorInfo.map((item, idx) => {
                   const Icon = ICON_MAP[item.icon] || Info;
                   return (
-                    <li key={idx} className="py-3 flex items-start gap-3.5 group">
-                      <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        <Icon className="h-3.5 w-3.5" />
+                    <li key={idx} className="py-3.5 flex items-start gap-3.5 group">
+                      <div className="h-8 w-8 rounded-xl bg-[#0B1E38]/10 dark:bg-blue-950/40 flex items-center justify-center text-[#0B1E38] dark:text-blue-400 shrink-0 mt-0.5 group-hover:bg-[#0B1E38] group-hover:text-white transition-colors">
+                        <Icon className="h-4 w-4" />
                       </div>
                       <div className="space-y-0.5 flex-1">
                         <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block">
                           {item.title}
                         </span>
                         {item.line1 && (
-                          <p className="text-xs sm:text-sm font-bold text-foreground">
+                          <p className="text-xs sm:text-sm font-semibold text-foreground">
                             {item.line1}
                           </p>
                         )}

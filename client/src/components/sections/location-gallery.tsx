@@ -41,31 +41,31 @@ export function LocationGallery({ images }: LocationGalleryProps) {
 
   return (
     <section id="gallery" className="w-full py-16 sm:py-24 bg-background-alt border-b border-border/60 scroll-mt-28">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         
         {/* Heading */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-2">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#0B1E38] dark:text-blue-400 mb-2">
             <Camera className="h-3.5 w-3.5" />
             <span>Visual Showcase</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold font-serif text-foreground tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight">
             Destination Photo Gallery
           </h2>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm sm:text-base text-muted-foreground mt-2">
             Explore breathtaking landscapes, mineral formations, and cultural scenes from this location.
           </p>
         </div>
 
         {/* Dynamic Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {images.map((image, index) => {
             const resolvedSrc = getFullImageUrl(image.src) || FALLBACK_IMAGE;
             return (
               <div
                 key={index}
                 onClick={() => setSelectedIdx(index)}
-                className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer bg-black/40 border border-border/70 hover:border-primary/60 transition-all duration-300 shadow-sm hover:shadow-xl"
+                className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer bg-black/40 border border-border/70 hover:border-[#0B1E38]/50 dark:hover:border-blue-500/50 transition-all duration-300 shadow-sm"
               >
                 <img
                   src={resolvedSrc}
@@ -73,14 +73,14 @@ export function LocationGallery({ images }: LocationGalleryProps) {
                   loading="lazy"
                   decoding="async"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE; }}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover md:group-hover:scale-105 transition-transform duration-500"
                 />
                 
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
                   <div className="flex justify-end">
                     {image.is360 && (
-                      <Badge className="bg-purple-600 text-white text-[10px] gap-1 shadow">
+                      <Badge className="bg-blue-600 text-white text-[10px] gap-1 shadow">
                         <Compass className="h-3 w-3" /> 360° Panorama
                       </Badge>
                     )}

@@ -1709,11 +1709,11 @@ export default function ProfessionalAddLocationPage() {
 
       {/* Interactive Map Picker Dialog */}
       <InteractiveMapPickerDialog
-        isOpen={isMapPickerOpen}
-        onClose={() => setIsMapPickerOpen(false)}
-        initialLocationName={location.title || 'Ratnapura, Sri Lanka'}
-        onSelectEmbedUrl={(url) => {
-          setLocation(prev => ({ ...prev, map_embed_url: url }));
+        open={isMapPickerOpen}
+        onOpenChange={setIsMapPickerOpen}
+        locationTitle={location.title || 'Ratnapura, Sri Lanka'}
+        onSelectCoordinates={(lat, lng) => {
+          setLocation(prev => ({ ...prev, map_embed_url: `https://www.google.com/maps?q=${lat},${lng}&output=embed` }));
           toast({
             title: 'Map Attached!',
             description: 'Google Maps embed link updated.',

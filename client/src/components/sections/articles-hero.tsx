@@ -19,7 +19,7 @@ export function ArticlesHeroSection({
   const articlesHero = siteContent.articles.hero;
 
   return (
-    <section className="relative w-full py-12 md:py-16 lg:py-20 overflow-hidden bg-slate-950 text-white border-b border-border/40">
+    <section className="relative w-full py-12 md:py-16 lg:py-20 overflow-hidden bg-[#080E18] text-white border-b border-white/10">
       {/* Background Image with Cinematic Grading */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -31,20 +31,23 @@ export function ArticlesHeroSection({
         />
 
         {/* Soft Multi-layered Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080E18] via-[#080E18]/80 to-[#080E18]/90" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 md:px-6">
+      {/* Ambient Sapphire Glow */}
+      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-blue-900/15 blur-[120px] pointer-events-none rounded-full" />
+
+      <div className="container relative z-10 mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs - Site-wide consistency */}
-        <div className="flex items-center space-x-2 text-xs sm:text-sm text-slate-400 mb-6">
-          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+        <div className="flex items-center space-x-2 text-xs sm:text-sm text-slate-400 mb-6 font-sans">
+          <Link href="/" className="hover:text-white transition-colors">Home</Link>
           {breadcrumbs.map((crumb, index) => (
             <div key={index} className="flex items-center space-x-2">
               <ChevronRight className="h-3.5 w-3.5 opacity-60" />
               {pathname === crumb.href ? (
-                <span className="text-primary font-medium">{crumb.label}</span>
+                <span className="text-white font-medium">{crumb.label}</span>
               ) : (
-                <Link href={crumb.href} className="hover:text-primary transition-colors">
+                <Link href={crumb.href} className="hover:text-white transition-colors">
                   {crumb.label}
                 </Link>
               )}
@@ -52,40 +55,33 @@ export function ArticlesHeroSection({
           ))}
         </div>
 
-        <div className="max-w-3xl space-y-4">
+        <div className="max-w-3xl space-y-4 font-sans">
           {/* Brand Tag */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-primary">
-            <BookOpen className="h-3.5 w-3.5 text-primary" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-medium uppercase tracking-[0.18em] text-blue-200 shadow-2xs">
+            <BookOpen className="h-3.5 w-3.5 text-blue-300" />
             <span>{articlesHero.tagline}</span>
           </div>
 
-          {/* Main Title - Luxury Serif */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-normal tracking-wide text-white leading-tight">
-            {articlesHero.title.includes(' ') ? (
-              <>
-                <span>{articlesHero.title.split(' ')[0]}</span>{' '}
-                <span className="text-primary italic">{articlesHero.title.substring(articlesHero.title.indexOf(' ') + 1)}</span>
-              </>
-            ) : (
-              articlesHero.title
-            )}
+          {/* Main Title - Modern Poppins Sans */}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-white leading-tight">
+            {articlesHero.title}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base md:text-lg text-slate-300 font-light leading-relaxed max-w-2xl">
+          <p className="text-xs sm:text-sm md:text-base text-slate-300 font-normal leading-relaxed max-w-2xl">
             {articlesHero.subtitle}
           </p>
 
           {/* Trust Highlights */}
-          <div className="pt-2 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-300">
+          <div className="pt-2 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-300 font-sans">
             <span className="flex items-center gap-1.5">
-              <Gem className="h-4 w-4 text-primary" /> Gemological Insights
+              <Gem className="h-4 w-4 text-blue-300" /> Gemological Insights
             </span>
             <span className="flex items-center gap-1.5">
-              <Award className="h-4 w-4 text-primary" /> NGJA &amp; GIA Standards
+              <Award className="h-4 w-4 text-blue-300" /> NGJA &amp; GIA Standards
             </span>
             <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4 text-primary" /> Updated Weekly
+              <Clock className="h-4 w-4 text-blue-300" /> Updated Weekly
             </span>
           </div>
         </div>

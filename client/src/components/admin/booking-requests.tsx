@@ -32,7 +32,7 @@ export function BookingRequests() {
     }
   }, [router]);
 
-  const handleStatusChange = (id: string, status: 'accepted' | 'rejected') => {
+  const handleStatusChange = (id: number, status: 'accepted' | 'rejected') => {
     const updatedBookings = bookings.map((booking) =>
       booking.id === id ? { ...booking, status } : booking
     );
@@ -74,7 +74,7 @@ export function BookingRequests() {
             <div>
               <h4 className="font-semibold text-sm">Tour Details</h4>
               <p className="text-sm text-muted-foreground">
-                Package: {booking.tourType === 'gem-explorer-day-tour' ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe'}
+                Package: {booking.tourTitle || (booking.tourType === 1 ? 'Gem Explorer Day Tour' : 'Sapphire Trails Deluxe')}
               </p>
               <p className="text-sm text-muted-foreground">Guests: {booking.guests}</p>
               <p className="text-sm text-muted-foreground">

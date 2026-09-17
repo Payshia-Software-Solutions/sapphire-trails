@@ -1,116 +1,228 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from '@/components/ui/button';
 import { ScrollAnimate } from '@/components/shared/scroll-animate';
-import { 
-  Footprints, 
-  ArrowRight, 
-  ShieldCheck, 
-  Waves, 
-  Store, 
-  Search,
-  CheckCircle2
-} from 'lucide-react';
+import { Footprints, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSiteContent } from '@/lib/site-content';
+import { cn } from '@/lib/utils';
 
-const defaultStepImages = [
-  "https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp",
-  "https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp",
-  "https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp",
-  "https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp",
+const default6Steps = [
+  {
+    step: '01',
+    title: 'Introduction to Sri Lankan Gemology',
+    subtitle: 'Heritage & Science',
+    description: "Discover Sri Lanka's rich gemstone heritage, geological origins, and the legendary history of Ceylon sapphires.",
+    image: '/img/journey/journey-1-gemology.webp',
+  },
+  {
+    step: '02',
+    title: 'Gem Market Experience',
+    subtitle: 'The Trading Bazaar',
+    description: "Explore local gem markets and Sri Lanka's vibrant open-air gem trade conducted through secret hand signals.",
+    image: '/img/journey/journey-2-market.webp',
+  },
+  {
+    step: '03',
+    title: 'Gem Cut & Polishing Experience',
+    subtitle: 'Master Lapidary',
+    description: "See how rough gemstones become beautiful polished stones under the precision hands of traditional master cutters.",
+    image: '/img/journey/journey-3-lapidary.webp',
+  },
+  {
+    step: '04',
+    title: 'Gem Museum Visit',
+    subtitle: 'Curated Specimens',
+    description: "Explore Sri Lanka's fascinating gemstone history, ancient artifacts, and rare natural crystal formations.",
+    image: '/img/journey/journey-4-museum.webp',
+  },
+  {
+    step: '05',
+    title: 'Gem Mine Experience',
+    subtitle: 'Subterranean Pits & Washing',
+    description: "Experience a traditional Sri Lankan gem mine. Stand alongside veteran miners washing sapphire gravel in natural mountain streams.",
+    image: '/img/journey/journey-5-mine.webp',
+  },
+  {
+    step: '06',
+    title: 'Gem & Jewellery Showcase',
+    subtitle: 'Haute Joaillerie',
+    description: "Discover a curated collection of natural certified Ceylon gemstones and bespoke fine jewelry handcrafted to perfection.",
+    image: '/img/journey/journey-6-showcase.webp',
+  },
 ];
 
-const defaultHighlights = [
-  ["Safety harnesses & helmets provided", "Licensed government pits", "Expert guidance at every step"],
-  ["Keep raw minerals you uncover", "Traditional wicker basket technique", "Natural mountain spring location"],
-  ["Exclusive market access", "Experience traditional trading rituals", "Bespoke collector negotiations"],
-  ["Microscopic crystal inspection", "Official authenticity certificates", "Custom jewellery design consultation"],
-];
+function JourneyStepCard({ step, idx }: { step: any; idx: number }) {
+  const stepNum = step.step || `0${idx + 1}`;
+  const stepImg = step.image || default6Steps[idx % default6Steps.length].image;
+
+  return (
+    <div className="group flex flex-col h-full cursor-pointer">
+      {/* Tall Immersive Portrait Image Container matching Brochure Pages 04 & 05 */}
+      <div className="relative aspect-[4/5] sm:aspect-[341/405] w-full rounded-2xl overflow-hidden bg-white/5 mb-4 shadow-md border border-white/10">
+        <Image
+          src={stepImg}
+          alt={step.title}
+          fill
+          sizes="(max-width: 768px) 85vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-500 ease-out md:group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080E18]/80 via-transparent to-transparent opacity-60 md:group-hover:opacity-40 transition-opacity" />
+        
+        {/* Quiet Luxury Step Pill (GPU-friendly high performance) */}
+        <div className="absolute top-3 left-3 bg-black/75 border border-white/20 px-3 py-1 rounded-full text-xs font-sans font-medium text-white tracking-widest shadow-sm">
+          {stepNum}
+        </div>
+      </div>
+
+      {/* Editorial Typography & Narrative (Fully Legible, No Truncation) */}
+      <div className="flex flex-col flex-grow space-y-1.5 font-sans px-1">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-blue-300 font-medium font-sans">
+          {step.subtitle || `Stage ${stepNum}`}
+        </p>
+        
+        <h3 className="text-base sm:text-lg lg:text-xl font-sans font-semibold text-white md:group-hover:text-blue-200 transition-colors leading-snug">
+          {step.title}
+        </h3>
+        
+        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal font-sans pt-0.5">
+          {step.description}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export function JourneySection() {
   const { content } = useSiteContent();
   const journey = content.homepage.journey;
+  const steps = (journey.steps && journey.steps.length >= 6) ? journey.steps : default6Steps;
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: false, 
+    align: 'start',
+    skipSnaps: true,
+    dragFree: false,
+    duration: 20,
+    containScroll: 'trimSnaps',
+  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+    emblaApi.on('select', onSelect);
+    onSelect();
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
 
   return (
-    <section id="journey" className="w-full bg-background-alt py-16 md:py-28 relative overflow-hidden">
+    <section id="journey" className="w-full bg-[#080E18] text-white py-16 md:py-24 lg:py-28 relative overflow-hidden border-y border-white/10">
+      {/* Subtle Luxury Ambient Glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] md:w-[900px] h-[400px] bg-blue-900/15 blur-[140px] pointer-events-none rounded-full" />
+
       <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 relative z-10">
+        
         {/* Section Header */}
-        <ScrollAnimate className="max-w-4xl lg:max-w-5xl mx-auto text-center space-y-3 mb-14 md:mb-18">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold uppercase tracking-wider text-primary">
-            <Footprints className="h-3.5 w-3.5" />
-            {journey.tagline || 'The Signature Gem Mine Tour Experience'}
+        <ScrollAnimate className="max-w-3xl lg:max-w-4xl mx-auto text-center space-y-3 mb-12 md:mb-18 px-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-medium uppercase tracking-[0.18em] text-blue-200 font-sans shadow-2xs">
+            <Footprints className="h-3.5 w-3.5 text-blue-300" />
+            {journey.tagline || 'The Signature Gemological Trail'}
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal tracking-wide text-foreground">
-            {journey.heading || 'The 4-Step Gem Mine Tour Journey'}
+          
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-sans font-bold tracking-tight text-white leading-tight">
+            {journey.heading && journey.heading.includes('6-Step') ? journey.heading : 'The 6-Step Gemological Trail'}
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-4">
-            {journey.subtitle || 'Unlike standard tourist stops, Sapphire Trails takes you deep into the authentic lifecycle of Ceylon Sapphires.'}
+
+          <p className="text-xs sm:text-sm md:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto font-sans font-normal">
+            {journey.subtitle || 'From subterranean timber-reinforced shafts to the world-famous street trading bazaar, experience every stage of authentic Ceylon sapphire heritage.'}
           </p>
         </ScrollAnimate>
 
-        {/* 4 Steps Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {journey.steps.map((step, idx) => (
-            <ScrollAnimate key={idx} className="flex">
-              <div className="group relative w-full bg-card border border-border/80 rounded-xl overflow-hidden flex flex-col justify-between transition-colors duration-300 hover:border-primary/40">
-                
-                {/* Image Container */}
-                <div className="relative h-48 sm:h-52 w-full overflow-hidden">
-                  <Image
-                    src={step.image || defaultStepImages[idx % defaultStepImages.length]}
-                    alt={step.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/25" />
-                  
-                  {/* Step Number Badge */}
-                  <div className="absolute top-3 left-3 bg-black/80 border border-white/15 px-2.5 py-1 rounded text-xs font-mono font-medium text-white/90">
-                    STEP {step.step || `0${idx + 1}`}
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-5 sm:p-6 flex flex-col flex-grow justify-between space-y-4">
-                  <div className="space-y-2">
-                    <p className="text-[11px] uppercase tracking-widest text-primary font-semibold font-serif">
-                      {step.subtitle}
-                    </p>
-                    <h3 className="text-base sm:text-lg font-headline font-bold text-foreground group-hover:text-primary transition-colors sm:min-h-[3.25rem] flex items-center">
-                      {step.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
-
-                  {/* Feature Highlights */}
-                  <div className="space-y-1.5 pt-3 border-t border-border/60">
-                    {(defaultHighlights[idx] || []).map((h, i) => (
-                      <div key={i} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                        <CheckCircle2 className="h-3 w-3 text-primary flex-shrink-0" />
-                        <span className="truncate">{h}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-              </div>
+        {/* Desktop / Tablet Grid (3 columns x 2 rows) matching Grand Brochure Layout */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 lg:gap-x-6 gap-y-12 sm:gap-y-16 md:gap-y-20">
+          {steps.map((step, idx) => (
+            <ScrollAnimate key={idx} className="flex flex-col">
+              <JourneyStepCard step={step} idx={idx} />
             </ScrollAnimate>
           ))}
         </div>
 
-        {/* Bottom CTA Strip */}
-        <ScrollAnimate className="mt-14 text-center">
-          <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 rounded-full shadow-lg">
+        {/* Mobile View Slider - High Performance 60/120fps touch physics */}
+        <div className="md:hidden relative">
+          <div className="overflow-hidden -ml-4 touch-pan-y select-none" ref={emblaRef}>
+            <div className="flex items-stretch transform-gpu">
+              {steps.map((step, idx) => (
+                <div key={idx} className="relative flex-[0_0_80%] sm:flex-[0_0_84%] min-w-0 pl-4 flex flex-col">
+                  <JourneyStepCard step={step} idx={idx} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile Carousel Controls & Progress Indicator */}
+          <div className="flex items-center justify-between mt-6 px-1">
+            <div className="flex items-center gap-1.5">
+              {steps.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => emblaApi?.scrollTo(i)}
+                  className={cn(
+                    "h-1.5 rounded-full transition-all duration-300",
+                    selectedIndex === i ? "w-6 bg-white" : "w-1.5 bg-white/30"
+                  )}
+                  aria-label={`Go to step ${i + 1}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <span className="text-[11px] font-sans font-medium uppercase tracking-widest text-slate-400">
+                0{selectedIndex + 1} / 0{steps.length}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => emblaApi?.scrollPrev()}
+                  disabled={selectedIndex === 0}
+                  className="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center text-white disabled:opacity-30 transition-opacity active:scale-95"
+                  aria-label="Previous step"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => emblaApi?.scrollNext()}
+                  disabled={selectedIndex === steps.length - 1}
+                  className="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center text-white disabled:opacity-30 transition-opacity active:scale-95"
+                  aria-label="Next step"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Professional Bottom CTA */}
+        <ScrollAnimate className="mt-12 md:mt-20 text-center">
+          <Button 
+            asChild 
+            size="lg" 
+            className="bg-white hover:bg-slate-100 text-[#080E18] font-semibold text-xs sm:text-sm h-11 px-8 rounded-full shadow-lg transition-all border border-white"
+          >
             <Link href="/tours">
               View All Tour Packages &amp; Bookings
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </ScrollAnimate>
+
       </div>
     </section>
   );

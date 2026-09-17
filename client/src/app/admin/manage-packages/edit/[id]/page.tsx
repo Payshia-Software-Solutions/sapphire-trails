@@ -37,7 +37,8 @@ import {
   Upload, 
   Layers, 
   Wand2,
-  Calendar
+  Calendar,
+  Users
 } from 'lucide-react';
 import Image from 'next/image';
 import { mapServerPackageToClient } from '@/lib/packages-data';
@@ -93,6 +94,7 @@ export default function EditPackageStudioPage() {
       duration: '',
       price: '',
       priceSuffix: 'per person',
+      pricingTiers: [],
       heroImage: '',
       heroImageHint: '',
       tourPageDescription: '',
@@ -106,6 +108,11 @@ export default function EditPackageStudioPage() {
       metaKeywords: '',
       canonicalUrl: '',
     },
+  });
+
+  const { fields: tierFields, append: appendTier, remove: removeTier } = useFieldArray({
+    control: form.control,
+    name: 'pricingTiers',
   });
 
   const { fields: highlightFields, append: appendHighlight, remove: removeHighlight } = useFieldArray({
@@ -150,6 +157,7 @@ export default function EditPackageStudioPage() {
         duration: packageData.duration,
         price: packageData.price,
         priceSuffix: packageData.priceSuffix || 'per person',
+        pricingTiers: packageData.pricingTiers || [],
         heroImage: packageData.heroImage,
         heroImageHint: packageData.heroImageHint,
         tourPageDescription: packageData.tourPageDescription,
@@ -280,6 +288,7 @@ export default function EditPackageStudioPage() {
       formData.append('duration', values.duration);
       formData.append('price', values.price);
       formData.append('price_suffix', values.priceSuffix || 'per person');
+      formData.append('pricing_tiers', JSON.stringify(values.pricingTiers || []));
       formData.append('tour_page_description', values.tourPageDescription);
       formData.append('homepage_image_alt', values.imageAlt || values.homepageTitle);
       formData.append('homepage_image_hint', values.imageHint || '');
@@ -603,6 +612,126 @@ export default function EditPackageStudioPage() {
                       </FormItem>
                     )}
                   />
+                </div>
+
+                {/* Dynamic Slab-Based (Tiered) Pricing Builder */}
+                <div className="rounded-xl border border-border/80 p-4 bg-muted/20 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-primary" />
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                          Dynamic Head-Count Slabs (Tiered Pricing)
+                        </h4>
+                        <Badge variant="outline" className="text-[10px] py-0 px-2 font-normal">
+                          {tierFields.length} {tierFields.length === 1 ? 'Slab' : 'Slabs'}
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                        Define custom rates based on guest count (e.g. 1–3 guests $140, 4+ guests $110). If empty, standard base price above applies.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const count = tierFields.length;
+                        const lastMax = count > 0 ? form.getValues(`pricingTiers.${count - 1}.max_guests`) : null;
+                        const nextMin = lastMax ? Number(lastMax) + 1 : (count === 0 ? 1 : 4);
+                        appendTier({ min_guests: nextMin, max_guests: null, price: 0, pricing_type: 'per_person' });
+                      }}
+                      className="text-xs h-8 rounded-full border-primary/30 text-primary hover:bg-primary/10 gap-1.5 shrink-0"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Add Slab</span>
+                    </Button>
+                  </div>
+
+                  {tierFields.length === 0 ? (
+                    <div className="text-center py-4 border border-dashed border-border rounded-lg text-xs text-muted-foreground bg-background/50">
+                      No slab rates configured. All bookings will use standard price ({form.watch('price') || '$0'} {form.watch('priceSuffix') || 'per person'}).
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {tierFields.map((field, index) => (
+                        <div key={field.id} className="grid grid-cols-12 gap-2 items-center bg-card p-3 rounded-xl border border-border shadow-2xs text-xs">
+                          {/* Min Guests */}
+                          <div className="col-span-6 sm:col-span-2">
+                            <Label className="text-[10px] text-muted-foreground block mb-1">Min Persons</Label>
+                            <Input
+                              type="number"
+                              min={1}
+                              {...form.register(`pricingTiers.${index}.min_guests`, { valueAsNumber: true })}
+                              className="h-8 text-xs text-center font-medium"
+                              placeholder="1"
+                            />
+                          </div>
+
+                          {/* Max Guests */}
+                          <div className="col-span-6 sm:col-span-2">
+                            <Label className="text-[10px] text-muted-foreground block mb-1">Max Persons</Label>
+                            <Input
+                              type="number"
+                              min={1}
+                              {...form.register(`pricingTiers.${index}.max_guests`, { 
+                                setValueAs: v => (v === '' || v === null || isNaN(v) ? null : Number(v))
+                              })}
+                              className="h-8 text-xs text-center font-medium"
+                              placeholder="+ (any)"
+                            />
+                          </div>
+
+                          {/* Price */}
+                          <div className="col-span-6 sm:col-span-3">
+                            <Label className="text-[10px] text-muted-foreground block mb-1">Rate ($)</Label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1.5 text-xs text-muted-foreground">$</span>
+                              <Input
+                                type="number"
+                                min={0}
+                                step="0.01"
+                                {...form.register(`pricingTiers.${index}.price`, { valueAsNumber: true })}
+                                className="h-8 text-xs pl-6 font-semibold text-primary"
+                                placeholder="0.00"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Rate Type */}
+                          <div className="col-span-5 sm:col-span-4">
+                            <Label className="text-[10px] text-muted-foreground block mb-1">Rate Calculation</Label>
+                            <Select
+                              value={form.watch(`pricingTiers.${index}.pricing_type`) || 'per_person'}
+                              onValueChange={(val: 'per_person' | 'fixed_group') => form.setValue(`pricingTiers.${index}.pricing_type`, val)}
+                            >
+                              <SelectTrigger className="h-8 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="per_person">Per Person (/ person)</SelectItem>
+                                <SelectItem value="fixed_group">Total Group (Flat rate)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Delete Action */}
+                          <div className="col-span-1 flex justify-end pt-3 sm:pt-4">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeTier(index)}
+                              className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                              title="Remove Slab"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <FormField

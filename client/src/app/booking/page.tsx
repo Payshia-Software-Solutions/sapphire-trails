@@ -5,6 +5,9 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { BookingPageContent } from '@/components/sections/booking-page-content';
 import { TrustSection } from '@/components/sections/TrustSection';
+import { fetchTourPackages } from '@/lib/packages-data';
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Book Your Gem Tour Adventure in Sri Lanka | Sapphire Trails',
@@ -24,17 +27,33 @@ export const metadata: Metadata = {
   }
 };
 
-export default function BookingPage() {
+function BookingPageSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-8 md:py-12 max-w-6xl animate-pulse font-sans">
+      <div className="space-y-2 mb-8">
+        <div className="h-8 bg-muted/60 rounded-md w-72 max-w-full" />
+        <div className="h-4 bg-muted/40 rounded-md w-96 max-w-full" />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="h-48 bg-muted/40 rounded-2xl" />
+          <div className="h-96 bg-muted/30 rounded-2xl" />
+        </div>
+        <div className="h-80 bg-muted/40 rounded-2xl" />
+      </div>
+    </div>
+  );
+}
+
+export default async function BookingPage() {
+  const initialPackages = await fetchTourPackages(3600);
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1 flex flex-col">
-        <Suspense fallback={
-          <div className="flex-1 flex items-center justify-center">
-            <p>Loading...</p>
-          </div>
-        }>
-          <BookingPageContent />
+        <Suspense fallback={<BookingPageSkeleton />}>
+          <BookingPageContent initialPackages={initialPackages} />
         </Suspense>
       </main>
       <TrustSection />
@@ -42,3 +61,4 @@ export default function BookingPage() {
     </div>
   );
 }
+
