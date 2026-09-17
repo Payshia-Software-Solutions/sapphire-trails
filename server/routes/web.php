@@ -2,14 +2,15 @@
 require_once __DIR__ . '/../lib/Env.php';
 
 // Load CORS settings
-$allowedOriginsConfig = Env::get('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001,http://sapphiretrails.lk,https://sapphiretrails.lk,http://www.sapphiretrails.lk,https://www.sapphiretrails.lk');
+$allowedOriginsConfig = Env::get('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001,http://sapphiretrails.lk,https://sapphiretrails.lk,http://www.sapphiretrails.lk,https://www.sapphiretrails.lk,http://192.168.8.115');
 $allowedOrigins = array_map('trim', explode(',', $allowedOriginsConfig));
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $isAllowedOrigin = !empty($origin) && (
     in_array($origin, $allowedOrigins, true) ||
     in_array('*', $allowedOrigins, true) ||
-    preg_match('#^https?://(www\.)?sapphiretrails\.lk$#i', $origin)
+    preg_match('#^https?://(www\.)?sapphiretrails\.lk$#i', $origin) ||
+    preg_match('#^https?://(192\.168\.\d+\.\d+|127\.0\.0\.1|10\.\d+\.\d+\.\d+|localhost)(:\d+)?$#i', $origin)
 );
 
 if ($isAllowedOrigin) {
@@ -59,6 +60,7 @@ $mailRoutes = require __DIR__ . '/mailRoutes.php';
 $invoiceRoutes = require __DIR__ . '/invoiceRoutes.php';
 $analyticsRoutes = require __DIR__ . '/analyticsRoutes.php';
 $articleRoutes = require __DIR__ . '/articleRoutes.php';
+$subscriberRoutes = require __DIR__ . '/subscriberRoutes.php';
 
 // Combine all routes
 $routes = array_merge(
@@ -75,7 +77,8 @@ $routes = array_merge(
     $mailRoutes,
     $invoiceRoutes,
     $analyticsRoutes,
-    $articleRoutes
+    $articleRoutes,
+    $subscriberRoutes
 );
 
 // Define the home route
@@ -91,9 +94,22 @@ $routes['GET /'] = function () {
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Determine if the application is running in a local subdirectory
-if ($_SERVER['HTTP_HOST'] === 'localhost' || strpos($_SERVER['HTTP_HOST'], 'localhost:') === 0) {
+// Determine if the application is running in a local subdirectory or accessed via local IP
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$isLocal = (
+    $host === 'localhost' ||
+    strpos($host, 'localhost:') === 0 ||
+    strpos($host, '127.0.0.1') === 0 ||
+    strpos($host, '192.168.') === 0 ||
+    strpos($host, '10.') === 0 ||
+    preg_match('/^172\.(1[6-9]|2[0-9]|3[0-1])\./', $host)
+);
+
+if ($isLocal || strpos($uri, '/sapphire-trails/server') !== false || strpos($uri, '/sapphire_trails_server') !== false) {
     $uri = str_replace(['/sapphire-trails/server', '/sapphire_trails_server'], '', $uri);
+}
+if (empty($uri)) {
+    $uri = '/';
 }
 
 // Set the header for JSON responses, except for HTML pages and iCal export

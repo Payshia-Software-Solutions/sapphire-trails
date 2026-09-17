@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
@@ -22,11 +24,24 @@ export interface FeaturedBannerConfig {
   delaySeconds?: number;
 }
 
+export interface TopBarConfig {
+  enabled: boolean;
+  email?: string;
+  phone?: string;
+  tagline?: string;
+  taglineLink?: string;
+}
+
+export { type SeoFaqItem, type SeoSettings, defaultSeoFaqs, defaultSeoSettings } from './site-seo';
+import { type SeoSettings, defaultSeoSettings, defaultSeoFaqs } from './site-seo';
+
 export interface SiteContentData {
   // Global Site Settings
   settings?: {
     defaultTheme?: 'light' | 'dark';
     banner?: FeaturedBannerConfig;
+    topbar?: TopBarConfig;
+    seo?: SeoSettings;
     [key: string]: any;
   };
 
@@ -41,6 +56,11 @@ export interface SiteContentData {
       ctaSecondaryText: string;
       videoUrl?: string;
       posterImageUrl?: string;
+      heroMode?: 'editorial_image' | 'cinematic_video';
+      gemImageUrl?: string;
+      cornerLeftText?: string;
+      cornerCenterText?: string;
+      cornerRightText?: string;
     };
     stats: Array<{
       value: string;
@@ -437,10 +457,20 @@ export const defaultFeaturedBanner: FeaturedBannerConfig = {
   delaySeconds: 2,
 };
 
+export const defaultTopBarConfig: TopBarConfig = {
+  enabled: true,
+  email: 'info@sapphiretrails.lk',
+  phone: '071 235 7700',
+  tagline: 'Authentic Gem Tours',
+  taglineLink: '',
+};
+
 export const defaultSiteContent: SiteContentData = {
   settings: {
     defaultTheme: 'light',
     banner: defaultFeaturedBanner,
+    topbar: defaultTopBarConfig,
+    seo: defaultSeoSettings,
   },
 
   homepage: {
@@ -453,45 +483,64 @@ export const defaultSiteContent: SiteContentData = {
       ctaSecondaryText: 'Explore Packages',
       videoUrl: 'https://content-provider.payshia.com/sapphire-trail/hero/hero-video-sapphire-trail.webm',
       posterImageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
+      heroMode: 'editorial_image',
+      gemImageUrl: '/img/hero-sapphire-gem.png',
+      cornerLeftText: 'SAPPHIRE TRAILS • RATNAPURA',
+      cornerCenterText: 'SRI LANKA',
+      cornerRightText: '01 / PRIVATE EXPEDITIONS',
     },
     stats: [
       { value: '5,000+', label: 'Happy Guests' },
-      { value: '27+', label: 'Years Hospitality Excellence' },
+      { value: '29+', label: 'Years Hospitality Excellence' },
       { value: '100%', label: 'Safety Record' },
       { value: '50+', label: 'Active Mine Pits Accessed' },
     ],
     journey: {
       tagline: 'The Signature Gemological Trail',
-      heading: 'The Authentic Ratnapura Gem Mining Tour Experience',
-      subtitle: 'From subterranean timber-reinforced shafts to the world-famous street trading bazaar, experience every stage of authentic Sri Lankan gem tours.',
+      heading: 'The 6-Step Gemological Trail',
+      subtitle: 'From subterranean timber-reinforced shafts to the world-famous street trading bazaar, experience every stage of authentic Ceylon sapphire heritage.',
       steps: [
         {
           step: '01',
-          title: 'Descend into Active Mining Pits',
-          subtitle: 'Authentic Underground Experience',
-          description: 'Equipped with safety gear, descend into real 40–60ft traditional timbered mine shafts. Meet veteran miners and witness ancient hand-drilling methods in action.',
-          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-3-optimized.webp',
+          title: 'Introduction to Sri Lankan Gemology',
+          subtitle: 'Heritage & Science',
+          description: "Discover Sri Lanka's rich gemstone heritage, geological origins, and the legendary history of Ceylon sapphires.",
+          image: '/img/journey/journey-1-gemology.webp',
         },
         {
           step: '02',
-          title: 'Traditional Gem Gravel Washing',
-          subtitle: 'Hands-on Illama Washing',
-          description: 'Stand alongside local miners in mountain stream beds. Master the ancient technique of swirling conical bamboo baskets to separate heavy sapphire gravel from silt.',
-          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp',
+          title: 'Gem Market Experience',
+          subtitle: 'The Trading Bazaar',
+          description: "Explore local gem markets and Sri Lanka's vibrant open-air gem trade conducted through secret hand signals.",
+          image: '/img/journey/journey-2-market.webp',
         },
         {
           step: '03',
-          title: 'Ratnapura Street Gem Market',
-          subtitle: "The World's Sapphire Capital",
-          description: 'Step into the bustling alleys of Ratnapura where rough gemstones are traded using secret hand signals and optical torches in a centuries-old open-air bazaar.',
-          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp',
+          title: 'Gem Cut & Polishing Experience',
+          subtitle: 'Master Lapidary',
+          description: "See how rough gemstones become beautiful polished stones under the precision hands of traditional master cutters.",
+          image: '/img/journey/journey-3-lapidary.webp',
         },
         {
           step: '04',
-          title: 'Gemologist Valuation & Workshop',
-          subtitle: 'Authentication & Lapidary',
-          description: 'Conclude at our partner laboratory at Grand Silver Ray. Examine raw Ceylon Sapphires, Padparadschas, and Star stones under high-power microscopes.',
-          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp',
+          title: 'Gem Museum Visit',
+          subtitle: 'Curated Specimens',
+          description: "Explore Sri Lanka's fascinating gemstone history, ancient artifacts, and rare natural crystal formations.",
+          image: '/img/journey/journey-4-museum.webp',
+        },
+        {
+          step: '05',
+          title: 'Gem Mine Experience',
+          subtitle: 'Subterranean Pits & Washing',
+          description: "Experience a traditional Sri Lankan gem mine. Stand alongside veteran miners washing sapphire gravel in natural mountain streams.",
+          image: '/img/journey/journey-5-mine.webp',
+        },
+        {
+          step: '06',
+          title: 'Gem & Jewellery Showcase',
+          subtitle: 'Haute Joaillerie',
+          description: "Discover a curated collection of natural certified Ceylon gemstones and bespoke fine jewelry handcrafted to perfection.",
+          image: '/img/journey/journey-6-showcase.webp',
         }
       ]
     },
@@ -591,12 +640,12 @@ export const defaultSiteContent: SiteContentData = {
     hero: {
       tagline: "The Guardians of Ceylon's Sapphire Legacy",
       title: 'About Sapphire Trails',
-      subtitle: "Backed by 27+ years of hospitality excellence at Grand Silver Ray, we lead ethical, VIP gemological journeys into Sri Lanka's most legendary sapphire mines.",
+      subtitle: "Backed by 29+ years of hospitality excellence at Grand Silver Ray, we lead ethical, VIP gemological journeys into Sri Lanka's most legendary sapphire mines.",
       image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-11-optimized.webp',
     },
     // 2. Metrics
     metrics: [
-      { value: '27+', label: 'Years Hospitality Heritage', description: 'Backed by the iconic Grand Silver Ray resort in Ratnapura' },
+      { value: '29+', label: 'Years Hospitality Heritage', description: 'Backed by the iconic Grand Silver Ray resort in Ratnapura' },
       { value: '100%', label: 'Ethical & Conflict-Free', description: 'Direct sourcing with fair artisan wages & environmental restoration' },
       { value: '15+', label: 'Partner Active Mines', description: 'Exclusive private pit access unavailable to standard mass tours' },
       { value: '4.9★', label: 'Guest Satisfaction', description: 'Unrivaled private tour ratings from discerning global travelers' },
@@ -604,8 +653,8 @@ export const defaultSiteContent: SiteContentData = {
     // 3. Our Story
     story: {
       tagline: 'Our Heritage & Origins',
-      heading: 'From 27 Years of Hospitality to the Birth of Sapphire Trails',
-      paragraph1: "Our journey is deeply rooted in Ratnapura—the legendary 'City of Gems' in Sri Lanka's Sabaragamuwa province. For over 27 years, our parent establishment, Grand Silver Ray, has welcomed global dignitaries, connoisseurs, and adventurers, establishing the gold standard in regional hospitality.",
+      heading: 'From 29 Years of Hospitality to the Birth of Sapphire Trails',
+      paragraph1: "Our journey is deeply rooted in Ratnapura—the legendary 'City of Gems' in Sri Lanka's Sabaragamuwa province. For over 29 years, our parent establishment, Grand Silver Ray, has welcomed global dignitaries, connoisseurs, and adventurers, establishing the gold standard in regional hospitality.",
       paragraph2: "However, we observed that most travelers visiting Sri Lanka only experienced gemstones behind glass display cases. The true magic—the ancient rhythm of timber pit mining and raw sapphire discovery—remained hidden.",
       quote: "Sapphire Trails was founded on a singular conviction: to bridge world-class luxury hospitality with authentic, ethical, and safe gem exploration directly at the source.",
       image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-4-optimized.webp',
@@ -837,7 +886,7 @@ export const defaultSiteContent: SiteContentData = {
         {
           title: 'Insured White-Glove Delivery',
           description: 'Discreet, fully insured hand delivery directly to your luxury hotel, villa, or proposal venue across Sri Lanka.',
-          image: 'https://content-provider.payshia.com/silver-ray/room-images/89/BEDROOM-1-optimized-69470fe99fc4c.webp',
+          image: 'https://content-provider.payshia.com/sapphire-trail/images/tour-8-optimized.webp',
         },
       ]
     },
@@ -966,7 +1015,7 @@ export const defaultSiteContent: SiteContentData = {
       subtitle: 'Connect with our gemological expedition specialists to plan your private tour, bespoke gemstone acquisition, or luxury suite reservations in Ratnapura.',
       image: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
     },
-    primaryPhone: '076 375 6688',
+    primaryPhone: '(+94) 76 37 56 688',
     secondaryPhone: '',
     primaryEmail: 'info@sapphiretrails.lk',
     physicalAddress: 'Grand Silver Ray, Colombo - Batticaloa Hwy, Ratnapura, Sri Lanka',
@@ -1105,7 +1154,12 @@ export function mergeProposalContent(parsedProposal?: any) {
   if (rawFaqs && typeof rawFaqs === 'object') {
     if (rawFaqs.heading) faqsHeading = rawFaqs.heading;
     if (Array.isArray(rawFaqs.items) && rawFaqs.items.length > 0) {
-      faqsItems = rawFaqs.items;
+      faqsItems = rawFaqs.items.map((item: any, idx: number) => {
+        const defaultMatch = d.faqs.items[idx];
+        const question = (item.question && item.question.trim()) || defaultMatch?.question || '';
+        const answer = (item.answer && item.answer.trim()) || defaultMatch?.answer || 'Please contact our concierge team on WhatsApp or via our inquiry form for tailored details.';
+        return { question, answer };
+      });
     }
   }
 
@@ -1222,6 +1276,68 @@ export function mergeFooterContent(parsedFooter?: any) {
   };
 }
 
+export function mergeSiteSettings(incoming?: any) {
+  const d = defaultSiteContent.settings;
+  if (!incoming || typeof incoming !== 'object') return d;
+
+  const rawFaqs = incoming.seo?.faqs;
+  const faqs = (Array.isArray(rawFaqs) && rawFaqs.length > 0)
+    ? rawFaqs
+    : defaultSeoSettings.faqs;
+
+  const rawKeywords = incoming.seo?.keywords;
+  const keywords = (Array.isArray(rawKeywords) && rawKeywords.length > 0)
+    ? rawKeywords
+    : defaultSeoSettings.keywords;
+
+  return {
+    ...d,
+    ...incoming,
+    banner: {
+      ...d?.banner,
+      ...(incoming.banner || {}),
+    },
+    topbar: {
+      ...d?.topbar,
+      ...(incoming.topbar || {}),
+    },
+    seo: {
+      ...defaultSeoSettings,
+      ...(incoming.seo || {}),
+      keywords,
+      faqs,
+    },
+  };
+}
+
+export async function fetchSiteContentServer(): Promise<SiteContentData> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/content/site_data`, {
+      next: { revalidate: 3600 },
+      headers: { Accept: 'application/json' },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data && typeof data === 'object') {
+        return {
+          ...defaultSiteContent,
+          ...data,
+          settings: mergeSiteSettings(data.settings),
+          tours: mergeToursContent(data.tours),
+          proposal: mergeProposalContent(data.proposal),
+          explore: mergeExploreContent(data.explore),
+          articles: mergeArticlesContent(data.articles),
+          contact: mergeContactContent(data.contact),
+          footer: mergeFooterContent(data.footer),
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('[fetchSiteContentServer] Failed to fetch remote site data, using defaults:', err);
+  }
+  return defaultSiteContent;
+}
+
 export async function fetchSiteContent(): Promise<SiteContentData> {
 
   try {
@@ -1236,14 +1352,7 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         const merged: SiteContentData = {
           ...defaultSiteContent,
           ...data,
-          settings: {
-            ...defaultSiteContent.settings,
-            ...(data.settings || {}),
-            banner: {
-              ...defaultSiteContent.settings?.banner,
-              ...(data.settings?.banner || {}),
-            },
-          },
+          settings: mergeSiteSettings(data.settings),
           homepage: { 
             ...defaultSiteContent.homepage, 
             ...data.homepage,
@@ -1319,14 +1428,7 @@ export async function fetchSiteContent(): Promise<SiteContentData> {
         return {
           ...defaultSiteContent,
           ...parsed,
-          settings: {
-            ...defaultSiteContent.settings,
-            ...(parsed.settings || {}),
-            banner: {
-              ...defaultSiteContent.settings?.banner,
-              ...(parsed.settings?.banner || {}),
-            },
-          },
+          settings: mergeSiteSettings(parsed.settings),
           homepage: {
             ...defaultSiteContent.homepage,
             ...(parsed.homepage || {}),
@@ -1447,6 +1549,10 @@ export function useSiteContent() {
                 ...defaultSiteContent.settings?.banner,
                 ...(parsed.settings?.banner || {}),
               },
+              topbar: {
+                ...defaultSiteContent.settings?.topbar,
+                ...(parsed.settings?.topbar || {}),
+              },
             },
             homepage: {
               ...defaultSiteContent.homepage,
@@ -1529,14 +1635,7 @@ export function useSiteContent() {
             setContent({
               ...defaultSiteContent,
               ...parsed,
-              settings: {
-                ...defaultSiteContent.settings,
-                ...(parsed.settings || {}),
-                banner: {
-                  ...defaultSiteContent.settings?.banner,
-                  ...(parsed.settings?.banner || {}),
-                },
-              },
+              settings: mergeSiteSettings(parsed.settings),
               homepage: {
                 ...defaultSiteContent.homepage,
                 ...(parsed.homepage || {}),
@@ -1638,7 +1737,7 @@ export async function uploadCmsImage(file: File, folder: string = 'cms'): Promis
  * Contact & WhatsApp helper functions for dynamic CMS configuration
  */
 export function getContactPhone(content?: SiteContentData | null): string {
-  return content?.contact?.primaryPhone || '076 375 6688';
+  return content?.contact?.primaryPhone || '(+94) 76 37 56 688';
 }
 
 export function getCleanPhone(phone?: string): string {
@@ -1656,5 +1755,16 @@ export function getWhatsappUrl(content?: SiteContentData | null, message?: strin
     return `https://wa.me/${num}?text=${encodeURIComponent(message)}`;
   }
   return `https://wa.me/${num}`;
+}
+
+export function getTopBarConfig(content?: SiteContentData | null): TopBarConfig {
+  const topbar = content?.settings?.topbar;
+  return {
+    enabled: topbar?.enabled !== false,
+    email: topbar?.email !== undefined && topbar.email !== '' ? topbar.email : (content?.contact?.primaryEmail || 'info@sapphiretrails.lk'),
+    phone: topbar?.phone !== undefined && topbar.phone !== '' ? topbar.phone : getContactPhone(content),
+    tagline: topbar?.tagline !== undefined ? topbar.tagline : 'Luxury Gem Tours',
+    taglineLink: topbar?.taglineLink || '',
+  };
 }
 

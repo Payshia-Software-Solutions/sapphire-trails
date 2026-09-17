@@ -8,7 +8,14 @@ import { type AnalyticsConfig, trackPageView } from '@/lib/analytics';
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
-  const [config, setConfig] = useState<AnalyticsConfig | null>(null);
+  const [config, setConfig] = useState<AnalyticsConfig>({
+    google_analytics_id: 'G-TX702Y4CLS',
+    meta_pixel_id: '',
+    is_ga_enabled: true,
+    is_pixel_enabled: false,
+    exclude_admin_traffic: true,
+    enable_ecommerce_events: true,
+  });
   const [isPixelInitialized, setIsPixelInitialized] = useState(false);
   const prevPathRef = useRef<string>('');
 
@@ -69,7 +76,6 @@ export function AnalyticsTracker() {
 
       if (window.fbq) {
         window.fbq('init', config.meta_pixel_id);
-        window.fbq('track', 'PageView');
         setIsPixelInitialized(true);
       }
     } catch (err) {
@@ -117,7 +123,7 @@ export function AnalyticsTracker() {
                 gtag('js', new Date());
                 gtag('config', '${config.google_analytics_id}', {
                   page_path: window.location.pathname,
-                  send_page_view: true
+                  send_page_view: false
                 });
               `,
             }}

@@ -25,7 +25,7 @@ import {
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
-import { useSiteContent, getContactPhone, getCleanPhone, getWhatsappUrl } from '@/lib/site-content';
+import { useSiteContent, getContactPhone, getCleanPhone, getWhatsappUrl, getTopBarConfig } from '@/lib/site-content';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,10 +64,11 @@ export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { content } = useSiteContent();
+  const topbar = getTopBarConfig(content);
 
-  const primaryPhone = getContactPhone(content);
+  const primaryPhone = topbar.phone || getContactPhone(content);
   const primaryPhoneTel = `tel:${getCleanPhone(primaryPhone)}`;
-  const primaryEmail = content?.contact?.primaryEmail || 'info@sapphiretrails.lk';
+  const primaryEmail = topbar.email || content?.contact?.primaryEmail || 'info@sapphiretrails.lk';
   const whatsappUrl = getWhatsappUrl(content);
 
   const headerRef = useRef<HTMLElement>(null);
@@ -89,13 +90,27 @@ export function Header() {
     const updateHeaderHeight = () => {
       if (headerRef.current) {
         const height = headerRef.current.getBoundingClientRect().height;
-        document.documentElement.style.setProperty('--header-height', `${height}px`);
+        if (height > 0) {
+          document.documentElement.style.setProperty('--header-height', `${Math.round(height)}px`);
+        }
       }
     };
     updateHeaderHeight();
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && headerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        updateHeaderHeight();
+      });
+      resizeObserver.observe(headerRef.current);
+    }
+
     window.addEventListener('resize', updateHeaderHeight);
-    return () => window.removeEventListener('resize', updateHeaderHeight);
-  }, [showTopBar]);
+    return () => {
+      window.removeEventListener('resize', updateHeaderHeight);
+      if (resizeObserver) resizeObserver.disconnect();
+    };
+  }, [showTopBar, topbar.enabled]);
 
   const handleLogout = () => {
     logout();
@@ -113,36 +128,53 @@ export function Header() {
   }
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
-      {/* Top Bar */}
-      <div className={cn(
-        "w-full bg-background-alt/40 text-xs text-muted-foreground border-b border-border py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",
-        showTopBar ? "max-h-[40px] opacity-100" : "max-h-0 opacity-0 py-0 border-b-transparent"
-      )}>
-        <div className="container mx-auto max-w-screen-2xl flex items-center justify-between px-4 md:px-6">
-          <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-3 sm:gap-6">
-            <a href={`mailto:${primaryEmail}`} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
-              <Mail className="h-3 w-3 text-primary shrink-0" />
-              <span>{primaryEmail}</span>
-            </a>
-            <a href={primaryPhoneTel} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs shrink-0">
-              <Phone className="h-3 w-3 text-primary shrink-0" />
-              <span>{primaryPhone}</span>
-            </a>
-          </div>
-          <div className="hidden sm:block text-primary/75 font-serif tracking-[0.15em] uppercase text-[10px]">
-            Luxury Gem Tours
+    <header ref={headerRef} className="sticky top-0 z-50 w-full bg-white dark:bg-background border-b border-border shadow-sm">
+      {/* Top Bar - Hidden on small mobile screens (<640px) to maximize screen real estate */}
+      {topbar.enabled && (
+        <div className={cn(
+          "hidden sm:block w-full bg-white dark:bg-background-alt text-xs text-muted-foreground border-b border-border py-1.5 transition-all duration-300 ease-in-out overflow-hidden origin-top",
+          showTopBar ? "max-h-[40px] opacity-100" : "max-h-0 opacity-0 py-0 border-b-transparent"
+        )}>
+          <div className="container mx-auto max-w-screen-2xl flex items-center justify-between px-4 md:px-6">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-3 sm:gap-6">
+              {primaryEmail && (
+                <a href={`mailto:${primaryEmail}`} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs">
+                  <Mail className="h-3 w-3 text-primary shrink-0" />
+                  <span>{primaryEmail}</span>
+                </a>
+              )}
+              {primaryPhone && (
+                <a href={primaryPhoneTel} className="flex items-center gap-1.5 hover:text-primary transition-colors text-[11px] sm:text-xs shrink-0">
+                  <Phone className="h-3 w-3 text-primary shrink-0" />
+                  <span>{primaryPhone}</span>
+                </a>
+              )}
+            </div>
+            {topbar.tagline && (
+              topbar.taglineLink ? (
+                <Link href={topbar.taglineLink} className="hidden sm:block text-primary/80 hover:text-primary transition-colors font-sans tracking-wide uppercase text-[11px] font-medium">
+                  {topbar.tagline}
+                </Link>
+              ) : (
+                <div className="hidden sm:block text-primary/80 font-sans tracking-wide uppercase text-[11px] font-medium">
+                  {topbar.tagline}
+                </div>
+              )
+            )}
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="container mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-4 md:px-6">
+      {/* Main Navbar - Compact h-14 (56px) on mobile, scaling to h-16 (tablet) and h-20 (desktop) */}
+      <div className="container mx-auto flex h-14 sm:h-16 md:h-20 max-w-screen-2xl items-center justify-between px-4 md:px-6 transition-all duration-300">
         <Link href="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
-          <span className="font-serif text-lg md:text-2xl tracking-widest md:tracking-[0.2em] text-primary">SAPPHIRE TRAILS</span>
+          <span className="font-brand text-base sm:text-lg md:text-2xl tracking-wider sm:tracking-widest md:tracking-[0.2em] text-primary">
+            SAPPHIRE TRAILS
+          </span>
         </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-3.5 lg:space-x-5 xl:space-x-6 text-[13px] xl:text-sm font-serif uppercase tracking-wider xl:tracking-widest">
+        <nav className="hidden md:flex items-center space-x-3.5 lg:space-x-5 xl:space-x-6 text-[13px] xl:text-[14px] font-sans font-medium">
           {navLinks.map((link) => {
             const isActive = isLinkActive(pathname, link.href);
             return (
@@ -152,7 +184,7 @@ export function Header() {
                 className={cn(
                   "transition-colors hover:text-primary relative py-1",
                   isActive 
-                    ? "text-primary font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary after:rounded-full" 
+                    ? "text-primary font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary after:rounded-full" 
                     : "text-foreground/80"
                 )}
               >
@@ -193,7 +225,7 @@ export function Header() {
                 </DropdownMenuContent>
                </DropdownMenu>
             ) : (
-                <Button asChild variant="outline" className="text-primary border-primary hover:bg-primary/10 hover:text-primary font-serif uppercase tracking-widest text-xs px-6 py-2 h-auto rounded-full">
+                <Button asChild className="bg-[#0B1E38] hover:bg-[#071527] text-white border border-[#0B1E38] font-sans font-medium text-xs px-5 py-1.5 h-auto rounded-full shadow-xs transition-all">
                     <Link href="/auth">Login</Link>
                 </Button>
             )}
@@ -206,19 +238,19 @@ export function Header() {
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="hover:bg-primary/10 rounded-full h-10 w-10 text-primary border border-primary/20"
+                className="hover:bg-primary/10 rounded-full h-9 w-9 text-primary border border-primary/20"
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4.5 w-4.5" />
                 <span className="sr-only">Open navigation menu</span>
               </Button>
             </SheetTrigger>
             
             <SheetContent 
               side="right" 
-              className="w-[85vw] max-w-sm bg-background text-foreground border-l border-border p-0 flex flex-col justify-between shadow-2xl z-50"
+              className="w-[85vw] max-w-sm bg-white dark:bg-[#0B1118] text-foreground border-l border-border/70 p-0 flex flex-col justify-between shadow-2xl z-50"
             >
-              {/* Drawer Top / Header */}
-              <div className="px-6 py-6 border-b border-border">
+              {/* Drawer Top / Header with Text-Only Logo */}
+              <div className="px-6 py-5 border-b border-border/70">
                 <SheetHeader className="text-left space-y-0">
                   <SheetTitle className="sr-only">Sapphire Trails Navigation</SheetTitle>
                 </SheetHeader>
@@ -226,28 +258,19 @@ export function Header() {
                 <Link 
                   href="/" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-3 group transition-opacity hover:opacity-85 pr-8"
+                  className="flex flex-col group transition-opacity hover:opacity-85 pr-8"
                 >
-                  <Image 
-                    src="/img/logo4.png"
-                    alt="Sapphire Trails"
-                    width={34}
-                    height={34}
-                    className="object-contain"
-                  />
-                  <div>
-                    <span className="block font-serif text-sm tracking-[0.22em] uppercase text-primary font-medium">
-                      SAPPHIRE TRAILS
-                    </span>
-                    <span className="block text-[9px] font-serif tracking-[0.2em] uppercase text-muted-foreground mt-0.5">
-                      Luxury Gem Tours
-                    </span>
-                  </div>
+                  <span className="font-brand text-lg tracking-[0.18em] uppercase text-primary font-normal">
+                    SAPPHIRE TRAILS
+                  </span>
+                  <span className="text-[10px] font-sans tracking-[0.22em] uppercase text-muted-foreground mt-0.5 font-medium">
+                    Luxury Gem Tours • Sri Lanka
+                  </span>
                 </Link>
               </div>
 
               {/* Scrollable Navigation Links Area */}
-              <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col justify-between">
+              <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col justify-between">
                 <nav className="flex flex-col space-y-1">
                   {navLinks.map((link) => {
                     const isActive = isLinkActive(pathname, link.href);
@@ -258,18 +281,18 @@ export function Header() {
                         href={link.href} 
                         onClick={() => setIsMenuOpen(false)}
                         className={cn(
-                          "group flex items-center justify-between py-3 px-3 transition-all duration-200 border-b border-border/40",
+                          "group flex items-center justify-between py-2.5 px-3.5 rounded-xl transition-all duration-200 font-sans text-[15px]",
                           isActive 
-                            ? "text-primary font-medium border-l-2 border-l-primary bg-primary/10" 
-                            : "text-foreground/80 hover:text-primary hover:bg-muted/40 border-l-2 border-l-transparent"
+                            ? "text-[#0B1E38] dark:text-blue-200 font-semibold bg-[#0B1E38]/8 dark:bg-white/10" 
+                            : "text-foreground/80 hover:text-[#0B1E38] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 font-medium"
                         )}
                       >
-                        <span className="font-serif text-[14px] sm:text-[15px] tracking-[0.14em] uppercase">
+                        <span>
                           {link.label}
                         </span>
 
                         {link.badge && (
-                          <span className="shrink-0 ml-3 text-[9px] font-sans font-medium tracking-wider uppercase px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/25 shadow-sm">
+                          <span className="shrink-0 ml-3 text-[10px] font-sans font-medium tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#0B1E38]/10 text-[#0B1E38] dark:bg-white/15 dark:text-blue-200 shadow-2xs">
                             {link.badge}
                           </span>
                         )}
@@ -278,58 +301,58 @@ export function Header() {
                   })}
                 </nav>
 
-                {/* Quiet Concierge Touchpoint */}
-                <div className="mt-8 pt-6 border-t border-border">
-                  <p className="text-[10px] font-serif uppercase tracking-[0.2em] text-muted-foreground mb-3 font-semibold">
+                {/* Quiet Concierge Touchpoint in subtle card */}
+                <div className="mt-6 pt-5 border-t border-border/60">
+                  <p className="text-[10px] font-sans uppercase tracking-[0.2em] text-muted-foreground mb-3 font-semibold">
                     Private Concierge
                   </p>
-                  <div className="space-y-2 text-xs">
+                  <div className="bg-[#0B1E38]/[0.03] dark:bg-white/[0.03] border border-[#0B1E38]/10 dark:border-white/10 rounded-2xl p-3.5 space-y-2 text-xs">
                     <a 
                       href={primaryPhoneTel} 
-                      className="flex items-center gap-2.5 text-foreground/80 hover:text-primary transition-colors py-0.5"
+                      className="flex items-center gap-2.5 text-foreground/80 hover:text-[#0B1E38] dark:hover:text-blue-300 transition-colors py-0.5 font-sans"
                     >
-                      <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
-                      <span className="tracking-wider">{primaryPhone}</span>
+                      <Phone className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300 shrink-0" />
+                      <span>{primaryPhone}</span>
                     </a>
                     {whatsappUrl && (
                       <a 
                         href={whatsappUrl} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="flex items-center gap-2.5 text-foreground/80 hover:text-primary transition-colors py-0.5"
+                        className="flex items-center gap-2.5 text-foreground/80 hover:text-[#0B1E38] dark:hover:text-blue-300 transition-colors py-0.5 font-sans"
                       >
-                        <MessageSquare className="h-3.5 w-3.5 text-primary shrink-0" />
-                        <span className="tracking-wider">WhatsApp Concierge</span>
+                        <MessageSquare className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300 shrink-0" />
+                        <span>WhatsApp Concierge</span>
                       </a>
                     )}
                     <a 
                       href={`mailto:${primaryEmail}`} 
-                      className="flex items-center gap-2.5 text-foreground/80 hover:text-primary transition-colors py-0.5"
+                      className="flex items-center gap-2.5 text-foreground/80 hover:text-[#0B1E38] dark:hover:text-blue-300 transition-colors py-0.5 font-sans"
                     >
-                      <Mail className="h-3.5 w-3.5 text-primary shrink-0" />
-                      <span className="tracking-wider">{primaryEmail}</span>
+                      <Mail className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300 shrink-0" />
+                      <span>{primaryEmail}</span>
                     </a>
                   </div>
                 </div>
               </div>
 
               {/* Bottom Sticky Action & Theme Drawer Footer */}
-              <div className="p-6 border-t border-border bg-background-alt/60 flex flex-col gap-4">
+              <div className="p-5 border-t border-border/70 bg-muted/20 dark:bg-card/40 flex flex-col gap-3.5 font-sans">
                 {/* Theme Toggle Button */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-serif uppercase tracking-[0.2em] text-muted-foreground font-semibold">Appearance</span>
+                  <span className="text-[11px] font-sans uppercase tracking-wider text-muted-foreground font-semibold">Appearance</span>
                   <button 
                     onClick={toggleTheme} 
-                    className="flex items-center gap-2 text-xs font-serif uppercase tracking-wider text-foreground/80 hover:text-primary transition-colors"
+                    className="flex items-center gap-2 text-xs font-sans font-medium text-foreground/80 hover:text-[#0B1E38] dark:hover:text-white transition-colors"
                   >
                     {theme === 'dark' ? (
                       <>
-                        <Sun className="h-3.5 w-3.5 text-primary" />
+                        <Sun className="h-3.5 w-3.5 text-amber-400" />
                         <span>Light Mode</span>
                       </>
                     ) : (
                       <>
-                        <Moon className="h-3.5 w-3.5 text-primary" />
+                        <Moon className="h-3.5 w-3.5 text-[#0B1E38]" />
                         <span>Dark Mode</span>
                       </>
                     )}
@@ -342,7 +365,7 @@ export function Header() {
                     <div className="flex items-center justify-between">
                       <div className="overflow-hidden">
                         <p className="text-xs font-semibold truncate text-foreground">{user.email}</p>
-                        <p className="text-[10px] font-serif uppercase tracking-widest text-primary font-medium mt-0.5">
+                        <p className="text-[11px] font-sans uppercase tracking-wider text-[#0B1E38] dark:text-blue-200 font-medium mt-0.5">
                           {user.type === 'admin' ? 'Administrator' : 'Client Account'}
                         </p>
                       </div>
@@ -360,20 +383,20 @@ export function Header() {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="flex-1 text-[10px] font-serif uppercase tracking-widest border-border hover:border-primary text-foreground hover:text-primary h-8 rounded-md bg-background"
+                          className="flex-1 text-xs font-sans font-medium border-border hover:border-[#0B1E38] text-foreground hover:text-[#0B1E38] h-8 rounded-lg bg-background"
                           onClick={handleAdminClick}
                         >
-                          <Shield className="mr-1.5 h-3 w-3 text-primary" />
+                          <Shield className="mr-1.5 h-3 w-3 text-[#0B1E38] dark:text-blue-300" />
                           Admin
                         </Button>
                       )}
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="flex-1 text-[10px] font-serif uppercase tracking-widest border-border hover:border-primary text-foreground hover:text-primary h-8 rounded-md bg-background"
+                        className="flex-1 text-xs font-sans font-medium border-border hover:border-[#0B1E38] text-foreground hover:text-[#0B1E38] h-8 rounded-lg bg-background"
                         onClick={handleProfileClick}
                       >
-                        <User className="mr-1.5 h-3 w-3 text-primary" />
+                        <User className="mr-1.5 h-3 w-3 text-[#0B1E38] dark:text-blue-300" />
                         Profile
                       </Button>
                     </div>
@@ -381,8 +404,7 @@ export function Header() {
                 ) : (
                   <Button 
                     asChild 
-                    variant="outline"
-                    className="w-full border-primary/40 hover:border-primary text-primary hover:bg-primary/10 font-serif uppercase tracking-[0.2em] text-[10px] h-9 rounded-md transition-all bg-background"
+                    className="w-full bg-[#0B1E38] hover:bg-[#071527] text-white font-sans font-medium text-xs h-10 rounded-full transition-all border border-[#0B1E38] shadow-sm"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Link href="/auth">

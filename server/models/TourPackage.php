@@ -26,6 +26,7 @@ class TourPackage
             $pkg['inclusions'] = $this->getInclusions($pkg['id']);
             $pkg['itinerary'] = $this->tourItinerary->getByTourPackageId($pkg['id']);
             $pkg['experience_gallery'] = $this->tourExperienceGallery->getByTourPackageId($pkg['id']);
+            $pkg['pricing_tiers'] = !empty($pkg['pricing_tiers']) ? (is_string($pkg['pricing_tiers']) ? json_decode($pkg['pricing_tiers'], true) : $pkg['pricing_tiers']) : [];
         }
 
         return $packages;
@@ -42,6 +43,7 @@ class TourPackage
             $pkg['inclusions'] = $this->getInclusions($id);
             $pkg['itinerary'] = $this->tourItinerary->getByTourPackageId($id);
             $pkg['experience_gallery'] = $this->tourExperienceGallery->getByTourPackageId($id);
+            $pkg['pricing_tiers'] = !empty($pkg['pricing_tiers']) ? (is_string($pkg['pricing_tiers']) ? json_decode($pkg['pricing_tiers'], true) : $pkg['pricing_tiers']) : [];
         }
 
         return $pkg;
@@ -58,6 +60,7 @@ class TourPackage
             $pkg['inclusions'] = $this->getInclusions($pkg['id']);
             $pkg['itinerary'] = $this->tourItinerary->getByTourPackageId($pkg['id']);
             $pkg['experience_gallery'] = $this->tourExperienceGallery->getByTourPackageId($pkg['id']);
+            $pkg['pricing_tiers'] = !empty($pkg['pricing_tiers']) ? (is_string($pkg['pricing_tiers']) ? json_decode($pkg['pricing_tiers'], true) : $pkg['pricing_tiers']) : [];
         }
 
         return $pkg;
@@ -66,15 +69,16 @@ class TourPackage
     public function create($data)
     {
         $slug = $this->generateSlug($data['homepage_title']);
+        $pricingTiers = !empty($data['pricing_tiers']) ? (is_string($data['pricing_tiers']) ? $data['pricing_tiers'] : json_encode($data['pricing_tiers'])) : null;
 
         $stmt = $this->pdo->prepare("
             INSERT INTO tour_packages (
                 slug, homepage_title, homepage_description, homepage_image_url,
                 homepage_image_alt, homepage_image_hint, tour_page_title, duration, price,
-                price_suffix, hero_image_url, hero_image_hint, tour_page_description, booking_link,
+                price_suffix, pricing_tiers, hero_image_url, hero_image_hint, tour_page_description, booking_link,
                 meta_title, meta_description, meta_keywords, canonical_url,
                 created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         ");
 
         $stmt->execute([
@@ -88,6 +92,7 @@ class TourPackage
             $data['duration'],
             $data['price'],
             $data['price_suffix'] ?? 'per person',
+            $pricingTiers,
             $data['hero_image_url'] ?? 'default_hero.jpg',
             $data['hero_image_hint'] ?? '',
             $data['tour_page_description'],
@@ -120,11 +125,13 @@ class TourPackage
 
     public function update($id, $data)
     {
+        $pricingTiers = !empty($data['pricing_tiers']) ? (is_string($data['pricing_tiers']) ? $data['pricing_tiers'] : json_encode($data['pricing_tiers'])) : null;
+
         $stmt = $this->pdo->prepare("
             UPDATE tour_packages SET
                 homepage_title = ?, homepage_description = ?, homepage_image_url = ?,
                 homepage_image_alt = ?, homepage_image_hint = ?, tour_page_title = ?,
-                duration = ?, price = ?, price_suffix = ?, hero_image_url = ?,
+                duration = ?, price = ?, price_suffix = ?, pricing_tiers = ?, hero_image_url = ?,
                 hero_image_hint = ?, tour_page_description = ?, booking_link = ?,
                 meta_title = ?, meta_description = ?, meta_keywords = ?, canonical_url = ?,
                 updated_at = NOW()
@@ -141,6 +148,7 @@ class TourPackage
             $data['duration'],
             $data['price'],
             $data['price_suffix'] ?? 'per person',
+            $pricingTiers,
             $data['hero_image_url'] ?? 'default_hero.jpg',
             $data['hero_image_hint'] ?? '',
             $data['tour_page_description'],

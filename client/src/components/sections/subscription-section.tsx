@@ -25,15 +25,12 @@ export function SubscriptionSection() {
     setIsSubmitting(true);
     addSubscriber(email.trim(), '2026 Gem Buyer Guide Download');
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: 'Guide Subscriber',
           email: email.trim(),
-          phone: '',
-          tourInterest: 'Guide Download (Lead Magnet)',
-          message: 'Subscriber requested the 2026 Ratnapura Gem Buyer & Traveler Guide from Homepage.',
+          source: '2026 Gem Buyer Guide Download',
         }),
       });
 
@@ -67,17 +64,17 @@ export function SubscriptionSection() {
           {/* Self-contained Luxury Banner Box (Seamless in both Light and Dark themes) */}
           <div className="relative rounded-3xl overflow-hidden border border-border/80 bg-card p-8 sm:p-12 md:p-16 shadow-lg text-foreground text-center flex flex-col items-center justify-center">
             {/* Badge */}
-            <div className="relative z-10 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/15 border border-primary/30 text-xs font-semibold uppercase tracking-wider text-primary mb-4">
-              <BookOpen className="h-3.5 w-3.5" />
+            <div className="relative z-10 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-xs font-medium uppercase tracking-wider text-[#0B1E38] dark:text-blue-200 font-sans shadow-2xs mb-4">
+              <BookOpen className="h-3.5 w-3.5 text-[#0B1E38] dark:text-blue-300" />
               {subData.tagline || 'Complimentary Insider Publication'}
             </div>
 
             {/* Headings */}
-            <div className="relative z-10 space-y-3 max-w-4xl lg:max-w-5xl">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-wide text-foreground leading-tight">
+            <div className="relative z-10 space-y-3 max-w-4xl lg:max-w-5xl font-sans">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans font-bold tracking-tight text-foreground leading-tight">
                 {subData.heading || "The 2026 Ratnapura Gem Buyer's & Traveler's Guide"}
               </h2>
-              <p className="mx-auto max-w-3xl md:max-w-4xl text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed px-4">
+              <p className="mx-auto max-w-3xl md:max-w-4xl text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed px-4 font-sans">
                 {subData.subheadline}
               </p>
             </div>
@@ -90,20 +87,20 @@ export function SubscriptionSection() {
                   <span>Guide dispatched! Please check your inbox shortly.</span>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2.5">
+                <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2.5 font-sans">
                   <Input
                     type="email"
                     required
                     placeholder="Enter your email address..."
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="bg-background border-border text-foreground text-xs h-11 placeholder:text-muted-foreground shadow-inner"
+                    className="bg-background border-border text-foreground text-xs h-11 rounded-full px-5 placeholder:text-muted-foreground shadow-xs"
                     aria-label="Email for newsletter"
                   />
                   <Button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs h-11 px-6 whitespace-nowrap shadow-lg transition-transform hover:scale-105"
+                    className="bg-[#0B1E38] hover:bg-[#071527] text-white font-medium text-xs h-11 px-7 rounded-full whitespace-nowrap shadow-sm transition-all border border-[#0B1E38]"
                   >
                     {isSubmitting ? (
                       <>

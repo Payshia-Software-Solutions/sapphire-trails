@@ -10,10 +10,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['var(--font-montserrat)', 'sans-serif'],
-        headline: ['var(--font-montserrat)', 'sans-serif'],
-        serif: ['var(--font-cinzel)', 'serif'],
-        sans: ['var(--font-montserrat)', 'sans-serif'],
+        body: ['var(--font-poppins)', 'sans-serif'],
+        headline: ['var(--font-poppins)', 'sans-serif'],
+        sans: ['var(--font-poppins)', 'sans-serif'],
+        brand: ['var(--font-cinzel)', 'serif'],
+        serif: ['var(--font-poppins)', 'sans-serif'],
         code: ['monospace'],
       },
       letterSpacing: {

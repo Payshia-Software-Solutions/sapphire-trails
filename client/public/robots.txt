@@ -2,6 +2,11 @@
 User-agent: *
 Disallow: /api/
 Disallow: /admin/
+Disallow: /invoices/
+Disallow: /booking/confirmation
+Disallow: /booking/*/view
+Disallow: /auth
+Disallow: /profile
 Allow: /
 
 Sitemap: https://sapphiretrails.lk/sitemap.xml
