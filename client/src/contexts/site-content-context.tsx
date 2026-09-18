@@ -16,11 +16,7 @@ interface SiteContentContextValue {
   refetch: () => Promise<SiteContentData>;
 }
 
-const SiteContentContext = createContext<SiteContentContextValue>({
-  content: defaultSiteContent,
-  isLoaded: true,
-  refetch: async () => defaultSiteContent,
-});
+const SiteContentContext = createContext<SiteContentContextValue | null>(null);
 
 export function SiteContentProvider({
   initialContent,
