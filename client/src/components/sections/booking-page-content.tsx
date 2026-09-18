@@ -71,15 +71,16 @@ function BookingSummary({
   totalGuests,
   totalPrice,
   calculationResult,
+  isSubmitting = false,
 } : {
   selectedTour?: TourPackage;
   selectedDate?: Date;
   totalGuests: number;
   totalPrice: number | null;
   calculationResult?: PriceCalculationResult | null;
+  isSubmitting?: boolean;
 }) {
   const { content } = useSiteContent();
-  const { formState: { isSubmitting } } = useFormContext();
   const summaryImg = selectedTour?.heroImage || selectedTour?.imageUrl || 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp';
 
   return (
@@ -158,10 +159,28 @@ function BookingSummary({
           </div>
         )}
         
-        <Button type="submit" form="booking-form-main" className="w-full bg-[#0B1E38] hover:bg-[#071527] text-white rounded-full font-medium text-sm h-11 shadow-sm" size="lg" disabled={!selectedTour || isSubmitting}>
-            {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-            Complete Booking
+        <Button 
+          type="submit" 
+          form="booking-form-main" 
+          className="w-full bg-[#0B1E38] hover:bg-[#071527] text-white rounded-full font-medium text-sm h-11 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200" 
+          size="lg" 
+          disabled={!selectedTour || isSubmitting}
+        >
+            {isSubmitting ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <LoaderCircle className="h-4 w-4 animate-spin text-white" />
+                <span>Confirming Booking...</span>
+              </span>
+            ) : (
+              "Complete Booking"
+            )}
         </Button>
+
+        {isSubmitting && (
+          <p className="text-center text-xs text-amber-600 dark:text-amber-400 font-medium animate-pulse">
+            Securing your expedition reservation. Please wait...
+          </p>
+        )}
 
         <div className="text-center text-xs text-muted-foreground">
           <a
@@ -225,6 +244,8 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
   const watchedDate = methods.watch('date');
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const [calculationResult, setCalculationResult] = useState<PriceCalculationResult | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const hasLoadedRef = useRef(false);
 
@@ -344,6 +365,8 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
   }, [user, tourTypeParam, methods]);
 
   async function onSubmit(data: z.infer<typeof bookingFormSchema>) {
+    if (isSubmittingRef.current || isSubmitting) return;
+
     if (!selectedTour) {
        toast({
            variant: "destructive",
@@ -351,8 +374,11 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
            description: "You must have a tour selected.",
        });
        return;
-   }
-   
+    }
+
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
+    
     const totalGuestsOnSubmit = data.adults + data.children;
     const calcResult = calculatePackagePrice(selectedTour, totalGuestsOnSubmit);
     const totalPriceOnSubmit = calcResult.totalPrice;
@@ -417,6 +443,8 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
        methods.reset();
        router.push(`/booking/confirmation?id=${savedBooking.id}`);
    } catch (error) {
+       isSubmittingRef.current = false;
+       setIsSubmitting(false);
        console.error("Booking submission failed:", error);
        toast({
            variant: "destructive",
@@ -465,6 +493,7 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
                 totalGuests={totalGuests}
                 totalPrice={totalPrice}
                 calculationResult={calculationResult}
+                isSubmitting={isSubmitting}
               />
             </div>
           </div>

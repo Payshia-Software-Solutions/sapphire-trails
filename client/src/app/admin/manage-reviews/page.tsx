@@ -55,6 +55,7 @@ import {
 } from '@/lib/reviews-data';
 import { mapServerPackageToClient } from '@/lib/packages-data';
 import { API_BASE_URL } from '@/lib/utils';
+import { useSiteContent, saveSiteContent } from '@/lib/site-content';
 
 const SAMPLE_TRIPADVISOR_IMPORTS: ReviewItem[] = [
   {
@@ -100,7 +101,13 @@ const SAMPLE_TRIPADVISOR_IMPORTS: ReviewItem[] = [
 
 export default function ManageReviewsPage() {
   const { toast } = useToast();
-  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const { content } = useSiteContent();
+  const [reviews, setReviews] = useState<ReviewItem[]>(() => {
+    if (content.homepage?.reviews && Array.isArray(content.homepage.reviews)) {
+      return content.homepage.reviews;
+    }
+    return getStoredReviews();
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSource, setSelectedSource] = useState<string>('all');
   const [tourOptions, setTourOptions] = useState<string[]>(['Other (Custom Tour)']);
@@ -129,7 +136,12 @@ export default function ManageReviewsPage() {
   const [tripadvisorUrl, setTripadvisorUrl] = useState('https://www.tripadvisor.com/Attraction_Review-Sapphire_Trails_Ratnapura');
 
   useEffect(() => {
-    setReviews(getStoredReviews());
+    if (content.homepage?.reviews && Array.isArray(content.homepage.reviews)) {
+      setReviews(content.homepage.reviews);
+      saveStoredReviews(content.homepage.reviews);
+    } else {
+      setReviews(getStoredReviews());
+    }
 
     // Dynamically fetch actual system tour packages from MySQL database via API
     async function fetchSystemPackages() {
@@ -158,7 +170,7 @@ export default function ManageReviewsPage() {
     }
 
     fetchSystemPackages();
-  }, []);
+  }, [content.homepage?.reviews]);
 
   const totalReviewsCount = reviews.length;
   const tripAdvisorCount = reviews.filter(r => r.source === 'tripadvisor').length;
@@ -224,7 +236,7 @@ export default function ManageReviewsPage() {
     setIsModalOpen(true);
   };
 
-  const handleSaveReview = (e: React.FormEvent) => {
+  const handleSaveReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName.trim() || !formReview.trim()) {
       toast({
@@ -265,6 +277,23 @@ export default function ManageReviewsPage() {
       status: formStatus,
     };
 
+    const persistReviews = async (updatedList: ReviewItem[]) => {
+      setReviews(updatedList);
+      saveStoredReviews(updatedList);
+      try {
+        const nextContent = {
+          ...content,
+          homepage: {
+            ...content.homepage,
+            reviews: updatedList,
+          },
+        };
+        await saveSiteContent(nextContent);
+      } catch (err) {
+        console.warn('Could not sync reviews to backend server:', err);
+      }
+    };
+
     let nextReviews: ReviewItem[];
     if (currentReview) {
       nextReviews = reviews.map(r => r.id === currentReview.id ? updatedItem : r);
@@ -272,8 +301,7 @@ export default function ManageReviewsPage() {
       nextReviews = [updatedItem, ...reviews];
     }
 
-    setReviews(nextReviews);
-    saveStoredReviews(nextReviews);
+    await persistReviews(nextReviews);
 
     setTimeout(() => {
       setIsSubmitting(false);
@@ -285,31 +313,59 @@ export default function ManageReviewsPage() {
     }, 300);
   };
 
-  const handleDeleteReview = (id: string) => {
+  const handleDeleteReview = async (id: string) => {
     const nextReviews = reviews.filter(r => r.id !== id);
     setReviews(nextReviews);
     saveStoredReviews(nextReviews);
+
+    try {
+      const nextContent = {
+        ...content,
+        homepage: {
+          ...content.homepage,
+          reviews: nextReviews,
+        },
+      };
+      await saveSiteContent(nextContent);
+    } catch (err) {
+      console.warn('Could not sync reviews deletion to backend server:', err);
+    }
+
     toast({
       title: 'Review Deleted',
-      description: 'The review was removed from the live website.',
+      description: 'The review was permanently removed from the website.',
     });
   };
 
-  const handleToggleStatus = (rev: ReviewItem) => {
+  const handleToggleStatus = async (rev: ReviewItem) => {
     const nextStatus: 'published' | 'hidden' = rev.status === 'published' ? 'hidden' : 'published';
     const nextReviews = reviews.map(r => r.id === rev.id ? { ...r, status: nextStatus } : r);
     setReviews(nextReviews);
     saveStoredReviews(nextReviews);
+
+    try {
+      const nextContent = {
+        ...content,
+        homepage: {
+          ...content.homepage,
+          reviews: nextReviews,
+        },
+      };
+      await saveSiteContent(nextContent);
+    } catch (err) {
+      console.warn('Could not sync review status to backend server:', err);
+    }
+
     toast({
       title: nextStatus === 'published' ? 'Review Published' : 'Review Hidden',
       description: `Review by ${rev.name} is now ${nextStatus}.`,
     });
   };
 
-  const handleImportTripAdvisor = () => {
+  const handleImportTripAdvisor = async () => {
     setIsImporting(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       // Merge unique sample imported reviews
       const existingIds = new Set(reviews.map(r => r.id));
       const newItems = SAMPLE_TRIPADVISOR_IMPORTS.filter(item => !existingIds.has(item.id));
@@ -317,6 +373,17 @@ export default function ManageReviewsPage() {
       const updated = [...newItems, ...reviews];
       setReviews(updated);
       saveStoredReviews(updated);
+
+      try {
+        const nextContent = {
+          ...content,
+          homepage: {
+            ...content.homepage,
+            reviews: updated,
+          },
+        };
+        await saveSiteContent(nextContent);
+      } catch (err) {}
 
       setIsImporting(false);
       setIsImportModalOpen(false);
