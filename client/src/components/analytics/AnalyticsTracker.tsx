@@ -6,21 +6,30 @@ import Script from 'next/script';
 import { API_BASE_URL } from '@/lib/utils';
 import { type AnalyticsConfig, trackPageView } from '@/lib/analytics';
 
-export function AnalyticsTracker() {
+interface AnalyticsTrackerProps {
+  initialConfig?: AnalyticsConfig | null;
+}
+
+const DEFAULT_ANALYTICS_CONFIG: AnalyticsConfig = {
+  google_analytics_id: 'G-TX702Y4CLS',
+  meta_pixel_id: '',
+  is_ga_enabled: true,
+  is_pixel_enabled: false,
+  exclude_admin_traffic: true,
+  enable_ecommerce_events: true,
+};
+
+export function AnalyticsTracker({ initialConfig }: AnalyticsTrackerProps = {}) {
   const pathname = usePathname();
-  const [config, setConfig] = useState<AnalyticsConfig>({
-    google_analytics_id: 'G-TX702Y4CLS',
-    meta_pixel_id: '',
-    is_ga_enabled: true,
-    is_pixel_enabled: false,
-    exclude_admin_traffic: true,
-    enable_ecommerce_events: true,
-  });
+  const [config, setConfig] = useState<AnalyticsConfig>(initialConfig || DEFAULT_ANALYTICS_CONFIG);
   const [isPixelInitialized, setIsPixelInitialized] = useState(false);
   const prevPathRef = useRef<string>('');
 
-  // 1. Fetch live analytics configuration from Backend
+  // 1. Fetch live analytics configuration from Backend ONLY if not provided via SSR
   useEffect(() => {
+    if (initialConfig) {
+      return;
+    }
     async function loadConfig() {
       try {
         const res = await fetch(`${API_BASE_URL}/analytics/config/`);
@@ -29,19 +38,11 @@ export function AnalyticsTracker() {
           setConfig(data);
         }
       } catch (e) {
-        // Fallback default
-        setConfig({
-          google_analytics_id: 'G-TX702Y4CLS',
-          meta_pixel_id: '',
-          is_ga_enabled: true,
-          is_pixel_enabled: false,
-          exclude_admin_traffic: true,
-          enable_ecommerce_events: true,
-        });
+        setConfig(DEFAULT_ANALYTICS_CONFIG);
       }
     }
     loadConfig();
-  }, []);
+  }, [initialConfig]);
 
   // 2. Initialize Meta Pixel when Pixel ID is present and enabled
   useEffect(() => {

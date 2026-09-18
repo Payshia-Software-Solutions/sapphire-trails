@@ -140,7 +140,11 @@ const TourCard = ({ tour }: { tour: TourPackage }) => {
 };
 
 
-export function ToursSection() {
+interface ToursSectionProps {
+  initialTours?: TourPackage[];
+}
+
+export function ToursSection({ initialTours = [] }: ToursSectionProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
     loop: false, 
     align: 'start',
@@ -150,7 +154,7 @@ export function ToursSection() {
     containScroll: 'trimSnaps',
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [tours, setTours] = useState<TourPackage[]>([]);
+  const [tours, setTours] = useState<TourPackage[]>(initialTours);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -165,6 +169,10 @@ export function ToursSection() {
   }, [emblaApi]);
 
   useEffect(() => {
+    // If tours are already supplied via SSR, do not make redundant client fetch
+    if (initialTours && initialTours.length > 0) {
+      return;
+    }
     async function fetchTours() {
       try {
         const response = await fetch(`${API_BASE_URL}/tours`);
@@ -179,7 +187,7 @@ export function ToursSection() {
       }
     }
     fetchTours();
-  }, []);
+  }, [initialTours]);
 
   const { content } = useSiteContent();
   const toursHeader = content.homepage.toursHeader;

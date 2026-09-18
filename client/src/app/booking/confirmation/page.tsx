@@ -32,6 +32,14 @@ import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
 import { API_BASE_URL } from '@/lib/utils';
 import { trackBookingSuccess } from '@/lib/analytics';
 import { type Booking } from '@/lib/bookings-data';
+const IMAGE_BASE_URL = 'https://content-provider.payshia.com/sapphire-trail';
+const getFullImageUrl = (path?: string | null) => {
+  if (!path) return 'https://content-provider.payshia.com/sapphire-trail/images/img4.webp';
+  if (path.startsWith('http') || path.startsWith('data:')) return path;
+  const cleanBase = IMAGE_BASE_URL.replace(/\/$/, '');
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${cleanBase}${cleanPath}`;
+};
 
 function ConfirmationContent() {
   const { content } = useSiteContent();
@@ -56,6 +64,7 @@ function ConfirmationContent() {
         if (res.ok) {
           const json = await res.json();
           const b = json.booking || json;
+          const rawImg = b.tour_hero_image || b.tour_image_url;
           const mappedBooking: Booking = {
             id: Number(b.id),
             user_id: b.user_id,
@@ -65,7 +74,7 @@ function ConfirmationContent() {
             address: b.address,
             tourType: Number(b.tour_package_id),
             tourTitle: b.tour_title || `Tour Package #${b.tour_package_id}`,
-            tourImage: b.tour_image_url || undefined,
+            tourImage: getFullImageUrl(rawImg),
             tourSlug: b.tour_slug || undefined,
             adults: Number(b.adults || 1),
             children: Number(b.children || 0),

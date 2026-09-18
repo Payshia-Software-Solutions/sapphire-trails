@@ -506,7 +506,7 @@ export function ICalSyncDialog({
               </h4>
               <div className="space-y-2 text-xs text-muted-foreground">
                 <div className="p-2.5 rounded bg-muted/40">
-                  <strong className="text-foreground">Airbnb:</strong> Go to Listing &gt; Pricing & availability &gt; Calendar sync &gt; <em>Import Calendar</em>, and paste the Export URL above. Then copy Airbnb's <em>Export Calendar</em> link and paste into our Import tab.
+                  <strong className="text-foreground">Airbnb:</strong> Go to Listing &gt; Pricing &amp; availability &gt; Calendar sync &gt; <em>Import Calendar</em>, and paste the Export URL above. Then copy Airbnb&apos;s <em>Export Calendar</em> link and paste into our Import tab.
                 </div>
                 <div className="p-2.5 rounded bg-muted/40">
                   <strong className="text-foreground">Booking.com:</strong> Go to Extranet &gt; Rates & Availability &gt; Sync calendars &gt; <em>Add calendar connection</em>, paste the Sapphire Trails URL, and save.

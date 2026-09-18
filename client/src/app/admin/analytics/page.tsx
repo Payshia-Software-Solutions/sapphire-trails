@@ -399,7 +399,7 @@ export default function AdminAnalyticsPage() {
                 <div className="flex items-start gap-2">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
                   <div>
-                    <strong className="text-foreground">InitiateCheckout:</strong> When clicking "Book Tour".
+                    <strong className="text-foreground">InitiateCheckout:</strong> When clicking &quot;Book Tour&quot;.
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
