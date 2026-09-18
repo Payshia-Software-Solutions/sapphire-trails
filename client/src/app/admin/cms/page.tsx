@@ -1968,7 +1968,7 @@ export default function MasterCmsPage() {
                         <Label className="text-xs font-bold text-primary flex items-center gap-1.5">
                           <ImageIcon className="h-4 w-4" /> 8 Mosaic Gallery Photos
                         </Label>
-                        <span className="text-[10px] text-muted-foreground">Click 'Change Photo' to upload from PC</span>
+                        <span className="text-[10px] text-muted-foreground">Click &apos;Change Photo&apos; to upload from PC</span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -3710,7 +3710,7 @@ export default function MasterCmsPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="text-xs font-semibold">Paragraph 1 (Etymology &amp; Adam's Peak)</Label>
+                      <Label className="text-xs font-semibold">Paragraph 1 (Etymology &amp; Adam&apos;s Peak)</Label>
                       <Textarea
                         rows={3}
                         value={ab.whyRatnapura.paragraph1}
@@ -7866,7 +7866,7 @@ export default function MasterCmsPage() {
                         />
                         <span className="text-xs font-medium text-foreground">Show once per session</span>
                       </label>
-                      <p className="text-[10px] text-muted-foreground">Once closed, won't pop up again on page refresh.</p>
+                      <p className="text-[10px] text-muted-foreground">Once closed, won&apos;t pop up again on page refresh.</p>
                     </div>
                   </div>
                 </CardContent>

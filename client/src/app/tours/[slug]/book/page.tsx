@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { BookingPageContent } from '@/components/sections/booking-page-content';
 import { TrustSection } from '@/components/sections/TrustSection';
-import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
+import { mapServerPackageToClient, type TourPackage, fetchTourPackages } from '@/lib/packages-data';
 import { API_BASE_URL } from '@/lib/utils';
 
 export const revalidate = 3600;
@@ -60,6 +60,7 @@ export async function generateMetadata(
 
 export default async function BookingPage({ params }: Props) {
   const { slug } = await params;
+  const initialPackages = await fetchTourPackages(3600);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -70,7 +71,7 @@ export default async function BookingPage({ params }: Props) {
             <p>Loading...</p>
           </div>
         }>
-          <BookingPageContent tourSlug={slug} />
+          <BookingPageContent tourSlug={slug} initialPackages={initialPackages} />
         </Suspense>
       </main>
       <TrustSection />

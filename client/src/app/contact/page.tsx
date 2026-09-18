@@ -1,5 +1,4 @@
-'use client';
-
+import type { Metadata } from 'next';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { ContactSection } from '@/components/sections/contact-section';
@@ -14,7 +13,29 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { TrustSection } from '@/components/sections/TrustSection';
-import { useSiteContent, getSectionThemeClass } from '@/lib/site-content';
+import { fetchSiteContentServer, getSectionThemeClass } from '@/lib/site-content';
+import { fetchTourPackages } from '@/lib/packages-data';
+
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: 'Contact Sapphire Trails | Inquire & Book Ratnapura Gem Tours',
+  description: 'Get in touch with our gemological concierge. Book private sapphire mine tours, custom ring consultations, and inquire about Ratnapura expeditions.',
+  alternates: {
+    canonical: '/contact',
+  },
+  openGraph: {
+    title: 'Contact Sapphire Trails | Inquire & Book Ratnapura Gem Tours',
+    description: 'Direct contact details, WhatsApp concierge, and inquiry booking form for Sapphire Trails in Ratnapura, Sri Lanka.',
+    url: 'https://sapphiretrails.lk/contact',
+    images: [{
+      url: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
+      width: 1200,
+      height: 630,
+      alt: 'Contact Sapphire Trails Concierge',
+    }],
+  },
+};
 
 function DynamicFaqSection({ faqs, heading }: { faqs: Array<{ question: string; answer: string }>; heading?: string }) {
   if (!faqs || faqs.length === 0) return null;
@@ -48,9 +69,12 @@ function DynamicFaqSection({ faqs, heading }: { faqs: Array<{ question: string; 
   );
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
   const breadcrumbs = [{ label: 'Contact', href: '/contact' }];
-  const { content } = useSiteContent();
+  const [content, initialTours] = await Promise.all([
+    fetchSiteContentServer(),
+    fetchTourPackages(3600),
+  ]);
   const contact = content.contact;
   const vis = contact?.sectionVisibility || {};
   const sty = contact?.sectionStyles || {};
@@ -136,7 +160,7 @@ export default function ContactPage() {
         {vis.tours !== false && (
           <div className={getSectionThemeClass(sty.tours)}>
             <ScrollAnimate>
-              <ContactTours />
+              <ContactTours initialTours={initialTours} />
             </ScrollAnimate>
           </div>
         )}

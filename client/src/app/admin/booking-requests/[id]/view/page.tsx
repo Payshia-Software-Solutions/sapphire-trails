@@ -360,7 +360,7 @@ export default function ViewBookingPage() {
 
           {booking.message && (
             <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-base font-semibold">Traveler's Special Requests</CardTitle></CardHeader>
+              <CardHeader className="pb-2"><CardTitle className="text-base font-semibold">Traveler&apos;s Special Requests</CardTitle></CardHeader>
               <CardContent className="flex items-start gap-4">
                 <MessageSquare className="h-5 w-5 text-muted-foreground mt-1 flex-shrink-0" />
                 <p className="text-muted-foreground italic text-sm">&quot;{booking.message}&quot;</p>
