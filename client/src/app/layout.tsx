@@ -2,10 +2,28 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Cinzel, Montserrat, Poppins } from 'next/font/google';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { LayoutProvider } from '@/components/layout-provider';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
-import { fetchSiteContentServer, defaultSeoSettings } from '@/lib/site-seo';
+import type { AnalyticsConfig } from '@/lib/analytics';
+import { defaultSeoSettings } from '@/lib/site-seo';
+import { fetchSiteContentServer } from '@/lib/site-content';
+import { SiteContentProvider } from '@/contexts/site-content-context';
+
+async function fetchAnalyticsConfigServer(): Promise<AnalyticsConfig | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/analytics/config/`, {
+      next: { revalidate: 3600 },
+      headers: { Accept: 'application/json' },
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn('[fetchAnalyticsConfigServer] Failed to fetch analytics config:', err);
+  }
+  return null;
+}
 
 const cinzel = Cinzel({
   subsets: ['latin'],
@@ -88,7 +106,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteContent = await fetchSiteContentServer();
+  const [siteContent, analyticsConfig] = await Promise.all([
+    fetchSiteContentServer(),
+    fetchAnalyticsConfigServer(),
+  ]);
   const seo = siteContent.settings?.seo || defaultSeoSettings;
   const contact = siteContent.contact;
   const footer = siteContent.footer;
@@ -294,10 +315,12 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavigationSchema) }}
         />
-        <LayoutProvider>
-            {children}
-        </LayoutProvider>
-        <AnalyticsTracker />
+        <SiteContentProvider initialContent={siteContent}>
+          <LayoutProvider>
+              {children}
+          </LayoutProvider>
+        </SiteContentProvider>
+        <AnalyticsTracker initialConfig={analyticsConfig} />
       </body>
     </html>
   );

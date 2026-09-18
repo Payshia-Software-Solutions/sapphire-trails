@@ -226,47 +226,54 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const [calculationResult, setCalculationResult] = useState<PriceCalculationResult | null>(null);
 
+  const hasLoadedRef = useRef(false);
+
   useEffect(() => {
-    async function fetchTourPackagesData() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/tours`);
-            if (response.ok) {
-                const serverData = await response.json();
-                if(Array.isArray(serverData)) {
-                    const mapped = serverData.map(mapServerPackageToClient);
-                    setTourPackages(mapped);
+    if (hasLoadedRef.current) return;
 
-                    // Auto-select package if slug or tourType is provided in URL
-                    if (tourSlugParam) {
-                      const found = mapped.find(p => p.slug === tourSlugParam);
-                      if (found) methods.setValue('tourType', found.id);
-                    } else if (tourTypeParam) {
-                      const found = mapped.find(p => String(p.id) === String(tourTypeParam));
-                      if (found) methods.setValue('tourType', found.id);
-                    } else if (mapped.length > 0 && !methods.getValues('tourType')) {
-                      // Direct /booking: Auto-select 1st package by default!
-                      methods.setValue('tourType', mapped[0].id);
-                    }
-                }
-            }
-        } catch(e) { console.error("Could not fetch tour packages", e); }
-    }
-
-    if (initialPackages.length === 0) {
-      fetchTourPackagesData();
-    } else {
-      // If already initialized with initialPackages, ensure tourType value is applied
+    if (initialPackages && initialPackages.length > 0) {
+      hasLoadedRef.current = true;
+      setTourPackages(initialPackages);
       if (tourSlugParam) {
         const found = initialPackages.find(p => p.slug === tourSlugParam);
         if (found) methods.setValue('tourType', found.id);
       } else if (tourTypeParam) {
         const found = initialPackages.find(p => String(p.id) === String(tourTypeParam));
         if (found) methods.setValue('tourType', found.id);
-      } else if (initialPackages.length > 0 && !methods.getValues('tourType')) {
+      } else if (!methods.getValues('tourType')) {
         methods.setValue('tourType', initialPackages[0].id);
       }
+      return;
     }
-  }, [tourSlugParam, tourTypeParam, methods, initialPackages]);
+
+    async function fetchTourPackagesData() {
+      hasLoadedRef.current = true;
+      try {
+        const response = await fetch(`${API_BASE_URL}/tours`);
+        if (response.ok) {
+          const serverData = await response.json();
+          if (Array.isArray(serverData)) {
+            const mapped = serverData.map(mapServerPackageToClient);
+            setTourPackages(mapped);
+
+            if (tourSlugParam) {
+              const found = mapped.find(p => p.slug === tourSlugParam);
+              if (found) methods.setValue('tourType', found.id);
+            } else if (tourTypeParam) {
+              const found = mapped.find(p => String(p.id) === String(tourTypeParam));
+              if (found) methods.setValue('tourType', found.id);
+            } else if (mapped.length > 0 && !methods.getValues('tourType')) {
+              methods.setValue('tourType', mapped[0].id);
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Could not fetch tour packages", e);
+      }
+    }
+
+    fetchTourPackagesData();
+  }, [tourSlugParam, tourTypeParam]);
 
   const selectedTour = watchedTourType
     ? tourPackages.find(p => p.id === Number(watchedTourType))
@@ -370,10 +377,13 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
        email: data.email,
        phone: data.phone,
        address: data.address,
+       tour_package_id: selectedTour.id,
        tour_type_id: selectedTour.id,
+       tour_date: format(data.date, 'yyyy-MM-dd'),
        booking_date: format(data.date, 'yyyy-MM-dd'),
        adults: data.adults,
        children: data.children,
+       guests: totalGuestsOnSubmit,
        total_price: totalPriceOnSubmit,
        message: fullMessage,
    };

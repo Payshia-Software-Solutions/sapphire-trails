@@ -1,5 +1,4 @@
-'use client';
-
+import type { Metadata } from 'next';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { AboutHeroSection } from '@/components/sections/about-hero';
@@ -12,15 +11,54 @@ import { WhyRatnapuraSection } from '@/components/sections/WhyRatnapuraSection';
 import { AboutTrustStrip } from '@/components/sections/AboutTrustStrip';
 import { AboutCtaSection } from '@/components/sections/AboutCtaSection';
 import { TrustSection } from '@/components/sections/TrustSection';
-import { useSiteContent, getSectionThemeClass } from '@/lib/site-content';
+import { fetchSiteContentServer, getSectionThemeClass } from '@/lib/site-content';
 
-export default function AboutPage() {
-  const { content } = useSiteContent();
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: 'About Us | Sapphire Trails Sri Lanka - Ethical Gem Mining & Heritage Tours',
+  description: "Learn about Sapphire Trails, Sri Lanka's premier ethical gem mining and gemological expedition operator in Ratnapura. Over 40 years of artisanal gem heritage.",
+  alternates: {
+    canonical: '/about',
+  },
+  openGraph: {
+    title: 'About Sapphire Trails | Ethical Gem Mining & Heritage Tours in Sri Lanka',
+    description: 'Discover the story, ethical mining values, and master craftsmanship behind Sapphire Trails in Ratnapura, Sri Lanka.',
+    url: 'https://sapphiretrails.lk/about',
+    images: [{
+      url: 'https://content-provider.payshia.com/sapphire-trail/images/tour-11-optimized.webp',
+      width: 1200,
+      height: 630,
+      alt: 'Sapphire Trails Ethical Gem Mining in Ratnapura',
+    }],
+  },
+};
+
+export default async function AboutPage() {
+  const content = await fetchSiteContentServer();
   const vis = content.about.sectionVisibility || {};
   const sty = content.about.sectionStyles || {};
 
+  const aboutSchema = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "About Sapphire Trails",
+    "description": "Learn about Sapphire Trails, Sri Lanka's premier ethical gem mining and gemological expedition operator in Ratnapura.",
+    "url": "https://sapphiretrails.lk/about",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sapphire Trails",
+      "url": "https://sapphiretrails.lk",
+      "logo": "https://sapphiretrails.lk/img/logo4.png"
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background selection:bg-primary/20 selection:text-primary">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutSchema) }}
+      />
       <Header />
       <main className="flex-1">
         {/* 1. Cinematic Luxury Hero */}

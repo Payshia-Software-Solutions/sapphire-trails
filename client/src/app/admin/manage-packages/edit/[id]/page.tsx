@@ -1096,7 +1096,7 @@ export default function EditPackageStudioPage() {
                     Experience Photo Gallery ({galleryFields.length} Photos)
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Batch upload high-definition photography for the tour's lightbox gallery.
+                    Batch upload high-definition photography for the tour&apos;s lightbox gallery.
                   </CardDescription>
                 </div>
                 <Button

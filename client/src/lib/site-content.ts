@@ -1,6 +1,3 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
 import { triggerRevalidation } from '@/lib/revalidate';
@@ -1101,8 +1098,8 @@ export const defaultSiteContent: SiteContentData = {
 };
 
 
-const SITE_CONTENT_STORAGE_KEY = 'sapphire_site_content_cache';
-const SITE_CONTENT_CHANGE_EVENT = 'sapphire_site_content_updated';
+export const SITE_CONTENT_STORAGE_KEY = 'sapphire_site_content_cache';
+export const SITE_CONTENT_CHANGE_EVENT = 'sapphire_site_content_updated';
 
 export function mergeProposalContent(parsedProposal?: any) {
   const d = defaultSiteContent.proposal;
@@ -1310,26 +1307,95 @@ export function mergeSiteSettings(incoming?: any) {
   };
 }
 
+export function mergeHomepageContent(parsedHomepage?: any) {
+  const d = defaultSiteContent.homepage;
+  if (!parsedHomepage || typeof parsedHomepage !== 'object') return d;
+
+  return {
+    ...d,
+    ...parsedHomepage,
+    hero: { ...d.hero, ...(parsedHomepage.hero || {}) },
+    stats: parsedHomepage.stats || d.stats,
+    journey: { ...d.journey, ...(parsedHomepage.journey || {}) },
+    discover: { ...d.discover, ...(parsedHomepage.discover || {}) },
+    toursHeader: { ...d.toursHeader, ...(parsedHomepage.toursHeader || {}) },
+    reviewsHeader: { ...d.reviewsHeader, ...(parsedHomepage.reviewsHeader || {}) },
+    exploreHeader: { ...d.exploreHeader, ...(parsedHomepage.exploreHeader || {}) },
+    faqHeader: { ...d.faqHeader, ...(parsedHomepage.faqHeader || {}) },
+    articlesHeader: { ...d.articlesHeader, ...(parsedHomepage.articlesHeader || {}) },
+    subscription: { ...d.subscription, ...(parsedHomepage.subscription || {}) },
+    sectionVisibility: { ...(d.sectionVisibility || {}), ...(parsedHomepage.sectionVisibility || {}) },
+    sectionStyles: { ...(d.sectionStyles || {}), ...(parsedHomepage.sectionStyles || {}) },
+  };
+}
+
+export function mergeAboutContent(parsedAbout?: any) {
+  const d = defaultSiteContent.about;
+  if (!parsedAbout || typeof parsedAbout !== 'object') return d;
+
+  return {
+    ...d,
+    ...parsedAbout,
+    hero: { ...d.hero, ...(parsedAbout.hero || {}) },
+    metrics: parsedAbout.metrics || d.metrics,
+    story: { ...d.story, ...(parsedAbout.story || {}) },
+    experience: {
+      ...d.experience,
+      ...(parsedAbout.experience || {}),
+      items: parsedAbout.experience?.items || d.experience.items,
+    },
+    values: {
+      ...d.values,
+      ...(parsedAbout.values || {}),
+      items: (parsedAbout.values?.items || d.values.items).map((v: any, idx: number) => ({
+        ...d.values.items[idx],
+        ...v,
+        points: (v.points && v.points.length > 0) ? v.points : (d.values.items[idx]?.points || []),
+      })),
+    },
+    gemJourney: {
+      ...d.gemJourney,
+      ...(parsedAbout.gemJourney || {}),
+      steps: (parsedAbout.gemJourney?.steps || d.gemJourney.steps).map((s: any, idx: number) => ({
+        ...d.gemJourney.steps[idx],
+        ...s,
+      })),
+    },
+    whyRatnapura: { ...d.whyRatnapura, ...(parsedAbout.whyRatnapura || {}) },
+    trustStrip: { ...d.trustStrip, ...(parsedAbout.trustStrip || {}) },
+    cta: { ...d.cta, ...(parsedAbout.cta || {}) },
+    sectionVisibility: { ...(d.sectionVisibility || {}), ...(parsedAbout.sectionVisibility || {}) },
+    sectionStyles: { ...(d.sectionStyles || {}), ...(parsedAbout.sectionStyles || {}) },
+  };
+}
+
+export function mergeAllSiteContent(data?: any): SiteContentData {
+  if (!data || typeof data !== 'object') return defaultSiteContent;
+  return {
+    ...defaultSiteContent,
+    ...data,
+    settings: mergeSiteSettings(data.settings),
+    homepage: mergeHomepageContent(data.homepage),
+    about: mergeAboutContent(data.about),
+    tours: mergeToursContent(data.tours),
+    proposal: mergeProposalContent(data.proposal),
+    explore: mergeExploreContent(data.explore),
+    articles: mergeArticlesContent(data.articles),
+    contact: mergeContactContent(data.contact),
+    footer: mergeFooterContent(data.footer),
+  };
+}
+
 export async function fetchSiteContentServer(): Promise<SiteContentData> {
   try {
     const response = await fetch(`${API_BASE_URL}/content/site_data`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 60 },
       headers: { Accept: 'application/json' },
     });
     if (response.ok) {
       const data = await response.json();
       if (data && typeof data === 'object') {
-        return {
-          ...defaultSiteContent,
-          ...data,
-          settings: mergeSiteSettings(data.settings),
-          tours: mergeToursContent(data.tours),
-          proposal: mergeProposalContent(data.proposal),
-          explore: mergeExploreContent(data.explore),
-          articles: mergeArticlesContent(data.articles),
-          contact: mergeContactContent(data.contact),
-          footer: mergeFooterContent(data.footer),
-        };
+        return mergeAllSiteContent(data);
       }
     }
   } catch (err) {
@@ -1338,161 +1404,57 @@ export async function fetchSiteContentServer(): Promise<SiteContentData> {
   return defaultSiteContent;
 }
 
+// Singleton in-flight promise to eliminate duplicate client requests completely
+let inFlightSiteContentPromise: Promise<SiteContentData> | null = null;
+
 export async function fetchSiteContent(): Promise<SiteContentData> {
+  if (inFlightSiteContentPromise) {
+    return inFlightSiteContentPromise;
+  }
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/content/site_data`, {
-      cache: 'no-store',
-      next: { revalidate: 60 },
-    });
+  inFlightSiteContentPromise = (async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/content/site_data`, {
+        cache: 'no-store',
+        next: { revalidate: 60 },
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data && typeof data === 'object') {
-        const merged: SiteContentData = {
-          ...defaultSiteContent,
-          ...data,
-          settings: mergeSiteSettings(data.settings),
-          homepage: { 
-            ...defaultSiteContent.homepage, 
-            ...data.homepage,
-            hero: { ...defaultSiteContent.homepage.hero, ...(data.homepage?.hero || {}) },
-            stats: data.homepage?.stats || defaultSiteContent.homepage.stats,
-            journey: { ...defaultSiteContent.homepage.journey, ...(data.homepage?.journey || {}) },
-            discover: { ...defaultSiteContent.homepage.discover, ...(data.homepage?.discover || {}) },
-            toursHeader: { ...defaultSiteContent.homepage.toursHeader, ...(data.homepage?.toursHeader || {}) },
-            reviewsHeader: { ...defaultSiteContent.homepage.reviewsHeader, ...(data.homepage?.reviewsHeader || {}) },
-            exploreHeader: { ...defaultSiteContent.homepage.exploreHeader, ...(data.homepage?.exploreHeader || {}) },
-            faqHeader: { ...defaultSiteContent.homepage.faqHeader, ...(data.homepage?.faqHeader || {}) },
-            articlesHeader: { ...defaultSiteContent.homepage.articlesHeader, ...(data.homepage?.articlesHeader || {}) },
-            subscription: { ...defaultSiteContent.homepage.subscription, ...(data.homepage?.subscription || {}) },
-          },
-          about: { 
-            ...defaultSiteContent.about, 
-            ...data.about,
-            hero: { ...defaultSiteContent.about.hero, ...(data.about?.hero || {}) },
-            metrics: data.about?.metrics || defaultSiteContent.about.metrics,
-            story: { ...defaultSiteContent.about.story, ...(data.about?.story || {}) },
-            experience: { 
-              ...defaultSiteContent.about.experience, 
-              ...(data.about?.experience || {}),
-              items: data.about?.experience?.items || defaultSiteContent.about.experience.items 
-            },
-            values: { 
-              ...defaultSiteContent.about.values, 
-              ...(data.about?.values || {}),
-              items: (data.about?.values?.items || defaultSiteContent.about.values.items).map((v: any, idx: number) => ({
-                ...defaultSiteContent.about.values.items[idx],
-                ...v,
-                points: (v.points && v.points.length > 0) ? v.points : (defaultSiteContent.about.values.items[idx]?.points || []),
-              }))
-            },
-            gemJourney: {
-              ...defaultSiteContent.about.gemJourney,
-              ...(data.about?.gemJourney || {}),
-              steps: (data.about?.gemJourney?.steps || defaultSiteContent.about.gemJourney.steps).map((s: any, idx: number) => ({
-                ...defaultSiteContent.about.gemJourney.steps[idx],
-                ...s,
-              }))
-            },
-            whyRatnapura: { ...defaultSiteContent.about.whyRatnapura, ...(data.about?.whyRatnapura || {}) },
-            trustStrip: { ...defaultSiteContent.about.trustStrip, ...(data.about?.trustStrip || {}) },
-            cta: { ...defaultSiteContent.about.cta, ...(data.about?.cta || {}) },
-          },
-          tours: mergeToursContent(data.tours),
-          proposal: mergeProposalContent(data.proposal),
-          explore: mergeExploreContent(data.explore),
-          articles: mergeArticlesContent(data.articles),
-          contact: mergeContactContent(data.contact),
-          footer: mergeFooterContent(data.footer),
-        };
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(SITE_CONTENT_STORAGE_KEY, JSON.stringify(merged));
-          if (merged.settings?.defaultTheme) {
-            localStorage.setItem('site_default_theme', merged.settings.defaultTheme);
+      if (response.ok) {
+        const data = await response.json();
+        if (data && typeof data === 'object') {
+          const merged = mergeAllSiteContent(data);
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem(SITE_CONTENT_STORAGE_KEY, JSON.stringify(merged));
+              if (merged.settings?.defaultTheme) {
+                localStorage.setItem('site_default_theme', merged.settings.defaultTheme);
+              }
+            } catch (e) {}
           }
+          return merged;
         }
-        return merged;
       }
+    } catch (err) {
+      console.warn('Failed to fetch dynamic site content, using cache/fallback', err);
+    } finally {
+      inFlightSiteContentPromise = null;
     }
-  } catch (err) {
-    console.warn('Failed to fetch dynamic site content, using cache/fallback', err);
-  }
 
-  // Fallback to localStorage cache if client-side
-  if (typeof window !== 'undefined') {
-    const cached = localStorage.getItem(SITE_CONTENT_STORAGE_KEY);
-    if (cached) {
+    // Fallback to localStorage cache if client-side
+    if (typeof window !== 'undefined') {
       try {
-        const parsed = JSON.parse(cached);
-        return {
-          ...defaultSiteContent,
-          ...parsed,
-          settings: mergeSiteSettings(parsed.settings),
-          homepage: {
-            ...defaultSiteContent.homepage,
-            ...(parsed.homepage || {}),
-            hero: { ...defaultSiteContent.homepage.hero, ...(parsed.homepage?.hero || {}) },
-            stats: parsed.homepage?.stats || defaultSiteContent.homepage.stats,
-            journey: { ...defaultSiteContent.homepage.journey, ...(parsed.homepage?.journey || {}) },
-            discover: { ...defaultSiteContent.homepage.discover, ...(parsed.homepage?.discover || {}) },
-            toursHeader: { ...defaultSiteContent.homepage.toursHeader, ...(parsed.homepage?.toursHeader || {}) },
-            reviewsHeader: { ...defaultSiteContent.homepage.reviewsHeader, ...(parsed.homepage?.reviewsHeader || {}) },
-            exploreHeader: { ...defaultSiteContent.homepage.exploreHeader, ...(parsed.homepage?.exploreHeader || {}) },
-            faqHeader: { ...defaultSiteContent.homepage.faqHeader, ...(parsed.homepage?.faqHeader || {}) },
-            articlesHeader: { ...defaultSiteContent.homepage.articlesHeader, ...(parsed.homepage?.articlesHeader || {}) },
-            subscription: { ...defaultSiteContent.homepage.subscription, ...(parsed.homepage?.subscription || {}) },
-          },
-          about: {
-            ...defaultSiteContent.about,
-            ...(parsed.about || {}),
-            hero: { ...defaultSiteContent.about.hero, ...(parsed.about?.hero || {}) },
-            metrics: parsed.about?.metrics || defaultSiteContent.about.metrics,
-            story: { ...defaultSiteContent.about.story, ...(parsed.about?.story || {}) },
-            experience: { 
-              ...defaultSiteContent.about.experience, 
-              ...(parsed.about?.experience || {}),
-              items: parsed.about?.experience?.items || defaultSiteContent.about.experience.items 
-            },
-            values: { 
-              ...defaultSiteContent.about.values, 
-              ...(parsed.about?.values || {}),
-              items: (parsed.about?.values?.items || defaultSiteContent.about.values.items).map((v: any, idx: number) => ({
-                ...defaultSiteContent.about.values.items[idx],
-                ...v,
-                points: (v.points && v.points.length > 0) ? v.points : (defaultSiteContent.about.values.items[idx]?.points || []),
-              }))
-            },
-            gemJourney: {
-              ...defaultSiteContent.about.gemJourney,
-              ...(parsed.about?.gemJourney || {}),
-              steps: (parsed.about?.gemJourney?.steps || defaultSiteContent.about.gemJourney.steps).map((s: any, idx: number) => ({
-                ...defaultSiteContent.about.gemJourney.steps[idx],
-                ...s,
-              }))
-            },
-            whyRatnapura: { ...defaultSiteContent.about.whyRatnapura, ...(parsed.about?.whyRatnapura || {}) },
-            trustStrip: { ...defaultSiteContent.about.trustStrip, ...(parsed.about?.trustStrip || {}) },
-            cta: { ...defaultSiteContent.about.cta, ...(parsed.about?.cta || {}) },
-          },
-          tours: mergeToursContent(parsed.tours),
-          proposal: mergeProposalContent(parsed.proposal),
-          explore: mergeExploreContent(parsed.explore),
-          articles: mergeArticlesContent(parsed.articles),
-          contact: mergeContactContent(parsed.contact),
-          footer: mergeFooterContent(parsed.footer),
-        };
-      } catch (e) {
-        // ignore parse error
-      }
+        const cached = localStorage.getItem(SITE_CONTENT_STORAGE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          return mergeAllSiteContent(parsed);
+        }
+      } catch (e) {}
     }
-  }
 
+    return defaultSiteContent;
+  })();
 
-
-
-
-  return defaultSiteContent;
+  return inFlightSiteContentPromise;
 }
 
 export async function saveSiteContent(data: SiteContentData): Promise<{ success: boolean; message: string }> {
@@ -1517,7 +1479,7 @@ export async function saveSiteContent(data: SiteContentData): Promise<{ success:
       }
       window.dispatchEvent(new Event(SITE_CONTENT_CHANGE_EVENT));
       // Revalidate homepage and primary static pages on-demand
-      triggerRevalidation(['/', '/about-us', '/contact']);
+      triggerRevalidation(['/', '/about', '/contact', '/tours', '/custom-proposal-package']);
     }
 
     return { success: true, message: 'All website content saved successfully!' };
@@ -1529,182 +1491,8 @@ export async function saveSiteContent(data: SiteContentData): Promise<{ success:
   }
 }
 
-/**
- * Universal React Hook for public and admin components to access and react to dynamic site content.
- */
-export function useSiteContent() {
-  const [content, setContent] = useState<SiteContentData>(() => {
-    if (typeof window !== 'undefined') {
-      const cached = localStorage.getItem(SITE_CONTENT_STORAGE_KEY);
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          return {
-            ...defaultSiteContent,
-            ...parsed,
-            settings: {
-              ...defaultSiteContent.settings,
-              ...(parsed.settings || {}),
-              banner: {
-                ...defaultSiteContent.settings?.banner,
-                ...(parsed.settings?.banner || {}),
-              },
-              topbar: {
-                ...defaultSiteContent.settings?.topbar,
-                ...(parsed.settings?.topbar || {}),
-              },
-            },
-            homepage: {
-              ...defaultSiteContent.homepage,
-              ...(parsed.homepage || {}),
-              hero: { ...defaultSiteContent.homepage.hero, ...(parsed.homepage?.hero || {}) },
-              stats: parsed.homepage?.stats || defaultSiteContent.homepage.stats,
-              journey: { ...defaultSiteContent.homepage.journey, ...(parsed.homepage?.journey || {}) },
-              discover: { ...defaultSiteContent.homepage.discover, ...(parsed.homepage?.discover || {}) },
-              toursHeader: { ...defaultSiteContent.homepage.toursHeader, ...(parsed.homepage?.toursHeader || {}) },
-              reviewsHeader: { ...defaultSiteContent.homepage.reviewsHeader, ...(parsed.homepage?.reviewsHeader || {}) },
-              exploreHeader: { ...defaultSiteContent.homepage.exploreHeader, ...(parsed.homepage?.exploreHeader || {}) },
-              faqHeader: { ...defaultSiteContent.homepage.faqHeader, ...(parsed.homepage?.faqHeader || {}) },
-              articlesHeader: { ...defaultSiteContent.homepage.articlesHeader, ...(parsed.homepage?.articlesHeader || {}) },
-              subscription: { ...defaultSiteContent.homepage.subscription, ...(parsed.homepage?.subscription || {}) },
-            },
-            about: {
-              ...defaultSiteContent.about,
-              ...(parsed.about || {}),
-              hero: { ...defaultSiteContent.about.hero, ...(parsed.about?.hero || {}) },
-              metrics: parsed.about?.metrics || defaultSiteContent.about.metrics,
-              story: { ...defaultSiteContent.about.story, ...(parsed.about?.story || {}) },
-              experience: { 
-                ...defaultSiteContent.about.experience, 
-                ...(parsed.about?.experience || {}),
-                items: parsed.about?.experience?.items || defaultSiteContent.about.experience.items 
-              },
-              values: { ...defaultSiteContent.about.values, ...(parsed.about?.values || {}) },
-              gemJourney: {
-                ...defaultSiteContent.about.gemJourney,
-                ...(parsed.about?.gemJourney || {}),
-                steps: (parsed.about?.gemJourney?.steps || defaultSiteContent.about.gemJourney.steps).map((s: any, idx: number) => ({
-                  ...defaultSiteContent.about.gemJourney.steps[idx],
-                  ...s,
-                }))
-              },
-              whyRatnapura: { ...defaultSiteContent.about.whyRatnapura, ...(parsed.about?.whyRatnapura || {}) },
-              trustStrip: { ...defaultSiteContent.about.trustStrip, ...(parsed.about?.trustStrip || {}) },
-              cta: { ...defaultSiteContent.about.cta, ...(parsed.about?.cta || {}) },
-            },
-            tours: mergeToursContent(parsed.tours),
-            proposal: mergeProposalContent(parsed.proposal),
-            explore: mergeExploreContent(parsed.explore),
-            articles: mergeArticlesContent(parsed.articles),
-            contact: mergeContactContent(parsed.contact),
-            footer: mergeFooterContent(parsed.footer),
-          };
-
-
-
-
-
-        } catch (e) {
-          // ignore
-        }
-      }
-    }
-    return defaultSiteContent;
-  });
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const load = async () => {
-      const latest = await fetchSiteContent();
-      if (isMounted) {
-        setContent(latest);
-        setIsLoaded(true);
-      }
-    };
-
-    load();
-
-    const handleUpdate = () => {
-      if (typeof window !== 'undefined') {
-        const cached = localStorage.getItem(SITE_CONTENT_STORAGE_KEY);
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            setContent({
-              ...defaultSiteContent,
-              ...parsed,
-              settings: mergeSiteSettings(parsed.settings),
-              homepage: {
-                ...defaultSiteContent.homepage,
-                ...(parsed.homepage || {}),
-                hero: { ...defaultSiteContent.homepage.hero, ...(parsed.homepage?.hero || {}) },
-                stats: parsed.homepage?.stats || defaultSiteContent.homepage.stats,
-                journey: { ...defaultSiteContent.homepage.journey, ...(parsed.homepage?.journey || {}) },
-                discover: { ...defaultSiteContent.homepage.discover, ...(parsed.homepage?.discover || {}) },
-                toursHeader: { ...defaultSiteContent.homepage.toursHeader, ...(parsed.homepage?.toursHeader || {}) },
-                reviewsHeader: { ...defaultSiteContent.homepage.reviewsHeader, ...(parsed.homepage?.reviewsHeader || {}) },
-                exploreHeader: { ...defaultSiteContent.homepage.exploreHeader, ...(parsed.homepage?.exploreHeader || {}) },
-                faqHeader: { ...defaultSiteContent.homepage.faqHeader, ...(parsed.homepage?.faqHeader || {}) },
-                articlesHeader: { ...defaultSiteContent.homepage.articlesHeader, ...(parsed.homepage?.articlesHeader || {}) },
-                subscription: { ...defaultSiteContent.homepage.subscription, ...(parsed.homepage?.subscription || {}) },
-              },
-              about: {
-                ...defaultSiteContent.about,
-                ...(parsed.about || {}),
-                hero: { ...defaultSiteContent.about.hero, ...(parsed.about?.hero || {}) },
-                metrics: parsed.about?.metrics || defaultSiteContent.about.metrics,
-                story: { ...defaultSiteContent.about.story, ...(parsed.about?.story || {}) },
-                experience: { 
-                  ...defaultSiteContent.about.experience, 
-                  ...(parsed.about?.experience || {}),
-                  items: parsed.about?.experience?.items || defaultSiteContent.about.experience.items 
-                },
-                values: { ...defaultSiteContent.about.values, ...(parsed.about?.values || {}) },
-                gemJourney: {
-                  ...defaultSiteContent.about.gemJourney,
-                  ...(parsed.about?.gemJourney || {}),
-                  steps: (parsed.about?.gemJourney?.steps || defaultSiteContent.about.gemJourney.steps).map((s: any, idx: number) => ({
-                    ...defaultSiteContent.about.gemJourney.steps[idx],
-                    ...s,
-                  }))
-                },
-                whyRatnapura: { ...defaultSiteContent.about.whyRatnapura, ...(parsed.about?.whyRatnapura || {}) },
-                trustStrip: { ...defaultSiteContent.about.trustStrip, ...(parsed.about?.trustStrip || {}) },
-                cta: { ...defaultSiteContent.about.cta, ...(parsed.about?.cta || {}) },
-              },
-              tours: mergeToursContent(parsed.tours),
-              proposal: mergeProposalContent(parsed.proposal),
-              explore: mergeExploreContent(parsed.explore),
-              articles: mergeArticlesContent(parsed.articles),
-              contact: mergeContactContent(parsed.contact),
-              footer: mergeFooterContent(parsed.footer),
-            });
-
-
-
-
-
-          } catch (e) {
-            // ignore
-          }
-        }
-      }
-    };
-
-    window.addEventListener(SITE_CONTENT_CHANGE_EVENT, handleUpdate);
-    window.addEventListener('storage', handleUpdate);
-
-    return () => {
-      isMounted = false;
-      window.removeEventListener(SITE_CONTENT_CHANGE_EVENT, handleUpdate);
-      window.removeEventListener('storage', handleUpdate);
-    };
-  }, []);
-
-  return { content, isLoaded };
-}
+// Re-export context hook and provider
+export { SiteContentProvider, useSiteContent } from '@/contexts/site-content-context';
 
 /**
  * Uploads an image file directly to the Payshia FTP server in a specific subdirectory
