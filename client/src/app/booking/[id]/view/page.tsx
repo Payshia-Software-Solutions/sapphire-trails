@@ -9,7 +9,8 @@ import { TrustSection } from '@/components/sections/TrustSection';
 import { format, parseISO } from 'date-fns';
 import { type Booking } from '@/lib/bookings-data';
 import { useToast } from '@/hooks/use-toast';
-import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
+import { getWhatsappUrl } from '@/lib/site-content';
+import { useSiteContent } from '@/contexts/site-content-context';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
