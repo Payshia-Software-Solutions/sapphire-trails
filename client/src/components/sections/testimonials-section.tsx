@@ -142,19 +142,21 @@ export function TestimonialsSection() {
           {/* Navigation Controls */}
           <div className="flex items-center justify-center gap-3 mt-8">
             <Button
+              type="button"
               variant="outline"
               size="icon"
               onClick={scrollPrev}
-              className="h-9 w-9 rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+              className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors flex items-center justify-center shadow-xs"
               aria-label="Previous review"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <Button
+              type="button"
               variant="outline"
               size="icon"
               onClick={scrollNext}
-              className="h-9 w-9 rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+              className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors flex items-center justify-center shadow-xs"
               aria-label="Next review"
             >
               <ArrowRight className="h-4 w-4" />

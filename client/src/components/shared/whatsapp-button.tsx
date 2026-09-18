@@ -159,13 +159,13 @@ export function WhatsAppButton() {
               </div>
             </div>
 
-            {/* Close Button */}
+            {/* Close Button with accessible touch target */}
             <button
               onClick={() => setIsOpen(false)}
-              className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/20 text-white/90 hover:text-white flex items-center justify-center transition-colors"
+              className="h-9 w-9 min-h-[40px] min-w-[40px] rounded-full bg-white/10 hover:bg-white/20 text-white/90 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               aria-label="Close chat"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" />
             </button>
           </div>
 
