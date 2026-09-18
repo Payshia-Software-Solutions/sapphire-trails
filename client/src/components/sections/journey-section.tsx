@@ -169,17 +169,22 @@ export function JourneySection() {
 
           {/* Mobile Carousel Controls & Progress Indicator */}
           <div className="flex items-center justify-between mt-6 px-1">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               {steps.map((_, i) => (
                 <button
                   key={i}
+                  type="button"
                   onClick={() => emblaApi?.scrollTo(i)}
-                  className={cn(
-                    "h-1.5 rounded-full transition-all duration-300",
-                    selectedIndex === i ? "w-6 bg-white" : "w-1.5 bg-white/30"
-                  )}
+                  className="p-2 min-w-[36px] min-h-[44px] flex items-center justify-center cursor-pointer"
                   aria-label={`Go to step ${i + 1}`}
-                />
+                >
+                  <span
+                    className={cn(
+                      "h-1.5 rounded-full transition-all duration-300 block",
+                      selectedIndex === i ? "w-6 bg-white" : "w-1.5 bg-white/40"
+                    )}
+                  />
+                </button>
               ))}
             </div>
 
@@ -187,19 +192,21 @@ export function JourneySection() {
               <span className="text-[11px] font-sans font-medium uppercase tracking-widest text-slate-400">
                 0{selectedIndex + 1} / 0{steps.length}
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
+                  type="button"
                   onClick={() => emblaApi?.scrollPrev()}
                   disabled={selectedIndex === 0}
-                  className="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center text-white disabled:opacity-30 transition-opacity active:scale-95"
+                  className="h-10 w-10 min-h-[44px] min-w-[44px] rounded-full border border-white/20 flex items-center justify-center text-white disabled:opacity-30 transition-opacity active:scale-95"
                   aria-label="Previous step"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => emblaApi?.scrollNext()}
                   disabled={selectedIndex === steps.length - 1}
-                  className="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center text-white disabled:opacity-30 transition-opacity active:scale-95"
+                  className="h-10 w-10 min-h-[44px] min-w-[44px] rounded-full border border-white/20 flex items-center justify-center text-white disabled:opacity-30 transition-opacity active:scale-95"
                   aria-label="Next step"
                 >
                   <ChevronRight className="h-4 w-4" />

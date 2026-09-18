@@ -194,13 +194,13 @@ export function Header() {
           })}
 
           
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full text-primary hover:bg-primary/10">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full text-primary hover:bg-primary/10 h-10 w-10 min-h-[44px] min-w-[44px]" aria-label="Toggle theme">
             {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
             {user ? (
                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
+                  <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 min-h-[44px] min-w-[44px]" aria-label="User account menu">
                     <User className="h-5 w-5 text-primary" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -225,7 +225,7 @@ export function Header() {
                 </DropdownMenuContent>
                </DropdownMenu>
             ) : (
-                <Button asChild className="bg-[#0B1E38] hover:bg-[#071527] text-white border border-[#0B1E38] font-sans font-medium text-xs px-5 py-1.5 h-auto rounded-full shadow-xs transition-all">
+                <Button asChild className="bg-[#0B1E38] hover:bg-[#071527] text-white border border-[#0B1E38] font-sans font-medium text-xs px-5 py-1.5 h-auto rounded-full shadow-xs transition-all min-h-[40px]">
                     <Link href="/auth">Login</Link>
                 </Button>
             )}
@@ -238,9 +238,10 @@ export function Header() {
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="hover:bg-primary/10 rounded-full h-9 w-9 text-primary border border-primary/20"
+                aria-label="Open navigation menu"
+                className="hover:bg-primary/10 rounded-full h-10 w-10 min-h-[44px] min-w-[44px] text-primary border border-primary/20"
               >
-                <Menu className="h-4.5 w-4.5" />
+                <Menu className="h-5 w-5" />
                 <span className="sr-only">Open navigation menu</span>
               </Button>
             </SheetTrigger>
@@ -343,16 +344,17 @@ export function Header() {
                   <span className="text-[11px] font-sans uppercase tracking-wider text-muted-foreground font-semibold">Appearance</span>
                   <button 
                     onClick={toggleTheme} 
-                    className="flex items-center gap-2 text-xs font-sans font-medium text-foreground/80 hover:text-[#0B1E38] dark:hover:text-white transition-colors"
+                    aria-label="Toggle visual theme"
+                    className="flex items-center gap-2 text-xs font-sans font-medium text-foreground/80 hover:text-[#0B1E38] dark:hover:text-white transition-colors py-2 px-3 rounded-lg min-h-[44px]"
                   >
                     {theme === 'dark' ? (
                       <>
-                        <Sun className="h-3.5 w-3.5 text-amber-400" />
+                        <Sun className="h-4 w-4 text-amber-400" />
                         <span>Light Mode</span>
                       </>
                     ) : (
                       <>
-                        <Moon className="h-3.5 w-3.5 text-[#0B1E38]" />
+                        <Moon className="h-4 w-4 text-[#0B1E38]" />
                         <span>Dark Mode</span>
                       </>
                     )}
@@ -371,8 +373,9 @@ export function Header() {
                       </div>
                       <button 
                         onClick={handleLogout} 
-                        className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                        className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
                         title="Log Out"
+                        aria-label="Log Out"
                       >
                         <LogOut className="h-4 w-4" />
                       </button>

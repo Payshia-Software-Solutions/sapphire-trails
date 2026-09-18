@@ -1,6 +1,7 @@
 import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
 import { triggerRevalidation } from '@/lib/revalidate';
+import { type ReviewItem, initialReviews } from './reviews-data';
 
 export type BannerTemplate = 'luxury_gold' | 'sapphire_blue' | 'minimal_editorial' | 'image_spotlight';
 export type BannerDisplayType = 'modal' | 'top_bar' | 'bottom_toast';
@@ -96,6 +97,7 @@ export interface SiteContentData {
       heading: string;
       subtitle: string;
     };
+    reviews?: ReviewItem[];
     exploreHeader: {
       tagline: string;
       heading: string;
@@ -606,6 +608,7 @@ export const defaultSiteContent: SiteContentData = {
       heading: 'What Discerning Travelers Say',
       subtitle: 'Read authentic impressions from international collectors, couples, and adventurers who explored the mines with us.'
     },
+    reviews: initialReviews,
     exploreHeader: {
       tagline: 'Beyond The Mining Pits',
       heading: 'Explore Ratnapura & Surrounding Wonders',
@@ -1320,6 +1323,7 @@ export function mergeHomepageContent(parsedHomepage?: any) {
     discover: { ...d.discover, ...(parsedHomepage.discover || {}) },
     toursHeader: { ...d.toursHeader, ...(parsedHomepage.toursHeader || {}) },
     reviewsHeader: { ...d.reviewsHeader, ...(parsedHomepage.reviewsHeader || {}) },
+    reviews: Array.isArray(parsedHomepage.reviews) ? parsedHomepage.reviews : (d.reviews || []),
     exploreHeader: { ...d.exploreHeader, ...(parsedHomepage.exploreHeader || {}) },
     faqHeader: { ...d.faqHeader, ...(parsedHomepage.faqHeader || {}) },
     articlesHeader: { ...d.articlesHeader, ...(parsedHomepage.articlesHeader || {}) },
