@@ -1,7 +1,6 @@
-'use client';
-
 import React from 'react';
 import Image from 'next/image';
+import type { Metadata } from 'next';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { PageHero } from '@/components/shared/page-hero';
@@ -12,12 +11,33 @@ import { ProposalFaq } from '@/components/sections/proposal-faq';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Gem, Sparkles, Clock, Truck, Heart, ArrowRight } from 'lucide-react';
-import { useSiteContent, getSectionThemeClass, getWhatsappUrl } from '@/lib/site-content';
+import { fetchSiteContentServer, getSectionThemeClass, getWhatsappUrl } from '@/lib/site-content';
+
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: 'Custom Proposal & Bespoke Engagement Ring Package | Sapphire Trails',
+  description: 'Embark on a private VIP gem mine tour in Ratnapura, select your certified Ceylon sapphire directly at the source, and receive your handcrafted engagement ring in 5 working days.',
+  alternates: {
+    canonical: '/custom-proposal-package',
+  },
+  openGraph: {
+    title: 'Custom Proposal & Bespoke Ring Package | Sapphire Trails Sri Lanka',
+    description: 'Bespoke atelier engagement ring crafting and luxury gem expedition in Ratnapura, Sri Lanka.',
+    url: 'https://sapphiretrails.lk/custom-proposal-package',
+    images: [{
+      url: 'https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp',
+      width: 1200,
+      height: 630,
+      alt: 'Sapphire Trails Custom Proposal Package',
+    }],
+  },
+};
 
 const defaultPillarIcons = [Gem, Sparkles, Clock, Truck];
 
-export default function CustomProposalPackagePage() {
-  const { content } = useSiteContent();
+export default async function CustomProposalPackagePage() {
+  const content = await fetchSiteContentServer();
   const prop = content.proposal;
   const vis = prop.sectionVisibility || {};
   const sty = prop.sectionStyles || {};
@@ -27,8 +47,28 @@ export default function CustomProposalPackagePage() {
     { label: 'Proposal Package', href: '/custom-proposal-package' }
   ];
 
+  const proposalSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": prop.hero?.title || "Custom Proposal & Bespoke Ring Package",
+    "description": prop.hero?.subtitle || "Embark on a private VIP gem mine tour in Ratnapura, select your certified Ceylon sapphire directly at the source, and receive your handcrafted engagement ring in 5 working days.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Sapphire Trails"
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    }
+  };
+
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background selection:bg-primary/20 selection:text-primary">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(proposalSchema) }}
+      />
       <Header />
 
       <main className="flex-1">

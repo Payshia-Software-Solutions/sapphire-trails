@@ -41,10 +41,11 @@ const TourCard = ({ tour }: { tour: TourPackage }) => (
     </Card>
   );
 
-export function ContactTours() {
-    const [tours, setTours] = useState<TourPackage[]>([]);
+export function ContactTours({ initialTours = [] }: { initialTours?: TourPackage[] }) {
+    const [tours, setTours] = useState<TourPackage[]>(initialTours);
 
     useEffect(() => {
+        if (initialTours && initialTours.length > 0) return;
         async function fetchTours() {
             try {
                 const response = await fetch(`${API_BASE_URL}/tours`);
@@ -61,7 +62,7 @@ export function ContactTours() {
             }
         }
         fetchTours();
-    }, []);
+    }, [initialTours]);
 
     if (tours.length === 0) return null;
 

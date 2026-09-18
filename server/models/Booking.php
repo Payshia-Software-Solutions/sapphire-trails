@@ -131,6 +131,23 @@ class Booking
             $userId = $this->userModel->findOrCreateGuest($data);
         }
 
+        $tourPackageId = $data['tour_package_id'] ?? ($data['tour_type_id'] ?? null);
+        if (empty($tourPackageId)) {
+            throw new InvalidArgumentException("A valid tour_package_id is required to create a booking.");
+        }
+
+        $adults = isset($data['adults']) ? (int)$data['adults'] : 1;
+        $children = isset($data['children']) ? (int)$data['children'] : 0;
+        $guests = isset($data['guests']) ? (int)$data['guests'] : ($adults + $children);
+        if ($guests < 1) {
+            $guests = 1;
+        }
+
+        $tourDate = $data['tour_date'] ?? ($data['booking_date'] ?? ($data['date'] ?? null));
+        if (empty($tourDate)) {
+            throw new InvalidArgumentException("A valid tour_date is required to create a booking.");
+        }
+
         $stmt = $this->pdo->prepare("
             INSERT INTO bookings (
                 user_id, tour_package_id, name, email, phone, address, adults, children, guests,
@@ -140,15 +157,15 @@ class Booking
 
         $stmt->execute([
             $userId,
-            $data['tour_package_id'],
-            $data['name'],
-            $data['email'],
+            $tourPackageId,
+            $data['name'] ?? '',
+            $data['email'] ?? '',
             $data['phone'] ?? null,
             $data['address'] ?? null,
-            $data['adults'] ?? 1,
-            $data['children'] ?? 0,
-            $data['guests'],
-            $data['tour_date'],
+            $adults,
+            $children,
+            $guests,
+            $tourDate,
             $data['end_date'] ?? null,
             $data['booking_source'] ?? 'website',
             $data['external_booking_id'] ?? null,
@@ -161,6 +178,15 @@ class Booking
     // Update a booking completely
     public function update($id, $data)
     {
+        $tourPackageId = $data['tour_package_id'] ?? ($data['tour_type_id'] ?? null);
+        $adults = isset($data['adults']) ? (int)$data['adults'] : 1;
+        $children = isset($data['children']) ? (int)$data['children'] : 0;
+        $guests = isset($data['guests']) ? (int)$data['guests'] : ($adults + $children);
+        if ($guests < 1) {
+            $guests = 1;
+        }
+        $tourDate = $data['tour_date'] ?? ($data['booking_date'] ?? ($data['date'] ?? null));
+
         $stmt = $this->pdo->prepare("
             UPDATE bookings 
             SET 
@@ -185,17 +211,17 @@ class Booking
 
         $stmt->execute([
             ':id' => $id,
-            ':name' => $data['name'],
-            ':email' => $data['email'],
+            ':name' => $data['name'] ?? '',
+            ':email' => $data['email'] ?? '',
             ':phone' => $data['phone'] ?? null,
             ':address' => $data['address'] ?? null,
-            ':tour_package_id' => $data['tour_package_id'],
-            ':adults' => $data['adults'] ?? 1,
-            ':children' => $data['children'] ?? 0,
-            ':guests' => $data['guests'],
-            ':tour_date' => $data['tour_date'],
+            ':tour_package_id' => $tourPackageId,
+            ':adults' => $adults,
+            ':children' => $children,
+            ':guests' => $guests,
+            ':tour_date' => $tourDate,
             ':end_date' => $data['end_date'] ?? null,
-            ':status' => $data['status'],
+            ':status' => $data['status'] ?? 'pending',
             ':booking_source' => $data['booking_source'] ?? 'website',
             ':external_booking_id' => $data['external_booking_id'] ?? null,
             ':message' => $data['message'] ?? null,
