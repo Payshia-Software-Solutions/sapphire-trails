@@ -84,6 +84,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/tours/exclusive-sapphire-mine-tour-with-hands-on-discover',
+        destination: '/tours/exclusive-gem-mine-tour-hands-on-discovery',
+        permanent: true,
+      },
+      {
+        source: '/tours/exclusive-sapphire-mine-tour',
+        destination: '/tours/exclusive-gem-mine-tour-hands-on-discovery',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
