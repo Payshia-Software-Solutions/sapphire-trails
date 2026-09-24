@@ -151,7 +151,9 @@ export default async function TourDetailPage({ params }: Props) {
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.9",
-      "reviewCount": "89"
+      "reviewCount": "124",
+      "bestRating": "5",
+      "worstRating": "1"
     }
   };
 

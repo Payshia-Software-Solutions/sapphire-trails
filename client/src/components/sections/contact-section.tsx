@@ -215,9 +215,9 @@ export function ContactSection() {
                                 name="phone"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel>Phone (Optional)</FormLabel>
+                                    <FormLabel>Phone Number</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Your phone number" {...field} />
+                                        <Input type="tel" placeholder="Your phone number" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                     </FormItem>
