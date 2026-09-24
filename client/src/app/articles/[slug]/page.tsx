@@ -676,17 +676,21 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     "@type": "Article",
     "headline": article.title,
     "description": article.description,
-    "image": article.imageUrl,
-    "datePublished": "2026-02-01T08:00:00+05:30",
-    "dateModified": "2026-02-28T12:00:00+05:30",
+    "image": [article.imageUrl],
+    "datePublished": "2026-01-15T08:00:00+05:30",
+    "dateModified": "2026-03-01T12:00:00+05:30",
+    "url": `https://sapphiretrails.lk/articles/${article.slug}`,
+    "inLanguage": "en-US",
     "author": {
       "@type": "Person",
       "name": article.author.name,
-      "jobTitle": article.author.role
+      "jobTitle": article.author.role,
+      "image": article.author.avatar
     },
     "publisher": {
       "@type": "Organization",
       "name": "Sapphire Trails",
+      "url": "https://sapphiretrails.lk",
       "logo": {
         "@type": "ImageObject",
         "url": "https://sapphiretrails.lk/img/logo4.png"

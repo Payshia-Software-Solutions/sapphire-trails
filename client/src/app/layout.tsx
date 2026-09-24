@@ -116,14 +116,26 @@ export default async function RootLayout({
 
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "TravelAgency"],
     "name": "Sapphire Trails",
     "url": "https://sapphiretrails.lk",
     "logo": "https://sapphiretrails.lk/img/logo4.png",
+    "image": "https://content-provider.payshia.com/sapphire-trail/images/img37.webp",
+    "description": seo.metaDescription,
+    "priceRange": "$$",
+    "currenciesAccepted": "USD, LKR, EUR, GBP",
+    "paymentAccepted": "Cash, Credit Card, Bank Transfer",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 6.6828,
+      "longitude": 80.4036
+    },
     "address": {
       "@type": "PostalAddress",
       "streetAddress": contact?.physicalAddress || "Grand Silver Ray, Colombo - Batticaloa Hwy",
       "addressLocality": "Ratnapura",
+      "addressRegion": "Sabaragamuwa Province",
+      "postalCode": "70000",
       "addressCountry": "LK"
     },
     "contactPoint": {
@@ -131,7 +143,7 @@ export default async function RootLayout({
       "telephone": contact?.primaryPhone || "+94-76-375-6688",
       "contactType": "Customer Service",
       "areaServed": "LK",
-      "availableLanguage": ["en"]
+      "availableLanguage": ["en", "si"]
     },
     "sameAs": [
       footer?.facebookUrl || "https://www.facebook.com/p/Sapphire-Trails-61573050367074/",
@@ -168,21 +180,32 @@ export default async function RootLayout({
       "Ethical Gem Mine Visit Ratnapura"
     ],
     "description": seo.metaDescription,
+    "url": "https://sapphiretrails.lk",
+    "image": "https://content-provider.payshia.com/sapphire-trail/images/img37.webp",
     "touristType": ["EcoTourism", "CulturalTourism", "GemstoneTourism"],
+    "isAccessibleForFree": false,
+    "publicAccess": true,
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 6.6828,
+      "longitude": 80.4036
+    },
     "location": {
       "@type": "Place",
-      "name": "Ratnapura, Sri Lanka",
+      "name": "Ratnapura Gem Mines, Sri Lanka",
       "address": {
         "@type": "PostalAddress",
+        "streetAddress": contact?.physicalAddress || "Grand Silver Ray, Colombo - Batticaloa Hwy",
         "addressLocality": "Ratnapura",
-        "addressRegion": "Sabaragamuwa",
+        "addressRegion": "Sabaragamuwa Province",
+        "postalCode": "70000",
         "addressCountry": "LK"
       }
     },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": seo.ratingValue || "4.9",
-      "reviewCount": seo.reviewCount || "124"
+    "provider": {
+      "@type": "TravelAgency",
+      "name": "Sapphire Trails",
+      "url": "https://sapphiretrails.lk"
     }
   };
 
