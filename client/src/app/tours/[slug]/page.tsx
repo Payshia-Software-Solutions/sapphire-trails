@@ -1,5 +1,5 @@
 
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { mapServerPackageToClient, type TourPackage } from '@/lib/packages-data';
@@ -18,6 +18,12 @@ const BASE_URL = 'https://sapphiretrails.lk';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
+
+// Map legacy tour slugs to canonical ones to maintain Google SEO equity and eliminate Search Console errors
+const LEGACY_TOUR_SLUG_MAP: Record<string, string> = {
+  'exclusive-sapphire-mine-tour-with-hands-on-discover': 'exclusive-gem-mine-tour-hands-on-discovery',
+  'exclusive-sapphire-mine-tour': 'exclusive-gem-mine-tour-hands-on-discovery',
+};
 
 export async function generateStaticParams() {
   try {
@@ -71,6 +77,9 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { slug } = await params;
+  if (LEGACY_TOUR_SLUG_MAP[slug]) {
+    permanentRedirect(`/tours/${LEGACY_TOUR_SLUG_MAP[slug]}`);
+  }
   const tourPackage = await getTourPackage(slug);
 
   if (!tourPackage) {
@@ -125,18 +134,29 @@ export async function generateMetadata(
 
 export default async function TourDetailPage({ params }: Props) {
   const { slug } = await params;
+  if (LEGACY_TOUR_SLUG_MAP[slug]) {
+    permanentRedirect(`/tours/${LEGACY_TOUR_SLUG_MAP[slug]}`);
+  }
   const tourPackage = await getTourPackage(slug);
 
-  if (!tourPackage) {
+  if (!tourPackage || !tourPackage.tourPageTitle) {
     notFound();
   }
+
+  const rawPrice = (tourPackage.price || '').replace(/[^0-9.]/g, '');
+  const displayPrice = rawPrice && !isNaN(Number(rawPrice)) && Number(rawPrice) > 0 ? rawPrice : '45.00';
+  const bookingUrl = tourPackage.id && !isNaN(Number(tourPackage.id))
+    ? `${BASE_URL}${tourPackage.bookingLink}?tourType=${tourPackage.id}`
+    : `${BASE_URL}/tours/${slug}`;
 
   const productStructuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": tourPackage.tourPageTitle,
-    "description": tourPackage.tourPageDescription,
-    "image": tourPackage.heroImage,
+    "name": tourPackage.tourPageTitle || tourPackage.homepageTitle || "Ratnapura Gem Mine Tour",
+    "description": tourPackage.tourPageDescription || tourPackage.homepageDescription || "Authentic gem mine tour experience in Ratnapura Sri Lanka with Sapphire Trails.",
+    "image": [tourPackage.heroImage || tourPackage.imageUrl || "https://content-provider.payshia.com/sapphire-trail/images/tour-1.webp"],
+    "sku": `ST-TOUR-${tourPackage.id && !isNaN(Number(tourPackage.id)) ? tourPackage.id : slug}`,
+    "url": `${BASE_URL}/tours/${slug}`,
     "brand": {
       "@type": "Brand",
       "name": "Sapphire Trails"
@@ -144,9 +164,9 @@ export default async function TourDetailPage({ params }: Props) {
     "offers": {
       "@type": "Offer",
       "priceCurrency": "USD",
-      "price": tourPackage.price.replace(/[^0-9.]/g, ''),
+      "price": displayPrice,
       "availability": "https://schema.org/InStock",
-      "url": `${BASE_URL}${tourPackage.bookingLink}?tourType=${tourPackage.id}`
+      "url": bookingUrl
     },
     "aggregateRating": {
       "@type": "AggregateRating",
