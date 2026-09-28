@@ -206,8 +206,8 @@ export function HeroSection() {
           />
         </div>
 
-        {/* 2. Unified Brand Headline: SAPPHIRE TRAILS (Strict Single-Line Grand Wordmark) */}
-        <h1 className="font-brand text-lg sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.85rem] 2xl:text-[4.25rem] tracking-[0.16em] sm:tracking-[0.22em] md:tracking-[0.24em] xl:tracking-[0.25em] text-foreground font-light select-none uppercase whitespace-nowrap">
+        {/* 2. Unified Brand Headline: SAPPHIRE TRAILS (Poppins font-sans) */}
+        <h1 className="font-sans text-lg sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.85rem] 2xl:text-[4.25rem] tracking-[0.16em] sm:tracking-[0.22em] md:tracking-[0.24em] xl:tracking-[0.25em] text-foreground font-light select-none uppercase whitespace-nowrap">
           SAPPHIRE TRAILS
         </h1>
 
