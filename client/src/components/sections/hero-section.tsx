@@ -162,12 +162,7 @@ export function HeroSection() {
   // 2. Default: Ultra-Fast Minimalist Editorial Sapphire Visual (SEO & Performance Champion)
   return (
     <section 
-      style={{
-        height: 'calc(100svh - var(--header-height, 115px))',
-        minHeight: 'calc(100svh - var(--header-height, 115px))',
-        maxHeight: 'calc(100svh - var(--header-height, 115px))',
-      }}
-      className="relative w-full flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-4 pt-2 sm:pt-4 pb-2 sm:pb-3 transition-colors duration-300"
+      className="relative w-full flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-4 pt-4 sm:pt-6 pb-4 sm:pb-5 transition-colors duration-300 min-h-[auto] lg:h-[calc(100vh-var(--header-height,115px))] lg:min-h-[calc(100vh-var(--header-height,115px))]"
     >
       {/* Studio Radial Ambient Glow behind the Ceylon Sapphire */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center z-10" aria-hidden="true">
@@ -271,8 +266,8 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Editorial Bottom / Corner Meta Strip (Directly from Reference Visual) */}
-      <div className="w-full max-w-screen-2xl mx-auto pt-1 pb-1 sm:pb-2 px-4 sm:px-8 lg:px-12 flex items-center justify-between text-[9px] sm:text-[10px] md:text-xs text-muted-foreground/70 font-sans tracking-widest uppercase select-none">
+      {/* Editorial Bottom / Corner Meta Strip (Desktop Viewport Closer) */}
+      <div className="hidden lg:flex w-full max-w-screen-2xl mx-auto pt-1 pb-1 sm:pb-2 px-4 sm:px-8 lg:px-12 items-center justify-between text-[9px] sm:text-[10px] md:text-xs text-muted-foreground/70 font-sans tracking-widest uppercase select-none">
         <div className="hover:text-foreground transition-colors font-medium">
           {cornerLeft}
         </div>

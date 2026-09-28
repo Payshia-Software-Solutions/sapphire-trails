@@ -25,8 +25,8 @@ export function MineDescentSection() {
 
   return (
     <section className="relative w-full overflow-hidden font-sans text-white border-t border-border/20">
-      {/* Background Image Container */}
-      <div className="relative w-full min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] flex flex-col justify-between">
+      {/* Background Image Container - Full page on desktop, compact & immersive on mobile */}
+      <div className="relative w-full min-h-[480px] sm:min-h-[540px] lg:min-h-[calc(100vh-var(--header-height,115px))] lg:h-[calc(100vh-var(--header-height,115px))] flex flex-col justify-between">
         <Image
           src={imageUrl}
           alt="Descending into an authentic timber gem mine pit in Ratnapura Sri Lanka"
