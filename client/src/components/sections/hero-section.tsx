@@ -62,6 +62,8 @@ export function HeroSection() {
   const videoUrl = heroContent.videoUrl || 'https://content-provider.payshia.com/sapphire-trail/hero/hero-video-sapphire-trail.webm';
   const posterImg = heroContent.posterImageUrl || 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp';
   const gemImg = heroContent.gemImageUrl || '/img/hero-sapphire-gem.png';
+  const mountainImg = heroContent.mountainImageUrl || '/img/hero-misty-mountains.jpg';
+  const storiesTagline = heroContent.storiesTagline || 'PEOPLE • PLACES • PRECIOUS STORIES';
   const cornerLeft = heroContent.cornerLeftText || 'SAPPHIRE TRAILS • RATNAPURA';
   const cornerCenter = heroContent.cornerCenterText || 'SRI LANKA';
   const cornerRight = heroContent.cornerRightText || '01 / PRIVATE EXPEDITIONS';
@@ -168,8 +170,22 @@ export function HeroSection() {
       className="relative w-full flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-4 pt-2 sm:pt-4 pb-2 sm:pb-3 transition-colors duration-300"
     >
       {/* Studio Radial Ambient Glow behind the Ceylon Sapphire */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center" aria-hidden="true">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center z-10" aria-hidden="true">
         <div className="w-[500px] sm:w-[750px] md:w-[900px] h-[500px] sm:h-[750px] md:h-[900px] rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.06)_0%,rgba(218,165,32,0.04)_40%,transparent_70%)] blur-3xl" />
+      </div>
+
+      {/* Misty Ratnapura Mountain Range Background (Smooth top fade) */}
+      <div className="absolute inset-x-0 bottom-0 h-[44%] sm:h-[48%] md:h-[52%] pointer-events-none z-0 overflow-hidden select-none">
+        <Image
+          src={mountainImg}
+          alt="Misty tropical mountains and rainforest of Ratnapura Sri Lanka"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-bottom opacity-85 dark:opacity-35 transition-opacity duration-700"
+        />
+        {/* Soft gradient mask blending the image seamlessly into the header background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAFBFD] via-[#FAFBFD]/60 via-30% to-transparent dark:from-[#0B1118] dark:via-[#0B1118]/70" />
       </div>
 
       {/* Center Stage: Proportioned Sapphire Gem on Top with SAPPHIRE TRAILS Unified Headline */}
@@ -247,6 +263,11 @@ export function HeroSection() {
               <span className="font-medium">Watch Film</span>
             </Button>
           )}
+        </div>
+
+        {/* 6. Editorial Tagline: PEOPLE • PLACES • PRECIOUS STORIES */}
+        <div className="pt-2 sm:pt-3 text-[10px] sm:text-xs tracking-[0.24em] sm:tracking-[0.28em] uppercase text-[#8C7A5B] dark:text-[#D4B98E] font-medium font-sans select-none drop-shadow-xs">
+          {storiesTagline}
         </div>
       </div>
 

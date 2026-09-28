@@ -3,6 +3,7 @@
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { HeroSection } from '@/components/sections/hero-section';
+import { MineDescentSection } from '@/components/sections/mine-descent-section';
 import { JourneySection } from '@/components/sections/journey-section';
 import { DiscoverSection } from '@/components/sections/discover-section';
 import { ToursSection } from '@/components/sections/tours-section';
@@ -36,7 +37,10 @@ export function HomePageClient({ initialTours = [] }: HomePageClientProps) {
           </div>
         )}
 
-        {/* 2. Key Heritage Numbers & Authority Stats */}
+        {/* 2. Subterranean Timber Mine Pit Descent Section */}
+        <MineDescentSection />
+
+        {/* 3. Key Heritage Numbers & Authority Stats */}
         {vis.stats !== false && (
           <div className={getSectionThemeClass(sty.stats)}>
             <StatsSection />
