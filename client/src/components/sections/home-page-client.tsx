@@ -32,11 +32,11 @@ export function HomePageClient({ initialTours = [] }: HomePageClientProps) {
       <main className="flex-1">
         {/* 1. Unified Mobile Hero Split Screen (Hero + Mine Section in 1 Viewport) & Desktop Cinematic Banners */}
         {vis.hero !== false && (
-          <div className="w-full flex flex-col lg:block h-[calc(100svh-56px)] sm:h-[calc(100svh-64px)] lg:h-auto">
-            <div className="flex-1 lg:flex-none flex flex-col min-h-0">
+          <div className="w-full flex flex-col lg:contents h-[calc(100svh-56px)] sm:h-[calc(100svh-64px)] lg:h-auto">
+            <div className="flex-1 lg:contents flex flex-col min-h-0">
               <HeroSection />
             </div>
-            <div className="flex-1 lg:flex-none flex flex-col min-h-0">
+            <div className="flex-1 lg:contents flex flex-col min-h-0">
               <MineDescentSection />
             </div>
           </div>

@@ -24,7 +24,7 @@ export function MineDescentSection() {
   const cornerRight = heroContent?.cornerRightText || '01 / PRIVATE EXPEDITIONS';
 
   return (
-    <section className="relative w-full h-full flex-1 lg:flex-none flex flex-col justify-between overflow-hidden font-sans text-white border-t border-border/20 lg:min-h-[calc(100vh-var(--header-height,115px))] lg:h-[calc(100vh-var(--header-height,115px))]">
+    <section className="relative w-full h-full flex-1 lg:flex-none flex flex-col justify-between overflow-hidden font-sans text-white border-t border-border/20 desktop-full-viewport-section">
       {/* Background Image Container */}
       <div className="relative w-full h-full flex-1 flex flex-col justify-between">
         <Image
@@ -44,19 +44,19 @@ export function MineDescentSection() {
         <div className="relative z-20 container mx-auto max-w-screen-2xl px-4 sm:px-8 lg:px-12 pt-3 sm:pt-20 pb-2 sm:pb-8 flex-1 flex flex-col justify-center">
           <div className="max-w-xl space-y-1.5 sm:space-y-4">
             {/* Tagline Badge (2 lines matching Image 2) */}
-            <div className="text-[9px] sm:text-xs font-semibold tracking-[0.22em] text-[#C9A86A] uppercase drop-shadow-sm leading-tight">
+            <div className="text-[9px] sm:text-xs font-semibold tracking-[0.22em] text-[#C9A86A] uppercase drop-shadow-sm leading-tight font-sans">
               <span>DESCEND BENEATH</span><br />
               <span>RATNAPURA</span>
             </div>
 
-            {/* Serif Main Headline (Playfair / Georgia 2-line title matching Image 2) */}
-            <h2 className="font-serif text-xl sm:text-3xl md:text-4xl lg:text-[44px] text-white font-normal leading-[1.15] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+            {/* Poppins Main Headline */}
+            <h2 className="font-sans text-xl sm:text-3xl md:text-4xl lg:text-[44px] text-white font-medium sm:font-semibold leading-[1.2] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
               Where Sri Lanka&apos;s<br />
               sapphires begin.
             </h2>
 
             {/* Description */}
-            <p className="text-[10px] sm:text-sm md:text-[15px] text-white/90 max-w-[280px] sm:max-w-lg font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)] line-clamp-2 sm:line-clamp-none">
+            <p className="text-[10px] sm:text-sm md:text-[15px] text-white/90 max-w-[280px] sm:max-w-lg font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)] line-clamp-2 sm:line-clamp-none font-sans">
               {description}
             </p>
 

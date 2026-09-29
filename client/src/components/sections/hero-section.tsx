@@ -162,7 +162,7 @@ export function HeroSection() {
   // 2. Default: Ultra-Fast Minimalist Editorial Sapphire Visual (SEO & Performance Champion)
   return (
     <section 
-      className="relative w-full h-full flex-1 lg:flex-none flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-3 sm:px-4 pt-1 sm:pt-6 pb-1 sm:pb-6 transition-colors duration-300 lg:h-[calc(100vh-var(--header-height,115px))] lg:min-h-[calc(100vh-var(--header-height,115px))]"
+      className="relative w-full h-full flex-1 lg:flex-none flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-3 sm:px-4 pt-1 sm:pt-6 pb-1 sm:pb-6 transition-colors duration-300 desktop-full-viewport-section"
     >
       {/* Studio Radial Ambient Glow behind the Ceylon Sapphire */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center z-10" aria-hidden="true">
