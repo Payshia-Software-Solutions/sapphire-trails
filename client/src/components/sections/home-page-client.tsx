@@ -30,15 +30,17 @@ export function HomePageClient({ initialTours = [] }: HomePageClientProps) {
     <div className="bg-background flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        {/* 1. Hero Cinematic Video Banner */}
+        {/* 1. Unified Mobile Hero Split Screen (Hero + Mine Section in 1 Viewport) & Desktop Cinematic Banners */}
         {vis.hero !== false && (
-          <div className={getSectionThemeClass(sty.hero)}>
-            <HeroSection />
+          <div className="w-full flex flex-col lg:block h-[calc(100svh-56px)] sm:h-[calc(100svh-64px)] lg:h-auto">
+            <div className="flex-1 lg:flex-none flex flex-col min-h-0">
+              <HeroSection />
+            </div>
+            <div className="flex-1 lg:flex-none flex flex-col min-h-0">
+              <MineDescentSection />
+            </div>
           </div>
         )}
-
-        {/* 2. Subterranean Timber Mine Pit Descent Section */}
-        <MineDescentSection />
 
         {/* 3. Key Heritage Numbers & Authority Stats */}
         {vis.stats !== false && (

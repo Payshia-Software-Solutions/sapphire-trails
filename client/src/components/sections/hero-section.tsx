@@ -162,7 +162,7 @@ export function HeroSection() {
   // 2. Default: Ultra-Fast Minimalist Editorial Sapphire Visual (SEO & Performance Champion)
   return (
     <section 
-      className="relative w-full flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-4 pt-4 sm:pt-6 pb-4 sm:pb-6 transition-colors duration-300 min-h-[auto] lg:h-[calc(100vh-var(--header-height,115px))] lg:min-h-[calc(100vh-var(--header-height,115px))]"
+      className="relative w-full h-full flex-1 lg:flex-none flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-white to-[#F4F6F9] dark:from-[#0B1118] dark:via-[#0E1520] dark:to-[#0B1118] px-3 sm:px-4 pt-1 sm:pt-6 pb-1 sm:pb-6 transition-colors duration-300 lg:h-[calc(100vh-var(--header-height,115px))] lg:min-h-[calc(100vh-var(--header-height,115px))]"
     >
       {/* Studio Radial Ambient Glow behind the Ceylon Sapphire */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center z-10" aria-hidden="true">
@@ -184,13 +184,13 @@ export function HeroSection() {
       </div>
 
       {/* Center Stage: Proportioned Sapphire Gem on Top with SAPPHIRE TRAILS Unified Headline */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-1.5 sm:space-y-3.5 md:space-y-4 lg:space-y-5 max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-2 sm:px-4 w-full my-auto">
+      <div className="relative z-20 flex flex-col items-center justify-center text-center space-y-1 sm:space-y-3.5 md:space-y-4 lg:space-y-5 max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-2 sm:px-4 w-full my-auto">
         
         {/* 1. Ceylon Sapphire Gem Visual on Top - Prominent and beautifully proportioned */}
         <div className="relative group cursor-pointer transition-transform duration-500 hover:scale-105 flex justify-center items-center">
           {/* Soft contact shadow beneath the loose gemstones */}
           <div 
-            className="absolute -bottom-1 sm:-bottom-1.5 md:-bottom-2 left-1/2 -translate-x-1/2 w-4/5 h-2.5 sm:h-3.5 md:h-4 bg-primary/20 dark:bg-black/80 rounded-full blur-md" 
+            className="absolute -bottom-1 sm:-bottom-1.5 md:-bottom-2 left-1/2 -translate-x-1/2 w-4/5 h-2 sm:h-3.5 md:h-4 bg-primary/20 dark:bg-black/80 rounded-full blur-md" 
             aria-hidden="true" 
           />
           
@@ -199,36 +199,36 @@ export function HeroSection() {
             alt="Natural Loose Ceylon Precious Gemstones - Royal Blue Sapphire, Ruby, Pushparaga and Padparadscha - Ratnapura Sri Lanka"
             width={1194}
             height={517}
-            sizes="(max-width: 640px) 240px, (max-width: 1024px) 380px, 520px"
-            className="relative z-10 w-44 sm:w-64 md:w-80 lg:w-[440px] xl:w-[490px] max-h-[14vh] sm:max-h-[20vh] lg:max-h-[24vh] h-auto object-contain drop-shadow-[0_12px_28px_rgba(26,54,93,0.18)] dark:drop-shadow-[0_15px_35px_rgba(0,0,0,0.85)]"
+            sizes="(max-width: 640px) 180px, (max-width: 1024px) 380px, 520px"
+            className="relative z-10 w-36 sm:w-64 md:w-80 lg:w-[440px] xl:w-[490px] max-h-[10vh] sm:max-h-[20vh] lg:max-h-[24vh] h-auto object-contain drop-shadow-[0_10px_22px_rgba(26,54,93,0.18)] dark:drop-shadow-[0_15px_35px_rgba(0,0,0,0.85)]"
             priority
             fetchPriority="high"
           />
         </div>
 
         {/* 2. Unified Brand Headline: SAPPHIRE TRAILS (Cinzel Grand Serif Wordmark) */}
-        <h1 className="font-brand text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.85rem] 2xl:text-[4.25rem] tracking-[0.2em] sm:tracking-[0.22em] md:tracking-[0.24em] xl:tracking-[0.25em] text-[#0B1E38] dark:text-white font-light select-none uppercase whitespace-nowrap">
+        <h1 className="font-brand text-lg sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.85rem] 2xl:text-[4.25rem] tracking-[0.18em] sm:tracking-[0.22em] md:tracking-[0.24em] xl:tracking-[0.25em] text-[#0B1E38] dark:text-white font-light select-none uppercase whitespace-nowrap">
           SAPPHIRE TRAILS
         </h1>
 
         {/* 3. Subtle Brand Tagline Badge */}
-        <div className="inline-flex items-center px-3.5 sm:px-4.5 py-1 sm:py-1.5 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-[9.5px] sm:text-[11px] md:text-xs tracking-[0.18em] sm:tracking-[0.2em] md:tracking-[0.22em] uppercase text-[#0B1E38] dark:text-blue-200 font-medium font-sans shadow-2xs">
+        <div className="inline-flex items-center px-3 sm:px-4.5 py-0.5 sm:py-1.5 rounded-full bg-[#0B1E38]/5 dark:bg-white/5 border border-[#0B1E38]/15 dark:border-white/15 text-[8.5px] sm:text-[11px] md:text-xs tracking-[0.16em] sm:tracking-[0.2em] md:tracking-[0.22em] uppercase text-[#0B1E38] dark:text-blue-200 font-medium font-sans shadow-2xs">
           <span>{tagline}</span>
         </div>
 
         {/* 4. Elegant Editorial Subheadline */}
-        <p className="text-[11px] sm:text-sm md:text-base text-muted-foreground max-w-sm sm:max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto font-sans font-normal leading-relaxed line-clamp-3 sm:line-clamp-none">
+        <p className="text-[10px] sm:text-sm md:text-base text-muted-foreground max-w-[310px] sm:max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto font-sans font-normal leading-relaxed line-clamp-3 sm:line-clamp-none">
           {subheadline}
         </p>
 
         {/* 5. Quiet Luxury Call-To-Action (CTA) Group (Stacked vertically on mobile matching Image 2) */}
-        <div className="flex flex-col items-center justify-center gap-2 sm:gap-3.5 md:gap-4 pt-1 sm:pt-2 w-full max-w-[270px] sm:max-w-none sm:flex-row font-sans">
+        <div className="flex flex-col items-center justify-center gap-1.5 sm:gap-3.5 md:gap-4 pt-0.5 sm:pt-2 w-full max-w-[250px] sm:max-w-none sm:flex-row font-sans">
           <Button 
             asChild 
-            className="w-full sm:w-auto bg-[#0B1E38] hover:bg-[#071527] text-white font-medium h-9 sm:h-11 md:h-12 lg:h-[50px] xl:h-[54px] px-6 sm:px-7 md:px-8 lg:px-9 xl:px-10 rounded-full shadow-sm transition-all border border-[#0B1E38] text-xs sm:text-sm md:text-[15px] lg:text-base"
+            className="w-full sm:w-auto bg-[#0B1E38] hover:bg-[#071527] text-white font-medium h-8 sm:h-11 md:h-12 lg:h-[50px] xl:h-[54px] px-5 sm:px-7 md:px-8 lg:px-9 xl:px-10 rounded-full shadow-xs transition-all border border-[#0B1E38] text-[11px] sm:text-sm md:text-[15px] lg:text-base"
           >
             <Link href="/booking">
-              <CalendarCheck className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-[18px] md:w-[18px] lg:h-5 lg:w-5 text-white" />
+              <CalendarCheck className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-[18px] md:w-[18px] lg:h-5 lg:w-5 text-white" />
               {ctaPrimary}
             </Link>
           </Button>
@@ -236,10 +236,10 @@ export function HeroSection() {
           <Button 
             asChild 
             variant="outline" 
-            className="w-full sm:w-auto border border-[#0B1E38]/30 hover:border-[#0B1E38] bg-white/90 dark:bg-card/80 hover:bg-[#0B1E38]/5 text-[#0B1E38] dark:text-white dark:border-white/20 font-medium h-9 sm:h-11 md:h-12 lg:h-[50px] xl:h-[54px] px-6 sm:px-7 md:px-8 lg:px-9 xl:px-10 rounded-full transition-all text-xs sm:text-sm md:text-[15px] lg:text-base"
+            className="w-full sm:w-auto border border-[#0B1E38]/30 hover:border-[#0B1E38] bg-white/90 dark:bg-card/80 hover:bg-[#0B1E38]/5 text-[#0B1E38] dark:text-white dark:border-white/20 font-medium h-8 sm:h-11 md:h-12 lg:h-[50px] xl:h-[54px] px-5 sm:px-7 md:px-8 lg:px-9 xl:px-10 rounded-full transition-all text-[11px] sm:text-sm md:text-[15px] lg:text-base"
           >
             <Link href="#tours">
-              <Compass className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-[18px] md:w-[18px] lg:h-5 lg:w-5 text-[#0B1E38] dark:text-blue-300" />
+              <Compass className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-[18px] md:w-[18px] lg:h-5 lg:w-5 text-[#0B1E38] dark:text-blue-300" />
               {ctaSecondary}
             </Link>
           </Button>
@@ -250,10 +250,10 @@ export function HeroSection() {
               type="button"
               variant="ghost"
               onClick={() => setIsVideoModalOpen(true)}
-              className="w-auto text-xs sm:text-sm md:text-[15px] lg:text-base text-muted-foreground hover:text-[#0B1E38] dark:hover:text-white gap-2 h-7 sm:h-11 md:h-12 lg:h-[50px] xl:h-[54px] px-3 sm:px-5 md:px-6 lg:px-7 rounded-full transition-colors group"
+              className="w-auto text-[10.5px] sm:text-sm md:text-[15px] lg:text-base text-muted-foreground hover:text-[#0B1E38] dark:hover:text-white gap-1.5 h-6 sm:h-11 md:h-12 lg:h-[50px] xl:h-[54px] px-3 sm:px-5 md:px-6 lg:px-7 rounded-full transition-colors group"
             >
-              <div className="h-5 w-5 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-full bg-[#0B1E38]/10 dark:bg-white/10 flex items-center justify-center text-[#0B1E38] dark:text-white group-hover:scale-110 transition-transform">
-                <Play className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 fill-[#0B1E38] dark:fill-white" />
+              <div className="h-4.5 w-4.5 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-full bg-[#0B1E38]/10 dark:bg-white/10 flex items-center justify-center text-[#0B1E38] dark:text-white group-hover:scale-110 transition-transform">
+                <Play className="h-2 w-2 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 fill-[#0B1E38] dark:fill-white" />
               </div>
               <span className="font-medium">Watch Film</span>
             </Button>
@@ -261,7 +261,7 @@ export function HeroSection() {
         </div>
 
         {/* 6. Editorial Tagline: PEOPLE • PLACES • PRECIOUS STORIES */}
-        <div className="pt-1 sm:pt-2.5 text-[9.5px] sm:text-xs tracking-[0.24em] sm:tracking-[0.28em] uppercase text-[#8C7A5B] dark:text-[#D4B98E] font-medium font-sans select-none drop-shadow-xs">
+        <div className="pt-0.5 sm:pt-2.5 text-[8.5px] sm:text-xs tracking-[0.22em] sm:tracking-[0.28em] uppercase text-[#8C7A5B] dark:text-[#D4B98E] font-medium font-sans select-none drop-shadow-xs">
           {storiesTagline}
         </div>
       </div>
