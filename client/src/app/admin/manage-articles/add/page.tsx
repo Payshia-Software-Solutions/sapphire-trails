@@ -41,6 +41,7 @@ import {
   saveStoredArticles,
   createArticleApi
 } from '@/lib/articles-data';
+import { uploadCmsImage } from '@/lib/site-content';
 
 const PRESET_AVATARS = [
   {
@@ -123,6 +124,9 @@ export default function AddArticlePage() {
   const [isCodeView, setIsCodeView] = useState(false);
   const editorRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editorFileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingEditorImage, setIsUploadingEditorImage] = useState(false);
 
   // Duplicate slug check
   const isDuplicateSlug = getStoredArticles().some(a => a.slug === articleSlug);
@@ -142,8 +146,8 @@ export default function AddArticlePage() {
     }
   };
 
-  // Image Upload Handler
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Image Upload Handler (Uploads to FTP CDN as WebP)
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -156,17 +160,69 @@ export default function AddArticlePage() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        setImageUrl(event.target.result as string);
+    setIsUploadingImage(true);
+    try {
+      const res = await uploadCmsImage(file, 'articles');
+      if (res.success && res.url) {
+        setImageUrl(res.url);
         toast({
-          title: '✨ Image Uploaded',
-          description: `${file.name} is ready for publishing.`,
+          title: '✨ Image Uploaded to CDN',
+          description: `${file.name} converted to WebP and uploaded to FTP successfully.`,
         });
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err: any) {
+      console.error('Image upload failed:', err);
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: err.message || 'Failed to upload image to FTP server.',
+      });
+    } finally {
+      setIsUploadingImage(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  // Inline Editor Image Upload Handler
+  const handleEditorImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid File',
+        description: 'Please upload an image file (JPG, PNG, WEBP).',
+      });
+      return;
+    }
+
+    setIsUploadingEditorImage(true);
+    try {
+      const res = await uploadCmsImage(file, 'articles');
+      if (res.success && res.url) {
+        const imgTag = `<img src="${res.url}" alt="${file.name.replace(/\.[^/.]+$/, "")}" class="rounded-xl shadow-md my-4 max-w-full h-auto" />`;
+        if (editorRef.current) {
+          editorRef.current.focus();
+          document.execCommand('insertHTML', false, imgTag);
+          setContentHtml(editorRef.current.innerHTML);
+        }
+        toast({
+          title: '✨ Image Inserted',
+          description: 'Image uploaded to FTP CDN and inserted into article.',
+        });
+      }
+    } catch (err: any) {
+      console.error('Editor image upload failed:', err);
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: err.message || 'Failed to upload image to FTP server.',
+      });
+    } finally {
+      setIsUploadingEditorImage(false);
+      if (e.target) e.target.value = '';
+    }
   };
 
   const handleAddTakeaway = () => {
@@ -301,7 +357,7 @@ export default function AddArticlePage() {
 
         <Button 
           onClick={handleSave} 
-          disabled={isSubmitting || isDuplicateSlug} 
+          disabled={isSubmitting || isDuplicateSlug || isUploadingImage || isUploadingEditorImage} 
           className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full px-7 h-10 text-xs gap-2 shadow-lg"
         >
           {isSubmitting ? (
@@ -484,6 +540,25 @@ export default function AddArticlePage() {
                 >
                   <Link2 className="h-3.5 w-3.5" /> Add Link
                 </Button>
+                <span className="h-4 w-[1px] bg-border mx-1" />
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="sm" 
+                  disabled={isUploadingEditorImage}
+                  onClick={() => editorFileInputRef.current?.click()} 
+                  className="h-8 px-2.5 text-xs gap-1 text-primary hover:bg-primary/10"
+                >
+                  {isUploadingEditorImage ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <ImageIcon className="h-3.5 w-3.5" />}
+                  {isUploadingEditorImage ? 'Uploading...' : 'Insert Photo'}
+                </Button>
+                <input
+                  type="file"
+                  ref={editorFileInputRef}
+                  onChange={handleEditorImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
               </div>
             )}
 
@@ -546,7 +621,13 @@ export default function AddArticlePage() {
             <CardContent className="space-y-4 text-xs">
               
               {/* Image Preview Box */}
-              {imageUrl ? (
+              {isUploadingImage ? (
+                <div className="border-2 border-dashed border-primary/60 rounded-xl p-8 text-center bg-primary/5 flex flex-col items-center justify-center gap-2">
+                  <LoaderCircle className="h-8 w-8 text-primary animate-spin" />
+                  <p className="font-semibold text-foreground text-xs">Uploading & Converting to WebP...</p>
+                  <p className="text-[10px] text-muted-foreground">Uploading directly to FTP Server CDN</p>
+                </div>
+              ) : imageUrl ? (
                 <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-border shadow-md group">
                   <Image
                     src={imageUrl}
@@ -577,7 +658,7 @@ export default function AddArticlePage() {
                   </div>
                   <div>
                     <p className="font-semibold text-foreground">Click to upload image</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">JPG, PNG, or WEBP (Max 10MB)</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">JPG, PNG, or WEBP (Direct FTP Upload)</p>
                   </div>
                 </div>
               )}
