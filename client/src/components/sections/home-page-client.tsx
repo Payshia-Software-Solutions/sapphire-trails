@@ -3,6 +3,7 @@
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { HeroSection } from '@/components/sections/hero-section';
+import { MineDescentSection } from '@/components/sections/mine-descent-section';
 import { JourneySection } from '@/components/sections/journey-section';
 import { DiscoverSection } from '@/components/sections/discover-section';
 import { ToursSection } from '@/components/sections/tours-section';
@@ -29,14 +30,19 @@ export function HomePageClient({ initialTours = [] }: HomePageClientProps) {
     <div className="bg-background flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        {/* 1. Hero Cinematic Video Banner */}
+        {/* 1. Unified Mobile Hero Split Screen (Hero + Mine Section in 1 Viewport) & Desktop Cinematic Banners */}
         {vis.hero !== false && (
-          <div className={getSectionThemeClass(sty.hero)}>
-            <HeroSection />
+          <div className="w-full flex flex-col lg:contents h-[calc(100svh-56px)] sm:h-[calc(100svh-64px)] lg:h-auto">
+            <div className="flex-1 lg:contents flex flex-col min-h-0">
+              <HeroSection />
+            </div>
+            <div className="flex-1 lg:contents flex flex-col min-h-0">
+              <MineDescentSection />
+            </div>
           </div>
         )}
 
-        {/* 2. Key Heritage Numbers & Authority Stats */}
+        {/* 3. Key Heritage Numbers & Authority Stats */}
         {vis.stats !== false && (
           <div className={getSectionThemeClass(sty.stats)}>
             <StatsSection />

@@ -6,6 +6,13 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (min-width: 1024px) {
+  .desktop-full-viewport-section {
+    min-height: calc(100vh - var(--header-height, 115px));
+    height: calc(100vh - var(--header-height, 115px));
+  }
+}
+
 @layer base {
   :root {
     --header-height: 115px;

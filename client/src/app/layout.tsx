@@ -1,7 +1,7 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import { Cinzel, Montserrat, Poppins } from 'next/font/google';
+import { Cinzel, Montserrat, Poppins, Playfair_Display } from 'next/font/google';
 import { cn, API_BASE_URL } from '@/lib/utils';
 import { LayoutProvider } from '@/components/layout-provider';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
@@ -34,6 +34,12 @@ const cinzel = Cinzel({
 const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-montserrat',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
   display: 'swap',
 });
 
@@ -268,7 +274,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="en" className={cn("light", cinzel.variable, montserrat.variable, poppins.variable)} suppressHydrationWarning>
+    <html lang="en" className={cn("light", cinzel.variable, montserrat.variable, poppins.variable, playfair.variable)} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
