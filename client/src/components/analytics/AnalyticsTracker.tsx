@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 import { API_BASE_URL } from '@/lib/utils';
-import { type AnalyticsConfig, trackPageView } from '@/lib/analytics';
+import { type AnalyticsConfig, trackPageView, setAnalyticsRuntimeConfig } from '@/lib/analytics';
 
 interface AnalyticsTrackerProps {
   initialConfig?: AnalyticsConfig | null;
@@ -13,8 +13,12 @@ interface AnalyticsTrackerProps {
 const DEFAULT_ANALYTICS_CONFIG: AnalyticsConfig = {
   google_analytics_id: 'G-TX702Y4CLS',
   meta_pixel_id: '',
+  gtm_id: '',
+  google_ads_id: '',
+  google_ads_conversion_label: '',
   is_ga_enabled: true,
   is_pixel_enabled: false,
+  is_gads_enabled: false,
   exclude_admin_traffic: true,
   enable_ecommerce_events: true,
 };
@@ -25,24 +29,31 @@ export function AnalyticsTracker({ initialConfig }: AnalyticsTrackerProps = {}) 
   const [isPixelInitialized, setIsPixelInitialized] = useState(false);
   const prevPathRef = useRef<string>('');
 
-  // 1. Fetch live analytics configuration from Backend ONLY if not provided via SSR
+  // 1. Fetch live analytics configuration from Backend to ensure fresh config even if SSR was cached
   useEffect(() => {
-    if (initialConfig) {
-      return;
-    }
     async function loadConfig() {
       try {
         const res = await fetch(`${API_BASE_URL}/analytics/config/`);
         if (res.ok) {
           const data = await res.json();
           setConfig(data);
+          setAnalyticsRuntimeConfig(data);
         }
       } catch (e) {
-        setConfig(DEFAULT_ANALYTICS_CONFIG);
+        if (!initialConfig) {
+          setConfig(DEFAULT_ANALYTICS_CONFIG);
+          setAnalyticsRuntimeConfig(DEFAULT_ANALYTICS_CONFIG);
+        }
       }
     }
     loadConfig();
   }, [initialConfig]);
+
+  useEffect(() => {
+    if (config) {
+      setAnalyticsRuntimeConfig(config);
+    }
+  }, [config]);
 
   // 2. Initialize Meta Pixel when Pixel ID is present and enabled
   useEffect(() => {
@@ -105,27 +116,29 @@ export function AnalyticsTracker({ initialConfig }: AnalyticsTrackerProps = {}) 
   const isAdmin = pathname.startsWith('/admin');
   const shouldSkipTracking = isAdmin && config.exclude_admin_traffic;
 
+  const hasGa = Boolean(config.is_ga_enabled && config.google_analytics_id);
+  const hasGads = Boolean(config.is_gads_enabled && config.google_ads_id);
+  const primaryGtagId = hasGa ? config.google_analytics_id : (hasGads ? config.google_ads_id : '');
+
   return (
     <>
-      {/* Google Analytics 4 Script (Deferred to idle time for blazing fast main-thread execution) */}
-      {config.is_ga_enabled && config.google_analytics_id && !shouldSkipTracking && (
+      {/* Google Tag Script (GA4 & Google Ads) */}
+      {(hasGa || hasGads) && primaryGtagId && !shouldSkipTracking && (
         <>
           <Script
             strategy="lazyOnload"
-            src={`https://www.googletagmanager.com/gtag/js?id=${config.google_analytics_id}`}
+            src={`https://www.googletagmanager.com/gtag/js?id=${primaryGtagId}`}
           />
           <Script
-            id="google-analytics-init"
+            id="google-tag-init"
             strategy="lazyOnload"
             dangerouslySetInnerHTML={{
               __html: `
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${config.google_analytics_id}', {
-                  page_path: window.location.pathname,
-                  send_page_view: false
-                });
+                ${hasGa ? `gtag('config', '${config.google_analytics_id}', { page_path: window.location.pathname, send_page_view: false });` : ''}
+                ${hasGads ? `gtag('config', '${config.google_ads_id}');` : ''}
               `,
             }}
           />

@@ -22,7 +22,8 @@ import {
   Zap,
   Activity,
   Layers,
-  HelpCircle
+  HelpCircle,
+  Target
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
@@ -37,8 +38,11 @@ export default function AdminAnalyticsPage() {
   const [googleAnalyticsId, setGoogleAnalyticsId] = useState('');
   const [metaPixelId, setMetaPixelId] = useState('');
   const [gtmId, setGtmId] = useState('');
+  const [googleAdsId, setGoogleAdsId] = useState('');
+  const [googleAdsConversionLabel, setGoogleAdsConversionLabel] = useState('');
   const [isGaEnabled, setIsGaEnabled] = useState(true);
   const [isPixelEnabled, setIsPixelEnabled] = useState(false);
+  const [isGadsEnabled, setIsGadsEnabled] = useState(false);
   const [excludeAdminTraffic, setExcludeAdminTraffic] = useState(true);
   const [enableEcommerceEvents, setEnableEcommerceEvents] = useState(true);
 
@@ -56,8 +60,11 @@ export default function AdminAnalyticsPage() {
           setGoogleAnalyticsId(data.google_analytics_id || '');
           setMetaPixelId(data.meta_pixel_id || '');
           setGtmId(data.gtm_id || '');
+          setGoogleAdsId(data.google_ads_id || '');
+          setGoogleAdsConversionLabel(data.google_ads_conversion_label || '');
           setIsGaEnabled(Boolean(data.is_ga_enabled));
           setIsPixelEnabled(Boolean(data.is_pixel_enabled));
+          setIsGadsEnabled(Boolean(data.is_gads_enabled));
           setExcludeAdminTraffic(data.exclude_admin_traffic !== undefined ? Boolean(data.exclude_admin_traffic) : true);
           setEnableEcommerceEvents(data.enable_ecommerce_events !== undefined ? Boolean(data.enable_ecommerce_events) : true);
         }
@@ -78,8 +85,11 @@ export default function AdminAnalyticsPage() {
         google_analytics_id: googleAnalyticsId.trim(),
         meta_pixel_id: metaPixelId.trim(),
         gtm_id: gtmId.trim(),
+        google_ads_id: googleAdsId.trim(),
+        google_ads_conversion_label: googleAdsConversionLabel.trim(),
         is_ga_enabled: isGaEnabled,
         is_pixel_enabled: isPixelEnabled,
+        is_gads_enabled: isGadsEnabled,
         exclude_admin_traffic: excludeAdminTraffic,
         enable_ecommerce_events: enableEcommerceEvents,
       };
@@ -94,7 +104,7 @@ export default function AdminAnalyticsPage() {
 
       toast({
         title: '✨ Analytics Configuration Saved',
-        description: 'Google Analytics and Meta Pixel settings have been updated.',
+        description: 'Tracking IDs (GA4, Google Ads, Meta Pixel) have been saved to production.',
       });
     } catch (e) {
       toast({
@@ -173,6 +183,17 @@ export default function AdminAnalyticsPage() {
             </Badge>
           )}
 
+          {isGadsEnabled && googleAdsId ? (
+            <Badge className="bg-amber-600/15 text-amber-500 border border-amber-500/30 text-xs py-1 px-2.5">
+              <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
+              Google Ads Active
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="text-muted-foreground text-xs py-1 px-2.5">
+              Google Ads Disabled
+            </Badge>
+          )}
+
           {isPixelEnabled && metaPixelId ? (
             <Badge className="bg-blue-600/15 text-blue-400 border border-blue-500/30 text-xs py-1 px-2.5">
               <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
@@ -225,13 +246,65 @@ export default function AdminAnalyticsPage() {
                     className="font-mono text-xs h-9 uppercase"
                   />
                   <p className="text-[11px] text-muted-foreground">
-                    Found in Google Analytics ➔ Admin ➔ Data Streams ➔ Measurement ID.
+                    Found in Google Analytics ➔ Admin ➔ Data Streams ➔ Measurement ID (starts with <code>G-</code>).
                   </p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* 2. Meta (Facebook) Pixel Card */}
+            {/* 2. Google Ads (AdWords) Conversion Tracking */}
+            <Card className="border-border shadow-sm">
+              <CardHeader className="pb-4 border-b border-border/50 flex flex-row items-center justify-between">
+                <div className="space-y-1">
+                  <CardTitle className="text-base font-semibold flex items-center gap-2 text-foreground">
+                    <Target className="h-5 w-5 text-amber-500" />
+                    Google Ads Conversion Tracking
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Track Google Ads clicks, campaign conversion events, and customer bookings.
+                  </CardDescription>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="gads-toggle" className="text-xs cursor-pointer font-medium">
+                    {isGadsEnabled ? 'Enabled' : 'Disabled'}
+                  </Label>
+                  <Switch
+                    id="gads-toggle"
+                    checked={isGadsEnabled}
+                    onCheckedChange={setIsGadsEnabled}
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4 space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Google Ads Conversion ID (Tag ID) *</Label>
+                  <Input
+                    placeholder="e.g. AW-651362947"
+                    value={googleAdsId}
+                    onChange={e => setGoogleAdsId(e.target.value)}
+                    className="font-mono text-xs h-9 uppercase"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Your Google Ads account conversion ID (starts with <code>AW-</code>).
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Conversion Action / Event Label (Purchase)</Label>
+                  <Input
+                    placeholder="e.g. 6tHFCKe1-5MdEIOFzLYC or AW-651362947/6tHFCKe1-5MdEIOFzLYC"
+                    value={googleAdsConversionLabel}
+                    onChange={e => setGoogleAdsConversionLabel(e.target.value)}
+                    className="font-mono text-xs h-9"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    From your Google Ads conversion event snippet (<code>send_to</code> parameter). Dispatched automatically when a booking is placed.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 3. Meta (Facebook) Pixel Card */}
             <Card className="border-border shadow-sm">
               <CardHeader className="pb-4 border-b border-border/50 flex flex-row items-center justify-between">
                 <div className="space-y-1">
@@ -270,7 +343,7 @@ export default function AdminAnalyticsPage() {
               </CardContent>
             </Card>
 
-            {/* 3. Google Tag Manager (Optional) */}
+            {/* 4. Google Tag Manager (Optional) */}
             <Card className="border-border shadow-sm">
               <CardHeader className="pb-4 border-b border-border/50">
                 <CardTitle className="text-base font-semibold flex items-center gap-2 text-foreground">
@@ -294,7 +367,7 @@ export default function AdminAnalyticsPage() {
               </CardContent>
             </Card>
 
-            {/* 4. Privacy & Filter Controls */}
+            {/* 5. Privacy & Filter Controls */}
             <Card className="border-border shadow-sm">
               <CardHeader className="pb-3 border-b border-border/50">
                 <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -431,7 +504,7 @@ export default function AdminAnalyticsPage() {
                   Live Event Testing
                 </CardTitle>
                 <CardDescription className="text-[11px]">
-                  Dispatch test events to test with Meta Pixel Helper or GA Debugger.
+                  Dispatch test events to test with Meta Pixel Helper, GA Debugger, or Google Tag Assistant.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-3 space-y-2">
