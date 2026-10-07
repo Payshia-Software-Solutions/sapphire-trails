@@ -13,7 +13,7 @@ import { SiteContentProvider } from '@/contexts/site-content-context';
 async function fetchAnalyticsConfigServer(): Promise<AnalyticsConfig | null> {
   try {
     const res = await fetch(`${API_BASE_URL}/analytics/config/`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 60 },
       headers: { Accept: 'application/json' },
     });
     if (res.ok) {

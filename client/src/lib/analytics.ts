@@ -14,10 +14,30 @@ export interface AnalyticsConfig {
   google_analytics_id?: string;
   meta_pixel_id?: string;
   gtm_id?: string;
+  google_ads_id?: string;
+  google_ads_conversion_label?: string;
   is_ga_enabled: boolean;
   is_pixel_enabled: boolean;
+  is_gads_enabled?: boolean;
   exclude_admin_traffic: boolean;
   enable_ecommerce_events: boolean;
+}
+
+let activeRuntimeConfig: AnalyticsConfig | null = null;
+
+export function setAnalyticsRuntimeConfig(config: AnalyticsConfig) {
+  activeRuntimeConfig = config;
+  if (typeof window !== 'undefined') {
+    (window as any).__sapphire_analytics_config = config;
+  }
+}
+
+export function getAnalyticsRuntimeConfig(): AnalyticsConfig | null {
+  if (activeRuntimeConfig) return activeRuntimeConfig;
+  if (typeof window !== 'undefined' && (window as any).__sapphire_analytics_config) {
+    return (window as any).__sapphire_analytics_config;
+  }
+  return null;
 }
 
 /**
@@ -157,6 +177,25 @@ export function trackBookingSuccess(params: {
         },
       ],
     });
+
+    // Google Ads (Conversion Event Snippet: AW-XXXXX/label)
+    const runtimeConfig = getAnalyticsRuntimeConfig();
+    if (
+      runtimeConfig?.is_gads_enabled &&
+      runtimeConfig?.google_ads_id
+    ) {
+      const rawLabel = (runtimeConfig.google_ads_conversion_label || '').trim();
+      const sendTo = rawLabel.includes('/')
+        ? rawLabel
+        : (rawLabel ? `${runtimeConfig.google_ads_id.trim()}/${rawLabel}` : runtimeConfig.google_ads_id.trim());
+
+      window.gtag('event', 'conversion', {
+        send_to: sendTo,
+        value: value,
+        currency: currency,
+        transaction_id: String(params.bookingId || ''),
+      });
+    }
   }
 
   // Meta Pixel (Schedule & Purchase)
