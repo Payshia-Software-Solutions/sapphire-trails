@@ -14,12 +14,13 @@ interface Stat {
 const defaultIcons = [Users, Award, ShieldCheck, Gem];
 
 const StatCounter = ({ stat }: { stat: Stat }) => {
-    const [count, setCount] = useState(0);
-    const ref = useRef<HTMLDivElement>(null);
-    const hasAnimated = useRef(false);
-
     const endValue = parseInt(stat.value.replace(/[^0-9]/g, '')) || 0;
     const suffix = stat.value.replace(/[0-9,]/g, '');
+
+    // Default to the full real value so SSR, Googlebot, and SEO crawlers index the real numbers, never 0
+    const [count, setCount] = useState<number>(endValue);
+    const hasAnimated = useRef(false);
+    const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -42,11 +43,14 @@ const StatCounter = ({ stat }: { stat: Stat }) => {
                             setCount(endValue);
                         }
                     };
+
+                    // Reset to 0 and run the visual count-up animation for human visitors
+                    setCount(0);
                     requestAnimationFrame(animateCount);
                     observer.disconnect();
                 }
             },
-            { threshold: 0.5 } // Start when 50% of the element is visible
+            { threshold: 0.3 }
         );
 
         const currentRef = ref.current;
@@ -64,9 +68,11 @@ const StatCounter = ({ stat }: { stat: Stat }) => {
     const Icon = stat.icon;
     return (
         <div ref={ref} className="flex flex-col items-center gap-1 sm:gap-1.5 px-1 sm:px-2">
-            <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-[#0B1E38] dark:text-blue-300 shrink-0" />
+            <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-[#0B1E38] dark:text-blue-300 shrink-0" aria-hidden="true" />
             <p className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-sans font-bold text-foreground tracking-tight">
-                {count.toLocaleString()}{suffix}
+                {/* Search engine crawlers and screen readers always get the verified stat value */}
+                <span className="sr-only">{stat.value}</span>
+                <span aria-hidden="true">{count.toLocaleString()}{suffix}</span>
             </p>
             <p className="text-xs sm:text-[13px] text-muted-foreground font-sans max-w-[170px] mx-auto leading-snug font-normal">
                 {stat.label}

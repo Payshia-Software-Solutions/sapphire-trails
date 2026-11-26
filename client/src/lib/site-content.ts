@@ -1,6 +1,7 @@
 import { API_BASE_URL } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
 import { triggerRevalidation } from '@/lib/revalidate';
+import { type ReviewItem, initialReviews } from './reviews-data';
 
 export type BannerTemplate = 'luxury_gold' | 'sapphire_blue' | 'minimal_editorial' | 'image_spotlight';
 export type BannerDisplayType = 'modal' | 'top_bar' | 'bottom_toast';
@@ -58,6 +59,21 @@ export interface SiteContentData {
       cornerLeftText?: string;
       cornerCenterText?: string;
       cornerRightText?: string;
+      mountainImageUrl?: string;
+      storiesTagline?: string;
+      mineSection?: {
+        enabled?: boolean;
+        tagline?: string;
+        heading?: string;
+        description?: string;
+        imageUrl?: string;
+        ctaText?: string;
+        ctaLink?: string;
+        features?: Array<{
+          icon: string;
+          title: string;
+        }>;
+      };
     };
     stats: Array<{
       value: string;
@@ -96,6 +112,7 @@ export interface SiteContentData {
       heading: string;
       subtitle: string;
     };
+    reviews?: ReviewItem[];
     exploreHeader: {
       tagline: string;
       heading: string;
@@ -472,19 +489,35 @@ export const defaultSiteContent: SiteContentData = {
 
   homepage: {
     hero: {
-      tagline: 'THE OFFICIAL SRI LANKA GEM MINE TOUR • RATNAPURA (RATHNAPURA)',
+      tagline: 'THE SRI LANKAN GEM MINE TOUR • RATNAPURA',
       headlineLine1: 'Sri Lanka Gem Mine Tour',
       headlineLine2: 'AN EXCLUSIVE LUXURY EXPERIENCE',
-      subheadline: "Discover the world's finest Ceylon sapphires with Sri Lanka's premier luxury gem mining tour. Experience active pit descent, traditional gem washing, and private excursions led by licensed gemologists.",
+      subheadline: 'Experience authentic Ceylon gem mining in Ratnapura (Rathnapura) Sri Lanka. Descend into real traditional timber gem pits, try river bed gem washing (illam), and explore bustling street gem markets led by certified local gemologists.',
       ctaPrimaryText: 'Book Your Experience',
       ctaSecondaryText: 'Explore Packages',
       videoUrl: 'https://content-provider.payshia.com/sapphire-trail/hero/hero-video-sapphire-trail.webm',
       posterImageUrl: 'https://content-provider.payshia.com/sapphire-trail/images/img35.webp',
       heroMode: 'editorial_image',
       gemImageUrl: '/img/hero-sapphire-gem.png',
+      mountainImageUrl: '/img/hero-misty-mountains.jpg',
+      storiesTagline: 'PEOPLE • PLACES • PRECIOUS STORIES',
       cornerLeftText: 'SAPPHIRE TRAILS • RATNAPURA',
       cornerCenterText: 'SRI LANKA',
       cornerRightText: '01 / PRIVATE EXPEDITIONS',
+      mineSection: {
+        enabled: true,
+        tagline: 'DESCEND BENEATH RATNAPURA',
+        heading: "Where Sri Lanka's sapphires begin.",
+        description: "Join local miners and expert gemologists for a hands-on journey into Sri Lanka's rich gem mining heritage.",
+        imageUrl: '/img/gem-mine-descent.jpg',
+        ctaText: 'DISCOVER THE EXPERIENCE',
+        ctaLink: '#tours',
+        features: [
+          { icon: 'gem', title: 'AUTHENTIC EXPERIENCES' },
+          { icon: 'users', title: 'EXPERT GUIDANCE' },
+          { icon: 'leaf', title: 'SUSTAINABLE TOURISM' },
+        ],
+      },
     },
     stats: [
       { value: '5,000+', label: 'Happy Guests' },
@@ -606,6 +639,7 @@ export const defaultSiteContent: SiteContentData = {
       heading: 'What Discerning Travelers Say',
       subtitle: 'Read authentic impressions from international collectors, couples, and adventurers who explored the mines with us.'
     },
+    reviews: initialReviews,
     exploreHeader: {
       tagline: 'Beyond The Mining Pits',
       heading: 'Explore Ratnapura & Surrounding Wonders',
@@ -1320,6 +1354,7 @@ export function mergeHomepageContent(parsedHomepage?: any) {
     discover: { ...d.discover, ...(parsedHomepage.discover || {}) },
     toursHeader: { ...d.toursHeader, ...(parsedHomepage.toursHeader || {}) },
     reviewsHeader: { ...d.reviewsHeader, ...(parsedHomepage.reviewsHeader || {}) },
+    reviews: Array.isArray(parsedHomepage.reviews) ? parsedHomepage.reviews : (d.reviews || []),
     exploreHeader: { ...d.exploreHeader, ...(parsedHomepage.exploreHeader || {}) },
     faqHeader: { ...d.faqHeader, ...(parsedHomepage.faqHeader || {}) },
     articlesHeader: { ...d.articlesHeader, ...(parsedHomepage.articlesHeader || {}) },

@@ -14,7 +14,7 @@ export default {
         headline: ['var(--font-poppins)', 'sans-serif'],
         sans: ['var(--font-poppins)', 'sans-serif'],
         brand: ['var(--font-cinzel)', 'serif'],
-        serif: ['var(--font-poppins)', 'sans-serif'],
+        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
         code: ['monospace'],
       },
       letterSpacing: {

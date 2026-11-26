@@ -234,17 +234,22 @@ export function ToursSection({ initialTours = [] }: ToursSectionProps) {
 
             {/* Mobile Carousel Indicator Dots */}
             {tours.length > 1 && (
-              <div className="flex justify-center items-center gap-1.5 pt-4">
+              <div className="flex justify-center items-center gap-1 pt-4">
                 {tours.map((_, i) => (
                   <button
                     key={i}
+                    type="button"
                     onClick={() => emblaApi?.scrollTo(i)}
-                    className={cn(
-                      "h-1.5 rounded-full transition-all duration-300",
-                      selectedIndex === i ? "w-6 bg-[#0B1E38] dark:bg-blue-300" : "w-1.5 bg-muted-foreground/30"
-                    )}
-                    aria-label={`Go to slide ${i + 1}`}
-                  />
+                    className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
+                    aria-label={`Go to tour slide ${i + 1}`}
+                  >
+                    <span
+                      className={cn(
+                        "h-1.5 rounded-full transition-all duration-300 block",
+                        selectedIndex === i ? "w-6 bg-[#0B1E38] dark:bg-blue-300" : "w-1.5 bg-muted-foreground/40"
+                      )}
+                    />
+                  </button>
                 ))}
               </div>
             )}

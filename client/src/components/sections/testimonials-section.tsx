@@ -14,18 +14,34 @@ import {
   Award
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { type ReviewItem, getStoredReviews } from '@/lib/reviews-data';
+import { type ReviewItem, getStoredReviews, REVIEWS_CHANGE_EVENT } from '@/lib/reviews-data';
 import { useSiteContent } from '@/lib/site-content';
 
 export function TestimonialsSection() {
   const { content } = useSiteContent();
   const reviewsHeader = content.homepage.reviewsHeader;
-  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  
+  const serverReviews = content.homepage?.reviews;
+  const initialData = Array.isArray(serverReviews) ? serverReviews : getStoredReviews();
+  const [reviews, setReviews] = useState<ReviewItem[]>(() => initialData.filter(r => r.status === 'published'));
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
 
   useEffect(() => {
+    if (Array.isArray(content.homepage?.reviews)) {
+      setReviews(content.homepage.reviews.filter(r => r.status === 'published'));
+      return;
+    }
     const loaded = getStoredReviews();
     setReviews(loaded.filter(r => r.status === 'published'));
+  }, [content.homepage?.reviews]);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const loaded = getStoredReviews();
+      setReviews(loaded.filter(r => r.status === 'published'));
+    };
+    window.addEventListener(REVIEWS_CHANGE_EVENT, handleStorageChange);
+    return () => window.removeEventListener(REVIEWS_CHANGE_EVENT, handleStorageChange);
   }, []);
 
   const scrollPrev = React.useCallback(() => {
@@ -36,7 +52,11 @@ export function TestimonialsSection() {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
-  const displayReviews = reviews.length > 0 ? reviews : getStoredReviews();
+  const displayReviews = reviews;
+
+  if (displayReviews.length === 0) {
+    return null;
+  }
 
   return (
     <section className="w-full bg-background-alt py-16 md:py-28 relative overflow-hidden">
@@ -142,19 +162,21 @@ export function TestimonialsSection() {
           {/* Navigation Controls */}
           <div className="flex items-center justify-center gap-3 mt-8">
             <Button
+              type="button"
               variant="outline"
               size="icon"
               onClick={scrollPrev}
-              className="h-9 w-9 rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+              className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors flex items-center justify-center shadow-xs"
               aria-label="Previous review"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <Button
+              type="button"
               variant="outline"
               size="icon"
               onClick={scrollNext}
-              className="h-9 w-9 rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+              className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full border-border hover:border-[#0B1E38] hover:bg-[#0B1E38]/10 hover:text-[#0B1E38] dark:hover:border-white/30 dark:hover:bg-white/10 dark:hover:text-white transition-colors flex items-center justify-center shadow-xs"
               aria-label="Next review"
             >
               <ArrowRight className="h-4 w-4" />

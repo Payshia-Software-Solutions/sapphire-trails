@@ -28,7 +28,8 @@ import {
   FileText
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
-import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
+import { getWhatsappUrl } from '@/lib/site-content';
+import { useSiteContent } from '@/contexts/site-content-context';
 import { API_BASE_URL } from '@/lib/utils';
 import { trackBookingSuccess } from '@/lib/analytics';
 import { type Booking } from '@/lib/bookings-data';

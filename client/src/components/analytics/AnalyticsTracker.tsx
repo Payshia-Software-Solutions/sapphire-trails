@@ -107,16 +107,16 @@ export function AnalyticsTracker({ initialConfig }: AnalyticsTrackerProps = {}) 
 
   return (
     <>
-      {/* Google Analytics 4 Script (Conditional based on admin settings) */}
+      {/* Google Analytics 4 Script (Deferred to idle time for blazing fast main-thread execution) */}
       {config.is_ga_enabled && config.google_analytics_id && !shouldSkipTracking && (
         <>
           <Script
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             src={`https://www.googletagmanager.com/gtag/js?id=${config.google_analytics_id}`}
           />
           <Script
             id="google-analytics-init"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             dangerouslySetInnerHTML={{
               __html: `
                 window.dataLayer = window.dataLayer || [];
@@ -132,11 +132,11 @@ export function AnalyticsTracker({ initialConfig }: AnalyticsTrackerProps = {}) 
         </>
       )}
 
-      {/* Google Tag Manager (if configured) */}
+      {/* Google Tag Manager (Deferred to idle time) */}
       {config.gtm_id && !shouldSkipTracking && (
         <Script
           id="google-tag-manager"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

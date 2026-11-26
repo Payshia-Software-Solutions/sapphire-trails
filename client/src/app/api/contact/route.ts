@@ -6,6 +6,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, email, phone, message, tourInterest } = body;
 
+    if (!name || !email || !phone || !phone.trim() || !message) {
+      return NextResponse.json({ error: 'Name, email, phone number, and message are required.' }, { status: 400 });
+    }
+
     // Delegate saving and email delivery directly to the PHP Backend Mailer
     const phpResponse = await fetch(`${API_BASE_URL}/contacts`, {
       method: 'POST',

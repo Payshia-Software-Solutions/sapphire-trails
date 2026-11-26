@@ -111,23 +111,23 @@ export function Footer() {
                    {footer.partnerTagline || 'Our Hospitality Partner for Luxury Gem Tours.'}
                  </p>
                </div>
-               <div className="flex items-center gap-4 mt-2">
-                 {footer.facebookUrl && (
-                   <Link href={footer.facebookUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Sapphire Trails Facebook">
-                     <Facebook className="h-5 w-5" />
-                   </Link>
-                 )}
-                 {footer.instagramUrl && (
-                   <Link href={footer.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Sapphire Trails Instagram">
-                     <Instagram className="h-5 w-5" />
-                   </Link>
-                 )}
-                 {footer.youtubeUrl && (
-                   <Link href={footer.youtubeUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Sapphire Trails YouTube">
-                     <Youtube className="h-5 w-5" />
-                   </Link>
-                 )}
-               </div>
+                <div className="flex items-center gap-2 mt-2">
+                  {footer.facebookUrl && (
+                    <Link href={footer.facebookUrl} target="_blank" rel="noopener noreferrer" className="p-2.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors" aria-label="Sapphire Trails Facebook">
+                      <Facebook className="h-5 w-5" />
+                    </Link>
+                  )}
+                  {footer.instagramUrl && (
+                    <Link href={footer.instagramUrl} target="_blank" rel="noopener noreferrer" className="p-2.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors" aria-label="Sapphire Trails Instagram">
+                      <Instagram className="h-5 w-5" />
+                    </Link>
+                  )}
+                  {footer.youtubeUrl && (
+                    <Link href={footer.youtubeUrl} target="_blank" rel="noopener noreferrer" className="p-2.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors" aria-label="Sapphire Trails YouTube">
+                      <Youtube className="h-5 w-5" />
+                    </Link>
+                  )}
+                </div>
             </div>
           )}
 

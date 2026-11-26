@@ -83,17 +83,21 @@ export const initialReviews: ReviewItem[] = [
 ];
 
 const REVIEWS_STORAGE_KEY = 'sapphire_trails_reviews_v1';
+export const REVIEWS_CHANGE_EVENT = 'sapphire_trails_reviews_changed';
 
 export function getStoredReviews(): ReviewItem[] {
   if (typeof window === 'undefined') return initialReviews;
   try {
     const raw = localStorage.getItem(REVIEWS_STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(initialReviews));
-      return initialReviews;
+    if (raw !== null) {
+      const parsed = JSON.parse(raw);
+      // Return stored array even if user deleted items down to 0!
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
     }
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : initialReviews;
+    localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(initialReviews));
+    return initialReviews;
   } catch {
     return initialReviews;
   }
@@ -103,6 +107,7 @@ export function saveStoredReviews(reviews: ReviewItem[]): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(reviews));
+    window.dispatchEvent(new CustomEvent(REVIEWS_CHANGE_EVENT, { detail: reviews }));
   } catch (e) {
     console.error('Failed to save reviews to localStorage', e);
   }

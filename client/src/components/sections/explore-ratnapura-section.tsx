@@ -118,10 +118,20 @@ export function ExploreRatnapuraSection() {
                 ))}
               </div>
             </div>
-            <Button onClick={scrollPrev} className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
+            <Button 
+              type="button"
+              onClick={scrollPrev} 
+              aria-label="Previous attraction"
+              className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 min-h-[44px] min-w-[44px] p-0 bg-background/70 hover:bg-background/90 border border-border/40 text-foreground z-10 flex items-center justify-center shadow-md"
+            >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <Button onClick={scrollNext} className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 p-0 bg-background/50 hover:bg-background/80 border-0 text-foreground z-10">
+            <Button 
+              type="button"
+              onClick={scrollNext} 
+              aria-label="Next attraction"
+              className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 min-h-[44px] min-w-[44px] p-0 bg-background/70 hover:bg-background/90 border border-border/40 text-foreground z-10 flex items-center justify-center shadow-md"
+            >
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>

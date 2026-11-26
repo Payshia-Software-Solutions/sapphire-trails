@@ -52,15 +52,56 @@ export default async function CustomProposalPackagePage() {
     "@type": "Product",
     "name": prop.hero?.title || "Custom Proposal & Bespoke Ring Package",
     "description": prop.hero?.subtitle || "Embark on a private VIP gem mine tour in Ratnapura, select your certified Ceylon sapphire directly at the source, and receive your handcrafted engagement ring in 5 working days.",
+    "image": [
+      prop.overview?.image || "https://content-provider.payshia.com/sapphire-trail/images/tour-7-optimized.webp"
+    ],
+    "url": "https://sapphiretrails.lk/custom-proposal-package",
+    "sku": "ST-PROPOSAL-VIP",
     "brand": {
       "@type": "Brand",
       "name": "Sapphire Trails"
     },
     "offers": {
       "@type": "AggregateOffer",
+      "lowPrice": "850",
+      "highPrice": "4500",
       "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock"
+      "offerCount": "1",
+      "availability": "https://schema.org/InStock",
+      "url": "https://sapphiretrails.lk/custom-proposal-package"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "64",
+      "bestRating": "5",
+      "worstRating": "1"
     }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://sapphiretrails.lk"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Tours",
+        "item": "https://sapphiretrails.lk/tours"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Custom Proposal Package",
+        "item": "https://sapphiretrails.lk/custom-proposal-package"
+      }
+    ]
   };
 
   return (
@@ -68,6 +109,10 @@ export default async function CustomProposalPackagePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(proposalSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <Header />
 
