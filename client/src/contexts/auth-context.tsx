@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { API_BASE_URL } from '@/lib/utils';
 import { setAuthToken, removeAuthToken, getAuthToken } from '@/lib/api';
+import { requestGoogleAccessToken } from '@/lib/google-auth';
 
 // Unified user data type
 export interface User {
@@ -23,6 +24,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, pass: string) => Promise<User | null>;
+  loginWithGoogle: () => Promise<User | null>;
   signup: (name: string, email: string, phone: string | undefined, pass: string) => Promise<boolean>;
   updateUser: (updatedUser: Partial<User>) => void;
   logout: () => void;
@@ -104,6 +106,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (): Promise<User | null> => {
+    setIsLoading(true);
+    try {
+      const accessToken = await requestGoogleAccessToken();
+
+      const response = await fetch(`${API_BASE_URL}/auth/google/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ access_token: accessToken }),
+      });
+
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(data?.message || data?.error || 'Google sign-in failed.');
+      }
+
+      const loggedInUser: User = data.user;
+      const token: string = data.token;
+      if (!loggedInUser || !token) {
+        throw new Error('Incomplete authentication data returned from server.');
+      }
+
+      setAuthToken(token);
+      setUser(loggedInUser);
+      localStorage.setItem(USER_SESSION_KEY, JSON.stringify(loggedInUser));
+      if (loggedInUser.type === 'admin') {
+        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(loggedInUser));
+      }
+
+      toast({ title: 'Welcome!', description: `Signed in as ${loggedInUser.name}.` });
+      return loggedInUser;
+    } catch (error: any) {
+      if (error instanceof Error && error.message === 'POPUP_CANCELLED') {
+        return null;
+      }
+      console.error('Google sign-in failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Could not complete Google sign-in.';
+      toast({ variant: 'destructive', title: 'Google Sign-In Failed', description: errorMessage });
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const signup = async (name: string, email: string, phone: string | undefined, pass: string): Promise<boolean> => {
     setIsLoading(true);
     try {
@@ -177,7 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value = { user, isLoading, login, signup, updateUser, logout };
+  const value = { user, isLoading, login, loginWithGoogle, signup, updateUser, logout };
 
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

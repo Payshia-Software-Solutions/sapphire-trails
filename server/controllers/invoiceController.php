@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../models/Invoice.php';
 require_once __DIR__ . '/../models/Booking.php';
 require_once __DIR__ . '/../lib/Mailer.php';
+require_once __DIR__ . '/../lib/AuthMiddleware.php';
 
 class InvoiceController
 {
@@ -41,12 +42,40 @@ class InvoiceController
     public function getByNumber($invoiceNumber)
     {
         $invoice = $this->model->getByNumber($invoiceNumber);
-        if ($invoice) {
-            echo json_encode($invoice);
-        } else {
+        if (!$invoice) {
             http_response_code(404);
             echo json_encode(['error' => 'Invoice not found']);
+            return;
         }
+
+        $currentUser = AuthMiddleware::authenticate();
+        $token = $_GET['token'] ?? null;
+        $emailParam = trim((string)($_GET['email'] ?? ''));
+
+        $isOwner = false;
+        if ($currentUser) {
+            $userId = $currentUser['id'] ?? null;
+            $userEmail = strtolower(trim((string)($currentUser['email'] ?? '')));
+            if ($userId && !empty($invoice['user_id']) && (int)$invoice['user_id'] === (int)$userId) {
+                $isOwner = true;
+            } elseif ($userEmail !== '' && strcasecmp($userEmail, trim((string)($invoice['customer_email'] ?? ''))) === 0) {
+                $isOwner = true;
+            }
+        }
+
+        $hasValidToken = AuthMiddleware::verifyResourceToken('invoice', (string)$invoiceNumber, $token);
+        $hasMatchingEmail = ($emailParam !== '' && strcasecmp($emailParam, trim((string)($invoice['customer_email'] ?? ''))) === 0);
+
+        if (!AuthMiddleware::isAdmin($currentUser) && !$isOwner && !$hasValidToken && !$hasMatchingEmail) {
+            http_response_code(401);
+            echo json_encode([
+                'error' => 'Verification required to view this invoice',
+                'requires_verification' => true
+            ]);
+            return;
+        }
+
+        echo json_encode($invoice);
     }
 
     public function getByBookingId($bookingId)

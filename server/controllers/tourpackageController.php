@@ -5,6 +5,7 @@ require_once __DIR__ . '/../models/TourInclusion.php';
 require_once __DIR__ . '/../models/TourItinerary.php';
 require_once __DIR__ . '/../models/TourExperienceGallery.php';
 require_once __DIR__ . '/../lib/ImageOptimizer.php';
+require_once __DIR__ . '/../lib/FileValidator.php';
 
 
 class TourPackageController
@@ -77,6 +78,42 @@ class TourPackageController
         return ImageOptimizer::generateWebPFileName($originalName);
     }
 
+    /**
+     * Validate an uploaded image, convert to WebP, upload via FTP, and return its FTP path or null.
+     */
+    private function processUploadedTourImage(array $file, string $ftpSubDir): ?string
+    {
+        if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        $validation = FileValidator::validateImage($file);
+        if (!$validation['valid']) {
+            throw new InvalidArgumentException($validation['error']);
+        }
+
+        $fileName = $this->generateUniqueFileName($file['name']);
+        $tempPath = './uploads/temp_' . $fileName;
+        $localPath = './uploads/' . $fileName;
+        $ftpPath = '/' . trim($ftpSubDir, '/') . '/' . $fileName;
+
+        if (!is_dir('./uploads')) {
+            mkdir('./uploads', 0755, true);
+        }
+
+        if (move_uploaded_file($file['tmp_name'], $tempPath)) {
+            ImageOptimizer::convertToWebP($tempPath, $localPath, 88);
+            @unlink($tempPath);
+            if ($this->uploadToFTP($localPath, $ftpPath)) {
+                @unlink($localPath);
+                return $ftpPath;
+            }
+            @unlink($localPath);
+        }
+
+        return null;
+    }
+
     public function getAll()
     {
         echo json_encode($this->model->getAll());
@@ -131,39 +168,31 @@ class TourPackageController
             $data['canonical_url'] = $data['canonical_url'] ?? $data['canonicalUrl'] ?? null;
 
             try {
-                $packageId = $this->model->create($data);
-
-                if ($homepageFile && $homepageFile['error'] === UPLOAD_ERR_OK) {
-                    $fileName = $this->generateUniqueFileName($homepageFile['name']);
-                    $tempPath = './uploads/temp_' . $fileName;
-                    $localPath = './uploads/' . $fileName;
-                    $ftpPath = '/tour-images/' . $packageId . '/' . $fileName;
-
-                    if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
-                    if (move_uploaded_file($homepageFile['tmp_name'], $tempPath)) {
-                        ImageOptimizer::convertToWebP($tempPath, $localPath, 88);
-                        @unlink($tempPath);
-                        if ($this->uploadToFTP($localPath, $ftpPath)) {
-                            $data['homepage_image_url'] = $ftpPath;
-                            @unlink($localPath);
+                // Validate any uploaded images before inserting into DB
+                foreach ([$homepageFile, $heroFile] as $imgFile) {
+                    if ($imgFile && ($imgFile['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                        $validation = FileValidator::validateImage($imgFile);
+                        if (!$validation['valid']) {
+                            http_response_code(400);
+                            echo json_encode(['error' => $validation['error']]);
+                            return;
                         }
                     }
                 }
 
-                if ($heroFile && $heroFile['error'] === UPLOAD_ERR_OK) {
-                    $fileName = $this->generateUniqueFileName($heroFile['name']);
-                    $tempPath = './uploads/temp_' . $fileName;
-                    $localPath = './uploads/' . $fileName;
-                    $ftpPath = '/tour-images/' . $packageId . '/' . $fileName;
+                $packageId = $this->model->create($data);
 
-                    if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
-                    if (move_uploaded_file($heroFile['tmp_name'], $tempPath)) {
-                        ImageOptimizer::convertToWebP($tempPath, $localPath, 88);
-                        @unlink($tempPath);
-                        if ($this->uploadToFTP($localPath, $ftpPath)) {
-                            $data['hero_image_url'] = $ftpPath;
-                            @unlink($localPath);
-                        }
+                if ($homepageFile && $homepageFile['error'] === UPLOAD_ERR_OK) {
+                    $uploadedHome = $this->processUploadedTourImage($homepageFile, "tour-images/{$packageId}");
+                    if ($uploadedHome) {
+                        $data['homepage_image_url'] = $uploadedHome;
+                    }
+                }
+
+                if ($heroFile && $heroFile['error'] === UPLOAD_ERR_OK) {
+                    $uploadedHero = $this->processUploadedTourImage($heroFile, "tour-images/{$packageId}");
+                    if ($uploadedHero) {
+                        $data['hero_image_url'] = $uploadedHero;
                     }
                 }
 
@@ -176,26 +205,24 @@ class TourPackageController
                     foreach ($galleryImages['name'] as $index => $originalName) {
                         if ($galleryImages['error'][$index] !== UPLOAD_ERR_OK) continue;
 
-                        $fileName = $this->generateUniqueFileName($originalName);
-                        $tempPath = './uploads/temp_' . $fileName;
-                        $localPath = './uploads/' . $fileName;
-                        $ftpPath = '/tour-images/' . $packageId . '/experience/' . $fileName;
+                        $galleryFile = [
+                            'name' => $originalName,
+                            'type' => $galleryImages['type'][$index] ?? '',
+                            'tmp_name' => $galleryImages['tmp_name'][$index],
+                            'error' => $galleryImages['error'][$index],
+                            'size' => $galleryImages['size'][$index] ?? 0,
+                        ];
 
-                        if (!is_dir('./uploads')) mkdir('./uploads', 0777, true);
-                        if (move_uploaded_file($galleryImages['tmp_name'][$index], $tempPath)) {
-                            ImageOptimizer::convertToWebP($tempPath, $localPath, 88);
-                            @unlink($tempPath);
-                            if ($this->uploadToFTP($localPath, $ftpPath)) {
-                                @unlink($localPath);
-                                $meta = $galleryMeta[$index] ?? [];
-                                $this->experienceGallery->create([
-                                    'tour_package_id' => $packageId,
-                                    'image_url' => $ftpPath,
-                                    'alt_text' => $meta['alt_text'] ?? '',
-                                    'hint' => $meta['hint'] ?? '',
-                                    'sort_order' => $meta['sort_order'] ?? $index
-                                ]);
-                            }
+                        $ftpPath = $this->processUploadedTourImage($galleryFile, "tour-images/{$packageId}/experience");
+                        if ($ftpPath) {
+                            $meta = $galleryMeta[$index] ?? [];
+                            $this->experienceGallery->create([
+                                'tour_package_id' => $packageId,
+                                'image_url' => $ftpPath,
+                                'alt_text' => $meta['alt_text'] ?? '',
+                                'hint' => $meta['hint'] ?? '',
+                                'sort_order' => $meta['sort_order'] ?? $index
+                            ]);
                         }
                     }
                 }
@@ -208,6 +235,9 @@ class TourPackageController
                     'message' => 'Tour package created successfully',
                     'package' => $fullPackage
                 ]);
+            } catch (InvalidArgumentException $e) {
+                http_response_code(400);
+                echo json_encode(['error' => $e->getMessage()]);
             } catch (PDOException $e) {
                 http_response_code(500);
                 echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
@@ -281,36 +311,26 @@ class TourPackageController
     $data['homepage_image_url'] = $existing['homepage_image_url'];
     $data['hero_image_url'] = $existing['hero_image_url'];
 
-    if ($homepageFile && $homepageFile['error'] === UPLOAD_ERR_OK) {
-        $fileName = $this->generateUniqueFileName($homepageFile['name']);
-        $localPath = './uploads/' . $fileName;
-        $ftpPath = '/tour-images/' . $id . '/' . $fileName;
-
-        move_uploaded_file($homepageFile['tmp_name'], $localPath);
-        if ($this->uploadToFTP($localPath, $ftpPath)) {
-            $data['homepage_image_url'] = $ftpPath;
-            unlink($localPath);
-        }
-    }
-
-    if ($heroFile && $heroFile['error'] === UPLOAD_ERR_OK) {
-        $fileName = $this->generateUniqueFileName($heroFile['name']);
-        $localPath = './uploads/' . $fileName;
-        $ftpPath = '/tour-images/' . $id . '/' . $fileName;
-
-        move_uploaded_file($heroFile['tmp_name'], $localPath);
-        if ($this->uploadToFTP($localPath, $ftpPath)) {
-            $data['hero_image_url'] = $ftpPath;
-            unlink($localPath);
-        }
-    }
-
-    $data['meta_title'] = $data['meta_title'] ?? $data['metaTitle'] ?? null;
-    $data['meta_description'] = $data['meta_description'] ?? $data['metaDescription'] ?? null;
-    $data['meta_keywords'] = $data['meta_keywords'] ?? $data['metaKeywords'] ?? null;
-    $data['canonical_url'] = $data['canonical_url'] ?? $data['canonicalUrl'] ?? null;
-
     try {
+        if ($homepageFile && $homepageFile['error'] === UPLOAD_ERR_OK) {
+            $uploadedHome = $this->processUploadedTourImage($homepageFile, "tour-images/{$id}");
+            if ($uploadedHome) {
+                $data['homepage_image_url'] = $uploadedHome;
+            }
+        }
+
+        if ($heroFile && $heroFile['error'] === UPLOAD_ERR_OK) {
+            $uploadedHero = $this->processUploadedTourImage($heroFile, "tour-images/{$id}");
+            if ($uploadedHero) {
+                $data['hero_image_url'] = $uploadedHero;
+            }
+        }
+
+        $data['meta_title'] = $data['meta_title'] ?? $data['metaTitle'] ?? null;
+        $data['meta_description'] = $data['meta_description'] ?? $data['metaDescription'] ?? null;
+        $data['meta_keywords'] = $data['meta_keywords'] ?? $data['metaKeywords'] ?? null;
+        $data['canonical_url'] = $data['canonical_url'] ?? $data['canonicalUrl'] ?? null;
+
         $this->model->update($id, $data);
         $this->model->updateImagePaths($id, $data['homepage_image_url'], $data['hero_image_url']);
 
@@ -321,6 +341,9 @@ class TourPackageController
             'message' => 'Tour package updated successfully',
             'package' => $fullPackage
         ]);
+    } catch (InvalidArgumentException $e) {
+        http_response_code(400);
+        echo json_encode(['error' => $e->getMessage()]);
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);

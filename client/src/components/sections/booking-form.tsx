@@ -7,7 +7,8 @@ import { useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
 import Image from "next/image"
-import { CalendarIcon, CheckCircle2, Clock, Gem, Sparkles, Car, Plane, MapPin } from "lucide-react"
+import { CalendarIcon, CheckCircle2, Clock, Gem, Sparkles, Car, Plane, MapPin, Tag, LoaderCircle, X } from "lucide-react"
+import type { ReferralValidationResult } from "@/lib/referrals-data"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -42,13 +43,23 @@ export function BookingForm({
   selectedTour, 
   bookedDates = [],
   isDirectBooking = false,
-  onSubmit 
+  onSubmit,
+  referralState,
+  onApplyReferral,
+  onClearReferral,
 }: { 
   tourPackages: TourPackage[], 
   selectedTour?: TourPackage, 
   bookedDates?: string[],
   isDirectBooking?: boolean,
-  onSubmit: (data: any) => void 
+  onSubmit: (data: any) => void,
+  referralState?: {
+    applied: ReferralValidationResult | null;
+    error: string | null;
+    isValidating: boolean;
+  },
+  onApplyReferral?: (code: string) => void,
+  onClearReferral?: () => void,
 }) {
   const form = useFormContext<z.infer<typeof bookingFormSchema>>();
   const [isSelectorExpanded, setIsSelectorExpanded] = useState(isDirectBooking || !selectedTour);
@@ -472,6 +483,77 @@ export function BookingForm({
                           )}
                       />
                     )}
+                 </div>
+
+                 {/* Partner / Referral Code */}
+                 <div className="pt-2 border-t border-border/60 space-y-2.5">
+                    <FormField
+                      control={form.control}
+                      name="referralCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-foreground">
+                            <Tag className="h-4 w-4 text-primary" />
+                            <span>Partner / Referral Code <span className="text-muted-foreground text-xs font-normal">(Optional)</span></span>
+                          </FormLabel>
+                          <div className="flex gap-2">
+                            <FormControl>
+                              <Input
+                                placeholder="e.g. THILINA"
+                                className="uppercase font-mono"
+                                {...field}
+                                value={field.value || ''}
+                                onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                              />
+                            </FormControl>
+                            {referralState?.applied?.valid ? (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange('');
+                                  onClearReferral?.();
+                                }}
+                                className="shrink-0"
+                              >
+                                <X className="h-4 w-4 mr-1" />
+                                Remove
+                              </Button>
+                            ) : (
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                disabled={referralState?.isValidating || !(field.value || '').trim()}
+                                onClick={() => onApplyReferral?.((field.value || '').trim())}
+                                className="shrink-0"
+                              >
+                                {referralState?.isValidating ? (
+                                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  'Apply'
+                                )}
+                              </Button>
+                            )}
+                          </div>
+                          {referralState?.applied?.valid && (
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5">
+                              <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                              <span>
+                                Code <strong>{referralState.applied.code}</strong> applied
+                                {referralState.applied.agent_name ? ` (Referred by ${referralState.applied.agent_name})` : ''} —{' '}
+                                {referralState.applied.guest_discount_amount && referralState.applied.guest_discount_amount > 0
+                                  ? `You save $${referralState.applied.guest_discount_amount.toFixed(2)}!`
+                                  : 'Partner referral linked.'}
+                              </span>
+                            </p>
+                          )}
+                          {referralState?.error && (
+                            <p className="text-xs text-destructive font-medium">{referralState.error}</p>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                  </div>
 
                  <FormField

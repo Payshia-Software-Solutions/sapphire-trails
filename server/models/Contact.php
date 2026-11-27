@@ -6,39 +6,6 @@ class Contact
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
-        $this->ensureSchema();
-    }
-
-    /** Ensure status and other optional columns exist in contact table */
-    private function ensureSchema()
-    {
-        try {
-            // Check if status column exists
-            $checkStatus = $this->pdo->query("SHOW COLUMNS FROM contact LIKE 'status'")->fetch();
-            if (!$checkStatus) {
-                $this->pdo->exec("ALTER TABLE contact ADD COLUMN status VARCHAR(50) NOT NULL DEFAULT 'unread' AFTER message");
-            }
-
-            // Check if phone column exists
-            $checkPhone = $this->pdo->query("SHOW COLUMNS FROM contact LIKE 'phone'")->fetch();
-            if (!$checkPhone) {
-                $this->pdo->exec("ALTER TABLE contact ADD COLUMN phone VARCHAR(100) NULL AFTER email");
-            }
-
-            // Check if tour_interest column exists
-            $checkInterest = $this->pdo->query("SHOW COLUMNS FROM contact LIKE 'tour_interest'")->fetch();
-            if (!$checkInterest) {
-                $this->pdo->exec("ALTER TABLE contact ADD COLUMN tour_interest VARCHAR(255) NULL AFTER phone");
-            }
-
-            // Check if subject column exists
-            $checkSubject = $this->pdo->query("SHOW COLUMNS FROM contact LIKE 'subject'")->fetch();
-            if (!$checkSubject) {
-                $this->pdo->exec("ALTER TABLE contact ADD COLUMN subject VARCHAR(255) NULL AFTER tour_interest");
-            }
-        } catch (\Exception $e) {
-            error_log("Contact schema check notice: " . $e->getMessage());
-        }
     }
 
     /** List all contact messages (newest first) */

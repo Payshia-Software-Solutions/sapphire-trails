@@ -20,7 +20,13 @@ import { useToast } from "@/hooks/use-toast";
 import { trackInitiateBooking, trackBookingSuccess } from '@/lib/analytics';
 
 import { API_BASE_URL } from '@/lib/utils';
+import { authFetch } from '@/lib/api';
 import { useSiteContent, getWhatsappUrl } from '@/lib/site-content';
+import {
+  getAttributedReferralCode,
+  clearAttributedReferralCode,
+  type ReferralValidationResult,
+} from '@/lib/referrals-data';
 
 
 function TourDisplayCard({ selectedTour }: { selectedTour?: TourPackage }) {
@@ -71,6 +77,7 @@ function BookingSummary({
   totalGuests,
   totalPrice,
   calculationResult,
+  appliedReferral,
   isSubmitting = false,
 } : {
   selectedTour?: TourPackage;
@@ -78,6 +85,7 @@ function BookingSummary({
   totalGuests: number;
   totalPrice: number | null;
   calculationResult?: PriceCalculationResult | null;
+  appliedReferral?: ReferralValidationResult | null;
   isSubmitting?: boolean;
 }) {
   const { content } = useSiteContent();
@@ -148,13 +156,27 @@ function BookingSummary({
                   <span className="text-muted-foreground">Subtotal:</span>
                   <span className="font-medium text-foreground">${totalPrice.toFixed(2)}</span>
               </div>
+              {appliedReferral?.valid && (appliedReferral.guest_discount_amount || 0) > 0 && (
+                <div className="flex justify-between text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                    <span>
+                      Referral Discount ({appliedReferral.code}
+                      {appliedReferral.guest_discount_type === 'percentage' && appliedReferral.guest_discount_value
+                        ? ` • ${appliedReferral.guest_discount_value}%`
+                        : ''}
+                      ):
+                    </span>
+                    <span>-${Number(appliedReferral.guest_discount_amount).toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Taxes & Fees:</span>
                   <span className="font-medium text-foreground">$0.00</span>
               </div>
               <div className="flex justify-between text-lg font-bold">
                   <span className="text-foreground">Total:</span>
-                  <span className="text-[#0B1E38] dark:text-blue-400 font-bold">${totalPrice.toFixed(2)}</span>
+                  <span className="text-[#0B1E38] dark:text-blue-400 font-bold">
+                    ${Math.max(0, totalPrice - (appliedReferral?.valid ? Number(appliedReferral.guest_discount_amount || 0) : 0)).toFixed(2)}
+                  </span>
               </div>
           </div>
         )}
@@ -242,10 +264,87 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
   const watchedAdults = methods.watch('adults');
   const watchedChildren = methods.watch('children');
   const watchedDate = methods.watch('date');
+  const watchedEmail = methods.watch('email');
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const [calculationResult, setCalculationResult] = useState<PriceCalculationResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
+
+  // Referral code state
+  const [appliedReferral, setAppliedReferral] = useState<ReferralValidationResult | null>(null);
+  const [referralError, setReferralError] = useState<string | null>(null);
+  const [isValidatingReferral, setIsValidatingReferral] = useState(false);
+
+  const validateReferralCode = async (codeToValidate: string, amountOverride?: number, silent = false) => {
+    const cleanCode = codeToValidate.trim().toUpperCase();
+    if (!cleanCode) {
+      setAppliedReferral(null);
+      setReferralError(null);
+      return;
+    }
+
+    setIsValidatingReferral(true);
+    setReferralError(null);
+    try {
+      const amt = amountOverride ?? totalPrice ?? 0;
+      const emailParam = (watchedEmail || user?.email || '').trim();
+      const params = new URLSearchParams({ amount: String(amt) });
+      if (emailParam) params.set('email', emailParam);
+
+      const res = await authFetch(`${API_BASE_URL}/referrals/validate/${encodeURIComponent(cleanCode)}/?${params.toString()}`);
+      const data: ReferralValidationResult = await res.json().catch(() => ({ valid: false, error: 'Failed to validate code.' }));
+
+      if (!res.ok || !data.valid) {
+        setAppliedReferral(null);
+        if (!silent) {
+          setReferralError(data.error || 'Invalid or inactive referral code.');
+        }
+        return;
+      }
+
+      setAppliedReferral(data);
+      setReferralError(null);
+      if (!silent) {
+        toast({
+          title: 'Referral Code Applied!',
+          description: data.guest_discount_amount && data.guest_discount_amount > 0
+            ? `Saved $${data.guest_discount_amount.toFixed(2)} with ${data.code}.`
+            : `Referral code ${data.code} linked to your booking.`,
+        });
+      }
+    } catch {
+      if (!silent) {
+        setReferralError('Could not validate referral code right now.');
+      }
+    } finally {
+      setIsValidatingReferral(false);
+    }
+  };
+
+  const handleClearReferral = () => {
+    setAppliedReferral(null);
+    setReferralError(null);
+    clearAttributedReferralCode();
+  };
+
+  // Pre-fill attributed referral code from URL ?ref= or localStorage
+  useEffect(() => {
+    const refParam = searchParams.get('ref')?.trim().toUpperCase();
+    const initialRef = refParam || getAttributedReferralCode();
+    if (initialRef && !methods.getValues('referralCode')) {
+      methods.setValue('referralCode', initialRef);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // Re-validate active referral when totalPrice or email changes
+  useEffect(() => {
+    const activeCode = (appliedReferral?.code || methods.getValues('referralCode') || '').trim();
+    if (activeCode && totalPrice !== null) {
+      validateReferralCode(activeCode, totalPrice, !appliedReferral);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalPrice, watchedEmail]);
 
   const hasLoadedRef = useRef(false);
 
@@ -347,6 +446,7 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
         adults: methods.getValues('adults') || 1,
         children: methods.getValues('children') || 0,
         date: methods.getValues('date'),
+        referralCode: methods.getValues('referralCode') || "",
         message: methods.getValues('message') || "",
       });
     } else {
@@ -359,6 +459,7 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
         adults: methods.getValues('adults') || 1,
         children: methods.getValues('children') || 0,
         date: methods.getValues('date'),
+        referralCode: methods.getValues('referralCode') || "",
         message: methods.getValues('message') || "",
       });
     }
@@ -381,7 +482,10 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
     
     const totalGuestsOnSubmit = data.adults + data.children;
     const calcResult = calculatePackagePrice(selectedTour, totalGuestsOnSubmit);
-    const totalPriceOnSubmit = calcResult.totalPrice;
+    const grossPriceOnSubmit = calcResult.totalPrice;
+    const activeReferralCode = appliedReferral?.valid ? appliedReferral.code : (data.referralCode || '').trim().toUpperCase();
+    const discountOnSubmit = appliedReferral?.valid ? Number(appliedReferral.guest_discount_amount || 0) : 0;
+    const totalPriceOnSubmit = Math.max(0, grossPriceOnSubmit - discountOnSubmit);
 
    // Format vehicle arrangement into clear note
    let fullMessage = (data.message || '').trim();
@@ -410,12 +514,13 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
        adults: data.adults,
        children: data.children,
        guests: totalGuestsOnSubmit,
-       total_price: totalPriceOnSubmit,
+       total_price: grossPriceOnSubmit,
+       referral_code: activeReferralCode || undefined,
        message: fullMessage,
    };
    
    try {
-       const response = await fetch(`${API_BASE_URL}/bookings`, {
+       const response = await authFetch(`${API_BASE_URL}/bookings`, {
            method: 'POST',
            headers: {
                'Content-Type': 'application/json',
@@ -429,19 +534,21 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
        }
        
        const savedBooking = await response.json();
+       const finalTrackedTotal = savedBooking.total_price ? Number(savedBooking.total_price) : totalPriceOnSubmit;
        
        // Dispatch GA4 Purchase & Meta Pixel Purchase/Schedule Events
        trackBookingSuccess({
            bookingId: savedBooking.id,
            tourName: selectedTour.tourPageTitle,
            tourId: selectedTour.id,
-           totalValue: totalPriceOnSubmit,
+           totalValue: finalTrackedTotal,
            guests: totalGuestsOnSubmit,
            currency: 'USD',
        });
 
        methods.reset();
-       router.push(`/booking/confirmation?id=${savedBooking.id}`);
+       const tokenQuery = savedBooking.access_token ? `&token=${encodeURIComponent(savedBooking.access_token)}` : '';
+       router.push(`/booking/confirmation?id=${savedBooking.id}${tokenQuery}`);
    } catch (error) {
        isSubmittingRef.current = false;
        setIsSubmitting(false);
@@ -483,7 +590,14 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
                 tourPackages={tourPackages} 
                 selectedTour={selectedTour} 
                 isDirectBooking={!tourSlug} 
-                onSubmit={onSubmit} 
+                onSubmit={onSubmit}
+                referralState={{
+                  applied: appliedReferral,
+                  error: referralError,
+                  isValidating: isValidatingReferral,
+                }}
+                onApplyReferral={(code) => validateReferralCode(code)}
+                onClearReferral={handleClearReferral}
               />
             </div>
             <div>
@@ -493,6 +607,7 @@ export function BookingPageContent({ tourSlug, initialPackages = [] }: { tourSlu
                 totalGuests={totalGuests}
                 totalPrice={totalPrice}
                 calculationResult={calculationResult}
+                appliedReferral={appliedReferral}
                 isSubmitting={isSubmitting}
               />
             </div>

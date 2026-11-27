@@ -136,6 +136,13 @@ ${data.additional_instructions ? `Reference: ${data.additional_instructions}` : 
           ? `${b.tour_title} - Luxury Expedition (${guests} Travelers)`
           : `Luxury Gem Mine Tour Experience (${guests} Travelers)`;
 
+        if (b.discount_amount && Number(b.discount_amount) > 0) {
+          setDiscountAmount(Number(b.discount_amount));
+        }
+        if (b.referral_code_used) {
+          setNotes((prev) => `${prev}\n- Referral Code Applied: ${b.referral_code_used}`.trim());
+        }
+
         setItems([
           {
             description: tourDesc,

@@ -46,9 +46,9 @@ return [
         $bookingController->reschedule($id);
     },
 
-    // Customer request to reschedule (Public)
+    // Customer request to reschedule (Requires ownership/invoice/token verification)
     'POST /bookings/{id}/reschedule-request/' => function ($id) use ($bookingController) {
-        $bookingController->reschedule($id);
+        $bookingController->rescheduleRequest($id);
     },
 
     // Update admin internal notes (Admin only)

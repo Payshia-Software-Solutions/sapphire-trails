@@ -1,41 +1,16 @@
 <?php
 require_once __DIR__ . '/../lib/Env.php';
+require_once __DIR__ . '/../lib/Cors.php';
 
-// Load CORS settings
-$allowedOriginsConfig = Env::get('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001,http://sapphiretrails.lk,https://sapphiretrails.lk,http://www.sapphiretrails.lk,https://www.sapphiretrails.lk,http://192.168.8.115');
-$allowedOrigins = array_map('trim', explode(',', $allowedOriginsConfig));
-
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$isAllowedOrigin = !empty($origin) && (
-    in_array($origin, $allowedOrigins, true) ||
-    in_array('*', $allowedOrigins, true) ||
-    preg_match('#^https?://(www\.)?sapphiretrails\.lk$#i', $origin) ||
-    preg_match('#^https?://(192\.168\.\d+\.\d+|127\.0\.0\.1|10\.\d+\.\d+\.\d+|localhost)(:\d+)?$#i', $origin)
-);
-
-if ($isAllowedOrigin) {
-    header("Access-Control-Allow-Origin: $origin");
-    header("Access-Control-Allow-Credentials: true");
-} else {
-    // Default fallback
-    header("Access-Control-Allow-Origin: *");
+if (!headers_sent()) {
+    applyCorsHeaders();
 }
 
-header("Vary: Origin");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin");
-header("Access-Control-Max-Age: 86400");
-
-// Handle OPTIONS requests (preflight)
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
-    exit();
-}
+$appEnv = Env::get('APP_ENV', 'development');
 
 ini_set('memory_limit', '256M');
 
 // Environment-based error display configuration
-$appEnv = Env::get('APP_ENV', 'development');
 if ($appEnv === 'production') {
     error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
     ini_set('display_errors', '0');
@@ -61,6 +36,8 @@ $invoiceRoutes = require __DIR__ . '/invoiceRoutes.php';
 $analyticsRoutes = require __DIR__ . '/analyticsRoutes.php';
 $articleRoutes = require __DIR__ . '/articleRoutes.php';
 $subscriberRoutes = require __DIR__ . '/subscriberRoutes.php';
+$referralRoutes = require __DIR__ . '/referralRoutes.php';
+$systemRoutes = require __DIR__ . '/systemRoutes.php';
 
 // Combine all routes
 $routes = array_merge(
@@ -78,7 +55,9 @@ $routes = array_merge(
     $invoiceRoutes,
     $analyticsRoutes,
     $articleRoutes,
-    $subscriberRoutes
+    $subscriberRoutes,
+    $referralRoutes,
+    $systemRoutes
 );
 
 // Define the home route

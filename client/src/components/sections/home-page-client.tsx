@@ -12,6 +12,7 @@ import { StatsSection } from '@/components/sections/stats-section';
 import { ExploreRatnapuraSection } from '@/components/sections/explore-ratnapura-section';
 import { FAQSection } from '@/components/sections/faq-section';
 import { ArticlesSection } from '@/components/sections/articles-section';
+import { ReferralPartnerSection } from '@/components/sections/referral-partner-section';
 import { SubscriptionSection } from '@/components/sections/subscription-section';
 import { TrustSection } from '@/components/sections/TrustSection';
 import { useSiteContent, getSectionThemeClass } from '@/lib/site-content';
@@ -98,7 +99,14 @@ export function HomePageClient({ initialTours = [] }: HomePageClientProps) {
           </div>
         )}
 
-        {/* 10. Complimentary 2026 Gem Guide Lead Magnet */}
+        {/* 10. Authorized Referral & Partner Network */}
+        {vis.referrals !== false && (
+          <div className={getSectionThemeClass(sty.referrals)}>
+            <ReferralPartnerSection />
+          </div>
+        )}
+
+        {/* 11. Complimentary 2026 Gem Guide Lead Magnet */}
         {vis.guide !== false && (
           <div className={getSectionThemeClass(sty.guide)}>
             <SubscriptionSection />

@@ -56,9 +56,8 @@ class ICalSyncService
                 $endDate = date('Ymd', strtotime($b['tour_date'] . ' +1 day'));
             }
 
-            $guestName = !empty($b['name']) ? $b['name'] : (!empty($b['user_name']) ? $b['user_name'] : "Guest");
-            $summary = "Reserved - " . $guestName . " (" . ($b['guests'] ?? 1) . " guests)";
-            $description = "Sapphire Trails Booking #" . $bookingId . "\\nStatus: " . ucfirst($b['status']) . "\\nSource: " . ($b['booking_source'] ?? 'website');
+            $summary = "Reserved - Sapphire Trails";
+            $description = "Sapphire Trails Reserved Slot (#{$bookingId})\\nStatus: " . ucfirst($b['status']);
 
             $ics[] = "BEGIN:VEVENT";
             $ics[] = "UID:" . $uid;
