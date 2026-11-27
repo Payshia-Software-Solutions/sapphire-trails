@@ -7,61 +7,6 @@ class Subscriber
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
-        $this->ensureSchema();
-    }
-
-    /**
-     * Create subscribers table if not exists and migrate legacy leads
-     */
-    private function ensureSchema()
-    {
-        try {
-            $this->pdo->exec("
-                CREATE TABLE IF NOT EXISTS subscribers (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    email VARCHAR(255) NOT NULL UNIQUE,
-                    source VARCHAR(255) NOT NULL DEFAULT '2026 Gem Buyer Guide Download',
-                    status ENUM('active', 'unsubscribed') NOT NULL DEFAULT 'active',
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                    INDEX idx_email (email),
-                    INDEX idx_status (status)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-            ");
-
-            // One-time automatic migration of any guide downloads stored in contact table
-            $count = (int)$this->pdo->query("SELECT COUNT(*) FROM subscribers")->fetchColumn();
-            if ($count === 0) {
-                $stmt = $this->pdo->query("
-                    SELECT email, 'Guide Download (Imported)' AS source, created_at 
-                    FROM contact 
-                    WHERE LOWER(name) LIKE '%subscriber%' 
-                       OR LOWER(message) LIKE '%guide%' 
-                       OR LOWER(message) LIKE '%subscriber%'
-                       OR LOWER(COALESCE(tour_interest, '')) LIKE '%guide%'
-                    GROUP BY email
-                ");
-                $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                if (!empty($contacts)) {
-                    $insertStmt = $this->pdo->prepare("
-                        INSERT IGNORE INTO subscribers (email, source, status, created_at)
-                        VALUES (?, ?, 'active', ?)
-                    ");
-                    foreach ($contacts as $c) {
-                        if (filter_var($c['email'], FILTER_VALIDATE_EMAIL)) {
-                            $insertStmt->execute([
-                                strtolower(trim($c['email'])),
-                                $c['source'],
-                                $c['created_at'] ?: date('Y-m-d H:i:s')
-                            ]);
-                        }
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            error_log("Subscriber schema setup notice: " . $e->getMessage());
-        }
     }
 
     /**

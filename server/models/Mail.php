@@ -9,45 +9,6 @@ class Mail
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
-        $this->ensureTablesExist();
-    }
-
-    private function ensureTablesExist()
-    {
-        $sqlSettings = "CREATE TABLE IF NOT EXISTS `mail_settings` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `mail_driver` VARCHAR(20) DEFAULT 'smtp',
-            `smtp_host` VARCHAR(255) DEFAULT '',
-            `smtp_port` INT DEFAULT 465,
-            `smtp_encryption` VARCHAR(10) DEFAULT 'ssl',
-            `smtp_username` VARCHAR(255) DEFAULT '',
-            `smtp_password` VARCHAR(255) DEFAULT '',
-            `from_email` VARCHAR(255) DEFAULT '',
-            `from_name` VARCHAR(255) DEFAULT 'Sapphire Trails',
-            `admin_emails` TEXT NULL,
-            `admin_emails_cc` TEXT NULL,
-            `admin_emails_bcc` TEXT NULL,
-            `is_enabled` TINYINT(1) DEFAULT 1,
-            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-
-        $sqlLogs = "CREATE TABLE IF NOT EXISTS `mail_logs` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `recipient` VARCHAR(255) NOT NULL,
-            `subject` VARCHAR(255) NOT NULL,
-            `email_type` VARCHAR(50) NOT NULL,
-            `status` ENUM('sent', 'failed') NOT NULL DEFAULT 'sent',
-            `error_message` TEXT NULL,
-            `body_preview` TEXT NULL,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-
-        try {
-            $this->pdo->exec($sqlSettings);
-            $this->pdo->exec($sqlLogs);
-        } catch (\Exception $e) {
-            error_log("Error creating mail tables: " . $e->getMessage());
-        }
     }
 
     public function getSettings()

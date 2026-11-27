@@ -35,6 +35,7 @@ export const bookingFormSchema = z.object({
   date: z.date({
     required_error: "A date for your tour is required.",
   }),
+  referralCode: z.string().optional(),
   message: z.string().optional(),
 }).refine(data => data.adults + data.children > 0, {
   message: "There must be at least one participant.",

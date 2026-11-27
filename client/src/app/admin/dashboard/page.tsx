@@ -368,60 +368,80 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8 pb-12 max-w-[1600px] mx-auto w-full">
-      {/* 1. Header & Welcome Bar */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b pb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              {greeting}, <span className="text-primary">{adminName}</span>
+    <div className="flex flex-col gap-7 pb-12 w-full">
+      {/* 1. Midnight Sapphire Executive Command Banner */}
+      <section className="relative overflow-hidden rounded-2xl bg-[#08111e] text-white p-6 sm:p-8 border border-primary/25 shadow-sm">
+        <div className="absolute -top-24 -right-12 w-80 h-80 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-300/90">
+                Concierge Command Center
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 border border-emerald-400/30">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live Sync
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-white">
+              {greeting}, <span className="text-amber-300">{adminName}</span>
             </h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live Sync
-            </span>
+            <p className="text-xs sm:text-sm text-slate-300 flex items-center gap-2">
+              <Calendar className="h-3.5 w-3.5 text-amber-300 shrink-0" />
+              <span>{format(new Date(), 'EEEE, MMMM d, yyyy')} &bull; Sapphire Trails Operations</span>
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
-            <Calendar className="h-3.5 w-3.5" />
-            {format(new Date(), 'EEEE, MMMM d, yyyy')} • Sapphire Trails Management Command Center
-          </p>
+
+          {/* Quick Actions & Refresh */}
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fetchData(true)}
+              disabled={isRefreshing}
+              className="gap-1.5 h-9 px-3.5 rounded-xl border-white/15 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white text-xs"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin text-amber-300' : ''}`} />
+              <span>{isRefreshing ? 'Syncing...' : 'Refresh'}</span>
+            </Button>
+
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="gap-1.5 h-9 px-3.5 rounded-xl border-white/15 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white text-xs"
+            >
+              <Link href="/admin/calendar">
+                <CalendarDays className="h-3.5 w-3.5 text-amber-300" />
+                <span>Calendar</span>
+              </Link>
+            </Button>
+
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="gap-1.5 h-9 px-3.5 rounded-xl border-white/15 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white text-xs"
+            >
+              <Link href="/admin/invoices">
+                <Receipt className="h-3.5 w-3.5 text-emerald-400" />
+                <span>Invoices</span>
+              </Link>
+            </Button>
+
+            <Button
+              asChild
+              size="sm"
+              className="gap-1.5 h-9 px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs shadow-sm"
+            >
+              <Link href="/admin/booking-requests">
+                <Users className="h-3.5 w-3.5" />
+                <span>Review Bookings</span>
+              </Link>
+            </Button>
+          </div>
         </div>
-
-        {/* Quick Actions & Refresh */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => fetchData(true)}
-            disabled={isRefreshing}
-            className="gap-1.5 bg-background shadow-xs hover:bg-muted"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin text-primary' : ''}`} />
-            <span>{isRefreshing ? 'Syncing...' : 'Refresh'}</span>
-          </Button>
-
-          <Button asChild size="sm" variant="outline" className="gap-1.5 bg-background shadow-xs">
-            <Link href="/admin/calendar">
-              <CalendarDays className="h-3.5 w-3.5 text-primary" />
-              <span>Calendar</span>
-            </Link>
-          </Button>
-
-          <Button asChild size="sm" variant="outline" className="gap-1.5 bg-background shadow-xs">
-            <Link href="/admin/invoices">
-              <Receipt className="h-3.5 w-3.5 text-emerald-600" />
-              <span>Invoices</span>
-            </Link>
-          </Button>
-
-          <Button asChild size="sm" className="gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
-            <Link href="/admin/booking-requests">
-              <Users className="h-3.5 w-3.5" />
-              <span>Review Bookings</span>
-            </Link>
-          </Button>
-        </div>
-      </div>
+      </section>
 
 
       {/* 2. Action Required Alert Center (if any items require attention) */}
@@ -430,7 +450,7 @@ export default function DashboardPage() {
           {analytics.pendingBookings > 0 && (
             <Link
               href="/admin/booking-requests"
-              className="group flex items-center justify-between p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-all shadow-xs"
+              className="group flex items-center justify-between p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-all shadow-sm"
             >
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
@@ -450,7 +470,7 @@ export default function DashboardPage() {
           {analytics.unpaidInvoicesCount > 0 && (
             <Link
               href="/admin/invoices"
-              className="group flex items-center justify-between p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/5 hover:bg-rose-500/10 transition-all shadow-xs"
+              className="group flex items-center justify-between p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/5 hover:bg-rose-500/10 transition-all shadow-sm"
             >
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-lg bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
@@ -472,7 +492,7 @@ export default function DashboardPage() {
           {analytics.unreadContactsCount > 0 && (
             <Link
               href="/admin/contact-submissions"
-              className="group flex items-center justify-between p-3.5 rounded-xl border border-sky-500/30 bg-sky-500/5 hover:bg-sky-500/10 transition-all shadow-xs"
+              className="group flex items-center justify-between p-3.5 rounded-xl border border-sky-500/30 bg-sky-500/5 hover:bg-sky-500/10 transition-all shadow-sm"
             >
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-lg bg-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
@@ -606,7 +626,7 @@ export default function DashboardPage() {
       {/* 4. Interactive Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Booking Volume & Activity Trend */}
-        <Card className="lg:col-span-2 border bg-card shadow-xs">
+        <Card className="lg:col-span-2 border bg-card shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div>
               <CardTitle className="text-base font-semibold">Booking Frequency & Trends</CardTitle>
@@ -647,7 +667,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Right 1 Col: Booking Status Breakdown */}
-        <Card className="border bg-card shadow-xs flex flex-col justify-between">
+        <Card className="border bg-card shadow-sm flex flex-col justify-between">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold">Booking Pipeline</CardTitle>
             <CardDescription className="text-xs">Status distribution across all bookings</CardDescription>
@@ -667,7 +687,7 @@ export default function DashboardPage() {
       {/* 5. Second Row: Revenue Breakdown & Tour Popularity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Revenue Status Donut Chart */}
-        <Card className="border bg-card shadow-xs flex flex-col justify-between">
+        <Card className="border bg-card shadow-sm flex flex-col justify-between">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold">Financial Overview</CardTitle>
@@ -692,7 +712,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Tour Popularity Bar Ranking */}
-        <Card className="lg:col-span-2 border bg-card shadow-xs">
+        <Card className="lg:col-span-2 border bg-card shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-base font-semibold">Tour Package Popularity</CardTitle>
@@ -716,7 +736,7 @@ export default function DashboardPage() {
       {/* 6. Live Operational Feeds & Activity (3-Pillar Command View) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Pillar 1: Recent Bookings Feed */}
-        <Card className="border bg-card shadow-xs flex flex-col justify-between">
+        <Card className="border bg-card shadow-sm flex flex-col justify-between">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <div>
               <CardTitle className="text-base font-semibold">Recent Bookings</CardTitle>
@@ -795,7 +815,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Pillar 2: Recent Invoices Feed */}
-        <Card className="border bg-card shadow-xs flex flex-col justify-between">
+        <Card className="border bg-card shadow-sm flex flex-col justify-between">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <div>
               <CardTitle className="text-base font-semibold">Latest Invoices</CardTitle>
@@ -862,7 +882,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Pillar 3: Customer Inquiries & Status Feed */}
-        <Card className="border bg-card shadow-xs flex flex-col justify-between">
+        <Card className="border bg-card shadow-sm flex flex-col justify-between">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <div>
               <CardTitle className="text-base font-semibold">Customer Inquiries</CardTitle>
@@ -952,7 +972,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
           <Link
             href="/admin/manage-packages"
-            className="group flex flex-col items-center justify-center text-center p-3.5 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-xs"
+            className="group flex flex-col items-center justify-center text-center p-3.5 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-sm"
           >
             <div className="h-9 w-9 rounded-xl bg-amber-500/10 text-amber-600 group-hover:scale-110 transition-transform flex items-center justify-center mb-2">
               <Compass className="h-4 w-4" />
@@ -963,7 +983,7 @@ export default function DashboardPage() {
 
           <Link
             href="/admin/booking-requests"
-            className="group flex flex-col items-center justify-center text-center p-3.5 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-xs"
+            className="group flex flex-col items-center justify-center text-center p-3.5 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-sm"
           >
             <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform flex items-center justify-center mb-2">
               <Users className="h-4 w-4" />
@@ -974,7 +994,7 @@ export default function DashboardPage() {
 
           <Link
             href="/admin/calendar"
-            className="group flex flex-col items-center justify-center text-center p-3.5 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-xs"
+            className="group flex flex-col items-center justify-center text-center p-3.5 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-sm"
           >
             <div className="h-9 w-9 rounded-xl bg-blue-500/10 text-blue-600 group-hover:scale-110 transition-transform flex items-center justify-center mb-2">
               <CalendarDays className="h-4 w-4" />
@@ -986,7 +1006,7 @@ export default function DashboardPage() {
 
           <Link
             href="/admin/invoices"
-            className="group flex flex-col items-center justify-center text-center p-4 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-xs"
+            className="group flex flex-col items-center justify-center text-center p-4 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-sm"
           >
             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-600 group-hover:scale-110 transition-transform flex items-center justify-center mb-2.5">
               <Receipt className="h-5 w-5" />
@@ -997,7 +1017,7 @@ export default function DashboardPage() {
 
           <Link
             href="/admin/contact-submissions"
-            className="group flex flex-col items-center justify-center text-center p-4 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-xs"
+            className="group flex flex-col items-center justify-center text-center p-4 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-sm"
           >
             <div className="h-10 w-10 rounded-xl bg-sky-500/10 text-sky-600 group-hover:scale-110 transition-transform flex items-center justify-center mb-2.5">
               <MessageSquare className="h-5 w-5" />
@@ -1008,7 +1028,7 @@ export default function DashboardPage() {
 
           <Link
             href="/admin/manage-reviews"
-            className="group flex flex-col items-center justify-center text-center p-4 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-xs"
+            className="group flex flex-col items-center justify-center text-center p-4 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-sm"
           >
             <div className="h-10 w-10 rounded-xl bg-purple-500/10 text-purple-600 group-hover:scale-110 transition-transform flex items-center justify-center mb-2.5">
               <Sparkles className="h-5 w-5" />
@@ -1019,7 +1039,7 @@ export default function DashboardPage() {
 
           <Link
             href="/admin/cms"
-            className="group flex flex-col items-center justify-center text-center p-4 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-xs"
+            className="group flex flex-col items-center justify-center text-center p-4 rounded-xl border bg-card hover:bg-primary/5 hover:border-primary/40 transition-all shadow-sm"
           >
             <div className="h-10 w-10 rounded-xl bg-slate-500/10 text-slate-600 dark:text-slate-300 group-hover:scale-110 transition-transform flex items-center justify-center mb-2.5">
               <Layers className="h-5 w-5" />

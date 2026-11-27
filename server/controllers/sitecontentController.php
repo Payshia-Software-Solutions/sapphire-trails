@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/SiteContent.php';
 require_once __DIR__ . '/../lib/ImageOptimizer.php';
+require_once __DIR__ . '/../lib/FileValidator.php';
 
 class SiteContentController
 {
@@ -68,6 +69,10 @@ class SiteContentController
     private function handleImageUpload($file, $ftpSubDir = 'cms')
     {
         if ($file && $file['error'] === UPLOAD_ERR_OK) {
+            $validation = FileValidator::validateImage($file);
+            if (!$validation['valid']) {
+                return null;
+            }
             $webpFilename = ImageOptimizer::generateWebPFileName($file['name']);
             $tempSource = './uploads/temp_' . $webpFilename;
             $webpPath = './uploads/' . $webpFilename;
@@ -124,14 +129,10 @@ class SiteContentController
         }
 
         $file = $_FILES['image'];
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/bmp'];
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
-
-        if (!in_array($mimeType, $allowedTypes)) {
+        $validation = FileValidator::validateImage($file);
+        if (!$validation['valid']) {
             http_response_code(400);
-            echo json_encode(['error' => 'Invalid file format. Allowed types: JPG, PNG, WEBP, GIF, SVG, BMP.']);
+            echo json_encode(['error' => $validation['error']]);
             return;
         }
 

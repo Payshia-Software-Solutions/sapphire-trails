@@ -31,6 +31,7 @@ import { format, parseISO } from 'date-fns';
 import { getWhatsappUrl } from '@/lib/site-content';
 import { useSiteContent } from '@/contexts/site-content-context';
 import { API_BASE_URL } from '@/lib/utils';
+import { authFetch } from '@/lib/api';
 import { trackBookingSuccess } from '@/lib/analytics';
 import { type Booking } from '@/lib/bookings-data';
 const IMAGE_BASE_URL = 'https://content-provider.payshia.com/sapphire-trail';
@@ -47,6 +48,7 @@ function ConfirmationContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get('id');
+  const token = searchParams.get('token');
 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,7 +63,8 @@ function ConfirmationContent() {
     async function fetchBookingData() {
       setIsLoading(true);
       try {
-        const res = await fetch(`${API_BASE_URL}/bookings/${id}`);
+        const query = token ? `?token=${encodeURIComponent(token)}` : '';
+        const res = await authFetch(`${API_BASE_URL}/bookings/${id}${query}`);
         if (res.ok) {
           const json = await res.json();
           const b = json.booking || json;

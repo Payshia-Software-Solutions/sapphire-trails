@@ -4,6 +4,7 @@ require_once './models/LocationGalleryImage.php';
 require_once './models/LocationHighlight.php';
 require_once './models/LocationVisitorInfo.php';
 require_once './models/LocationNearbyAttractions.php';
+require_once __DIR__ . '/../lib/FileValidator.php';
 
 class LocationController
 {
@@ -77,10 +78,36 @@ class LocationController
 
     private function generateUniqueFileName($originalName)
     {
-        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
-        $name = pathinfo($originalName, PATHINFO_FILENAME);
-        $safeName = preg_replace('/[^a-zA-Z0-9-_]/', '', $name);
-        return $safeName . '-' . uniqid() . '.' . $ext;
+        return FileValidator::generateSafeFileName($originalName);
+    }
+
+    private function processUploadedLocationImage(?array $file, string $slug): ?string
+    {
+        if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        $validation = FileValidator::validateImage($file);
+        if (!$validation['valid']) {
+            throw new InvalidArgumentException($validation['error']);
+        }
+
+        $filename = $this->generateUniqueFileName($file['name']);
+        if (!is_dir('./uploads')) {
+            mkdir('./uploads', 0755, true);
+        }
+        $local = './uploads/' . $filename;
+        $ftp = '/location-images/' . $slug . '/' . $filename;
+
+        if (move_uploaded_file($file['tmp_name'], $local)) {
+            if ($this->uploadToFTP($local, $ftp)) {
+                @unlink($local);
+                return $ftp;
+            }
+            @unlink($local);
+        }
+
+        return null;
     }
 
     // GET /locations
@@ -136,34 +163,20 @@ class LocationController
             $data['hero_image_url'] = 'default_hero.jpg';
             $data['intro_image_url'] = 'default_intro.jpg';
 
-            if ($cardImage && $cardImage['error'] === UPLOAD_ERR_OK) {
-                $filename = $this->generateUniqueFileName($cardImage['name']);
-                $local = './uploads/' . $filename;
-                $ftp = '/location-images/' . $slug . '/' . $filename;
-                if (move_uploaded_file($cardImage['tmp_name'], $local) && $this->uploadToFTP($local, $ftp)) {
-                    $data['card_image_url'] = $ftp;
-                    unlink($local);
+            try {
+                if ($uploaded = $this->processUploadedLocationImage($cardImage, $slug)) {
+                    $data['card_image_url'] = $uploaded;
                 }
-            }
-
-            if ($heroImage && $heroImage['error'] === UPLOAD_ERR_OK) {
-                $filename = $this->generateUniqueFileName($heroImage['name']);
-                $local = './uploads/' . $filename;
-                $ftp = '/location-images/' . $slug . '/' . $filename;
-                if (move_uploaded_file($heroImage['tmp_name'], $local) && $this->uploadToFTP($local, $ftp)) {
-                    $data['hero_image_url'] = $ftp;
-                    unlink($local);
+                if ($uploaded = $this->processUploadedLocationImage($heroImage, $slug)) {
+                    $data['hero_image_url'] = $uploaded;
                 }
-            }
-
-            if ($introImage && $introImage['error'] === UPLOAD_ERR_OK) {
-                $filename = $this->generateUniqueFileName($introImage['name']);
-                $local = './uploads/' . $filename;
-                $ftp = '/location-images/' . $slug . '/' . $filename;
-                if (move_uploaded_file($introImage['tmp_name'], $local) && $this->uploadToFTP($local, $ftp)) {
-                    $data['intro_image_url'] = $ftp;
-                    unlink($local);
+                if ($uploaded = $this->processUploadedLocationImage($introImage, $slug)) {
+                    $data['intro_image_url'] = $uploaded;
                 }
+            } catch (InvalidArgumentException $e) {
+                http_response_code(400);
+                echo json_encode(['error' => $e->getMessage()]);
+                return;
             }
 
             // Decode JSON fields and set to empty array if not present or invalid
@@ -243,40 +256,20 @@ class LocationController
             $heroImage = $_FILES['hero_image'] ?? null;
             $introImage = $_FILES['intro_image'] ?? null;
 
-            if ($cardImage && $cardImage['error'] === UPLOAD_ERR_OK) {
-                $filename = $this->generateUniqueFileName($cardImage['name']);
-                $local = './uploads/' . $filename;
-                $ftp = '/location-images/' . $slug . '/' . $filename;
-                if (move_uploaded_file($cardImage['tmp_name'], $local)) {
-                    if ($this->uploadToFTP($local, $ftp)) {
-                        $data['card_image_url'] = $ftp;
-                        unlink($local);
-                    }
+            try {
+                if ($uploaded = $this->processUploadedLocationImage($cardImage, $slug)) {
+                    $data['card_image_url'] = $uploaded;
                 }
-            }
-
-            if ($heroImage && $heroImage['error'] === UPLOAD_ERR_OK) {
-                $filename = $this->generateUniqueFileName($heroImage['name']);
-                $local = './uploads/' . $filename;
-                $ftp = '/location-images/' . $slug . '/' . $filename;
-                if (move_uploaded_file($heroImage['tmp_name'], $local)) {
-                    if ($this->uploadToFTP($local, $ftp)) {
-                        $data['hero_image_url'] = $ftp;
-                        unlink($local);
-                    }
+                if ($uploaded = $this->processUploadedLocationImage($heroImage, $slug)) {
+                    $data['hero_image_url'] = $uploaded;
                 }
-            }
-
-            if ($introImage && $introImage['error'] === UPLOAD_ERR_OK) {
-                $filename = $this->generateUniqueFileName($introImage['name']);
-                $local = './uploads/' . $filename;
-                $ftp = '/location-images/' . $slug . '/' . $filename;
-                if (move_uploaded_file($introImage['tmp_name'], $local)) {
-                    if ($this->uploadToFTP($local, $ftp)) {
-                        $data['intro_image_url'] = $ftp;
-                        unlink($local);
-                    }
+                if ($uploaded = $this->processUploadedLocationImage($introImage, $slug)) {
+                    $data['intro_image_url'] = $uploaded;
                 }
+            } catch (InvalidArgumentException $e) {
+                http_response_code(400);
+                echo json_encode(['error' => $e->getMessage()]);
+                return;
             }
 
             // Handle stringified JSON fields from FormData

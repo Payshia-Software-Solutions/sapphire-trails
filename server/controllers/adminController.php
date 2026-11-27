@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../models/Admin.php';
 require_once __DIR__ . '/../lib/JWT.php';
 require_once __DIR__ . '/../lib/Env.php';
+require_once __DIR__ . '/../lib/AuthMiddleware.php';
 
 class AdminController
 {
@@ -91,7 +92,7 @@ class AdminController
             if ($admin && password_verify($data['password'], $admin['password_hash'])) {
                 unset($admin['password_hash']);
 
-                $secret = Env::get('APP_SECRET', 'sapphire_trails_default_fallback_secret_key');
+                $secret = AuthMiddleware::getJwtSecret();
                 $jwtExpiresIn = (int) Env::get('JWT_EXPIRES_IN', 86400);
 
                 $tokenPayload = [

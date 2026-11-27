@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { ScrollProvider, useScroll } from "@/contexts/scroll-context";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { FeaturedBannerModal } from '@/components/shared/feature-banner-modal';
+import { ReferralTracker } from '@/components/shared/referral-tracker';
 
 function BodyEffectManager() {
   const { setScrollableElement } = useScroll();
@@ -37,6 +38,7 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
       <ThemeProvider>
         <ScrollProvider>
           <BodyEffectManager />
+          <ReferralTracker />
           <PreloaderProvider>
               {children}
           </PreloaderProvider>

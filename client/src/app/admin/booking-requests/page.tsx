@@ -267,7 +267,7 @@ export default function BookingRequestsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-[1600px] mx-auto pb-16">
+    <div className="flex flex-col gap-6 w-full pb-16">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-5">
             <div className="flex flex-col gap-1">
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2.5">

@@ -1,3 +1,5 @@
+import { getAuthToken } from './api';
+
 /**
  * Helper to trigger Next.js On-Demand ISR Cache Revalidation.
  * Can be called after creating, updating, or deleting content in Admin panels.
@@ -11,14 +13,19 @@ export async function triggerRevalidation(
   try {
     const pathList = Array.isArray(paths) ? paths : [paths];
     const tagList = tags ? (Array.isArray(tags) ? tags : [tags]) : [];
+    const token = getAuthToken();
 
-    const secret = process.env.NEXT_PUBLIC_REVALIDATION_SECRET || 'sapphire_secret_revalidate_2026';
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
     const response = await fetch('/api/revalidate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
-        secret,
         paths: pathList,
         tags: tagList,
       }),
