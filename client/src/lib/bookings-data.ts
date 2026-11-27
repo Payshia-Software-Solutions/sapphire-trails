@@ -27,6 +27,14 @@ export interface Booking {
   invoice_payment_status?: 'unpaid' | 'partially_paid' | 'paid' | 'refunded' | 'cancelled' | null;
   invoice_total?: number | null;
   admin_notes?: string | null;
+  gross_amount?: number | null;
+  discount_amount?: number | null;
+  total_price?: number | null;
+  referral_code_used?: string | null;
+  referral_net_commission?: number | null;
+  referral_agent_discount_share?: number | null;
+  referral_company_discount_share?: number | null;
+  referral_commission_status?: string | null;
 }
 
 export interface PackageICalFeed {

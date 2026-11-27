@@ -35,6 +35,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/utils';
+import { authFetch } from '@/lib/api';
 
 const IMAGE_BASE_URL = 'https://content-provider.payshia.com/sapphire-trail';
 const getFullImageUrl = (path?: string | null) => {
@@ -71,7 +72,11 @@ export default function PublicBookingViewPage() {
     async function fetchBooking() {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/bookings/${id}`);
+        const token = typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search).get('token')
+          : null;
+        const query = token ? `?token=${encodeURIComponent(token)}` : '';
+        const response = await authFetch(`${API_BASE_URL}/bookings/${id}${query}`);
         if (!response.ok) throw new Error('Booking not found');
 
         const serverBooking = await response.json();

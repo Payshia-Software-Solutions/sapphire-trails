@@ -35,6 +35,11 @@ return [
         $userController->login();
     },
 
+    // Public Google Sign-In
+    'POST /auth/google/' => function () use ($userController) {
+        $userController->googleLogin();
+    },
+
     // Update user profile
     'PUT /users/{id}/' => function ($id) use ($userController) {
         $currentUser = AuthMiddleware::requireAuth();
@@ -44,7 +49,7 @@ return [
             echo json_encode(['error' => 'Forbidden: You can only edit your own profile']);
             exit;
         }
-        $userController->update($id);
+        $userController->update($id, $currentUser);
     },
 
     // Delete user (Admin only)

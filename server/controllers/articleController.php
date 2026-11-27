@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/Article.php';
+require_once __DIR__ . '/../lib/FileValidator.php';
 
 class ArticleController
 {
@@ -272,13 +273,12 @@ class ArticleController
 
     private function handleImageUpload($file, $folder)
     {
-        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-        if (!in_array($extension, $allowedExtensions)) {
+        $validation = FileValidator::validateImage($file);
+        if (!$validation['valid']) {
             return null;
         }
 
-        $filename = uniqid('art_') . '.' . $extension;
+        $filename = FileValidator::generateSafeFileName($file['name']);
         $localDir = __DIR__ . '/../uploads/';
         if (!is_dir($localDir)) {
             mkdir($localDir, 0755, true);
@@ -289,7 +289,7 @@ class ArticleController
             if ($this->ftpConfig && !empty($this->ftpConfig['ftp_server'])) {
                 $ftpPath = '/article-images/' . $filename;
                 if ($this->uploadToFTP($localPath, $ftpPath)) {
-                    unlink($localPath);
+                    @unlink($localPath);
                     return 'https://content-provider.payshia.com/sapphire-trail' . $ftpPath;
                 }
             }

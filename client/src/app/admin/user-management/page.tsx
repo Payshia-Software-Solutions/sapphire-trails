@@ -362,7 +362,7 @@ export default function UserManagementPage() {
   };
 
   return (
-    <div className="flex flex-col gap-8 max-w-7xl mx-auto w-full pb-12">
+    <div className="flex flex-col gap-8 w-full pb-12">
       
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

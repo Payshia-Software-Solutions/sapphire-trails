@@ -15,6 +15,9 @@ return [
     'GET /tours/{id}/' => function ($id) use ($controller) {
         if (is_numeric($id)) {
             $controller->getById($id);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Tour package not found']);
         }
     },
 

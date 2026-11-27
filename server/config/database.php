@@ -17,13 +17,13 @@ $options = [
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
+    error_log("Database connection error: " . $e->getMessage());
+    http_response_code(500);
+    header('Content-Type: application/json');
     if (Env::get('APP_ENV') === 'development') {
-        throw new \PDOException($e->getMessage(), (int)$e->getCode());
+        echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
     } else {
-        error_log("Database connection error: " . $e->getMessage());
-        http_response_code(500);
-        header('Content-Type: application/json');
         echo json_encode(['error' => 'Database connection failed. Please try again later.']);
-        exit;
     }
+    exit;
 }

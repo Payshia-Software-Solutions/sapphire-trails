@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../models/Mail.php';
+require_once __DIR__ . '/AuthMiddleware.php';
 
 class Mailer
 {
@@ -610,8 +611,13 @@ class Mailer
         </table>
         ";
 
+        $bookingToken = !empty($bookingId) ? AuthMiddleware::generateResourceToken('booking', (string)$bookingId) : '';
+        $confirmationUrl = !empty($bookingId)
+            ? "https://sapphiretrails.lk/booking/confirmation?id=" . urlencode((string)$bookingId) . "&token=" . urlencode($bookingToken)
+            : "https://sapphiretrails.lk/booking/confirmation";
+
         $buttons = "
-          <a href=\"https://sapphiretrails.lk/booking/confirmation\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 26px; border-radius: 9999px; margin: 4px; box-shadow: 0 4px 12px rgba(11, 30, 56, 0.2);\">
+          <a href=\"{$confirmationUrl}\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 26px; border-radius: 9999px; margin: 4px; box-shadow: 0 4px 12px rgba(11, 30, 56, 0.2);\">
             View Booking Status &rarr;
           </a>
           <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails Concierge, I am inquiring about my booking #ST-BK-{$bookingId} ({$name}).") . "\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 9999px; margin: 4px;\">
@@ -897,9 +903,15 @@ class Mailer
             $formattedNewDate .= " to " . date('F d, Y', strtotime($newEndDate));
         }
 
-        $invoiceLink = !empty($invoice['invoice_number']) 
-            ? "https://sapphiretrails.lk/invoices/{$invoice['invoice_number']}" 
-            : "https://sapphiretrails.lk/booking/confirmation";
+        if (!empty($invoice['invoice_number'])) {
+            $invToken = AuthMiddleware::generateResourceToken('invoice', (string)$invoice['invoice_number']);
+            $invoiceLink = "https://sapphiretrails.lk/invoices/{$invoice['invoice_number']}?token=" . urlencode($invToken);
+        } else {
+            $bkToken = !empty($bookingId) ? AuthMiddleware::generateResourceToken('booking', (string)$bookingId) : '';
+            $invoiceLink = !empty($bookingId)
+                ? "https://sapphiretrails.lk/booking/confirmation?id=" . urlencode((string)$bookingId) . "&token=" . urlencode($bkToken)
+                : "https://sapphiretrails.lk/booking/confirmation";
+        }
 
         $html = $this->renderRescheduleTemplate($bookingId, $name, $tourTitle, $formattedOldDate, $formattedNewDate, $guests, $reason, $invoiceLink);
         return $this->send($email, "📅 Tour Dates Updated & Confirmed - Sapphire Trails (#ST-BK-{$bookingId})", $html, 'reschedule_confirmation');
@@ -981,7 +993,8 @@ class Mailer
             </tr>";
         }
 
-        $viewUrl = "https://sapphiretrails.lk/invoices/{$invoiceNumber}";
+        $invToken = AuthMiddleware::generateResourceToken('invoice', (string)$invoiceNumber);
+        $viewUrl = "https://sapphiretrails.lk/invoices/{$invoiceNumber}?token=" . urlencode($invToken);
         $statusBadgeColor = $paymentStatus === 'paid' ? '#ECFDF5; color: #047857; border: 1px solid #A7F3D0;' : ($paymentStatus === 'partially_paid' ? '#EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE;' : '#FEF3C7; color: #B45309; border: 1px solid #FDE68A;');
         $statusText = strtoupper(str_replace('_', ' ', $paymentStatus));
 
@@ -1074,7 +1087,15 @@ class Mailer
         $children   = $booking['children'] ?? 0;
 
         $invoiceNumber = $booking['invoice_number'] ?? null;
-        $invoiceUrl    = $invoiceNumber ? "https://sapphiretrails.lk/invoices/{$invoiceNumber}" : "https://sapphiretrails.lk/booking/confirmation";
+        if ($invoiceNumber) {
+            $invToken = AuthMiddleware::generateResourceToken('invoice', (string)$invoiceNumber);
+            $invoiceUrl = "https://sapphiretrails.lk/invoices/{$invoiceNumber}?token=" . urlencode($invToken);
+        } else {
+            $bkToken = !empty($bookingId) ? AuthMiddleware::generateResourceToken('booking', (string)$bookingId) : '';
+            $invoiceUrl = !empty($bookingId)
+                ? "https://sapphiretrails.lk/booking/confirmation?id=" . urlencode((string)$bookingId) . "&token=" . urlencode($bkToken)
+                : "https://sapphiretrails.lk/booking/confirmation";
+        }
 
         $contact = $this->getContactDetails();
         $waNum = $contact['whatsapp'];
@@ -1176,5 +1197,343 @@ class Mailer
 
         $html = $this->wrapEmailTheme($badge, $heading, $body, "#INQ-{$inquiryId}", $buttons);
         return $this->send($guestEmail, $subject, $html, 'inquiry_reply');
+    }
+
+    private function getFrontendBaseUrl(): string
+    {
+        $raw = getenv('FRONTEND_URL') ?: ($_ENV['FRONTEND_URL'] ?? 'https://sapphiretrails.lk');
+        $clean = rtrim(trim((string)$raw), '/');
+        return $clean !== '' ? $clean : 'https://sapphiretrails.lk';
+    }
+
+    private function formatAgentTypeLabel(string $agentType): string
+    {
+        $map = [
+            'customer_agent' => 'Past Guest / Brand Ambassador',
+            'tour_guide'     => 'Tour Guide / Private Chauffeur',
+            'hotel_partner'  => 'Hotel / Boutique Villa Concierge',
+            'travel_agent'   => 'Luxury Travel Advisor / Agency',
+        ];
+        if (isset($map[$agentType])) {
+            return $map[$agentType];
+        }
+        return ucwords(str_replace(['_', '-'], ' ', trim($agentType) ?: 'Partner'));
+    }
+
+    private function formatReferralRateValue(?string $type, $value): string
+    {
+        if (empty($type) || $type === 'none') {
+            return 'None';
+        }
+        $num = floatval($value ?? 0);
+        if ($type === 'percentage') {
+            $formatted = rtrim(rtrim(number_format($num, 2, '.', ''), '0'), '.');
+            return $formatted . '%';
+        }
+        return '$' . number_format($num, 2);
+    }
+
+    private function formatCostShareLabel(array $rules): string
+    {
+        $mode = $rules['discount_bear_mode'] ?? 'split';
+        $agentShare = floatval($rules['agent_discount_share_percent'] ?? 50);
+        if (($rules['guest_discount_type'] ?? 'none') === 'none' || floatval($rules['guest_discount_value'] ?? 0) <= 0) {
+            return 'Not Applicable (No Guest Discount)';
+        }
+        if ($mode === 'company' || $agentShare <= 0) {
+            return '100% Covered by Sapphire Trails';
+        }
+        if ($mode === 'agent' || $agentShare >= 100) {
+            return '100% Partner Share';
+        }
+        $companyShare = max(0, 100 - $agentShare);
+        return rtrim(rtrim(number_format($companyShare, 2, '.', ''), '0'), '.') . '% Company / '
+            . rtrim(rtrim(number_format($agentShare, 2, '.', ''), '0'), '.') . '% Partner';
+    }
+
+    private function buildPartnerRateSummaryHtml(array $rules): string
+    {
+        $commLabel = htmlspecialchars($this->formatReferralRateValue($rules['commission_type'] ?? 'percentage', $rules['commission_value'] ?? 10));
+        $commBasis = (($rules['commission_basis'] ?? 'gross') === 'net') ? 'Net Booking Value' : 'Gross Expedition Value';
+        $discLabel = htmlspecialchars($this->formatReferralRateValue($rules['guest_discount_type'] ?? 'percentage', $rules['guest_discount_value'] ?? 5));
+        $shareLabel = htmlspecialchars($this->formatCostShareLabel($rules));
+        $attribDays = intval($rules['attribution_days'] ?? 30);
+        $minBooking = floatval($rules['min_booking_amount'] ?? 0);
+        $minBookingLabel = $minBooking > 0 ? '$' . number_format($minBooking, 2) : 'No Minimum Spend';
+
+        return "
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 22px;\">
+          <tr>
+            <td colspan=\"2\" style=\"padding-bottom: 10px; border-bottom: 1px solid #E2E8F0;\">
+              <span style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #B8860B;\">Partner Rate Summary &amp; Commercial Terms</span>
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 9px 0; color: #64748B; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">Your Commission Rate</td>
+            <td style=\"padding: 9px 0; text-align: right; color: #0B1E38; font-weight: 700; font-size: 14px; border-bottom: 1px solid #EDF2F7;\">{$commLabel} <span style=\"font-size: 11px; font-weight: 500; color: #64748B;\">({$commBasis})</span></td>
+          </tr>
+          <tr>
+            <td style=\"padding: 9px 0; color: #64748B; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">Referred Guest Privilege</td>
+            <td style=\"padding: 9px 0; text-align: right; color: #047857; font-weight: 700; font-size: 14px; border-bottom: 1px solid #EDF2F7;\">{$discLabel} Off Checkout</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 9px 0; color: #64748B; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">Discount Cost Sharing</td>
+            <td style=\"padding: 9px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">{$shareLabel}</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 9px 0; color: #64748B; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">Minimum Booking Value</td>
+            <td style=\"padding: 9px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px; border-bottom: 1px solid #EDF2F7;\">{$minBookingLabel}</td>
+          </tr>
+          <tr>
+            <td style=\"padding: 9px 0 2px 0; color: #64748B; font-size: 13px;\">Referral Attribution Window</td>
+            <td style=\"padding: 9px 0 2px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$attribDays} Days</td>
+          </tr>
+        </table>
+        ";
+    }
+
+    /**
+     * Send confirmation email to applicant + notification email to admins upon partner application
+     */
+    public function sendReferralApplicationEmails(array $agent): void
+    {
+        $agentId = (int)($agent['id'] ?? 0);
+        $name = htmlspecialchars((string)($agent['user_name'] ?? 'Valued Member'));
+        $rawEmail = trim((string)($agent['user_email'] ?? ''));
+        $phone = htmlspecialchars((string)($agent['user_phone'] ?? 'Not Provided'));
+        $category = htmlspecialchars($this->formatAgentTypeLabel((string)($agent['agent_type'] ?? 'customer_agent')));
+        $note = trim((string)($agent['application_note'] ?? ''));
+        $noteHtml = $note !== '' ? nl2br(htmlspecialchars($note)) : '<span style="color:#94A3B8;">No additional notes submitted.</span>';
+
+        $frontendUrl = $this->getFrontendBaseUrl();
+        $portalUrl = $frontendUrl . '/profile?tab=referrals';
+        $adminReferralsUrl = $frontendUrl . '/admin/referrals';
+        $contact = $this->getContactDetails();
+        $waNum = $contact['whatsapp'];
+
+        if ($rawEmail !== '') {
+            $badge = "<span style=\"display: inline-block; background-color: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">Application Under Review</span>";
+            $heading = "Partner Application Received, {$name}";
+
+            $body = "
+            <p style=\"color: #475569; font-size: 14px; line-height: 1.7; margin: 0 0 18px 0;\">
+              Thank you for applying to join the <strong>Sapphire Trails Authorized Partner &amp; Referral Program</strong>. Our Ratnapura concierge administration team has received your request and will review your partner profile shortly.
+            </p>
+
+            <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;\">
+              <tr>
+                <td colspan=\"2\" style=\"padding-bottom: 10px; border-bottom: 1px solid #E2E8F0;\">
+                  <span style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #B8860B;\">Submitted Application Summary</span>
+                </td>
+              </tr>
+              <tr><td style=\"padding: 8px 0; color: #64748B; font-size: 13px; width: 38%;\">Applicant:</td><td style=\"padding: 8px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$name}</td></tr>
+              <tr><td style=\"padding: 8px 0; color: #64748B; font-size: 13px;\">Partner Category:</td><td style=\"padding: 8px 0; text-align: right; color: #0B1E38; font-weight: 600; font-size: 13px;\">{$category}</td></tr>
+              <tr><td style=\"padding: 8px 0; color: #64748B; font-size: 13px;\">Review Status:</td><td style=\"padding: 8px 0; text-align: right; color: #B45309; font-weight: 700; font-size: 13px;\">Pending Admin Verification</td></tr>
+            </table>
+
+            <div style=\"background-color: #FFFFFF; border: 1px solid #E2E8F0; border-left: 3px solid #D4AF37; border-radius: 0 10px 10px 0; padding: 14px 18px; margin-bottom: 20px;\">
+              <p style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748B; margin: 0 0 6px 0;\">What Happens Next</p>
+              <p style=\"font-size: 13px; color: #475569; line-height: 1.65; margin: 0;\">
+                Once approved, you will receive an official onboarding email containing your <strong>personal referral code</strong>, <strong>shareable invitation link</strong>, and complete <strong>Partner Rate Summary</strong>.
+              </p>
+            </div>
+            ";
+
+            $buttons = "
+              <a href=\"{$portalUrl}\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 26px; border-radius: 9999px; margin: 4px;\">
+                View Member Portal &rarr;
+              </a>
+              <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails Concierge, I have submitted a Partner Program application (#ST-AGT-{$agentId}).") . "\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 9999px; margin: 4px;\">
+                💬 WhatsApp Concierge
+              </a>
+            ";
+
+            $html = $this->wrapEmailTheme($badge, $heading, $body, "#ST-AGT-{$agentId}", $buttons);
+            $this->send($rawEmail, "Partner Application Received (#ST-AGT-{$agentId}) - Sapphire Trails", $html, 'referral_application_applicant');
+        }
+
+        $adminEmails = $this->settings['admin_emails'] ?? '';
+        if (!empty($adminEmails)) {
+            $adminBadge = "<span style=\"display: inline-block; background-color: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">Action Required &bull; Partner Request</span>";
+            $adminHeading = "New Referral Partner Application";
+
+            $adminBody = "
+            <p style=\"color: #475569; font-size: 14px; line-height: 1.65; margin: 0 0 18px 0;\">
+              A registered member has applied to become an authorized Sapphire Trails Referral Partner. Please review and approve or decline their application in Concierge Studio.
+            </p>
+            <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin-bottom: 18px;\">
+              <tr><td style=\"padding: 7px 0; color: #64748B; font-size: 13px; width: 35%;\">Applicant Name:</td><td style=\"padding: 7px 0; text-align: right; color: #0B1E38; font-weight: 700; font-size: 13px;\">{$name}</td></tr>
+              <tr><td style=\"padding: 7px 0; color: #64748B; font-size: 13px;\">Email:</td><td style=\"padding: 7px 0; text-align: right; color: #0B1E38; font-size: 13px;\">" . htmlspecialchars($rawEmail) . "</td></tr>
+              <tr><td style=\"padding: 7px 0; color: #64748B; font-size: 13px;\">Phone:</td><td style=\"padding: 7px 0; text-align: right; color: #0B1E38; font-size: 13px;\">{$phone}</td></tr>
+              <tr><td style=\"padding: 7px 0; color: #64748B; font-size: 13px;\">Category:</td><td style=\"padding: 7px 0; text-align: right; color: #B8860B; font-weight: 700; font-size: 13px;\">{$category}</td></tr>
+            </table>
+            <div style=\"background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 18px;\">
+              <p style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748B; margin: 0 0 6px 0;\">Referral Approach Notes</p>
+              <div style=\"font-size: 13px; color: #334155; line-height: 1.6;\">{$noteHtml}</div>
+            </div>
+            ";
+
+            $adminButtons = "
+              <a href=\"{$adminReferralsUrl}\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 26px; border-radius: 9999px; margin: 4px;\">
+                Review in Referrals Studio &rarr;
+              </a>
+            ";
+
+            $adminHtml = $this->wrapEmailTheme($adminBadge, $adminHeading, $adminBody, "#ST-AGT-{$agentId}", $adminButtons);
+            $this->send($adminEmails, "🤝 New Referral Partner Application - {$name} ({$category})", $adminHtml, 'referral_application_admin', '', $this->settings['admin_emails_cc'] ?? null, $this->settings['admin_emails_bcc'] ?? null);
+        }
+    }
+
+    /**
+     * Send partner onboarding or rate-summary update email when approved
+     */
+    public function sendReferralApprovalWithRatesEmail(array $agent, array $effectiveRules, bool $isRateUpdate = false): array
+    {
+        $rawEmail = trim((string)($agent['user_email'] ?? ''));
+        if ($rawEmail === '') {
+            return ['success' => false, 'error' => 'Partner email address is missing'];
+        }
+
+        $name = htmlspecialchars((string)($agent['user_name'] ?? 'Partner'));
+        $code = htmlspecialchars((string)($agent['referral_code'] ?? ''));
+        $category = htmlspecialchars($this->formatAgentTypeLabel((string)($agent['agent_type'] ?? 'customer_agent')));
+        $adminNote = trim((string)($agent['admin_note'] ?? ''));
+
+        $frontendUrl = $this->getFrontendBaseUrl();
+        $referralLink = $frontendUrl . '/?ref=' . urlencode((string)($agent['referral_code'] ?? ''));
+        $safeReferralLink = htmlspecialchars($referralLink);
+        $portalUrl = $frontendUrl . '/profile?tab=referrals';
+        $contact = $this->getContactDetails();
+        $waNum = $contact['whatsapp'];
+
+        $badge = $isRateUpdate
+            ? "<span style=\"display: inline-block; background-color: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">★ Partner Terms Updated</span>"
+            : "<span style=\"display: inline-block; background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">✓ Approved Referral Partner</span>";
+
+        $heading = $isRateUpdate
+            ? "Updated Partner Rate Summary"
+            : "Welcome to Our Partner Network, {$name}!";
+
+        $intro = $isRateUpdate
+            ? "Your active <strong>Sapphire Trails</strong> referral partner credentials and commercial rate summary have been updated. Your latest terms are detailed below for your records."
+            : "We are pleased to welcome you as an official <strong>Sapphire Trails Authorized Referral Partner</strong> ({$category}). Your personal invitation code and partner commission portal are now active.";
+
+        $rateTableHtml = $this->buildPartnerRateSummaryHtml($effectiveRules);
+
+        $adminNoteHtml = $adminNote !== ''
+            ? "<div style=\"background-color: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px;\">
+                 <p style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #92400E; margin: 0 0 6px 0;\">Concierge Desk Note</p>
+                 <p style=\"font-size: 13px; color: #78350F; line-height: 1.6; margin: 0;\">" . nl2br(htmlspecialchars($adminNote)) . "</p>
+               </div>"
+            : '';
+
+        $body = "
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.7; margin: 0 0 20px 0;\">
+          {$intro}
+        </p>
+
+        <!-- Midnight Sapphire Credentials Box -->
+        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background-color: #08111e; border-radius: 14px; overflow: hidden; margin-bottom: 22px;\">
+          <tr>
+            <td style=\"padding: 20px 22px;\">
+              <p style=\"margin: 0 0 4px 0; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: #F7E6A1;\">Your Invitation Credentials</p>
+              <p style=\"margin: 0 0 14px 0; font-size: 12px; color: #CBD5E1;\">Share this code or direct link with travelers — their guest discount applies automatically at checkout.</p>
+              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
+                <tr>
+                  <td style=\"background-color: rgba(255,255,255,0.08); border: 1px solid rgba(212,175,55,0.4); border-radius: 10px; padding: 12px 16px;\">
+                    <span style=\"display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #94A3B8; margin-bottom: 4px;\">Personal Referral Code</span>
+                    <span style=\"font-family: monospace; font-size: 20px; font-weight: 700; letter-spacing: 0.12em; color: #F7E6A1;\">{$code}</span>
+                  </td>
+                </tr>
+                <tr><td style=\"height: 10px;\"></td></tr>
+                <tr>
+                  <td style=\"background-color: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 16px;\">
+                    <span style=\"display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #94A3B8; margin-bottom: 4px;\">Shareable Invitation Link</span>
+                    <a href=\"{$safeReferralLink}\" style=\"font-size: 12px; color: #FFFFFF; word-break: break-all; text-decoration: underline;\">{$safeReferralLink}</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        {$rateTableHtml}
+
+        {$adminNoteHtml}
+
+        <div style=\"background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px 18px; margin-bottom: 18px;\">
+          <p style=\"font-size: 12px; font-weight: 700; color: #0B1E38; margin: 0 0 8px 0;\">How Settlements Work</p>
+          <ul style=\"margin: 0; padding-left: 18px; font-size: 12.5px; color: #475569; line-height: 1.75;\">
+            <li>Every booking completed via your code or link within your attribution window is logged immediately in your Partner Portal.</li>
+            <li>Commissions move from <strong>Pending</strong> to <strong>Approved</strong> upon expedition confirmation, and payouts are recorded in your Partner Ledger.</li>
+            <li>Please do not use your own referral code for personal bookings; only third-party guest reservations qualify.</li>
+          </ul>
+        </div>
+        ";
+
+        $buttons = "
+          <a href=\"{$portalUrl}\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 28px; border-radius: 9999px; margin: 4px; box-shadow: 0 4px 12px rgba(11, 30, 56, 0.2);\">
+            Open Partner Portal &rarr;
+          </a>
+          <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails Partner Desk, I am {$agent['user_name']} (Code: {$agent['referral_code']}).") . "\" style=\"display: inline-block; background-color: #10B981; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 22px; border-radius: 9999px; margin: 4px;\">
+            💬 WhatsApp Partner Desk
+          </a>
+        ";
+
+        $subject = $isRateUpdate
+            ? "★ Updated Partner Rate Summary ({$agent['referral_code']}) - Sapphire Trails"
+            : "💎 Approved: Your Sapphire Trails Partner Account & Rate Summary ({$agent['referral_code']})";
+
+        $html = $this->wrapEmailTheme($badge, $heading, $body, $code, $buttons);
+        return $this->send($rawEmail, $subject, $html, $isRateUpdate ? 'referral_rates_updated' : 'referral_approved');
+    }
+
+    /**
+     * Send polite status update if a referral application/account is rejected or suspended
+     */
+    public function sendReferralStatusNoticeEmail(array $agent, string $newStatus): array
+    {
+        $rawEmail = trim((string)($agent['user_email'] ?? ''));
+        if ($rawEmail === '') {
+            return ['success' => false, 'error' => 'Recipient email address is missing'];
+        }
+
+        $name = htmlspecialchars((string)($agent['user_name'] ?? 'Partner'));
+        $adminNote = trim((string)($agent['admin_note'] ?? ''));
+        $isSuspended = $newStatus === 'suspended';
+
+        $badge = "<span style=\"display: inline-block; background-color: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;\">" . ($isSuspended ? 'Partner Account Paused' : 'Application Status Update') . "</span>";
+        $heading = $isSuspended ? "Partner Privileges Temporarily Paused" : "Update on Your Partner Application";
+
+        $message = $isSuspended
+            ? "Your Sapphire Trails referral partner account has been temporarily placed on hold. Existing settled commissions remain unaffected in your ledger."
+            : "Thank you for your interest in joining the Sapphire Trails Partner Program. After reviewing your current request, our team is unable to approve partner activation at this time.";
+
+        $noteBox = $adminNote !== ''
+            ? "<div style=\"background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 3px solid #64748B; border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 16px 0;\">
+                 <p style=\"font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748B; margin: 0 0 6px 0;\">Review Notes</p>
+                 <p style=\"font-size: 13px; color: #334155; line-height: 1.6; margin: 0;\">" . nl2br(htmlspecialchars($adminNote)) . "</p>
+               </div>"
+            : '';
+
+        $body = "
+        <p style=\"font-size: 15px; font-weight: 600; color: #0B1E38; margin: 0 0 12px 0;\">Dear {$name},</p>
+        <p style=\"color: #475569; font-size: 14px; line-height: 1.7; margin: 0 0 16px 0;\">{$message}</p>
+        {$noteBox}
+        <p style=\"color: #475569; font-size: 13px; line-height: 1.65; margin: 0;\">
+          You are welcome to reach out to our Ratnapura concierge desk anytime if you would like to share additional details or discuss partnership opportunities directly.
+        </p>
+        ";
+
+        $contact = $this->getContactDetails();
+        $waNum = $contact['whatsapp'];
+        $buttons = "
+          <a href=\"https://wa.me/{$waNum}?text=" . urlencode("Hello Sapphire Trails Concierge, I am {$agent['user_name']} inquiring about my partner status.") . "\" style=\"display: inline-block; background-color: #0B1E38; color: #FFFFFF; font-weight: 600; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 9999px; margin: 4px;\">
+            Contact Partner Desk &rarr;
+          </a>
+        ";
+
+        $html = $this->wrapEmailTheme($badge, $heading, $body, "#ST-AGT-" . intval($agent['id'] ?? 0), $buttons);
+        return $this->send($rawEmail, "Update on Your Sapphire Trails Partner Account", $html, 'referral_status_update');
     }
 }

@@ -1,14 +1,50 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
+import { API_BASE_URL } from '@/lib/utils';
 
-const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET || 'sapphire_secret_revalidate_2026';
+const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET;
+
+async function isAuthorizedRevalidateRequest(request: NextRequest, bodySecret?: string | null): Promise<boolean> {
+  const { searchParams } = new URL(request.url);
+  const secret = bodySecret ?? searchParams.get('secret');
+
+  if (REVALIDATION_SECRET && secret && secret === REVALIDATION_SECRET) {
+    return true;
+  }
+
+  const authHeader = request.headers.get('authorization');
+  if (authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
+    try {
+      const verifyRes = await fetch(`${API_BASE_URL}/analytics/settings/`, {
+        method: 'GET',
+        headers: {
+          Authorization: authHeader,
+          Accept: 'application/json',
+        },
+        cache: 'no-store',
+      });
+      return verifyRes.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
     const { searchParams } = new URL(request.url);
 
-    const secret = body.secret || searchParams.get('secret');
+    const authorized = await isAuthorizedRevalidateRequest(request, body.secret);
+    if (!authorized) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Valid admin session or revalidation secret required' },
+        { status: 401 }
+      );
+    }
+
     const paths: string[] = Array.isArray(body.paths)
       ? body.paths
       : body.path
@@ -24,13 +60,6 @@ export async function POST(request: NextRequest) {
       : searchParams.get('tag')
       ? [searchParams.get('tag')!]
       : [];
-
-    if (secret !== REVALIDATION_SECRET) {
-      return NextResponse.json(
-        { error: 'Unauthorized: Invalid secret token' },
-        { status: 401 }
-      );
-    }
 
     if (paths.length === 0 && tags.length === 0) {
       return NextResponse.json(
@@ -77,12 +106,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const secret = searchParams.get('secret');
   const path = searchParams.get('path');
   const tag = searchParams.get('tag');
 
-  if (secret !== REVALIDATION_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized: Invalid secret token' }, { status: 401 });
+  const authorized = await isAuthorizedRevalidateRequest(request);
+  if (!authorized) {
+    return NextResponse.json({ error: 'Unauthorized: Valid admin session or revalidation secret required' }, { status: 401 });
   }
 
   if (!path && !tag) {

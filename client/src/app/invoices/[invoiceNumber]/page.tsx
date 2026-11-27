@@ -37,6 +37,7 @@ import {
   Send 
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/utils';
+import { authFetch } from '@/lib/api';
 import { trackContactClick } from '@/lib/analytics';
 import { useSiteContent, getWhatsappUrl, getContactPhone } from '@/lib/site-content';
 
@@ -49,6 +50,9 @@ export default function DigitalInvoicePage() {
 
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [verifyEmail, setVerifyEmail] = useState('');
+  const [verifyError, setVerifyError] = useState('');
 
   // Date Change Request Dialog (Traveler Self-Service)
   const [isDateChangeOpen, setIsDateChangeOpen] = useState(false);
@@ -57,25 +61,43 @@ export default function DigitalInvoicePage() {
   const [dateChangeReason, setDateChangeReason] = useState('');
   const [isSubmittingDateChange, setIsSubmittingDateChange] = useState(false);
 
+  const loadInvoice = async (emailOverride?: string) => {
+    setIsLoading(true);
+    setVerifyError('');
+    try {
+      const token = typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search).get('token')
+        : null;
+      const params = new URLSearchParams();
+      if (token) params.set('token', token);
+      if (emailOverride) params.set('email', emailOverride);
+      const query = params.toString() ? `?${params.toString()}` : '';
+
+      const res = await authFetch(`${API_BASE_URL}/invoices/by-number/${invoiceNumber}${query}`);
+      if (res.status === 401) {
+        setNeedsVerification(true);
+        setInvoice(null);
+        if (emailOverride) {
+          setVerifyError('The email address does not match this invoice.');
+        }
+        return;
+      }
+      if (!res.ok) throw new Error('Invoice not found');
+      const data = await res.json();
+      setNeedsVerification(false);
+      setInvoice(mapServerInvoiceToClient(data));
+    } catch (error) {
+      console.error(error);
+      setInvoice(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!invoiceNumber) return;
-
-    async function fetchInvoice() {
-      setIsLoading(true);
-      try {
-        const res = await fetch(`${API_BASE_URL}/invoices/by-number/${invoiceNumber}`);
-        if (!res.ok) throw new Error('Invoice not found');
-        const data = await res.json();
-        setInvoice(mapServerInvoiceToClient(data));
-      } catch (error) {
-        console.error(error);
-        setInvoice(null);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchInvoice();
+    loadInvoice();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoiceNumber]);
 
   const handlePrint = () => {
@@ -104,18 +126,27 @@ export default function DigitalInvoicePage() {
 
     setIsSubmittingDateChange(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/bookings/${invoice.booking_id}/reschedule-request/`, {
+      const token = typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search).get('token')
+        : null;
+      const res = await authFetch(`${API_BASE_URL}/bookings/${invoice.booking_id}/reschedule-request/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           new_date: requestedDate,
           new_end_date: requestedEndDate || null,
           reason: dateChangeReason.trim() || 'Date change requested by customer via invoice portal',
+          invoice_number: invoice.invoice_number,
+          email: invoice.customer_email || verifyEmail || undefined,
+          access_token: token || undefined,
           send_email: true,
         }),
       });
 
-      if (!res.ok) throw new Error('Failed to submit date change request.');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || 'Failed to submit date change request.');
+      }
 
       toast({
         title: '🗓️ Date Change Request Submitted',
@@ -124,11 +155,7 @@ export default function DigitalInvoicePage() {
 
       // Refresh invoice
       setIsDateChangeOpen(false);
-      const updatedRes = await fetch(`${API_BASE_URL}/invoices/by-number/${invoiceNumber}`);
-      if (updatedRes.ok) {
-        const data = await updatedRes.json();
-        setInvoice(mapServerInvoiceToClient(data));
-      }
+      await loadInvoice(verifyEmail || undefined);
     } catch (e) {
       toast({
         variant: 'destructive',
@@ -145,6 +172,48 @@ export default function DigitalInvoicePage() {
       <div className="min-h-screen bg-[#090b0e] text-white flex flex-col items-center justify-center gap-4">
         <LoaderCircle className="h-10 w-10 animate-spin text-[#c79954]" />
         <p className="text-xs text-muted-foreground tracking-widest uppercase font-mono">Loading Official Statement...</p>
+      </div>
+    );
+  }
+
+  if (needsVerification) {
+    return (
+      <div className="min-h-screen bg-[#090b0e] text-white flex flex-col items-center justify-center gap-6 p-4">
+        <div className="w-full max-w-md bg-[#12151d] border border-[#c79954]/30 rounded-2xl p-6 space-y-4">
+          <div className="text-center space-y-1.5">
+            <ShieldCheck className="h-8 w-8 text-[#c79954] mx-auto" />
+            <h1 className="text-xl font-serif text-[#c79954]">Verify Your Identity</h1>
+            <p className="text-xs text-muted-foreground">
+              Enter the email address used for invoice <span className="font-mono text-white">{invoiceNumber}</span> to view your statement.
+            </p>
+          </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (verifyEmail.trim()) {
+                loadInvoice(verifyEmail.trim());
+              }
+            }}
+            className="space-y-3"
+          >
+            <div className="space-y-1.5">
+              <Label htmlFor="verify-email" className="text-xs">Customer Email</Label>
+              <Input
+                id="verify-email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                value={verifyEmail}
+                onChange={(e) => setVerifyEmail(e.target.value)}
+                className="bg-[#090b0e] border-[#c79954]/30 text-white"
+              />
+            </div>
+            {verifyError && <p className="text-xs text-red-400">{verifyError}</p>}
+            <Button type="submit" className="w-full bg-[#c79954] hover:bg-[#b58844] text-black font-semibold text-xs">
+              View Invoice
+            </Button>
+          </form>
+        </div>
       </div>
     );
   }

@@ -1,15 +1,18 @@
 <?php
 require_once __DIR__ . '/User.php';
+require_once __DIR__ . '/Referral.php';
 
 class Booking
 {
     private $pdo;
     private $userModel;
+    private $referralModel;
 
     public function __construct($pdo, $userModel = null)
     {
         $this->pdo = $pdo;
         $this->userModel = $userModel ?: new User($pdo);
+        $this->referralModel = new Referral($pdo);
     }
 
     // Fetch all bookings with joined user, tour and invoice data
@@ -28,11 +31,16 @@ class Booking
                    inv.id AS invoice_id,
                    inv.invoice_number,
                    inv.payment_status AS invoice_payment_status,
-                   inv.total_amount AS invoice_total
+                   inv.total_amount AS invoice_total,
+                   rc.net_commission_amount AS referral_net_commission,
+                   rc.agent_discount_share AS referral_agent_discount_share,
+                   rc.company_discount_share AS referral_company_discount_share,
+                   rc.status AS referral_commission_status
             FROM bookings b
             LEFT JOIN users u ON b.user_id = u.id
             LEFT JOIN tour_packages t ON b.tour_package_id = t.id
             LEFT JOIN invoices inv ON inv.booking_id = b.id
+            LEFT JOIN referral_commissions rc ON rc.booking_id = b.id
             ORDER BY b.created_at DESC
         ");
         $stmt->execute();
@@ -55,11 +63,16 @@ class Booking
                    inv.id AS invoice_id,
                    inv.invoice_number,
                    inv.payment_status AS invoice_payment_status,
-                   inv.total_amount AS invoice_total
+                   inv.total_amount AS invoice_total,
+                   rc.net_commission_amount AS referral_net_commission,
+                   rc.agent_discount_share AS referral_agent_discount_share,
+                   rc.company_discount_share AS referral_company_discount_share,
+                   rc.status AS referral_commission_status
             FROM bookings b
             LEFT JOIN users u ON b.user_id = u.id
             LEFT JOIN tour_packages t ON b.tour_package_id = t.id
             LEFT JOIN invoices inv ON inv.booking_id = b.id
+            LEFT JOIN referral_commissions rc ON rc.booking_id = b.id
             WHERE b.id = ?
         ");
         $stmt->execute([$id]);
@@ -151,8 +164,9 @@ class Booking
         $stmt = $this->pdo->prepare("
             INSERT INTO bookings (
                 user_id, tour_package_id, name, email, phone, address, adults, children, guests,
+                gross_amount, discount_amount, total_price, referral_code_id, referral_code_used,
                 tour_date, end_date, status, booking_source, external_booking_id, message, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, NOW(), NOW())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, NOW(), NOW())
         ");
 
         $stmt->execute([
@@ -165,6 +179,11 @@ class Booking
             $adults,
             $children,
             $guests,
+            $data['gross_amount'] ?? null,
+            $data['discount_amount'] ?? 0.00,
+            $data['total_price'] ?? null,
+            $data['referral_code_id'] ?? null,
+            $data['referral_code_used'] ?? null,
             $tourDate,
             $data['end_date'] ?? null,
             $data['booking_source'] ?? 'website',

@@ -280,7 +280,7 @@ The Sapphire Trails Team`
   const waPhone = cleanPhone.startsWith('0') ? '94' + cleanPhone.substring(1) : cleanPhone;
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-[1600px] mx-auto pb-16">
+    <div className="flex flex-col gap-6 w-full pb-16">
       {/* 1. Full-Width Top Header Bar */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border/80 pb-5">
         <div className="flex items-center gap-3">
